@@ -23,6 +23,6 @@ class HomeController extends GetxController {
 
   void changeIndex(int index) {
     currentIndex.value = index;
-    pageController.jumpToPage(index);
+    // pageController.jumpToPage(index);
   }
 }
