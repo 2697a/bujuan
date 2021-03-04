@@ -23,6 +23,11 @@ environment:
 dependencies:
   get:
   sliding_up_panel: ^1.0.2
+  path_provider: ^1.6.11
+  cached_network_image: ^2.5.0
+  cookie_jar: ^1.0.1
+  encrypt: ^3.0.0
+  dartin: ^0.0.1
   flutter:
     sdk: flutter
 

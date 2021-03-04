@@ -1,13 +1,18 @@
+import 'package:bujuan/entity/sheet_details_entity.dart';
 import 'package:get/get.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class BottomBarController extends GetxController {
-  PanelController panelController;
+  var isPlay = false.obs;
+  var song = SheetDetailsPlaylistTrack().obs;
 
   @override
   void onInit() {
-    panelController = PanelController();
     super.onInit();
+  }
+
+  changeSong(SheetDetailsPlaylistTrack song) {
+    this.song.value = song;
+    isPlay.value = true;
   }
 
   @override

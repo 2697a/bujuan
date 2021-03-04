@@ -1,15 +1,19 @@
 import 'package:bujuan/global/global_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class HomeController extends GetxController {
   var currentIndex = 0.obs;
   PageController pageController;
   var isDarkTheme = false.obs;
+  var isHideBottom = false.obs;
+  PanelController panelController;
 
   @override
   void onInit() {
     pageController = PageController(initialPage: currentIndex.value);
+    panelController = PanelController();
     super.onInit();
   }
 
@@ -23,6 +27,10 @@ class HomeController extends GetxController {
 
   void changeIndex(int index) {
     currentIndex.value = index;
-    // pageController.jumpToPage(index);
+    pageController.jumpToPage(index);
+  }
+
+  void changeHide(bool isHideBottom) {
+    this.isHideBottom.value = isHideBottom;
   }
 }
