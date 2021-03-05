@@ -1,5 +1,6 @@
 package com.sixbugs.starry
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
@@ -85,7 +86,7 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 .setOpenCache(false)
                 .setDebug(true)
                 .setAutoManagerFocus(true)   //使用多实例的时候要关掉，不然会相互抢焦点
-                .addInterceptor(SongUrlInterceptor(channel))
+                .addInterceptor(SongUrlInterceptor(channel,binding.activity))
                 .setImageLoader(ImageLoader())
                 .setNotificationSwitch(true)
                 .setNotificationType(INotification.SYSTEM_NOTIFICATION)
@@ -94,23 +95,25 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
 
     //播放前拦截检测
-    class SongUrlInterceptor(private var channel: MethodChannel) : AsyncInterceptor() {
+    class SongUrlInterceptor(private var channel: MethodChannel,private var activity: Activity) : AsyncInterceptor() {
         override fun process(songInfo: SongInfo?, callback: InterceptorCallback) {
             if (TextUtils.isEmpty(songInfo?.songUrl)) {
-                channel.invokeMethod("GET_SONG_URL", songInfo?.songId, object : Result {
-                    override fun notImplemented() {
-                    }
+                activity.runOnUiThread {
+                    channel.invokeMethod("GET_SONG_URL", songInfo?.songId, object : Result {
+                        override fun notImplemented() {
+                        }
 
-                    override fun error(errorCode: String?, errorMessage: String?, errorDetails: Any?) {
-                        //没有获取到，以后走拼接
-                    }
+                        override fun error(errorCode: String?, errorMessage: String?, errorDetails: Any?) {
+                            //没有获取到，以后走拼接
+                        }
 
-                    override fun success(result: Any?) {
-                        songInfo?.songUrl = result as String
-                        callback.onContinue(songInfo)
-                    }
+                        override fun success(result: Any?) {
+                            songInfo?.songUrl = result as String
+                            callback.onContinue(songInfo)
+                        }
 
-                })
+                    })
+                };
             } else {
                 callback.onContinue(songInfo)
             }
