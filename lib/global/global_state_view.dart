@@ -5,10 +5,9 @@ import 'package:get/get.dart';
 
 class StateView extends GetView {
   final int state;
-  @required
   final Widget widget;
 
-  StateView(this.state, {this.widget});
+  StateView(this.state, {@required this.widget});
 
   @override
   Widget build(BuildContext context) {

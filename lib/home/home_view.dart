@@ -9,16 +9,17 @@ import 'home_controller.dart';
 class HomeView extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
-    return Obx(() => controller.isHideBottom.value
-        ? Scaffold(body: _buildContent())
-        : Scaffold(
-            body: _buildContent(),
-            bottomNavigationBar: _buildNavigationBar(context),
-          ));
+    return Obx(() => Scaffold(
+          body: _buildContent(),
+          // bottomNavigationBar: _buildNavigationBar(context),
+        ));
   }
 
   Widget _buildNavigationBar(context) {
-    return Obx(() => BottomNavigationBar(
+    return AnimatedContainer(
+      duration: Duration(microseconds: 500),
+      child: SingleChildScrollView(
+        child: BottomNavigationBar(
           selectedItemColor: Theme.of(context).accentColor,
           unselectedItemColor: Theme.of(context).bottomAppBarColor,
           backgroundColor: Theme.of(context).primaryColor,
@@ -33,7 +34,10 @@ class HomeView extends GetView<HomeController> {
           ],
           onTap: (index) => controller.changeIndex(index),
           currentIndex: controller.currentIndex.value,
-        ));
+        ),
+      ),
+      height: controller.bottomHeight.value,
+    );
   }
 
   Widget _buildContent() {
@@ -42,6 +46,7 @@ class HomeView extends GetView<HomeController> {
       body: Scaffold(
         appBar: AppBar(
           elevation: 0,
+          title: Text("Bujuan"),
           actions: [
             IconButton(
               icon: Icon(Icons.wb_sunny_outlined),
@@ -64,7 +69,14 @@ class HomeView extends GetView<HomeController> {
           ),
         ),
       ),
-      callBack: (s) => controller.changeHide(s == 0),
+      callBack: (s) {
+        // controller.changeHide(58.0*(1-s));
+       // if(s==0.0){
+       //   controller.changeHide(58.0*(1-s));
+       // } else if(s==1.0){
+       //   controller.changeHide(58.0*(1-s));
+       // }
+      },
     );
   }
 }

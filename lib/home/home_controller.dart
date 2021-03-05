@@ -1,4 +1,6 @@
+import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/global/global_theme.dart';
+import 'package:bujuan/utils/sp_util.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -7,7 +9,7 @@ class HomeController extends GetxController {
   var currentIndex = 0.obs;
   PageController pageController;
   var isDarkTheme = false.obs;
-  var isHideBottom = false.obs;
+  var bottomHeight = 58.0.obs;
   PanelController panelController;
 
   @override
@@ -17,7 +19,10 @@ class HomeController extends GetxController {
     super.onInit();
   }
 
-  void changeTheme() => Get.changeTheme(Get.isDarkMode ? lightTheme : darkTheme);
+  void changeTheme(){
+    Get.changeTheme(Get.isDarkMode ? lightTheme : darkTheme);
+    SpUtil.putBool(IS_DARK_SP, !Get.isDarkMode);
+  }
 
   @override
   void onClose() {
@@ -30,7 +35,7 @@ class HomeController extends GetxController {
     pageController.jumpToPage(index);
   }
 
-  void changeHide(bool isHideBottom) {
-    this.isHideBottom.value = isHideBottom;
+  void changeHide(double bottomHeight) {
+    this.bottomHeight.value = bottomHeight;
   }
 }

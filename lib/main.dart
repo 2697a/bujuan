@@ -1,14 +1,18 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:bujuan/utils/net_utils.dart';
+import 'package:bujuan/utils/sp_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get/get_utils/src/platform/platform.dart';
+import 'package:starry/starry.dart';
 
 import 'api/answer.dart';
 import 'api/netease_cloud_music.dart';
 import 'global/global_binding.dart';
+import 'global/global_config.dart';
 import 'global/global_theme.dart';
 import 'home/home_binding.dart';
 import 'home/home_view.dart';
@@ -20,9 +24,14 @@ main(List<String> args) async {
   }
   GlobalBinding().dependencies();
   await _startServer();
+  await SpUtil.getInstance();
+  await Starry.init(url: SongUrl(getSongUrl: (id) async {
+    return await NetUtils().getSongUrl(id);
+  }));
+  var isDark = SpUtil.getBool(IS_DARK_SP, defValue: false);
   runApp(GetMaterialApp(
     // showPerformanceOverlay: true,
-    theme: lightTheme,
+    theme: isDark ? darkTheme : lightTheme,
     enableLog: true,
     initialRoute: "/home",
     getPages: [GetPage(name: "/home", page: () => HomeView(), binding: HomeBinding())],

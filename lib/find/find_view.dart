@@ -16,10 +16,10 @@ class FindView extends GetView<FindController> {
               itemCount: controller.result.length,
               itemBuilder: (context, index) {
                 return InkWell(
-                  child: CachedNetworkImage(
-                    imageUrl: "${controller.result[index].picUrl}?param=300y300",
-                  ),
-                  onTap: () => Get.to(() => SheetInfoView(controller.result[index].id),binding: SheetInfoBinding()),
+                  child: Hero(tag: "${controller.result[index].id}", child: CachedNetworkImage(
+                    imageUrl: "${controller.result[index].picUrl}?param=500y500",
+                  )),
+                  onTap: () => Get.to(() => SheetInfoView(controller.result[index].id,controller.result[index].picUrl),binding: SheetInfoBinding()),
                 );
               },
             ))));
