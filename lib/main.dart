@@ -31,6 +31,7 @@ main(List<String> args) async {
   var isDark = SpUtil.getBool(IS_DARK_SP, defValue: false);
   runApp(GetMaterialApp(
     // showPerformanceOverlay: true,
+    debugShowCheckedModeBanner: false,
     theme: isDark ? darkTheme : lightTheme,
     enableLog: true,
     initialRoute: "/home",

@@ -26,7 +26,7 @@ class SheetInfoView extends GetView<SheetInfoController> {
                 SliverAppBar(
                   pinned: true,
                   title: Text("data"),
-                  expandedHeight: 220.0,
+                  expandedHeight: 250.0,
                   flexibleSpace: FlexibleSpaceBar(
                     background: Hero(
                         tag: "$id",
@@ -42,27 +42,18 @@ class SheetInfoView extends GetView<SheetInfoController> {
                     delegate: SliverChildBuilderDelegate(
                       (BuildContext context, int index) {
                         return ListTile(
-                          leading: Text("${index + 1}"),
-                          subtitle: Text(controller.result.value.tracks[index].ar[0].name),
-                          title: Text(controller.result.value.tracks[index].name),
+                          subtitle: Text(
+                              controller.result.value.tracks[index].ar[0].name),
+                          title:
+                              Text(controller.result.value.tracks[index].name),
                           onTap: () {
-                            var songs = List<SongInfo>();
-                            controller.result.value.tracks.forEach((element) {
-                              SongInfo songInfo = SongInfo(
-                                songId: "${element.id}",
-                                duration: element.dt,
-                                songCover: element.al.picUrl,
-                                songName: element.name,
-                                artist: element.ar[0].name,
-                              );
-                              songs.add(songInfo);
-                            });
-                            Starry.playMusic(songs, index);
-                            Get.find<BottomBarController>().changeSong(controller.result.value.tracks[index]);
+                            controller.playSong(index);
                           },
                         );
                       },
-                      childCount: controller.result.value.tracks == null ? 0 : controller.result.value.tracks.length,
+                      childCount: controller.result.value.tracks == null
+                          ? 0
+                          : controller.result.value.tracks.length,
                     ),
                   ),
                 )

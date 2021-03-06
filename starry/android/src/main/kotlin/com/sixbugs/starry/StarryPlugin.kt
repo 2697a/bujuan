@@ -1,5 +1,6 @@
 package com.sixbugs.starry
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
@@ -9,10 +10,13 @@ import androidx.annotation.NonNull
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import com.lzx.starrysky.OnPlayProgressListener
+import com.lzx.starrysky.OnPlayerEventListener
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.intercept.AsyncInterceptor
 import com.lzx.starrysky.intercept.InterceptorCallback
+import com.lzx.starrysky.manager.PlaybackStage
 import com.lzx.starrysky.notification.INotification
 import com.lzx.starrysky.notification.imageloader.ImageLoaderCallBack
 import com.lzx.starrysky.notification.imageloader.ImageLoaderStrategy
@@ -43,24 +47,40 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 StarrySky.with().playMusic(jsonToList.toMutableList(), index)
                 result.success("Android ${android.os.Build.VERSION.RELEASE}")
             }
-
             "PLAY_BY_ID" -> {
                 //根据ID播放
+                val playList = StarrySky.with().getPlayList()
+                val id = call.argument<String>("ID")
+                if (playList.size > 0) {
+                    StarrySky.with().playMusicById(id)
+                }
             }
             "PLAY_BY_INFO" -> {
                 //根据songInfo播放
+                val playList = StarrySky.with().getPlayList()
+                val songInfo = call.argument<String>("SONG_INFO")
+                val songInfoToBean = GsonUtil.GsonToBean(songInfo, SongInfo::class.java)
+                if (playList.size > 0) {
+                    StarrySky.with().playMusicByInfo(songInfoToBean)
+                }
             }
             "PAUSE" -> {
                 //暂停
+                if (StarrySky.with().isPlaying())
+                    StarrySky.with().pauseMusic()
             }
-            "PLAY" -> {
+            "RESTORE" -> {
                 //播放
+                if (StarrySky.with().isPaused())
+                    StarrySky.with().restoreMusic()
             }
             "NEXT" -> {
                 //下一首
+                StarrySky.with().skipToNext()
             }
             "PREVIOUS" -> {
                 //上一首
+                StarrySky.with().skipToPrevious()
             }
 
             else -> result.notImplemented()
@@ -73,6 +93,7 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     }
 
     override fun onDetachedFromActivity() {
+        StarrySky.with().removePlayerEventListener("MAIN")
     }
 
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
@@ -82,20 +103,49 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
+        //初始化
         StarrySky.init(binding.activity.application)
                 .setOpenCache(false)
                 .setDebug(true)
                 .setAutoManagerFocus(true)   //使用多实例的时候要关掉，不然会相互抢焦点
-                .addInterceptor(SongUrlInterceptor(channel,binding.activity))
+                .addInterceptor(SongUrlInterceptor(channel, binding.activity))
                 .setImageLoader(ImageLoader())
                 .setNotificationSwitch(true)
                 .setNotificationType(INotification.SYSTEM_NOTIFICATION)
                 .apply()
+
+        //进度监听
+        StarrySky.with().setOnPlayProgressListener(object : OnPlayProgressListener {
+            @SuppressLint("SetTextI18n")
+            override fun onPlayProgress(currPos: Long, duration: Long) {
+                channel.invokeMethod("PLAT_PROGRESS", 1)
+            }
+        })
+        //状态监听
+        StarrySky.with().addPlayerEventListener(object : OnPlayerEventListener {
+            override fun onPlaybackStageChange(stage: PlaybackStage) {
+                when (stage.stage) {
+                    PlaybackStage.PLAYING -> {
+                        channel.invokeMethod("PLAYING_SONG_INFO", GsonUtil.GsonString(stage.songInfo))
+                    }
+                    PlaybackStage.SWITCH -> { //切歌
+                        channel.invokeMethod("SWITCH_SONG_INFO", GsonUtil.GsonString(stage.songInfo))
+                    }
+                    PlaybackStage.PAUSE,
+                    PlaybackStage.IDEA -> {
+                        channel.invokeMethod("PAUSE_OR_IDEA_SONG_INFO", GsonUtil.GsonString(stage.songInfo))
+                    }
+                    PlaybackStage.ERROR -> {//播放错误
+                        channel.invokeMethod("PLAT_ERROR", GsonUtil.GsonString(stage.songInfo))
+                    }
+                }
+            }
+        }, "MAIN")
     }
 
 
     //播放前拦截检测
-    class SongUrlInterceptor(private var channel: MethodChannel,private var activity: Activity) : AsyncInterceptor() {
+    class SongUrlInterceptor(private var channel: MethodChannel, private var activity: Activity) : AsyncInterceptor() {
         override fun process(songInfo: SongInfo?, callback: InterceptorCallback) {
             if (TextUtils.isEmpty(songInfo?.songUrl)) {
                 activity.runOnUiThread {
@@ -142,4 +192,6 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         }
 
     }
+
+
 }

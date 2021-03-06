@@ -22,15 +22,14 @@ environment:
 
 dependencies:
   get:
-  sliding_up_panel: ^1.0.2
+  sliding_up_panel:
+    path: sliding_up_panel
   path_provider: ^1.6.11
   cached_network_image: ^2.5.0
   flutter_placeholder_textlines: ^1.0.4
-  assets_audio_player: ^2.0.14
   starry:
     path: starry
   shared_preferences: ^0.5.7+3
-  audio_service: ^0.16.2+1
   cookie_jar: ^1.0.1
   encrypt: ^3.0.0
   dartin: ^0.0.1
