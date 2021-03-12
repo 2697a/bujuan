@@ -5,21 +5,25 @@ import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/global/global_controller.dart';
 import 'package:bujuan/utils/net_utils.dart';
 import 'package:bujuan/utils/sp_util.dart';
+import 'package:color_thief_flutter/color_thief_flutter.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:starry/music_item.dart';
 import 'package:starry/starry.dart';
+import 'package:we_slide/we_slide.dart';
 
 class SheetInfoController extends GlobalController
     with SingleGetTickerProviderMixin {
-  PanelController panelController;
+  WeSlideController panelController;
   var loadState = 0.obs;
   var result = SheetDetailsPlaylist().obs;
+  var color = Theme.of(Get.context).primaryColor.obs;
   LyricController lyricController;
 
   @override
   void onInit() {
-    panelController = PanelController();
+    panelController = WeSlideController();
     lyricController = LyricController(vsync: this);
     super.onInit();
   }
@@ -27,6 +31,10 @@ class SheetInfoController extends GlobalController
   getSheetInfo(id) async {
     var sheetDetailsEntity = await NetUtils().getPlayListDetails(id);
     if (sheetDetailsEntity != null && sheetDetailsEntity.code == 200) {
+      getColorFromUrl('${sheetDetailsEntity.playlist.coverImgUrl}').then((color) {
+        this.color.value = Color.fromRGBO(color[0], color[1], color[2], 1);
+        print(color); // [R,G,B]
+      });
       result.value = sheetDetailsEntity.playlist;
       loadState.value = 2;
     } else {
@@ -66,5 +74,11 @@ class SheetInfoController extends GlobalController
       artist: track.ar[0].name,
     );
     Get.find<BottomBarController>().changeSong(musicItem);
+  }
+
+  @override
+  void onClose() {
+    // panelController?.dispose();
+    super.onClose();
   }
 }

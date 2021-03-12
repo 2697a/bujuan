@@ -15,6 +15,7 @@ class LyricView extends StatefulWidget {
 
 class LyricViewState extends State<LyricView> with TickerProviderStateMixin {
   LyricController lyricController;
+  final GlobalKey globalKey = GlobalKey();
 
   @override
   void initState() {
@@ -33,18 +34,16 @@ class LyricViewState extends State<LyricView> with TickerProviderStateMixin {
     if (widget.pos != null) {
       lyricController.progress = Duration(seconds: widget.pos);
     }
-    return Expanded(child: OrientationBuilder(builder: (context, orientation) {
-      return LyricWidget(
-          lyricMaxWidth: orientation == Orientation.landscape
-              ? MediaQuery.of(context).size.width / 2.4
-              : MediaQuery.of(context).size.width / 1.4,
-          enableDrag: false,
-          controller: lyricController,
-          lyrics: LyricUtil.formatLyric(widget.lyric),
-          size: Size(
-              orientation == Orientation.landscape
-                  ? MediaQuery.of(context).size.width / 2.4
-                  : MediaQuery.of(context).size.width / 1.4, double.infinity));
-    }));
+    return Expanded(
+        child: OrientationBuilder(
+            key: globalKey,
+            builder: (context, orientation) {
+              return LyricWidget(
+                  lyricMaxWidth: orientation == Orientation.landscape ? MediaQuery.of(context).size.width / 1.4 : MediaQuery.of(context).size.width / 1.4,
+                  enableDrag: false,
+                  controller: lyricController,
+                  lyrics: LyricUtil.formatLyric(widget.lyric),
+                  size: Size(orientation == Orientation.landscape ? MediaQuery.of(context).size.width / 1.4 : MediaQuery.of(context).size.width / 1.4, double.infinity));
+            }));
   }
 }

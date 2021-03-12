@@ -1,6 +1,8 @@
 import 'package:bujuan/bottom_bar/bottom_bar_view.dart';
 import 'package:bujuan/find/find_view.dart';
 import 'package:bujuan/global/global_theme.dart';
+import 'package:bujuan/setting/setting_binding.dart';
+import 'package:bujuan/setting/setting_view.dart';
 import 'package:bujuan/user/user_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,60 +13,21 @@ import 'home_controller.dart';
 class HomeView extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
-    return Obx(() => AnnotatedRegion<SystemUiOverlayStyle>(
-          child: Scaffold(
-            body: _buildContent(),
-            // bottomNavigationBar: _buildNavigationBar(context),
-          ),
-          value: !Get.isDarkMode
-              ? SystemUiOverlayStyle.light.copyWith(
-                  systemNavigationBarColor: lightTheme.primaryColor,
-                )
-              : SystemUiOverlayStyle.dark.copyWith(
-                  systemNavigationBarColor: darkTheme.primaryColor,
-                ),
-        ));
-  }
-
-  Widget _buildNavigationBar(context) {
-    return AnimatedContainer(
-      duration: Duration(microseconds: 500),
-      child: SingleChildScrollView(
-        child: BottomNavigationBar(
-          selectedItemColor: Theme.of(context).accentColor,
-          unselectedItemColor: Theme.of(context).bottomAppBarColor,
-          backgroundColor: Theme.of(context).primaryColor,
-          type: BottomNavigationBarType.fixed,
-          elevation: 0.0,
-          iconSize: 26.0,
-          items: [
-            BottomNavigationBarItem(
-                icon: Icon(Icons.home_outlined), label: "home"),
-            BottomNavigationBarItem(icon: Icon(Icons.history), label: "top"),
-            BottomNavigationBarItem(icon: Icon(Icons.search), label: "search"),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.person_outline), label: "user"),
-          ],
-          onTap: (index) => controller.changeIndex(index),
-          currentIndex: controller.currentIndex.value,
-        ),
-      ),
-      height: controller.bottomHeight.value,
-    );
+    return Obx(() => _buildContent());
   }
 
   Widget _buildContent() {
     return BottomBarView(
       panelController: controller.panelController,
-      lyricController: controller.lyricController,
+      isShowBottom: true,
       body: Scaffold(
         appBar: AppBar(
           elevation: 0,
           title: Text("Bujuan"),
           actions: [
             IconButton(
-              icon: Icon(Icons.wb_sunny_outlined),
-              onPressed: () => controller.changeTheme(),
+              icon: Icon(Icons.settings),
+              onPressed: () => Get.to(SettingView(),binding: SettingBinding()),
             )
           ],
         ),
@@ -72,7 +35,7 @@ class HomeView extends GetView<HomeController> {
           padding: EdgeInsets.only(top: 8.0),
           child: PageView(
             controller: controller.pageController,
-            // physics: NeverScrollableScrollPhysics(),
+            physics: NeverScrollableScrollPhysics(),
             // onPageChanged: (index) => controller.changeIndex(index),
             children: [
               FindView(),

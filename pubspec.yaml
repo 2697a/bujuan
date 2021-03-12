@@ -34,6 +34,9 @@ dependencies:
   cookie_jar: ^2.0.0
   encrypt: ^3.0.0
   dartin: ^0.0.1
+  seekbar: ^0.0.2
+  wave_slider: ^0.2.0
+  we_slide: ^2.0.0
   flutter:
     sdk: flutter
 

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:starry/music_item.dart';
 import 'package:starry/starry.dart';
+import 'package:we_slide/we_slide.dart';
 
 class BottomBarController extends GetxController
     with SingleGetTickerProviderMixin {
@@ -18,10 +19,12 @@ class BottomBarController extends GetxController
   var color = Theme.of(Get.context).primaryColor.obs;
   var lyric = LyricEntity().obs;
   LyricController controller;
+  WeSlideController weSlideController;
 
   // LyricController controller1;
   @override
   void onInit() {
+    weSlideController = WeSlideController();
     _listenerStarry();
     super.onInit();
   }
@@ -96,9 +99,9 @@ class BottomBarController extends GetxController
     Starry.onPlayerSongPosChanged.listen((pos) {
       if (pos != null) {
         this.playPos.value = pos;
-        print("======as=d=====$pos");
-        if (controller == null) controller = LyricController(vsync: this);
-        controller?.progress = Duration(seconds: pos);
+        // print("======as=d=====$pos");
+        // if (controller == null) controller = LyricController(vsync: this);
+        // controller?.progress = Duration(seconds: pos);
       }
     });
   }
