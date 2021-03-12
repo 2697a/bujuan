@@ -1,6 +1,3 @@
-import 'package:bujuan/api/lyric/lyric_controller.dart';
-import 'package:bujuan/api/lyric/lyric_util.dart';
-import 'package:bujuan/api/lyric/lyric_widget.dart';
 import 'package:bujuan/bottom_bar/bottom_bar_controller.dart';
 import 'package:bujuan/bottom_bar/lyric_view.dart';
 import 'package:bujuan/global/global_theme.dart';
@@ -8,10 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:seekbar/seekbar.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:starry/starry.dart';
-import 'package:wave_slider/wave_slider.dart';
 import 'package:we_slide/we_slide.dart';
 
 typedef CallBack = void Function(double selectIndex);

@@ -105,7 +105,7 @@ packages:
       name: dartin
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.1"
+    version: "0.1.5"
   encrypt:
     dependency: "direct main"
     description:
@@ -324,13 +324,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.26.0"
-  seekbar:
-    dependency: "direct main"
-    description:
-      name: seekbar
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.2"
   shared_preferences:
     dependency: "direct main"
     description:
@@ -378,13 +371,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.99"
-  sliding_up_panel:
-    dependency: "direct main"
-    description:
-      path: sliding_up_panel
-      relative: true
-    source: path
-    version: "1.0.2"
   source_span:
     dependency: transitive
     description:
@@ -476,13 +462,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.0"
-  wave_slider:
-    dependency: "direct main"
-    description:
-      name: wave_slider
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.2.0"
   we_slide:
     dependency: "direct main"
     description:

@@ -1,12 +1,9 @@
-import 'package:bujuan/api/lyric/lyric_controller.dart';
 import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/global/global_theme.dart';
 import 'package:bujuan/utils/sp_util.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:we_slide/we_slide.dart';
 
 class HomeController extends GetxController with SingleGetTickerProviderMixin{
