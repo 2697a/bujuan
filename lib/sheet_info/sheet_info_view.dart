@@ -11,8 +11,9 @@ import 'package:starry/song_info.dart';
 class SheetInfoView extends GetView<SheetInfoController> {
   final id;
   final imageUrl;
+  final name;
 
-  SheetInfoView(this.id, this.imageUrl);
+  SheetInfoView(this.id, this.imageUrl, this.name);
 
   @override
   Widget build(BuildContext context) {
@@ -20,20 +21,36 @@ class SheetInfoView extends GetView<SheetInfoController> {
     return Scaffold(
       body: BottomBarView(
         isShowBottom: false,
+        lyricController: controller.lyricController,
         panelController: controller.panelController,
         body: Obx(() => CustomScrollView(
               slivers: [
-                SliverAppBar(
-                  pinned: true,
-                  title: Text("data"),
-                  expandedHeight: 250.0,
-                  flexibleSpace: FlexibleSpaceBar(
-                    background: Hero(
-                        tag: "$id",
-                        child: CachedNetworkImage(
-                          fit: BoxFit.fitWidth,
-                          imageUrl: "$imageUrl?param=500y500",
-                        )),
+                SliverToBoxAdapter(
+                    child: AppBar(
+                  title: Text("$name"),
+                )),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 5.0),
+                    child: Row(
+                      children: [
+                        Hero(
+                            tag: "$id",
+                            child: Card(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadiusDirectional.circular(8.0)),
+                              clipBehavior: Clip.antiAlias,
+                              child: CachedNetworkImage(
+                                width: 150.0,
+                                height: 150.0,
+                                fit: BoxFit.fitWidth,
+                                imageUrl: "$imageUrl?param=300y300",
+                              ),
+                            )),
+                        Expanded(child: Container())
+                      ],
+                    ),
                   ),
                 ),
                 SheetLoadingView(

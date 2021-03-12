@@ -1,7 +1,9 @@
 import 'package:bujuan/bottom_bar/bottom_bar_view.dart';
 import 'package:bujuan/find/find_view.dart';
+import 'package:bujuan/global/global_theme.dart';
 import 'package:bujuan/user/user_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import 'home_controller.dart';
@@ -9,9 +11,18 @@ import 'home_controller.dart';
 class HomeView extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
-    return Obx(() => Scaffold(
-          body: _buildContent(),
-          // bottomNavigationBar: _buildNavigationBar(context),
+    return Obx(() => AnnotatedRegion<SystemUiOverlayStyle>(
+          child: Scaffold(
+            body: _buildContent(),
+            // bottomNavigationBar: _buildNavigationBar(context),
+          ),
+          value: !Get.isDarkMode
+              ? SystemUiOverlayStyle.light.copyWith(
+                  systemNavigationBarColor: lightTheme.primaryColor,
+                )
+              : SystemUiOverlayStyle.dark.copyWith(
+                  systemNavigationBarColor: darkTheme.primaryColor,
+                ),
         ));
   }
 
@@ -27,10 +38,12 @@ class HomeView extends GetView<HomeController> {
           elevation: 0.0,
           iconSize: 26.0,
           items: [
-            BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: "home"),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.home_outlined), label: "home"),
             BottomNavigationBarItem(icon: Icon(Icons.history), label: "top"),
             BottomNavigationBarItem(icon: Icon(Icons.search), label: "search"),
-            BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: "user"),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.person_outline), label: "user"),
           ],
           onTap: (index) => controller.changeIndex(index),
           currentIndex: controller.currentIndex.value,
@@ -43,6 +56,7 @@ class HomeView extends GetView<HomeController> {
   Widget _buildContent() {
     return BottomBarView(
       panelController: controller.panelController,
+      lyricController: controller.lyricController,
       body: Scaffold(
         appBar: AppBar(
           elevation: 0,
@@ -55,15 +69,13 @@ class HomeView extends GetView<HomeController> {
           ],
         ),
         body: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+          padding: EdgeInsets.only(top: 8.0),
           child: PageView(
             controller: controller.pageController,
-            physics: NeverScrollableScrollPhysics(),
+            // physics: NeverScrollableScrollPhysics(),
             // onPageChanged: (index) => controller.changeIndex(index),
             children: [
               FindView(),
-              UserView(),
-              UserView(),
               UserView(),
             ],
           ),
@@ -71,11 +83,11 @@ class HomeView extends GetView<HomeController> {
       ),
       callBack: (s) {
         // controller.changeHide(58.0*(1-s));
-       // if(s==0.0){
-       //   controller.changeHide(58.0*(1-s));
-       // } else if(s==1.0){
-       //   controller.changeHide(58.0*(1-s));
-       // }
+        // if(s==0.0){
+        //   controller.changeHide(58.0*(1-s));
+        // } else if(s==1.0){
+        //   controller.changeHide(58.0*(1-s));
+        // }
       },
     );
   }

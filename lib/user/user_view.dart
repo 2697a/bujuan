@@ -1,6 +1,9 @@
+import 'package:bujuan/bottom_bar/bottom_bar_view.dart';
 import 'package:bujuan/global/global_state_view.dart';
 import 'package:bujuan/login/login_binding.dart';
 import 'package:bujuan/login/login_view.dart';
+import 'package:bujuan/sheet_info/sheet_info_binding.dart';
+import 'package:bujuan/sheet_info/sheet_info_view.dart';
 import 'package:bujuan/user/user_controller.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +12,11 @@ import 'package:get/get.dart';
 class UserView extends GetView<UserController> {
   @override
   Widget build(BuildContext context) {
-    return Obx(() => controller.isLogin.value ? _buildLoginView() : _buildNoLoginView());
+    return Scaffold(
+      body: Obx(() => controller.isLogin.value
+          ? _buildLoginView()
+          : _buildNoLoginView()),
+    );
   }
 
   ///未登录的UI
@@ -28,12 +35,40 @@ class UserView extends GetView<UserController> {
           controller.loadState.value,
           widget: CustomScrollView(
             slivers: [
-              SliverToBoxAdapter(
-                child: CachedNetworkImage(imageUrl: controller.userProfile.value.profile.avatarUrl),
-              )
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (BuildContext context, int index) {
+                    return ListTile(
+                      leading: Hero(
+                        tag: "${controller.playList[index].id}",
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadiusDirectional.circular(8.0)),
+                          clipBehavior: Clip.antiAlias,
+                          child: CachedNetworkImage(
+                            width: 50,
+                            height: 50,
+                            imageUrl:
+                                "${controller.playList[index].coverImgUrl}?param=200y200",
+                          ),
+                        ),
+                      ),
+                      subtitle: Text(controller.playList[index].name),
+                      title: Text(controller.playList[index].name),
+                      onTap: () => Get.to(
+                          () => SheetInfoView(
+                              controller.playList[index].id,
+                              controller.playList[index].coverImgUrl,
+                              controller.playList[index].name),
+                          binding: SheetInfoBinding()),
+                    );
+                  },
+                  childCount: controller.playList.length,
+                ),
+              ),
             ],
           ),
         ));
   }
-
 }

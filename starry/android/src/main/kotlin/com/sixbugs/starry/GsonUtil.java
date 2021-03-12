@@ -10,6 +10,9 @@ import com.google.gson.reflect.TypeToken;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import snow.player.annotation.PersistenceId;
+
 /**
  * Created by 方毅超
  * Date: 2017/6/29.
@@ -19,7 +22,6 @@ import java.util.Map;
  * @date 2016年10月17日
  */
 public class  GsonUtil{
-
 
     private static Gson gson = null;
 

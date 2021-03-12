@@ -10,18 +10,38 @@ class FindView extends GetView<FindController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Obx(() => StateView(controller.loadState.value,
-            widget: GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, crossAxisSpacing: 5, mainAxisSpacing: 15, childAspectRatio: 1),
-              itemCount: controller.result.length,
-              itemBuilder: (context, index) {
-                return InkWell(
-                  child: Hero(tag: "${controller.result[index].id}", child: CachedNetworkImage(
-                    imageUrl: "${controller.result[index].picUrl}?param=500y500",
-                  )),
-                  onTap: () => Get.to(() => SheetInfoView(controller.result[index].id,controller.result[index].picUrl),binding: SheetInfoBinding()),
-                );
-              },
-            ))));
+        body: Obx(
+      () => StateView(controller.loadState.value, widget: OrientationBuilder(
+        builder: (context, orientation) {
+          return GridView.builder(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: orientation == Orientation.portrait ? 3 : 6,
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 15,
+                childAspectRatio: 1),
+            itemCount: controller.result.length,
+            itemBuilder: (context, index) {
+              return InkWell(
+                child: Hero(
+                  tag: "${controller.result[index].id}",
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadiusDirectional.circular(8.0)),
+                    clipBehavior: Clip.antiAlias,
+                    child: CachedNetworkImage(
+                      imageUrl: "${controller.result[index].picUrl}?param=300y300",
+                    ),
+                  ),
+                ),
+                onTap: () => Get.to(
+                    () => SheetInfoView(controller.result[index].id,
+                        controller.result[index].picUrl,controller.result[index].name),
+                    binding: SheetInfoBinding()),
+              );
+            },
+          );
+        },
+      )),
+    ));
   }
 }

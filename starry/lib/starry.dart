@@ -2,7 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
-import 'package:starry/song_info.dart';
+
+import 'music_item.dart';
 
 typedef Future<String> GetSongUrl(String id);
 enum PlayState { PLAYING, PAUSE, STOP, ERROR }
@@ -25,17 +26,17 @@ class Starry {
       _playerStateController.stream;
 
   ///当前播放歌曲
-  static final StreamController<SongInfo> _playerSongController =
-      StreamController<SongInfo>.broadcast();
+  static final StreamController<MusicItem> _playerSongController =
+      StreamController<MusicItem>.broadcast();
 
-  static Stream<SongInfo> get onPlayerSongChanged =>
+  static Stream<MusicItem> get onPlayerSongChanged =>
       _playerSongController.stream;
 
   ///当前播放歌曲进度
-  static final StreamController<double> _playerSongPosController =
-      StreamController<double>.broadcast();
+  static final StreamController<int> _playerSongPosController =
+      StreamController<int>.broadcast();
 
-  static Stream<num> get onPlayerSongPosChanged =>
+  static Stream<int> get onPlayerSongPosChanged =>
       _playerSongPosController.stream;
 
   static Future<String> get platformVersion async {
@@ -57,8 +58,8 @@ class Starry {
   }
 
   ///根据下标播放歌曲
-  static Future<void> playMusicById(String id) async {
-    await _channel.invokeMethod('PLAY_BY_ID', {"ID": id});
+  static Future<void> playMusicByIndex(int index) async {
+    await _channel.invokeMethod('PLAY_BY_INDEX', {"INDEX": index});
   }
 
   ///暂停
@@ -81,6 +82,15 @@ class Starry {
     await _channel.invokeMethod("NEXT");
   }
 
+  ///下一首
+  static Future<MusicItem> getNowPlaying() async {
+    var musicItemStr = await _channel.invokeMethod("NOW_PLAYING");
+    if (musicItemStr != null && musicItemStr != "") {
+      return MusicItem.fromJson(jsonDecode(musicItemStr));
+    }
+    return null;
+  }
+
   static Future<dynamic> _platformCallHandler(MethodCall call) async {
     var method = call.method;
     var arguments = call.arguments;
@@ -89,20 +99,21 @@ class Starry {
       return future;
     } else if (method == 'PLAYING_SONG_INFO') {
       //当前播放歌曲
+      _playerSongPosController.add(arguments);
       _playerStateController.add(PlayState.PLAYING);
     } else if (method == 'SWITCH_SONG_INFO') {
       //切歌
       var songMap = jsonDecode(arguments);
-      var songInfo = SongInfo.fromJson(songMap);
-      _playerSongController.add(songInfo);
+      var musicItem = MusicItem.fromJson(songMap);
+      _playerSongController.add(musicItem);
     } else if (method == 'PAUSE_OR_IDEA_SONG_INFO') {
       //暂停或初始化
       _playerStateController.add(PlayState.PAUSE);
-    } else if (method == 'PLAT_ERROR') {
+    } else if (method == 'PLAY_ERROR') {
       //播放错误
       _playerStateController.add(PlayState.ERROR);
-    } else if (method == 'PLAT_PROGRESS') {
-      //播放错误
+    } else if (method == 'PLAY_PROGRESS') {
+      //播放进度
       _playerSongPosController.add(arguments);
     }
   }

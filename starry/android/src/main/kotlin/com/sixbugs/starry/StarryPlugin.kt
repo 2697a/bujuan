@@ -1,26 +1,12 @@
 package com.sixbugs.starry
 
-import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
-import android.text.TextUtils
+import android.util.Log
 import androidx.annotation.NonNull
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
-import com.lzx.starrysky.OnPlayProgressListener
-import com.lzx.starrysky.OnPlayerEventListener
-import com.lzx.starrysky.SongInfo
-import com.lzx.starrysky.StarrySky
-import com.lzx.starrysky.intercept.AsyncInterceptor
-import com.lzx.starrysky.intercept.InterceptorCallback
-import com.lzx.starrysky.manager.PlaybackStage
-import com.lzx.starrysky.notification.INotification
-import com.lzx.starrysky.notification.imageloader.ImageLoaderCallBack
-import com.lzx.starrysky.notification.imageloader.ImageLoaderStrategy
-
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStoreOwner
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -28,10 +14,24 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
+import snow.player.Player
+import snow.player.PlayerClient
+import snow.player.audio.MusicItem
+import snow.player.lifecycle.PlayerViewModel
+import snow.player.playlist.Playlist
 
 /** StarryPlugin */
 class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
-    private lateinit var channel: MethodChannel
+    private lateinit var playerClient: PlayerClient
+    private lateinit var changeListener: (MusicItem?, Int, Int) -> Unit
+    private lateinit var starryPlaybackStateChangeListener: StarryPlaybackStateChangeListener
+    private lateinit var onStalledChangeListener: (Boolean, Int, Long) -> Unit
+    lateinit var liveProgress : LiveProgress
+    companion object {
+        lateinit var channel: MethodChannel
+        lateinit var activity: Activity
+    }
+
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "starry")
@@ -39,48 +39,53 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     }
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
+
         when (call.method) {
             "PLAY_MUSIC" -> {
                 val songList = call.argument<String>("PLAY_LIST")!!
                 val index = call.argument<Int>("INDEX")!!
-                val jsonToList = GsonUtil.jsonToList(songList, SongInfo::class.java)
-                StarrySky.with().playMusic(jsonToList.toMutableList(), index)
-                result.success("Android ${android.os.Build.VERSION.RELEASE}")
+                val jsonToList = GsonUtil.jsonToList(songList, MusicItem::class.java)
+                val appendAll = Playlist.Builder().appendAll(jsonToList.toMutableList()).build()
+                playerClient.setPlaylist(appendAll, index, true)
+                result.success("success")
             }
-            "PLAY_BY_ID" -> {
+            "PLAY_BY_INDEX" -> {
                 //根据ID播放
-                val playList = StarrySky.with().getPlayList()
-                val id = call.argument<String>("ID")
-                if (playList.size > 0) {
-                    StarrySky.with().playMusicById(id)
+                val index = call.argument<Int>("INDEX")!!
+                playerClient.getPlaylist { data ->
+                    if (data.allMusicItem.size > index) {
+                        playerClient.skipToPosition(index)
+                    }
                 }
+                result.success("success")
             }
-            "PLAY_BY_INFO" -> {
-                //根据songInfo播放
-                val playList = StarrySky.with().getPlayList()
-                val songInfo = call.argument<String>("SONG_INFO")
-                val songInfoToBean = GsonUtil.GsonToBean(songInfo, SongInfo::class.java)
-                if (playList.size > 0) {
-                    StarrySky.with().playMusicByInfo(songInfoToBean)
-                }
+            "NOW_PLAYING" -> {
+                //获取当前播放的歌曲
+                val playingMusicItem = playerClient.playingMusicItem
+                val playingSongStr = GsonUtil.GsonString(playingMusicItem)
+                result.success(playingSongStr)
             }
             "PAUSE" -> {
                 //暂停
-                if (StarrySky.with().isPlaying())
-                    StarrySky.with().pauseMusic()
+                if (playerClient.isPlaying) {
+                    playerClient.pause()
+                }
+                result.success("success")
             }
             "RESTORE" -> {
                 //播放
-                if (StarrySky.with().isPaused())
-                    StarrySky.with().restoreMusic()
+                playerClient.play()
+                result.success("success")
             }
             "NEXT" -> {
                 //下一首
-                StarrySky.with().skipToNext()
+                playerClient.skipToNext()
+                result.success("success")
             }
             "PREVIOUS" -> {
                 //上一首
-                StarrySky.with().skipToPrevious()
+                playerClient.skipToPrevious()
+                result.success("success")
             }
 
             else -> result.notImplemented()
@@ -90,10 +95,16 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
         channel.setMethodCallHandler(null)
+        playerClient.removeOnPlayingMusicItemChangeListener(changeListener)
+        playerClient.removeOnPlaybackStateChangeListener(starryPlaybackStateChangeListener)
+        liveProgress.unsubscribe()
     }
 
     override fun onDetachedFromActivity() {
-        StarrySky.with().removePlayerEventListener("MAIN")
+        playerClient.removeOnPlayingMusicItemChangeListener(changeListener)
+        playerClient.removeOnPlaybackStateChangeListener(starryPlaybackStateChangeListener)
+        playerClient.removeOnStalledChangeListener(onStalledChangeListener)
+        liveProgress.unsubscribe()
     }
 
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
@@ -103,95 +114,46 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
-        //初始化
-        StarrySky.init(binding.activity.application)
-                .setOpenCache(false)
-                .setDebug(true)
-                .setAutoManagerFocus(true)   //使用多实例的时候要关掉，不然会相互抢焦点
-                .addInterceptor(SongUrlInterceptor(channel, binding.activity))
-                .setImageLoader(ImageLoader())
-                .setNotificationSwitch(true)
-                .setNotificationType(INotification.SYSTEM_NOTIFICATION)
-                .apply()
+        activity = binding.activity
+        // 创建一个 PlayerClient 对象
+        playerClient = PlayerClient.newInstance(binding.activity.applicationContext, MyPlayerService::class.java)
+        playerClient.connect { success -> Log.d("App", "connect: $success"); }
 
-        //进度监听
-        StarrySky.with().setOnPlayProgressListener(object : OnPlayProgressListener {
-            @SuppressLint("SetTextI18n")
-            override fun onPlayProgress(currPos: Long, duration: Long) {
-                channel.invokeMethod("PLAT_PROGRESS", 1)
+        //监听歌曲播放状态
+        starryPlaybackStateChangeListener = StarryPlaybackStateChangeListener()
+        playerClient.addOnPlaybackStateChangeListener(starryPlaybackStateChangeListener)
+
+        //播放歌曲发生变化
+        changeListener = { musicItem, _, _ -> channel.invokeMethod("SWITCH_SONG_INFO", GsonUtil.GsonString(musicItem)) }
+        playerClient.addOnPlayingMusicItemChangeListener(changeListener)
+
+        liveProgress = LiveProgress(playerClient,object : LiveProgress.OnUpdateListener {
+            override fun onUpdate(progressSec: Int, durationSec: Int, textProgress: String?, textDuration: String?) {
+                channel.invokeMethod("PLAY_PROGRESS", progressSec)
             }
         })
-        //状态监听
-        StarrySky.with().addPlayerEventListener(object : OnPlayerEventListener {
-            override fun onPlaybackStageChange(stage: PlaybackStage) {
-                when (stage.stage) {
-                    PlaybackStage.PLAYING -> {
-                        channel.invokeMethod("PLAYING_SONG_INFO", GsonUtil.GsonString(stage.songInfo))
-                    }
-                    PlaybackStage.SWITCH -> { //切歌
-                        channel.invokeMethod("SWITCH_SONG_INFO", GsonUtil.GsonString(stage.songInfo))
-                    }
-                    PlaybackStage.PAUSE,
-                    PlaybackStage.IDEA -> {
-                        channel.invokeMethod("PAUSE_OR_IDEA_SONG_INFO", GsonUtil.GsonString(stage.songInfo))
-                    }
-                    PlaybackStage.ERROR -> {//播放错误
-                        channel.invokeMethod("PLAT_ERROR", GsonUtil.GsonString(stage.songInfo))
-                    }
-                }
-            }
-        }, "MAIN")
+        liveProgress.subscribe()
+//        onSeekCompleteListener = { progress, _,        _ ->  }
+//        playerClient.addOnSeekCompleteListener(onSeekCompleteListener)
     }
 
 
-    //播放前拦截检测
-    class SongUrlInterceptor(private var channel: MethodChannel, private var activity: Activity) : AsyncInterceptor() {
-        override fun process(songInfo: SongInfo?, callback: InterceptorCallback) {
-            if (TextUtils.isEmpty(songInfo?.songUrl)) {
-                activity.runOnUiThread {
-                    channel.invokeMethod("GET_SONG_URL", songInfo?.songId, object : Result {
-                        override fun notImplemented() {
-                        }
-
-                        override fun error(errorCode: String?, errorMessage: String?, errorDetails: Any?) {
-                            //没有获取到，以后走拼接
-                        }
-
-                        override fun success(result: Any?) {
-                            songInfo?.songUrl = result as String
-                            callback.onContinue(songInfo)
-                        }
-
-                    })
-                };
-            } else {
-                callback.onContinue(songInfo)
-            }
-
+    class StarryPlaybackStateChangeListener : Player.OnPlaybackStateChangeListener {
+        override fun onPlay(stalled: Boolean, playProgress: Int, playProgressUpdateTime: Long) {
+            channel.invokeMethod("PLAYING_SONG_INFO", null)
         }
 
-        override fun getTag(): String = "SongUrlInterceptor"
+        override fun onPause(playProgress: Int, updateTime: Long) {
+            channel.invokeMethod("PAUSE_OR_IDEA_SONG_INFO", null)
+        }
 
-    }
+        override fun onStop() {
+            channel.invokeMethod("STOP_SONG_INFO", null)
+        }
 
-    //图片加载
-    class ImageLoader : ImageLoaderStrategy {
-        override fun loadImage(context: Context, url: String?, callBack: ImageLoaderCallBack) {
-            Glide.with(context).asBitmap().load(url).into(object : CustomTarget<Bitmap?>() {
-                override fun onLoadCleared(placeholder: Drawable?) {}
-
-                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
-                    callBack.onBitmapLoaded(resource)
-                }
-
-                override fun onLoadFailed(errorDrawable: Drawable?) {
-                    super.onLoadFailed(errorDrawable)
-                    callBack.onBitmapFailed(errorDrawable)
-                }
-            })
+        override fun onError(errorCode: Int, errorMessage: String?) {
+            channel.invokeMethod("PLAY_ERROR", null)
         }
 
     }
-
-
 }

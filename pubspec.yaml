@@ -18,19 +18,20 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: ">=2.10.0 <3.0.0"
 
 dependencies:
   get:
   sliding_up_panel:
     path: sliding_up_panel
-  path_provider: ^1.6.11
-  cached_network_image: ^2.5.0
+  path_provider: ^2.0.1
+  color_thief_flutter: ^1.0.2
+  cached_network_image: ^3.0.0-nullsafety
   flutter_placeholder_textlines: ^1.0.4
   starry:
     path: starry
-  shared_preferences: ^0.5.7+3
-  cookie_jar: ^1.0.1
+  shared_preferences: ^2.0.3
+  cookie_jar: ^2.0.0
   encrypt: ^3.0.0
   dartin: ^0.0.1
   flutter:

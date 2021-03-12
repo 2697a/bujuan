@@ -29,8 +29,18 @@ main(List<String> args) async {
     return await NetUtils().getSongUrl(id);
   }));
   var isDark = SpUtil.getBool(IS_DARK_SP, defValue: false);
+  if (!isDark) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        systemNavigationBarColor: Colors.white,
+        systemNavigationBarIconBrightness: Brightness.dark));
+  } else {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        systemNavigationBarColor: Colors.grey[900],
+        systemNavigationBarIconBrightness: Brightness.light));
+  }
   runApp(GetMaterialApp(
     // showPerformanceOverlay: true,
+    darkTheme: darkTheme,
     debugShowCheckedModeBanner: false,
     theme: isDark ? darkTheme : lightTheme,
     enableLog: true,
