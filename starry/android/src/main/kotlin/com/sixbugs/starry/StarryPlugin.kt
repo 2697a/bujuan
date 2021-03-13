@@ -28,6 +28,7 @@ import kotlin.system.exitProcess
 class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     private lateinit var playerClient: PlayerClient
     private lateinit var changeListener: (MusicItem?, Int, Int) -> Unit
+    private lateinit var playlistChangeListener: (PlaylistManager, Int) -> Unit
     private lateinit var starryPlaybackStateChangeListener: StarryPlaybackStateChangeListener
     private lateinit var liveProgress: LiveProgress
     private lateinit var eventChannel: EventChannel
@@ -54,14 +55,19 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 starryPlaybackStateChangeListener = StarryPlaybackStateChangeListener()
                 playerClient.addOnPlaybackStateChangeListener(starryPlaybackStateChangeListener)
                 //播放歌曲发生变化
-                changeListener = { musicItem, _, _ -> setMusicItem(musicItem!!) }
+                changeListener = { musicItem, _, _ -> channel.invokeMethod("SWITCH_SONG_INFO", GsonUtil.GsonString(musicItem)) }
                 playerClient.addOnPlayingMusicItemChangeListener(changeListener)
-                liveProgress = LiveProgress(playerClient) { progressSec, _, _, _ ->
-                    run {
-                        eventSink?.success(progressSec)
+                //监听歌曲播放进度
+                liveProgress = LiveProgress(playerClient) { progressSec, _, _, _ -> eventSink?.success(progressSec) }
+                liveProgress.subscribe()
+                //播放列表发生变化
+                playlistChangeListener = { playlistManager, _ ->
+                    playlistManager.getPlaylist { playlist ->
+                        val listStr = GsonUtil.GsonString(playlist.allMusicItem.toList())
+                        channel.invokeMethod("PLAY_LIST_CHANGE", listStr)
                     }
                 }
-                liveProgress.subscribe()
+                playerClient.addOnPlaylistChangeListener(playlistChangeListener)
                 result.success("success")
             }
             "PLAY_MUSIC" -> {
@@ -129,6 +135,7 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         channel.setMethodCallHandler(null)
         playerClient.removeOnPlayingMusicItemChangeListener(changeListener)
         playerClient.removeOnPlaybackStateChangeListener(starryPlaybackStateChangeListener)
+        playerClient.removeOnPlaylistChangeListener(playlistChangeListener)
         liveProgress.unsubscribe()
         playerClient.shutdown()
 //        exitProcess(0)

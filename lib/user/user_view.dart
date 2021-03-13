@@ -1,8 +1,6 @@
 import 'package:bujuan/global/global_state_view.dart';
 import 'package:bujuan/login/login_binding.dart';
 import 'package:bujuan/login/login_view.dart';
-import 'package:bujuan/sheet_info/sheet_info_binding.dart';
-import 'package:bujuan/sheet_info/sheet_info_view.dart';
 import 'package:bujuan/user/user_controller.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -12,9 +10,8 @@ class UserView extends GetView<UserController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Obx(() => controller.isLogin.value
-          ? _buildLoginView()
-          : _buildNoLoginView()),
+      body: Obx(() =>
+          controller.isLogin.value ? _buildLoginView() : _buildNoLoginView()),
     );
   }
 
@@ -38,6 +35,7 @@ class UserView extends GetView<UserController> {
                 delegate: SliverChildBuilderDelegate(
                   (BuildContext context, int index) {
                     return ListTile(
+                      contentPadding: EdgeInsets.symmetric(horizontal: 2.0),
                       leading: Hero(
                         tag: "${controller.playList[index].id}",
                         child: Card(
@@ -55,7 +53,12 @@ class UserView extends GetView<UserController> {
                       ),
                       subtitle: Text(controller.playList[index].name),
                       title: Text(controller.playList[index].name),
-                      onTap: () => Get.toNamed("/sheet",arguments: {"id":controller.playList[index].id,"name":controller.playList[index].name,"imageUrl":"${controller.playList[index].coverImgUrl}?param=300y300"}),
+                      onTap: () => Get.toNamed("/sheet", arguments: {
+                        "id": controller.playList[index].id,
+                        "name": controller.playList[index].name,
+                        "imageUrl":
+                            "${controller.playList[index].coverImgUrl}?param=300y300"
+                      }),
                     );
                   },
                   childCount: controller.playList.length,

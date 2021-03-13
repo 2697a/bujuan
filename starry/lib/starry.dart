@@ -40,10 +40,12 @@ class Starry {
   static Stream<int> get onPlayerSongPosChanged =>
       _playerSongPosController.stream;
 
-  static Future<String> get platformVersion async {
-    final String version = await _channel.invokeMethod('getPlatformVersion');
-    return version;
-  }
+  ///播放列表发生变化
+  static final StreamController<List<MusicItem>> _playerSongListController =
+      StreamController<List<MusicItem>>.broadcast();
+
+  static Stream<List<MusicItem>> get onPlayerSongListChanged =>
+      _playerSongListController.stream;
 
   ///初始化
   static Future<void> init({SongUrl url}) async {
@@ -128,6 +130,11 @@ class Starry {
     } else if (method == 'PLAY_PROGRESS') {
       //播放进度
       _playerSongPosController.add(arguments);
+    } else if (method == 'PLAY_LIST_CHANGE') {
+      //播放列表发生变化
+      List list = jsonDecode(arguments);
+      var playList = list.map((e) => MusicItem.fromJson(e)).toList();
+      _playerSongListController.add(playList);
     }
   }
 }

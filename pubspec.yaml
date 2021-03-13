@@ -34,6 +34,7 @@ dependencies:
   cookie_jar: ^2.0.0
   encrypt: ^3.0.0
   we_slide: ^2.0.0
+  pull_to_refresh: ^1.6.4
   flutter:
     sdk: flutter
 

@@ -2,9 +2,11 @@ import 'package:bujuan/find/find_view.dart';
 import 'package:bujuan/global/global_theme.dart';
 import 'package:bujuan/music_bottom_bar/music_bottom_bar_view.dart';
 import 'package:bujuan/play_view/default_view.dart';
+import 'package:bujuan/search/search_view.dart';
 import 'package:bujuan/setting/setting_binding.dart';
 import 'package:bujuan/setting/setting_view.dart';
 import 'package:bujuan/user/user_view.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -20,11 +22,30 @@ class HomeView extends GetView<HomeController> {
 
   Widget _buildContent() {
     return Scaffold(
-      appBar: AppBar(elevation: 0, title: Text("Bujuan"), actions: [
-        IconButton(
-            icon: Icon(Icons.settings),
-            onPressed: () => Get.to(SettingView(), binding: SettingBinding()))
-      ]),
+      appBar: AppBar(
+          elevation: 0,
+          title: Text("Bujuan"),
+          leading: IconButton(
+            icon: Hero(
+                tag: "${controller.avatar.value}",
+                child: Card(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadiusDirectional.circular(30.0)),
+                  clipBehavior: Clip.antiAlias,
+                  child: CachedNetworkImage(
+                    fit: BoxFit.cover,
+                    imageUrl: controller.avatar.value,
+                    height: 30.0,
+                    width: 30.0,
+                  ),
+                )),
+            onPressed: () => Get.toNamed("/profile"),
+          ),
+          actions: [
+            IconButton(
+                icon: Icon(Icons.settings),
+                onPressed: () => Get.toNamed("/setting"))
+          ]),
       body: Padding(
           padding: EdgeInsets.only(top: 8.0),
           child: PageView(
@@ -33,6 +54,8 @@ class HomeView extends GetView<HomeController> {
               // onPageChanged: (index) => controller.changeIndex(index),
               children: [
                 FindView(),
+                SearchView(),
+                SearchView(),
                 UserView(),
               ])),
     );
@@ -48,7 +71,8 @@ class HomeView extends GetView<HomeController> {
           body: _buildContent(),
           parallax: true,
           panel: DefaultView(weSlideController: controller.weSlideController),
-          panelHeader: MusicBottomBarView(weSlideController: controller.weSlideController),
+          panelHeader: MusicBottomBarView(
+              weSlideController: controller.weSlideController),
           footer: _buildBottomNavigationBar(),
         ),
         value: !Get.isDarkMode
@@ -70,7 +94,10 @@ class HomeView extends GetView<HomeController> {
       backgroundColor: Theme.of(Get.context).primaryColor,
       type: BottomNavigationBarType.fixed,
       elevation: 0.0,
-      iconSize: 26.0,
+      iconSize: 24.0,
+      selectedIconTheme: IconThemeData(size: 26.0),
+      // showSelectedLabels: false,
+      // showUnselectedLabels: false,
       items: [
         BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: "home"),
         BottomNavigationBarItem(icon: Icon(Icons.history), label: "top"),
