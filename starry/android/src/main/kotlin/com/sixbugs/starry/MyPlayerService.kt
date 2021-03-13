@@ -50,7 +50,6 @@ class MyPlayerService : PlayerService() {
         try {
             if (musicItem.uri == musicItem.musicId) {
                 val function = {
-                    StarryPlugin.channel.invokeMethod("GET_SONG_URL", musicItem.musicId)
                     StarryPlugin.channel.invokeMethod("GET_SONG_URL", musicItem.musicId, object : MethodChannel.Result {
                         override fun notImplemented() {
                             result.onSuccess(Uri.parse("http://music.163.com/song/media/outer/url?id" + musicItem.musicId))

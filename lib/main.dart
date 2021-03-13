@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:bujuan/sheet_info/sheet_info_binding.dart';
+import 'package:bujuan/sheet_info/sheet_info_view.dart';
 import 'package:bujuan/utils/net_utils.dart';
 import 'package:bujuan/utils/sp_util.dart';
 import 'package:flutter/material.dart';
@@ -20,14 +22,12 @@ import 'home/home_view.dart';
 main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
   if (GetPlatform.isAndroid) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(statusBarColor: Colors.transparent));
+    SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(statusBarColor: Colors.transparent));
   }
   GlobalBinding().dependencies();
   await _startServer();
   await SpUtil.getInstance();
-  await Starry.init(url: SongUrl(getSongUrl: (id) async {
-    return await NetUtils().getSongUrl(id);
-  }));
   var isDark = SpUtil.getBool(IS_DARK_SP, defValue: false);
   if (!isDark) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -45,7 +45,10 @@ main(List<String> args) async {
     theme: isDark ? darkTheme : lightTheme,
     enableLog: true,
     initialRoute: "/home",
-    getPages: [GetPage(name: "/home", page: () => HomeView(), binding: HomeBinding())],
+    getPages: [
+      GetPage(name: "/home", page: () => HomeView(), binding: HomeBinding()),
+      GetPage(name: '/sheet', page: () => SheetInfoView(),binding: SheetInfoBinding()),
+    ],
   ));
 }
 
@@ -60,7 +63,9 @@ Future<HttpServer> _startServer({address = "localhost", int port = 3000}) {
 }
 
 void _handleRequest(HttpRequest request) async {
-  final answer = await cloudMusicApi(request.uri.path, parameter: request.uri.queryParameters, cookie: request.cookies).catchError((e, s) async {
+  final answer = await cloudMusicApi(request.uri.path,
+          parameter: request.uri.queryParameters, cookie: request.cookies)
+      .catchError((e, s) async {
     print(e.toString());
     return Answer();
   });

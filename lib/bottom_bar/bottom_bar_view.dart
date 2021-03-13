@@ -12,38 +12,31 @@ typedef CallBack = void Function(double selectIndex);
 
 class BottomBarView extends GetView<BottomBarController> {
   final Widget body;
-  final CallBack callBack;
   final WeSlideController panelController;
   final bool isShowBottom;
 
-  BottomBarView({Key key, @required this.panelController, @required this.body, this.callBack, this.isShowBottom = true});
-
-  // @override
-  // Widget build(BuildContext context) {
-  //   return Obx(() => SlidingUpPanel(
-  //         controller: panelController,
-  //         body: Padding(
-  //           padding: EdgeInsets.only(bottom: 120.0),
-  //           child: body,
-  //         ),
-  //         minHeight: 120.0,
-  //         maxHeight: MediaQuery.of(context).size.height,
-  //         color: Theme.of(context).primaryColor,
-  //         panel: _buildPlayView(),
-  //         collapsed: _buildPlayBarView(),
-  //       ));
-  // }
+  BottomBarView(
+      {Key key,
+      @required this.panelController,
+      @required this.body,
+      this.isShowBottom = true});
 
   Widget _buildPlayView() {
     return controller.isPlay.value
         ? Scaffold(
             body: OrientationBuilder(
               builder: (context, orientation) {
-                return orientation == Orientation.portrait ? _buildPortraitPlayView(context) : _buildLandscapePlayView(context);
+                return orientation == Orientation.portrait
+                    ? _buildPortraitPlayView(context)
+                    : _buildLandscapePlayView(context);
               },
             ),
           )
-        : Container();
+        : Scaffold(
+            body: Center(
+              child: Text("aa bb aa"),
+            ),
+          );
   }
 
   ///竖屏播放界面
@@ -53,36 +46,18 @@ class BottomBarView extends GetView<BottomBarController> {
             Padding(
               padding: EdgeInsets.only(top: Get.statusBarHeight / 2),
             ),
-            // AppBar(
-            //   elevation: 0,
-            //   leading: IconButton(
-            //     icon: Icon(Icons.keyboard_arrow_down_sharp),
-            //     onPressed: () => panelController?.hide(),
-            //   ),
-            //   centerTitle: true,
-            //   title: Column(
-            //     children: [
-            //       Text(
-            //         controller.song.value.title,
-            //         textAlign: TextAlign.center,
-            //         style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-            //       ),
-            //       Text(
-            //         controller.song.value.artist,
-            //         textAlign: TextAlign.center,
-            //         style: TextStyle(fontSize: 14.0, color: Colors.grey[400]),
-            //       )
-            //     ],
-            //   ),
-            //   actions: [
-            //     IconButton(
-            //       icon: Icon(Icons.more_horiz),
-            //       onPressed: () => panelController?.hide(),
-            //     ),
-            //   ],
-            // ),
+            Text(
+              controller.song.value.title,
+              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+            ),
+            Padding(padding: EdgeInsets.symmetric(vertical: 2.0)),
+            Text(
+              controller.song.value.artist,
+              style: TextStyle(color: Colors.grey[600]),
+            ),
             Card(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(230.0)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadiusDirectional.circular(230.0)),
               clipBehavior: Clip.antiAlias,
               child: CachedNetworkImage(
                 width: 230.0,
@@ -114,7 +89,9 @@ class BottomBarView extends GetView<BottomBarController> {
                     onPressed: () => controller.skipToPrevious()),
                 IconButton(
                     icon: Icon(
-                      controller.playState.value == PlayState.PLAYING ? Icons.pause : Icons.play_arrow,
+                      controller.playState.value == PlayState.PLAYING
+                          ? Icons.pause
+                          : Icons.play_arrow,
                       size: 36.0,
                     ),
                     onPressed: () => controller.playOrPause()),
@@ -150,12 +127,14 @@ class BottomBarView extends GetView<BottomBarController> {
                   ),
                   Card(
                     color: Colors.blue,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(200.0)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadiusDirectional.circular(200.0)),
                     clipBehavior: Clip.antiAlias,
                     child: CachedNetworkImage(
                       width: 200.0,
                       height: 200.0,
-                      imageUrl: "${controller.song.value.iconUri}?param=500y500",
+                      imageUrl:
+                          "${controller.song.value.iconUri}?param=500y500",
                     ),
                   ),
                   Expanded(child: Container()),
@@ -171,7 +150,9 @@ class BottomBarView extends GetView<BottomBarController> {
                           onPressed: () => controller.skipToPrevious()),
                       IconButton(
                           icon: Icon(
-                            controller.playState.value == PlayState.PLAYING ? Icons.pause : Icons.play_arrow,
+                            controller.playState.value == PlayState.PLAYING
+                                ? Icons.pause
+                                : Icons.play_arrow,
                             size: 36.0,
                           ),
                           onPressed: () => controller.playOrPause()),
@@ -198,7 +179,8 @@ class BottomBarView extends GetView<BottomBarController> {
                   ),
                   Text(
                     controller.song.value.title,
-                    style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                    style:
+                        TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
                   ),
                   Padding(padding: EdgeInsets.symmetric(vertical: 2.0)),
                   Text(
@@ -234,7 +216,8 @@ class BottomBarView extends GetView<BottomBarController> {
         BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: "home"),
         BottomNavigationBarItem(icon: Icon(Icons.history), label: "top"),
         BottomNavigationBarItem(icon: Icon(Icons.search), label: "search"),
-        BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: "user"),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.person_outline), label: "user"),
       ],
       onTap: (index) => controller.changeIndex(index),
       currentIndex: controller.currentIndex.value,
@@ -243,12 +226,18 @@ class BottomBarView extends GetView<BottomBarController> {
 
   Widget _buildPlayBarView() {
     return Container(
-      decoration: BoxDecoration(color: Theme.of(Get.context).primaryColor, border: Border(top: BorderSide(color: Theme.of(Get.context).bottomAppBarColor.withAlpha(50), width: .1))),
+      decoration: BoxDecoration(
+          color: Theme.of(Get.context).primaryColor,
+          border: Border(
+              top: BorderSide(
+                  color: Theme.of(Get.context).bottomAppBarColor.withAlpha(50),
+                  width: .1))),
       height: 65.0,
       child: ListTile(
         contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
         leading: Card(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(46.0)),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadiusDirectional.circular(46.0)),
           clipBehavior: Clip.antiAlias,
           child: CachedNetworkImage(
             width: 46.0,
@@ -264,70 +253,26 @@ class BottomBarView extends GetView<BottomBarController> {
           style: TextStyle(fontSize: 16.0),
           overflow: TextOverflow.ellipsis,
         ),
-        subtitle: Text(controller.isPlay.value ? "${controller.song.value.artist}" : "周杰伦", style: TextStyle(fontSize: 14.0, color: Colors.grey[400])),
+        subtitle: Text(
+            controller.isPlay.value ? "${controller.song.value.artist}" : "周杰伦",
+            style: TextStyle(fontSize: 14.0, color: Colors.grey[400])),
         trailing: Wrap(
           children: [
-            IconButton(icon: Icon(controller.playState.value == PlayState.PLAYING ? Icons.pause : Icons.play_arrow), onPressed: () => controller.playOrPause(), color: Theme.of(Get.context).bottomAppBarColor),
-            IconButton(icon: Icon(Icons.skip_next), onPressed: () => controller.skipToNext(), color: Theme.of(Get.context).bottomAppBarColor),
+            IconButton(
+                icon: Icon(controller.playState.value == PlayState.PLAYING
+                    ? Icons.pause
+                    : Icons.play_arrow),
+                onPressed: () => controller.playOrPause(),
+                color: Theme.of(Get.context).bottomAppBarColor),
+            IconButton(
+                icon: Icon(Icons.skip_next),
+                onPressed: () => controller.skipToNext(),
+                color: Theme.of(Get.context).bottomAppBarColor),
           ],
         ),
-        onTap: () => panelController?.show(),
+        onTap: () => panelController.show(),
       ),
     );
-    // return Container(
-    //   padding: EdgeInsets.symmetric(horizontal: 8.0),
-    //   decoration: BoxDecoration(
-    //     color: Theme.of(Get.context).primaryColor,
-    //     border: Border(top: BorderSide(color: Theme.of(Get.context).bottomAppBarColor.withAlpha(50),width: .1))
-    //   ),
-    //   height: 65.0,
-    //   child: InkWell(
-    //     child: Row(
-    //       children: [
-    //         Card(
-    //           shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(46.0)),
-    //           clipBehavior: Clip.antiAlias,
-    //           child: CachedNetworkImage(
-    //             width: 46.0,
-    //             height: 46.0,
-    //             imageUrl: controller.isPlay.value
-    //                 ? "${controller.song.value.iconUri}?param=100y100"
-    //                 : "https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fn.sinaimg.cn%2Ffront%2F342%2Fw700h442%2F20190321%2FxqrY-huqrnan7527352.jpg&refer=http%3A%2F%2Fn.sinaimg.cn&app=2002&size=f9999,"
-    //                     "10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1617447095&t=49ad10b2c81c151cfa993b98ace7f6f1",
-    //           ),
-    //         ),
-    //         Expanded(
-    //           child: Padding(
-    //             padding: EdgeInsets.only(left: 8.0),
-    //             child: Column(
-    //               crossAxisAlignment: CrossAxisAlignment.start,
-    //               mainAxisAlignment: MainAxisAlignment.center,
-    //               children: [
-    //                 Container(
-    //                   alignment: Alignment.centerLeft,
-    //                   height: 25.0,
-    //                   child: Text(
-    //                     controller.isPlay.value ? "${controller.song.value.title}" : "七里香",
-    //                     style: TextStyle(fontSize: 16.0),
-    //                     overflow: TextOverflow.ellipsis,
-    //                   ),
-    //                 ),
-    //                 Container(
-    //                   alignment: Alignment.centerLeft,
-    //                   height: 25.0,
-    //                   child: Text(controller.isPlay.value ? "${controller.song.value.artist}" : "周杰伦", style: TextStyle(fontSize: 14.0, color: Colors.grey[400])),
-    //                 )
-    //               ],
-    //             ),
-    //           ),
-    //         ),
-    //         IconButton(icon: Icon(controller.playState.value == PlayState.PLAYING ? Icons.pause : Icons.play_arrow), onPressed: () => controller.playOrPause()),
-    //         IconButton(icon: Icon(Icons.skip_next), onPressed: () => controller.skipToNext()),
-    //       ],
-    //     ),
-    //     onTap: () => panelController?.show(),
-    //   ),
-    // );
   }
 
   @override

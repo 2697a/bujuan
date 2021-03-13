@@ -11,7 +11,7 @@ class SettingController extends GetxController {
     super.onInit();
   }
 
-  changeTheme() {
+  changeTheme() async {
     Get.changeTheme(Get.isDarkMode ? lightTheme : darkTheme);
     isDark.value = !Get.isDarkMode;
     SpUtil.putBool(IS_DARK_SP, !Get.isDarkMode);

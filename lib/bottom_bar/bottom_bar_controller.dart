@@ -9,29 +9,28 @@ import 'package:starry/music_item.dart';
 import 'package:starry/starry.dart';
 import 'package:we_slide/we_slide.dart';
 
-class BottomBarController extends GetxController
-    with SingleGetTickerProviderMixin {
+class BottomBarController extends GetxController {
   var isPlay = false.obs;
   var playState = PlayState.STOP.obs;
-  var currentIndex = 0.obs;
   var playPos = 0.obs;
   var song = MusicItem(musicId: null, duration: 0).obs;
-  var color = Theme.of(Get.context).primaryColor.obs;
   var lyric = LyricEntity().obs;
-  LyricController controller;
-  WeSlideController weSlideController;
+  var color = Theme.of(Get.context).primaryColor.obs;
+  var currentIndex = 0.obs;
 
-  // LyricController controller1;
   @override
   void onInit() {
-    weSlideController = WeSlideController();
     _listenerStarry();
     super.onInit();
   }
 
-  // void setController(lyricController) {
-  //   controller = lyricController;
-  // }
+  void setController(WeSlideController weSlideController){
+    // this.weSlideController = weSlideController;
+  }
+  @override
+  void onReady() {
+    super.onReady();
+  }
 
   void getNowPlaying() async {
     var musicItem = await Starry.getNowPlaying();
@@ -45,16 +44,10 @@ class BottomBarController extends GetxController
 
   ///更新当前歌曲
   changeSong(MusicItem song) async {
-    getColorFromUrl('${song.iconUri}').then((color) {
-      this.color.value = Color.fromRGBO(color[0], color[1], color[2], 1);
-      print(color); // [R,G,B]
-    });
     var lyricEntity = await NetUtils().getMusicLyric(song.musicId);
     lyric.value = lyricEntity;
     this.song.value = song;
     isPlay.value = true;
-
-    // panelController?.open();
   }
 
   ///播放或暂停
@@ -80,17 +73,9 @@ class BottomBarController extends GetxController
 
   _listenerStarry() {
     Starry.onPlayerSongChanged.listen((MusicItem songInfo) async {
-      getColorFromUrl('${songInfo.iconUri}').then((color) {
-        this.color.value = Color.fromRGBO(color[0], color[1], color[2], 1);
-        print(color); // [R,G,B]
-      });
       var lyricEntity = await NetUtils().getMusicLyric(songInfo.musicId);
       lyric.value = lyricEntity;
       this.song.value = songInfo;
-      // getColorFromUrl('${songInfo.iconUri}').then((color) {
-      //   this.color.value = Color.fromRGBO(color[0], color[1], color[2], 1);
-      //   print(color); // [R,G,B]
-      // });
     });
     Starry.onPlayerStateChanged.listen((PlayState playState) {
       this.playState.value = playState;
@@ -99,16 +84,14 @@ class BottomBarController extends GetxController
     Starry.onPlayerSongPosChanged.listen((pos) {
       if (pos != null) {
         this.playPos.value = pos;
-        // print("======as=d=====$pos");
-        // if (controller == null) controller = LyricController(vsync: this);
-        // controller?.progress = Duration(seconds: pos);
       }
     });
   }
 
+
   @override
   void onClose() {
     super.onClose();
-    controller.dispose();
   }
+
 }

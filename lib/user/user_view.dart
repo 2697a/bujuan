@@ -1,4 +1,3 @@
-import 'package:bujuan/bottom_bar/bottom_bar_view.dart';
 import 'package:bujuan/global/global_state_view.dart';
 import 'package:bujuan/login/login_binding.dart';
 import 'package:bujuan/login/login_view.dart';
@@ -56,12 +55,7 @@ class UserView extends GetView<UserController> {
                       ),
                       subtitle: Text(controller.playList[index].name),
                       title: Text(controller.playList[index].name),
-                      onTap: () => Get.to(
-                          () => SheetInfoView(
-                              controller.playList[index].id,
-                              controller.playList[index].coverImgUrl,
-                              controller.playList[index].name),
-                          binding: SheetInfoBinding()),
+                      onTap: () => Get.toNamed("/sheet",arguments: {"id":controller.playList[index].id,"name":controller.playList[index].name,"imageUrl":"${controller.playList[index].coverImgUrl}?param=300y300"}),
                     );
                   },
                   childCount: controller.playList.length,

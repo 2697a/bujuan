@@ -17,6 +17,7 @@ class SongUrl {
 class Starry {
   static const MethodChannel _channel = const MethodChannel('starry');
   static SongUrl songUrl;
+  static const EventChannel eventChannel = const EventChannel('starry/event');
 
   ///歌曲播放状态
   static final StreamController<PlayState> _playerStateController =
@@ -46,6 +47,7 @@ class Starry {
 
   ///初始化
   static Future<void> init({SongUrl url}) async {
+    await _channel.invokeMethod('INIT');
     songUrl = url;
     _channel.setMethodCallHandler((call) => _platformCallHandler(call));
   }
@@ -87,6 +89,17 @@ class Starry {
     var musicItemStr = await _channel.invokeMethod("NOW_PLAYING");
     if (musicItemStr != null && musicItemStr != "") {
       return MusicItem.fromJson(jsonDecode(musicItemStr));
+    }
+    return null;
+  }
+
+  ///获取播放列表
+  static Future<List<MusicItem>> getPlayList() async {
+    var musicItemStr = await _channel.invokeMethod("PLAY_LIST");
+    if (musicItemStr != null && musicItemStr != "") {
+      List jsonDecode2 = jsonDecode(musicItemStr);
+      var list = jsonDecode2.map((e) => MusicItem.fromJson(e)).toList();
+      return list;
     }
     return null;
   }

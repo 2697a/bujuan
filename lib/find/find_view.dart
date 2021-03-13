@@ -33,10 +33,9 @@ class FindView extends GetView<FindController> {
                     ),
                   ),
                 ),
-                onTap: () => Get.to(
-                    () => SheetInfoView(controller.result[index].id,
-                        controller.result[index].picUrl,controller.result[index].name),
-                    binding: SheetInfoBinding()),
+                onTap: () {
+                  Get.toNamed("/sheet",arguments: {"id":controller.result[index].id,"name":controller.result[index].name,"imageUrl":"${controller.result[index].picUrl}?param=300y300"});
+                }
               );
             },
           );

@@ -1,5 +1,6 @@
 package com.sixbugs.starry
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.util.Log
 import androidx.annotation.NonNull
@@ -10,6 +11,7 @@ import androidx.lifecycle.ViewModelStoreOwner
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
+import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
@@ -19,28 +21,49 @@ import snow.player.PlayerClient
 import snow.player.audio.MusicItem
 import snow.player.lifecycle.PlayerViewModel
 import snow.player.playlist.Playlist
+import snow.player.playlist.PlaylistManager
+import kotlin.system.exitProcess
 
 /** StarryPlugin */
 class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     private lateinit var playerClient: PlayerClient
     private lateinit var changeListener: (MusicItem?, Int, Int) -> Unit
     private lateinit var starryPlaybackStateChangeListener: StarryPlaybackStateChangeListener
-    private lateinit var onStalledChangeListener: (Boolean, Int, Long) -> Unit
-    lateinit var liveProgress : LiveProgress
+    private lateinit var liveProgress: LiveProgress
+    private lateinit var eventChannel: EventChannel
+    var eventSink: EventChannel.EventSink? = null
+
     companion object {
         lateinit var channel: MethodChannel
+
+        @SuppressLint("StaticFieldLeak")
         lateinit var activity: Activity
     }
 
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "starry")
+        eventChannel = EventChannel(flutterPluginBinding.binaryMessenger, "starry/event")
         channel.setMethodCallHandler(this)
     }
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
-
         when (call.method) {
+            "INIT" -> {
+                //监听歌曲播放状态
+                starryPlaybackStateChangeListener = StarryPlaybackStateChangeListener()
+                playerClient.addOnPlaybackStateChangeListener(starryPlaybackStateChangeListener)
+                //播放歌曲发生变化
+                changeListener = { musicItem, _, _ -> setMusicItem(musicItem!!) }
+                playerClient.addOnPlayingMusicItemChangeListener(changeListener)
+                liveProgress = LiveProgress(playerClient) { progressSec, _, _, _ ->
+                    run {
+                        eventSink?.success(progressSec)
+                    }
+                }
+                liveProgress.subscribe()
+                result.success("success")
+            }
             "PLAY_MUSIC" -> {
                 val songList = call.argument<String>("PLAY_LIST")!!
                 val index = call.argument<Int>("INDEX")!!
@@ -50,7 +73,7 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 result.success("success")
             }
             "PLAY_BY_INDEX" -> {
-                //根据ID播放
+                //根据INDEX播放
                 val index = call.argument<Int>("INDEX")!!
                 playerClient.getPlaylist { data ->
                     if (data.allMusicItem.size > index) {
@@ -74,7 +97,8 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             }
             "RESTORE" -> {
                 //播放
-                playerClient.play()
+                if (playerClient.isConnected)
+                    playerClient.play()
                 result.success("success")
             }
             "NEXT" -> {
@@ -87,10 +111,18 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 playerClient.skipToPrevious()
                 result.success("success")
             }
+            "PLAY_LIST" -> {
+                //上一首
+                playerClient.getPlaylist { playlist ->
+                    val listStr = GsonUtil.GsonString(playlist.allMusicItem.toList())
+                    result.success(listStr)
+                }
+            }
 
             else -> result.notImplemented()
 
         }
+
     }
 
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
@@ -98,13 +130,14 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         playerClient.removeOnPlayingMusicItemChangeListener(changeListener)
         playerClient.removeOnPlaybackStateChangeListener(starryPlaybackStateChangeListener)
         liveProgress.unsubscribe()
+        playerClient.shutdown()
+//        exitProcess(0)
     }
 
     override fun onDetachedFromActivity() {
-        playerClient.removeOnPlayingMusicItemChangeListener(changeListener)
-        playerClient.removeOnPlaybackStateChangeListener(starryPlaybackStateChangeListener)
-        playerClient.removeOnStalledChangeListener(onStalledChangeListener)
-        liveProgress.unsubscribe()
+//        playerClient.removeOnPlayingMusicItemChangeListener(changeListener)
+//        playerClient.removeOnPlaybackStateChangeListener(starryPlaybackStateChangeListener)
+//        liveProgress.unsubscribe()
     }
 
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
@@ -117,26 +150,27 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         activity = binding.activity
         // 创建一个 PlayerClient 对象
         playerClient = PlayerClient.newInstance(binding.activity.applicationContext, MyPlayerService::class.java)
-        playerClient.connect { success -> Log.d("App", "connect: $success"); }
+        if (!playerClient.isConnected) {
+            playerClient.connect { success -> Log.d("App", "connect: $success"); }
+        }
+        eventChannel.setStreamHandler(
+                object : EventChannel.StreamHandler {
+                    override fun onListen(arguments: Any?, events: EventChannel.EventSink) {
+                        eventSink = events
+                        Log.d("Android", "EventChannel onListen called")
+                    }
 
-        //监听歌曲播放状态
-        starryPlaybackStateChangeListener = StarryPlaybackStateChangeListener()
-        playerClient.addOnPlaybackStateChangeListener(starryPlaybackStateChangeListener)
+                    override fun onCancel(arguments: Any?) {
+                        liveProgress.unsubscribe()
+                        Log.w("Android", "EventChannel onCancel called")
+                    }
+                })
 
-        //播放歌曲发生变化
-        changeListener = { musicItem, _, _ -> channel.invokeMethod("SWITCH_SONG_INFO", GsonUtil.GsonString(musicItem)) }
-        playerClient.addOnPlayingMusicItemChangeListener(changeListener)
-
-        liveProgress = LiveProgress(playerClient,object : LiveProgress.OnUpdateListener {
-            override fun onUpdate(progressSec: Int, durationSec: Int, textProgress: String?, textDuration: String?) {
-                channel.invokeMethod("PLAY_PROGRESS", progressSec)
-            }
-        })
-        liveProgress.subscribe()
-//        onSeekCompleteListener = { progress, _,        _ ->  }
-//        playerClient.addOnSeekCompleteListener(onSeekCompleteListener)
     }
 
+    private fun setMusicItem(playingMusic: MusicItem) {
+        channel.invokeMethod("SWITCH_SONG_INFO", GsonUtil.GsonString(playingMusic))
+    }
 
     class StarryPlaybackStateChangeListener : Player.OnPlaybackStateChangeListener {
         override fun onPlay(stalled: Boolean, playProgress: Int, playProgressUpdateTime: Long) {

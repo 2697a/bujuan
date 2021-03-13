@@ -33,7 +33,6 @@ dependencies:
   shared_preferences: ^2.0.4
   cookie_jar: ^2.0.0
   encrypt: ^3.0.0
-  dartin: ^0.1.5
   we_slide: ^2.0.0
   flutter:
     sdk: flutter

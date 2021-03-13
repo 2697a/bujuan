@@ -8,8 +8,13 @@ class FindController extends GetxController {
 
   @override
   void onInit() async {
-    await _loadTodaySheet();
     super.onInit();
+  }
+
+  @override
+  void onReady() {
+    _loadTodaySheet();
+    super.onReady();
   }
 
   _loadTodaySheet() async {
