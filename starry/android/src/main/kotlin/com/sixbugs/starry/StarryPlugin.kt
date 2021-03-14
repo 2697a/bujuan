@@ -124,6 +124,11 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                     result.success(listStr)
                 }
             }
+            "CHANGE_SEEK" -> {
+                //改变播放进度
+                val seek = call.argument<Int>("SEEK")!!
+                playerClient.seekTo(seek)
+            }
 
             else -> result.notImplemented()
 

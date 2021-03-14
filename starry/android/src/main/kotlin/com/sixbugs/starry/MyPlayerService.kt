@@ -12,6 +12,11 @@ import snow.player.util.AsyncResult
 class MyPlayerService : PlayerService() {
 
 
+    override fun onCreate() {
+        super.onCreate()
+//        setMaxIDLETime(30)
+    }
+
     override fun onCreateNotificationView(): NotificationView? {
         return AppNotificationView()
     }

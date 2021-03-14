@@ -95,6 +95,11 @@ class Starry {
     return null;
   }
 
+  ///切换歌曲播放进度
+  static Future<void> changeSongSeek(seek) async {
+    await _channel.invokeMethod("CHANGE_SEEK", {"SEEK": seek});
+  }
+
   ///获取播放列表
   static Future<List<MusicItem>> getPlayList() async {
     var musicItemStr = await _channel.invokeMethod("PLAY_LIST");

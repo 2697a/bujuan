@@ -371,6 +371,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.99"
+  sleek_circular_slider:
+    dependency: "direct main"
+    description:
+      name: sleek_circular_slider
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.2.0+web"
   source_span:
     dependency: transitive
     description:

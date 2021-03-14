@@ -35,6 +35,7 @@ dependencies:
   encrypt: ^3.0.0
   we_slide: ^2.0.0
   pull_to_refresh: ^1.6.4
+  sleek_circular_slider: ^1.2.0+web
   flutter:
     sdk: flutter
 

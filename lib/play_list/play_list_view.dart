@@ -65,7 +65,7 @@ class PlayListView extends GetView<PlayListController> {
             ),
             Expanded(
                 child: Text(
-              " -  ${controller.playList[index].title}",
+              " -  ${controller.playList[index].artist}",
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(

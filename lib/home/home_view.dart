@@ -1,4 +1,5 @@
 import 'package:bujuan/find/find_view.dart';
+import 'package:bujuan/keep.dart';
 import 'package:bujuan/global/global_theme.dart';
 import 'package:bujuan/music_bottom_bar/music_bottom_bar_view.dart';
 import 'package:bujuan/play_view/default_view.dart';
@@ -53,10 +54,10 @@ class HomeView extends GetView<HomeController> {
               physics: NeverScrollableScrollPhysics(),
               // onPageChanged: (index) => controller.changeIndex(index),
               children: [
-                FindView(),
-                SearchView(),
-                SearchView(),
-                UserView(),
+                KeepAliveWrapper( child: FindView()),
+                KeepAliveWrapper( child: SearchView()),
+                KeepAliveWrapper( child: SearchView()),
+                KeepAliveWrapper( child: UserView()),
               ])),
     );
   }

@@ -65,4 +65,8 @@ class GlobalController extends GetxController {
   skipToNext() async {
     await Starry.skipToNext();
   }
+
+  seekTo(int seek) async {
+    await Starry.changeSongSeek(seek);
+  }
 }

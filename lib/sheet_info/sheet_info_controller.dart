@@ -13,8 +13,7 @@ import 'package:starry/music_item.dart';
 import 'package:starry/starry.dart';
 import 'package:we_slide/we_slide.dart';
 
-class SheetInfoController extends GlobalController
-    with SingleGetTickerProviderMixin {
+class SheetInfoController extends GlobalController{
   WeSlideController weSlideController;
   var loadState = 0.obs;
   var result = SheetDetailsPlaylist().obs;
@@ -22,12 +21,10 @@ class SheetInfoController extends GlobalController
       .of(Get.context)
       .primaryColor
       .obs;
-  LyricController lyricController;
 
   @override
   void onInit() {
     weSlideController = WeSlideController();
-    lyricController = LyricController(vsync: this);
     super.onInit();
   }
 
@@ -76,16 +73,6 @@ class SheetInfoController extends GlobalController
       await Starry.playMusic(songs, index);
       SpUtil.putInt(PLAY_SONG_SHEET_ID, result.value.id);
     }
-    var track = result.value.tracks[index];
-    MusicItem musicItem = MusicItem(
-      musicId: "${track.id}",
-      duration: track.dt,
-      iconUri: track.al.picUrl,
-      title: track.name,
-      uri: "${track.id}",
-      artist: track.ar[0].name,
-    );
-    // Get.find<BottomBarController>().changeSong(musicItem);
   }
 
 
@@ -93,7 +80,6 @@ class SheetInfoController extends GlobalController
   @override
   void onClose() {
     weSlideController = null;
-    lyricController?.dispose();
     super.onClose();
   }
 }
