@@ -36,6 +36,7 @@ dependencies:
   we_slide: ^2.0.0
   pull_to_refresh: ^1.6.4
   sleek_circular_slider: ^1.2.0+web
+  dots_indicator: ^2.0.0
   flutter:
     sdk: flutter
 

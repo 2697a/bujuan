@@ -37,7 +37,7 @@ class TodayView extends GetView<TodayController>{
                       Hero(tag: "today", child: Card(
                         shape: RoundedRectangleBorder(
                             borderRadius:
-                            BorderRadiusDirectional.circular(8.0)),
+                            BorderRadiusDirectional.circular(6.0)),
                         clipBehavior: Clip.antiAlias,
                         child: Row(
                           children: [

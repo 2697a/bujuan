@@ -99,6 +99,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.0.2"
+  dots_indicator:
+    dependency: "direct main"
+    description:
+      name: dots_indicator
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.0.0"
   encrypt:
     dependency: "direct main"
     description:
