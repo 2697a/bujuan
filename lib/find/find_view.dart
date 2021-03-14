@@ -23,6 +23,28 @@ class FindView extends GetView<FindController> {
         child: CustomScrollView(
           physics: BouncingScrollPhysics(),
           slivers: [
+            SliverToBoxAdapter(
+              child: InkWell(
+                child: Hero(tag: "today", child: Card(
+                  shape: RoundedRectangleBorder(
+                      borderRadius:
+                      BorderRadiusDirectional.circular(8.0)),
+                  clipBehavior: Clip.antiAlias,
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(5.0),
+                        height: 120.0,
+                        child: Image.asset("assets/images/today.png"),
+                      ),
+                      Expanded(child: Text("每日推荐",textAlign: TextAlign.center,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20.0),))
+                    ],
+                  ),
+                )),
+                onTap: ()=>Get.toNamed("/today"),
+              ),
+            ),
+            SliverPadding(padding: EdgeInsets.symmetric(vertical: 2.0)),
             SliverGrid(
               delegate: SliverChildBuilderDelegate(
                 (BuildContext context, int index) {
@@ -55,7 +77,7 @@ class FindView extends GetView<FindController> {
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: orientation == Orientation.portrait ? 3 : 6,
                   crossAxisSpacing: 8,
-                  mainAxisSpacing: 15,
+                  mainAxisSpacing: 12,
                   childAspectRatio: 1),
             )
           ],

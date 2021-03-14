@@ -10,10 +10,10 @@ import 'package:starry/music_item.dart';
 import 'package:starry/starry.dart';
 import 'package:we_slide/we_slide.dart';
 
-class SheetInfoController extends GlobalController {
-  WeSlideController weSlideController;
+class TodayController extends GlobalController {
   var loadState = 0.obs;
-  var result = SheetDetailsPlaylist().obs;
+  WeSlideController weSlideController;
+  var list = List<SheetDetailsPlaylistTrack>().obs;
   var color = Theme
       .of(Get.context)
       .primaryColor
@@ -27,7 +27,7 @@ class SheetInfoController extends GlobalController {
 
   @override
   void onReady() {
-    getSheetInfo(Get.arguments["id"]);
+    getToday();
     weSlideController.addListener(() {
       if (weSlideController.isOpened) {
         Get.find<HomeController>().resumeStream();
@@ -38,25 +38,25 @@ class SheetInfoController extends GlobalController {
     super.onReady();
   }
 
-  getSheetInfo(id) async {
-    var sheetDetailsEntity = await NetUtils().getPlayListDetails(id);
-    if (sheetDetailsEntity != null && sheetDetailsEntity.code == 200) {
-      result.value = sheetDetailsEntity.playlist;
+  getToday() async {
+    var list = await NetUtils().getTodaySongs();
+    if(list!=null) {
+      this.list..clear()..addAll(list);
       loadState.value = 2;
-    } else {
-      loadState.value = 1;
     }
+    else
+      loadState.value = 1;
   }
 
   playSong(index) async {
     var songs = [];
     var playSheetId = SpUtil.getInt(PLAY_SONG_SHEET_ID, defValue: -1);
-    if (result.value.id == playSheetId) {
+    if (playSheetId == -999) {
       //当前歌单正在播放，直接根据下标播放
       Starry.playMusicByIndex(index);
     } else {
       //当前歌单未在播放
-      result.value.tracks.forEach((track) {
+      list.forEach((track) {
         MusicItem musicItem = MusicItem(
           musicId: "${track.id}",
           duration: track.dt,
@@ -68,7 +68,7 @@ class SheetInfoController extends GlobalController {
         songs.add(musicItem);
       });
       await Starry.playMusic(songs, index);
-      SpUtil.putInt(PLAY_SONG_SHEET_ID, result.value.id);
+      SpUtil.putInt(PLAY_SONG_SHEET_ID, -999);
     }
   }
 

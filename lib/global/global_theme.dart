@@ -7,7 +7,7 @@ final ThemeData lightTheme = ThemeData(
   scaffoldBackgroundColor: Colors.white,
   bottomAppBarColor: Colors.black,
   // appBarTheme: AppBarTheme(elevation: 0),
-  cardTheme: CardTheme(color: Colors.white),
+  // cardTheme: CardTheme(color: Colors.white),
 );
 final ThemeData darkTheme = ThemeData(
   accentColor: Colors.blue,
@@ -16,5 +16,5 @@ final ThemeData darkTheme = ThemeData(
   primaryColor: Colors.grey[900],
   // appBarTheme: AppBarTheme(elevation: 0),
   scaffoldBackgroundColor: Colors.grey[900],
-  cardTheme: CardTheme(color: Color.fromRGBO(28, 28, 28, 1)),
+  // cardTheme: CardTheme(color: Color.fromRGBO(28, 28, 28, 1)),
 );

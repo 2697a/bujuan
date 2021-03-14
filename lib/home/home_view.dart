@@ -48,7 +48,7 @@ class HomeView extends GetView<HomeController> {
                 onPressed: () => Get.toNamed("/setting"))
           ]),
       body: Padding(
-          padding: EdgeInsets.only(top: 8.0),
+          padding: EdgeInsets.only(top: 8.0,left: 5.0,right: 5.0),
           child: PageView(
               controller: controller.pageController,
               physics: NeverScrollableScrollPhysics(),

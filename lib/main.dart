@@ -6,6 +6,8 @@ import 'package:bujuan/setting/setting_binding.dart';
 import 'package:bujuan/setting/setting_view.dart';
 import 'package:bujuan/sheet_info/sheet_info_binding.dart';
 import 'package:bujuan/sheet_info/sheet_info_view.dart';
+import 'package:bujuan/today/today_binding.dart';
+import 'package:bujuan/today/today_view.dart';
 import 'package:bujuan/utils/net_utils.dart';
 import 'package:bujuan/utils/sp_util.dart';
 import 'package:flutter/material.dart';
@@ -52,14 +54,15 @@ main(List<String> args) async {
     initialRoute: "/home",
     getPages: [
       GetPage(name: "/home", page: () => HomeView(), binding: HomeBinding()),
+      GetPage(name: '/today', page: () => TodayView(),binding: TodayBinding()),
       GetPage(name: '/sheet', page: () => SheetInfoView(),binding: SheetInfoBinding()),
       GetPage(name: '/profile', page: () => ProfileView()),
       GetPage(name: '/setting', page: () => SettingView(),binding: SettingBinding()),
     ],
   ),
-    headerBuilder: () => WaterDropMaterialHeader(color: Theme.of(Get.context).accentColor,backgroundColor: Theme.of(Get.context).primaryColor),        // 配置默认头部指示器,假如你每个页面的头部指示器都一样的话,你需要设置这个
+    headerBuilder: () => MaterialClassicHeader(color: Theme.of(Get.context).accentColor,backgroundColor: Theme.of(Get.context).primaryColor),        // 配置默认头部指示器,假如你每个页面的头部指示器都一样的话,你需要设置这个
     footerBuilder:  () => ClassicFooter(),        // 配置默认底部指示器
-    headerTriggerDistance: 80.0,        // 头部触发刷新的越界距离
+    headerTriggerDistance: 60.0,        // 头部触发刷新的越界距离
     springDescription:SpringDescription(stiffness: 170, damping: 16, mass: 1.9),         // 自定义回弹动画,三个属性值意义请查询flutter api
     maxOverScrollExtent :120, //头部最大可以拖动的范围,如果发生冲出视图范围区域,请设置这个属性
     maxUnderScrollExtent:0, // 底部最大可以拖动的范围
