@@ -20,32 +20,24 @@ class Starry {
   static const EventChannel eventChannel = const EventChannel('starry/event');
 
   ///歌曲播放状态
-  static final StreamController<PlayState> _playerStateController =
-      StreamController<PlayState>.broadcast();
+  static final StreamController<PlayState> _playerStateController = StreamController<PlayState>.broadcast();
 
-  static Stream<PlayState> get onPlayerStateChanged =>
-      _playerStateController.stream;
+  static Stream<PlayState> get onPlayerStateChanged => _playerStateController.stream;
 
   ///当前播放歌曲
-  static final StreamController<MusicItem> _playerSongController =
-      StreamController<MusicItem>.broadcast();
+  static final StreamController<MusicItem> _playerSongController = StreamController<MusicItem>.broadcast();
 
-  static Stream<MusicItem> get onPlayerSongChanged =>
-      _playerSongController.stream;
+  static Stream<MusicItem> get onPlayerSongChanged => _playerSongController.stream;
 
   ///当前播放歌曲进度
-  static final StreamController<int> _playerSongPosController =
-      StreamController<int>.broadcast();
+  static final StreamController<int> _playerSongPosController = StreamController<int>.broadcast();
 
-  static Stream<int> get onPlayerSongPosChanged =>
-      _playerSongPosController.stream;
+  static Stream<int> get onPlayerSongPosChanged => _playerSongPosController.stream;
 
   ///播放列表发生变化
-  static final StreamController<List<MusicItem>> _playerSongListController =
-      StreamController<List<MusicItem>>.broadcast();
+  static final StreamController<List<MusicItem>> _playerSongListController = StreamController<List<MusicItem>>.broadcast();
 
-  static Stream<List<MusicItem>> get onPlayerSongListChanged =>
-      _playerSongListController.stream;
+  static Stream<List<MusicItem>> get onPlayerSongListChanged => _playerSongListController.stream;
 
   ///初始化
   static Future<void> init({SongUrl url}) async {
@@ -57,8 +49,7 @@ class Starry {
   ///add播放类表并根据下标播放
   static Future<void> playMusic(List song, int index) async {
     var jsonEncode2 = jsonEncode(song);
-    await _channel
-        .invokeMethod('PLAY_MUSIC', {"PLAY_LIST": jsonEncode2, "INDEX": index});
+    await _channel.invokeMethod('PLAY_MUSIC', {"PLAY_LIST": jsonEncode2, "INDEX": index});
   }
 
   ///根据下标播放歌曲
@@ -111,8 +102,12 @@ class Starry {
     return null;
   }
 
-  static Future<void> audioEffect() async{
+  static Future<void> audioEffect() async {
     await _channel.invokeMethod("AUDIO_EFFECT");
+  }
+
+  static Future<int> toggleAudioFocus(bool value) async {
+   return await _channel.invokeMethod("TOGGLE_IGNORE_AUDIO_FOCUS", {"IS_IGNORE": value});
   }
 
   static Future<dynamic> _platformCallHandler(MethodCall call) async {

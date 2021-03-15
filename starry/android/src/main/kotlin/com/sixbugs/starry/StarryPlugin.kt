@@ -132,6 +132,15 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             "UPDATE_AUDIO_EFFECT_CONFIG" -> {
                 //更新音效
             }
+            "TOGGLE_IGNORE_AUDIO_FOCUS" -> {
+                //忽略/不忽略音频焦点
+                val isIgnore = call.argument<Boolean>("IS_IGNORE")!!
+                playerClient.isIgnoreAudioFocus = isIgnore
+                if (playerClient.isConnected)
+                    result.success(1)
+                else
+                    result.success(0)
+            }
 
             else -> result.notImplemented()
 

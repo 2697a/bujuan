@@ -3,6 +3,7 @@ import 'package:bujuan/music_bottom_bar/music_bottom_bar_view.dart';
 import 'package:bujuan/play_view/default_view.dart';
 import 'package:bujuan/sheet_info/sheet_loading_view.dart';
 import 'package:bujuan/today/today_controller.dart';
+import 'package:bujuan/utils/bujuan_util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -34,22 +35,55 @@ class TodayView extends GetView<TodayController>{
                   background: Column(
                     children: [
                       Expanded(child: Container()),
-                      Hero(tag: "today", child: Card(
-                        shape: RoundedRectangleBorder(
-                            borderRadius:
-                            BorderRadiusDirectional.circular(6.0)),
-                        clipBehavior: Clip.antiAlias,
-                        child: Row(
-                          children: [
-                            Container(
-                              padding: EdgeInsets.all(5.0),
-                              height: 120.0,
-                              child: Image.asset("assets/images/today.png"),
+                      Hero(
+                          tag: "today",
+                          child: Card(
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(6.0)),
+                            clipBehavior: Clip.antiAlias,
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(5.0),
+                                  height: 120.0,
+                                  child: Image.asset("assets/images/today.png"),
+                                ),
+                                Expanded(
+                                    child: Stack(
+                                      children: [
+                                        Container(
+                                          height: 120,
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            "每日推荐",
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+                                          ),
+                                        ),
+                                        Container(
+                                          padding: EdgeInsets.symmetric(horizontal: 8.0,vertical: 5.0),
+                                          height: 120,
+                                          alignment: Alignment.bottomRight,
+                                          width: double.infinity,
+                                          child: Wrap(
+                                            children: [
+                                              Text(
+                                                BuJuanUtil.dateToString(DateTime.now(),2),
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12.0,color: Theme.of(Get.context).accentColor),
+                                              ),
+                                              Text(
+                                                BuJuanUtil.dateToString(DateTime.now(),1),
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0,color: Theme.of(Get.context).accentColor),
+                                              )
+                                            ],
+                                          ),
+                                        )
+                                      ],
+                                    ))
+                              ],
                             ),
-                            Expanded(child: Text("每日推荐",textAlign: TextAlign.center,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20.0),))
-                          ],
-                        ),
-                      ))
+                          ))
                     ],
                   ),
                 ),

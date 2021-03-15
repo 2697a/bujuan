@@ -1,6 +1,7 @@
 import 'package:bujuan/entity/personal_entity.dart';
 import 'package:bujuan/find/find_controller.dart';
 import 'package:bujuan/global/global_state_view.dart';
+import 'package:bujuan/utils/bujuan_util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +19,7 @@ class FindView extends GetView<FindController> {
 
   Widget _buildFindView() {
     return OrientationBuilder(builder: (context, orientation) {
-      return SmartRefresher(
+      return Obx(()=>SmartRefresher(
         enablePullDown: true,
         enablePullUp: false,
         controller: controller.refreshController,
@@ -40,11 +41,39 @@ class FindView extends GetView<FindController> {
                             child: Image.asset("assets/images/today.png"),
                           ),
                           Expanded(
-                              child: Text(
-                            "每日推荐",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
-                          ))
+                              child: Stack(
+                                children: [
+                                  Container(
+                                    height: 120,
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      "每日推荐",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: EdgeInsets.symmetric(horizontal: 8.0,vertical: 5.0),
+                                    height: 120,
+                                    alignment: Alignment.bottomRight,
+                                    width: double.infinity,
+                                    child: Wrap(
+                                      children: [
+                                        Text(
+                                          BuJuanUtil.dateToString(DateTime.now(),2),
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12.0,color: Theme.of(context).accentColor),
+                                        ),
+                                        Text(
+                                          BuJuanUtil.dateToString(DateTime.now(),1),
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0,color: Theme.of(context).accentColor),
+                                        )
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              ))
                         ],
                       ),
                     )),
@@ -88,8 +117,8 @@ class FindView extends GetView<FindController> {
                           child: Padding(
                             padding: EdgeInsets.symmetric(horizontal: 8.0),
                             child: Text(
-                              "More",
-                              style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(Get.context).accentColor),
+                              "更多 >>",
+                              style: TextStyle(fontWeight: FontWeight.normal, color: Colors.grey[500],fontSize: 12.0),
                             ),
                           ),
                           onTap: () {},
@@ -125,45 +154,10 @@ class FindView extends GetView<FindController> {
                 ),
               ),
             ),
-            // SliverGrid(
-            //   delegate: SliverChildBuilderDelegate(
-            //     (BuildContext context, int index) {
-            //       return InkWell(
-            //           child: Hero(
-            //             tag: "${controller.result[index].id}",
-            //             child: Card(
-            //               shape: RoundedRectangleBorder(
-            //                   borderRadius:
-            //                       BorderRadiusDirectional.circular(6.0)),
-            //               clipBehavior: Clip.antiAlias,
-            //               child: CachedNetworkImage(
-            //                 fit: BoxFit.cover,
-            //                 imageUrl:
-            //                     "${controller.result[index].picUrl}?param=300y300",
-            //               ),
-            //             ),
-            //           ),
-            //           onTap: () {
-            //             Get.toNamed("/sheet", arguments: {
-            //               "id": controller.result[index].id,
-            //               "name": controller.result[index].name,
-            //               "imageUrl":
-            //                   "${controller.result[index].picUrl}?param=300y300"
-            //             });
-            //           });
-            //     },
-            //     childCount: controller.result.length, //内部控件数量
-            //   ),
-            //   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            //       crossAxisCount: orientation == Orientation.portrait ? 3 : 6,
-            //       crossAxisSpacing: 8,
-            //       mainAxisSpacing: 12,
-            //       childAspectRatio: 1),
-            // ),
             SliverPadding(padding: EdgeInsets.symmetric(vertical: 2)),
             SliverList(
               delegate: SliverChildBuilderDelegate(
-                (BuildContext context, int index) {
+                    (BuildContext context, int index) {
                   return ListTile(
                     contentPadding: EdgeInsets.symmetric(horizontal: 2.0,vertical: 0.0),
                     leading: Card(
@@ -190,7 +184,7 @@ class FindView extends GetView<FindController> {
           ],
         ),
         onRefresh: () async => controller.loadTodaySheet(),
-      );
+      ));
     });
   }
 
