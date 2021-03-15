@@ -1,9 +1,11 @@
+
 import 'package:bujuan/entity/personal_entity.dart';
 import 'package:bujuan/find/find_controller.dart';
 import 'package:bujuan/global/global_state_view.dart';
 import 'package:bujuan/utils/bujuan_util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dots_indicator/dots_indicator.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -95,10 +97,10 @@ class FindView extends GetView<FindController> {
             SliverPadding(padding: EdgeInsets.symmetric(vertical: 1.5)),
             SliverToBoxAdapter(
               child: Container(
-                height: 170.0,
+                height: 200.0,
                 child: Column(
                   children: [
-                    Padding(padding: EdgeInsets.only(bottom: 4.0)),
+                    Padding(padding: EdgeInsets.only(bottom: 4.0,left: 3.0)),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -118,7 +120,7 @@ class FindView extends GetView<FindController> {
                             padding: EdgeInsets.symmetric(horizontal: 8.0),
                             child: Text(
                               "更多 >>",
-                              style: TextStyle(fontWeight: FontWeight.normal, color: Colors.grey[500],fontSize: 12.0),
+                              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey[500],fontSize: 12.0),
                             ),
                           ),
                           onTap: () {},
@@ -134,7 +136,7 @@ class FindView extends GetView<FindController> {
                                 physics: NeverScrollableScrollPhysics(),
                                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                                     crossAxisCount: 3, //每行三列
-                                    childAspectRatio: 1.0),
+                                    childAspectRatio: .6),
                                 itemCount: controller.result.sublist(0, 3).length,
                                 itemBuilder: (context, index) {
                                   return _sheetItem(controller.result.sublist(0, 3)[index]);
@@ -143,7 +145,7 @@ class FindView extends GetView<FindController> {
                                 physics: NeverScrollableScrollPhysics(),
                                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                                     crossAxisCount: 3, //每行三列
-                                    childAspectRatio: 1.0),
+                                    childAspectRatio: .6),
                                 itemCount: controller.result.sublist(3, 6).length,
                                 itemBuilder: (context, index) {
                                   return _sheetItem(controller.result.sublist(3, 6)[index]);
@@ -189,22 +191,27 @@ class FindView extends GetView<FindController> {
   }
 
   Widget _sheetItem(PersonalResult personalResult) {
-    return InkWell(
-        child: Hero(
-          tag: "${personalResult.id}",
-          child: Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(6.0)),
-            clipBehavior: Clip.antiAlias,
-            child: CachedNetworkImage(
-              height: 120.0,
-              width: 120.0,
-              fit: BoxFit.cover,
-              imageUrl: "${personalResult.picUrl}?param=300y300",
+    return Wrap(
+      children: [
+        InkWell(
+            child: Hero(
+              tag: "${personalResult.id}",
+              child: Card(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(6.0)),
+                clipBehavior: Clip.antiAlias,
+                child: CachedNetworkImage(
+                  height: 120.0,
+                  width: 120.0,
+                  fit: BoxFit.cover,
+                  imageUrl: "${personalResult.picUrl}?param=300y300",
+                ),
+              ),
             ),
-          ),
-        ),
-        onTap: () {
-          Get.toNamed("/sheet", arguments: {"id": personalResult.id, "name": personalResult.name, "imageUrl": "${personalResult.picUrl}?param=300y300"});
-        });
+            onTap: () {
+              Get.toNamed("/sheet", arguments: {"id": personalResult.id, "name": personalResult.name, "imageUrl": "${personalResult.picUrl}?param=300y300"});
+            }),
+        Padding(padding: EdgeInsets.symmetric(horizontal: 6.0,vertical: 3),child: Text(personalResult.name,maxLines: 2,overflow: TextOverflow.ellipsis,style: TextStyle(fontSize: 12.0)),)
+      ],
+    );
   }
 }

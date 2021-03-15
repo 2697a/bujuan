@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:bujuan/profile/profile_binding.dart';
 import 'package:bujuan/profile/profile_view.dart';
 import 'package:bujuan/setting/setting_binding.dart';
 import 'package:bujuan/setting/setting_view.dart';
@@ -53,7 +54,7 @@ main(List<String> args) async {
       GetPage(name: "/home", page: () => HomeView(), binding: HomeBinding()),
       GetPage(name: '/today', page: () => TodayView(),binding: TodayBinding()),
       GetPage(name: '/sheet', page: () => SheetInfoView(),binding: SheetInfoBinding()),
-      GetPage(name: '/profile', page: () => ProfileView()),
+      GetPage(name: '/profile', page: () => ProfileView(),binding: ProfileBinding()),
       GetPage(name: '/setting', page: () => SettingView(),binding: SettingBinding()),
     ],
   ),

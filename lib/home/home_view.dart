@@ -40,7 +40,7 @@ class HomeView extends GetView<HomeController> {
                     width: 30.0,
                   ),
                 )),
-            onPressed: () => Get.toNamed("/profile"),
+            onPressed: () => Get.toNamed("/profile",arguments: {"avatar":"${controller.avatar.value}"}),
           ),
           actions: [
             IconButton(
