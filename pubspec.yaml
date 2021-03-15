@@ -21,7 +21,7 @@ environment:
   sdk: ">=2.10.0 <3.0.0"
 
 dependencies:
-  get:
+  get: ^4.0.0-nullsafety.2
 #  sliding_up_panel:
 #    path: sliding_up_panel
   path_provider: ^2.0.1

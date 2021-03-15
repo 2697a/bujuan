@@ -6,6 +6,8 @@ import snow.player.PlayerService
 import snow.player.SoundQuality
 import snow.player.annotation.PersistenceId
 import snow.player.audio.MusicItem
+import snow.player.effect.AudioEffectManager
+import snow.player.ui.equalizer.AndroidAudioEffectManager
 import snow.player.util.AsyncResult
 
 @PersistenceId("MyPlayerService")
@@ -17,6 +19,9 @@ class MyPlayerService : PlayerService() {
 //        setMaxIDLETime(30)
     }
 
+    override fun onCreateAudioEffectManager(): AudioEffectManager? {
+        return AndroidAudioEffectManager()
+    }
     override fun onCreateNotificationView(): NotificationView? {
         return AppNotificationView()
     }

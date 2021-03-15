@@ -197,7 +197,8 @@ class DefaultView extends GetView<GlobalController> {
                           icon: Icon(
                             Icons.shuffle,
                           ),
-                          onPressed: () {}),
+                          onPressed: () {
+                          }),
                     ],
                   ),
                 ],
@@ -245,7 +246,6 @@ class DefaultView extends GetView<GlobalController> {
             trackColor: Colors.grey[500].withOpacity(.6),
             progressBarColors: [
               Theme.of(Get.context).accentColor,
-              Theme.of(Get.context).accentColor.withAlpha(90),
               Theme.of(Get.context).accentColor,
             ],
           ),
@@ -268,13 +268,6 @@ class DefaultView extends GetView<GlobalController> {
                 "${controller.song.value.iconUri}?param=500y500",
               ),
             ),
-            Container(
-              decoration: BoxDecoration(
-                  color: Theme.of(Get.context)
-                      .primaryColor
-                      .withOpacity(.3),
-                  borderRadius: BorderRadius.circular(230.0)),
-            )
           ],
         ),
       ),

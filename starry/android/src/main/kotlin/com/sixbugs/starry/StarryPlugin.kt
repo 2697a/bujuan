@@ -2,12 +2,9 @@ package com.sixbugs.starry
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.os.Bundle
 import android.util.Log
 import androidx.annotation.NonNull
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelStoreOwner
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -19,10 +16,10 @@ import io.flutter.plugin.common.MethodChannel.Result
 import snow.player.Player
 import snow.player.PlayerClient
 import snow.player.audio.MusicItem
-import snow.player.lifecycle.PlayerViewModel
 import snow.player.playlist.Playlist
 import snow.player.playlist.PlaylistManager
-import kotlin.system.exitProcess
+import snow.player.ui.equalizer.EqualizerActivity
+
 
 /** StarryPlugin */
 class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
@@ -129,6 +126,12 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 val seek = call.argument<Int>("SEEK")!!
                 playerClient.seekTo(seek)
             }
+            "TOGGLE_AUDIO_EFFECT" -> {
+                //开启/关闭音效
+            }
+            "UPDATE_AUDIO_EFFECT_CONFIG" -> {
+                //更新音效
+            }
 
             else -> result.notImplemented()
 
@@ -180,9 +183,6 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
     }
 
-    private fun setMusicItem(playingMusic: MusicItem) {
-        channel.invokeMethod("SWITCH_SONG_INFO", GsonUtil.GsonString(playingMusic))
-    }
 
     class StarryPlaybackStateChangeListener : Player.OnPlaybackStateChangeListener {
         override fun onPlay(stalled: Boolean, playProgress: Int, playProgressUpdateTime: Long) {

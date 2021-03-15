@@ -17,8 +17,8 @@ class MusicBottomBarView extends GetView<GlobalController> {
           color: Theme.of(Get.context).primaryColor,
           border: Border(
               top: BorderSide(
-                  color: Theme.of(Get.context).bottomAppBarColor.withAlpha(20),
-                  width: .6))),
+                  color: Theme.of(Get.context).bottomAppBarColor.withAlpha(30),
+                  width: .1))),
       height: 65.0,
       child: ListTile(
         contentPadding: EdgeInsets.symmetric(horizontal: 8.0),

@@ -8,12 +8,14 @@ import android.os.Build
 import androidx.media.app.NotificationCompat
 import snow.player.PlayMode
 import snow.player.PlayerService
+import kotlin.system.exitProcess
 
 class AppNotificationView() : PlayerService.MediaNotificationView() {
-    val ACTION_TOGGLE_FAVORITE = "toggle_favorite"
+    val ACTION_TOGGLE_FAVORITE = "stop_play"
     private val ACTION_SWITCH_PLAY_MODE = "switch_play_mode"
-    lateinit var mSwitchPlayMode: PendingIntent
+    private lateinit var mSwitchPlayMode: PendingIntent
     private var mContentIntent: PendingIntent? = null
+    private lateinit var mStopPlay: PendingIntent
 
     override fun onInit(context: Context?) {
         super.onInit(context)
@@ -33,6 +35,11 @@ class AppNotificationView() : PlayerService.MediaNotificationView() {
                 }
             }
         }
+        mStopPlay = buildCustomAction(ACTION_TOGGLE_FAVORITE) { player, _ ->
+            player.stop()
+            exitProcess(0)
+        }
+
         val packageManager = context?.packageManager
         val intent: Intent? = packageManager?.getLaunchIntentForPackage("com.sixbugs.bujuan")
         intent?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -70,7 +77,7 @@ class AppNotificationView() : PlayerService.MediaNotificationView() {
         builder?.setContentIntent(mContentIntent)
     }
     private fun addToggleFavorite(builder: androidx.core.app.NotificationCompat.Builder?) {
-        builder?.addAction(R.mipmap.ic_notif_favorite_false, "skip to previous", null)
+        builder?.addAction(R.drawable.ic_baseline_stop_24, "stop", mStopPlay)
     }
     private fun addSkipToPrevious(builder: androidx.core.app.NotificationCompat.Builder?) {
         builder?.addAction(R.mipmap.ic_notif_skip_to_previous, "skip to previous", doSkipToPrevious())

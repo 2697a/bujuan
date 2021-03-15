@@ -111,6 +111,10 @@ class Starry {
     return null;
   }
 
+  static Future<void> audioEffect() async{
+    await _channel.invokeMethod("AUDIO_EFFECT");
+  }
+
   static Future<dynamic> _platformCallHandler(MethodCall call) async {
     var method = call.method;
     var arguments = call.arguments;

@@ -1,4 +1,3 @@
-import 'package:bujuan/entity/new_song_entity.dart';
 import 'package:bujuan/entity/personal_entity.dart';
 import 'package:bujuan/find/find_controller.dart';
 import 'package:bujuan/global/global_state_view.dart';
@@ -31,8 +30,7 @@ class FindView extends GetView<FindController> {
                 child: Hero(
                     tag: "today",
                     child: Card(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadiusDirectional.circular(6.0)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(6.0)),
                       clipBehavior: Clip.antiAlias,
                       child: Row(
                         children: [
@@ -45,8 +43,7 @@ class FindView extends GetView<FindController> {
                               child: Text(
                             "每日推荐",
                             textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 20.0),
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
                           ))
                         ],
                       ),
@@ -70,77 +67,61 @@ class FindView extends GetView<FindController> {
             SliverToBoxAdapter(
               child: Container(
                 height: 170.0,
-                child: Card(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadiusDirectional.circular(6.0)),
-                  clipBehavior: Clip.antiAlias,
-                  child: Column(
-                    children: [
-                      Padding(padding: EdgeInsets.only(bottom: 4.0)),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Obx(() => DotsIndicator(
-                                dotsCount: 2,
-                                position: controller.currentIndexPage.value
-                                    .toDouble(),
-                                decorator: DotsDecorator(
-                                    size: const Size.square(6.0),
-                                    activeSize: const Size(12.0, 6.0),
-                                    activeShape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(6.0)),
-                                    color: Colors.grey[500],
-                                    // Inactive color
-                                    activeColor:
-                                        Theme.of(Get.context).accentColor),
-                              )),
-                          InkWell(
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 8.0),
-                              child: Text(
-                                "More",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Theme.of(Get.context).accentColor),
-                              ),
+                child: Column(
+                  children: [
+                    Padding(padding: EdgeInsets.only(bottom: 4.0)),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Obx(() => DotsIndicator(
+                          dotsCount: 2,
+                          position: controller.currentIndexPage.value.toDouble(),
+                          decorator: DotsDecorator(
+                              size: const Size.square(6.0),
+                              activeSize: const Size(12.0, 6.0),
+                              activeShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6.0)),
+                              color: Colors.grey[500],
+                              // Inactive color
+                              activeColor: Theme.of(Get.context).accentColor),
+                        )),
+                        InkWell(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Text(
+                              "More",
+                              style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(Get.context).accentColor),
                             ),
-                            onTap: () {},
-                          )
-                        ],
-                      ),
-                      Padding(padding: EdgeInsets.only(bottom: 6.0)),
-                      Expanded(
-                          child: PageView(
-                        onPageChanged: (index) =>
-                            controller.currentIndexPage.value = index,
-                        children: [
-                          GridView.builder(
-                              physics: NeverScrollableScrollPhysics(),
-                              gridDelegate:
-                                  SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 3, //每行三列
-                                      childAspectRatio: 1.0),
-                              itemCount: controller.result.sublist(0, 3).length,
-                              itemBuilder: (context, index) {
-                                return _sheetItem(
-                                    controller.result.sublist(0, 3)[index]);
-                              }),
-                          GridView.builder(
-                              physics: NeverScrollableScrollPhysics(),
-                              gridDelegate:
-                                  SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 3, //每行三列
-                                      childAspectRatio: 1.0),
-                              itemCount: controller.result.sublist(3, 6).length,
-                              itemBuilder: (context, index) {
-                                return _sheetItem(
-                                    controller.result.sublist(3, 6)[index]);
-                              }),
-                        ],
-                      )),
-                    ],
-                  ),
+                          ),
+                          onTap: () {},
+                        )
+                      ],
+                    ),
+                    Padding(padding: EdgeInsets.only(bottom: 6.0)),
+                    Expanded(
+                        child: PageView(
+                          onPageChanged: (index) => controller.currentIndexPage.value = index,
+                          children: [
+                            GridView.builder(
+                                physics: NeverScrollableScrollPhysics(),
+                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 3, //每行三列
+                                    childAspectRatio: 1.0),
+                                itemCount: controller.result.sublist(0, 3).length,
+                                itemBuilder: (context, index) {
+                                  return _sheetItem(controller.result.sublist(0, 3)[index]);
+                                }),
+                            GridView.builder(
+                                physics: NeverScrollableScrollPhysics(),
+                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 3, //每行三列
+                                    childAspectRatio: 1.0),
+                                itemCount: controller.result.sublist(3, 6).length,
+                                itemBuilder: (context, index) {
+                                  return _sheetItem(controller.result.sublist(3, 6)[index]);
+                                }),
+                          ],
+                        )),
+                  ],
                 ),
               ),
             ),
@@ -184,20 +165,17 @@ class FindView extends GetView<FindController> {
               delegate: SliverChildBuilderDelegate(
                 (BuildContext context, int index) {
                   return ListTile(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 2.0),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 2.0,vertical: 0.0),
                     leading: Card(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadiusDirectional.circular(6.0)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(6.0)),
                       clipBehavior: Clip.antiAlias,
                       child: CachedNetworkImage(
-                        width: 50,
-                        height: 50,
-                        imageUrl:
-                            "${controller.newSong[index].picUrl}?param=150y150",
+                        width: 48,
+                        height: 48,
+                        imageUrl: "${controller.newSong[index].picUrl}?param=150y150",
                       ),
                     ),
-                    subtitle:
-                        Text(controller.newSong[index].song.artists[0].name),
+                    subtitle: Text(controller.newSong[index].song.artists[0].name),
                     title: Text(controller.newSong[index].name),
                     trailing: IconButton(
                       icon: Icon(Icons.more_vert),
@@ -206,8 +184,7 @@ class FindView extends GetView<FindController> {
                     onTap: () {},
                   );
                 },
-                childCount:
-                    controller.newSong == null ? 0 : controller.newSong.length,
+                childCount: controller.newSong == null ? 0 : controller.newSong.length,
               ),
             )
           ],
@@ -222,8 +199,7 @@ class FindView extends GetView<FindController> {
         child: Hero(
           tag: "${personalResult.id}",
           child: Card(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadiusDirectional.circular(6.0)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(6.0)),
             clipBehavior: Clip.antiAlias,
             child: CachedNetworkImage(
               height: 120.0,
@@ -234,11 +210,7 @@ class FindView extends GetView<FindController> {
           ),
         ),
         onTap: () {
-          Get.toNamed("/sheet", arguments: {
-            "id": personalResult.id,
-            "name": personalResult.name,
-            "imageUrl": "${personalResult.picUrl}?param=300y300"
-          });
+          Get.toNamed("/sheet", arguments: {"id": personalResult.id, "name": personalResult.name, "imageUrl": "${personalResult.picUrl}?param=300y300"});
         });
   }
 }
