@@ -123,8 +123,8 @@ class TodayView extends GetView<TodayController>{
                   style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
                 ),
               ),
-              subtitle: Text(controller.list[index].ar[0].name),
-              title: Text(controller.list[index].name),
+              subtitle: Text(controller.list[index].ar[0].name,maxLines: 1,overflow: TextOverflow.ellipsis),
+              title: Text(controller.list[index].name,maxLines: 1,overflow: TextOverflow.ellipsis),
               onTap: () {
                 controller.playSong(index);
               },

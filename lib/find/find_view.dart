@@ -79,22 +79,10 @@ class FindView extends GetView<FindController> {
                         ],
                       ),
                     )),
-                onTap: () => Get.toNamed("/today"),
+                onTap: () => controller.goToTodayMusic(),
               ),
             ),
-            SliverPadding(padding: EdgeInsets.symmetric(vertical: 1.5)),
-            SliverToBoxAdapter(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(icon: Icon(Icons.portrait, size: 32)),
-                  IconButton(icon: Icon(Icons.portrait, size: 32)),
-                  IconButton(icon: Icon(Icons.portrait, size: 32)),
-                  IconButton(icon: Icon(Icons.portrait, size: 32)),
-                ],
-              ),
-            ),
-            SliverPadding(padding: EdgeInsets.symmetric(vertical: 1.5)),
+            SliverPadding(padding: EdgeInsets.symmetric(vertical: 6.0)),
             SliverToBoxAdapter(
               child: Container(
                 height: 200.0,
@@ -118,9 +106,12 @@ class FindView extends GetView<FindController> {
                         InkWell(
                           child: Padding(
                             padding: EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Text(
-                              "更多 >>",
-                              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey[500],fontSize: 12.0),
+                            child: Wrap(
+                              alignment: WrapAlignment.center,
+                              children: [
+                                Text("更多",style: TextStyle(color: Colors.grey[500],fontSize: 12.0)),
+                                Icon(Icons.keyboard_arrow_right,size: 18.0,color: Colors.grey[500])
+                              ],
                             ),
                           ),
                           onTap: () {},
@@ -135,8 +126,9 @@ class FindView extends GetView<FindController> {
                             GridView.builder(
                                 physics: NeverScrollableScrollPhysics(),
                                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisSpacing: 10,
                                     crossAxisCount: 3, //每行三列
-                                    childAspectRatio: .6),
+                                    childAspectRatio: 1),
                                 itemCount: controller.result.sublist(0, 3).length,
                                 itemBuilder: (context, index) {
                                   return _sheetItem(controller.result.sublist(0, 3)[index]);
@@ -144,8 +136,9 @@ class FindView extends GetView<FindController> {
                             GridView.builder(
                                 physics: NeverScrollableScrollPhysics(),
                                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisSpacing: 10,
                                     crossAxisCount: 3, //每行三列
-                                    childAspectRatio: .6),
+                                    childAspectRatio: 1),
                                 itemCount: controller.result.sublist(3, 6).length,
                                 itemBuilder: (context, index) {
                                   return _sheetItem(controller.result.sublist(3, 6)[index]);

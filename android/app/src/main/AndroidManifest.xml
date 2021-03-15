@@ -23,7 +23,8 @@
     <application
         android:name="io.flutter.app.FlutterApplication"
         android:icon="@mipmap/ic_launcher"
-        android:label="bujuan"
+        android:label="不倦"
+        tools:replace="android:label"
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
         <activity

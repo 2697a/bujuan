@@ -51,7 +51,7 @@ class UserView extends GetView<UserController> {
                           ),
                         ),
                       ),
-                      subtitle: Text(controller.playList[index].name),
+                      subtitle: Text("${controller.playList.length}首单曲",maxLines: 1,overflow: TextOverflow.ellipsis),
                       title: Text(controller.playList[index].name),
                       onTap: () => Get.toNamed("/sheet", arguments: {
                         "id": controller.playList[index].id,

@@ -2,7 +2,7 @@ import 'package:bujuan/entity/sheet_details_entity.dart';
 import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/global/global_controller.dart';
 import 'package:bujuan/home/home_controller.dart';
-import 'package:bujuan/utils/net_utils.dart';
+import 'package:bujuan/utils/net_util.dart';
 import 'package:bujuan/utils/sp_util.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

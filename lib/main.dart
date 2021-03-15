@@ -58,7 +58,7 @@ main(List<String> args) async {
       GetPage(name: '/setting', page: () => SettingView(),binding: SettingBinding()),
     ],
   ),
-    headerBuilder: () => WaterDropHeader(waterDropColor: Theme.of(Get.context).accentColor,complete: Text("Drink and love money~",style: TextStyle(color: Colors.grey[500],fontWeight: FontWeight.bold)),),        // 配置默认头部指示器,假如你每个页面的头部指示器都一样的话,你需要设置这个
+    headerBuilder: () => WaterDropHeader(waterDropColor: Theme.of(Get.context).accentColor,complete: Text("drink and love money~",style: TextStyle(color: Colors.grey[500],fontWeight: FontWeight.bold)),),        // 配置默认头部指示器,假如你每个页面的头部指示器都一样的话,你需要设置这个
     footerBuilder:  () => ClassicFooter(),        // 配置默认底部指示器
     headerTriggerDistance: 60.0,        // 头部触发刷新的越界距离
     springDescription:SpringDescription(stiffness: 170, damping: 16, mass: 1.9),         // 自定义回弹动画,三个属性值意义请查询flutter api

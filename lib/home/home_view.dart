@@ -4,8 +4,6 @@ import 'package:bujuan/global/global_theme.dart';
 import 'package:bujuan/music_bottom_bar/music_bottom_bar_view.dart';
 import 'package:bujuan/play_view/default_view.dart';
 import 'package:bujuan/search/search_view.dart';
-import 'package:bujuan/setting/setting_binding.dart';
-import 'package:bujuan/setting/setting_view.dart';
 import 'package:bujuan/user/user_view.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -28,19 +26,19 @@ class HomeView extends GetView<HomeController> {
           title: Text("Bujuan"),
           leading: IconButton(
             icon: Hero(
-                tag: "${controller.avatar.value}",
+                tag: "avatar",
                 child: Card(
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadiusDirectional.circular(30.0)),
                   clipBehavior: Clip.antiAlias,
                   child: CachedNetworkImage(
                     fit: BoxFit.cover,
-                    imageUrl: controller.avatar.value,
+                    imageUrl: controller.userProfileEntity.value!=null?controller.userProfileEntity.value.profile.avatarUrl:"https://pic1.zhimg.com/80/v2-7ff2d917aa926cfbf2e8b85b035e2563_1440w.jpg",
                     height: 30.0,
                     width: 30.0,
                   ),
                 )),
-            onPressed: () => Get.toNamed("/profile",arguments: {"avatar":"${controller.avatar.value}"}),
+            onPressed: () => controller.goToProfile(),
           ),
           actions: [
             IconButton(

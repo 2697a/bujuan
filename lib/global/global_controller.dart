@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:bujuan/entity/lyric_entity.dart';
-import 'package:bujuan/utils/net_utils.dart';
+import 'package:bujuan/utils/net_util.dart';
 import 'package:bujuan/utils/sp_util.dart';
 import 'package:get/get.dart';
 import 'package:starry/music_item.dart';

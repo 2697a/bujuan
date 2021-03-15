@@ -205,8 +205,8 @@ class SheetInfoView extends GetView<SheetInfoController> {
                   style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
                 ),
               ),
-              subtitle: Text(controller.result.value.tracks[index].ar[0].name),
-              title: Text(controller.result.value.tracks[index].name),
+              subtitle: Text(controller.result.value.tracks[index].ar[0].name,maxLines: 1,overflow: TextOverflow.ellipsis),
+              title: Text(controller.result.value.tracks[index].name,maxLines: 1,overflow: TextOverflow.ellipsis),
               onTap: () {
                 controller.playSong(index);
               },

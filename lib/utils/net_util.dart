@@ -74,6 +74,12 @@ class NetUtils {
     return login;
   }
 
+  //刷新登录，token换token(总把新桃换旧符)
+  Future<Map> refreshLogin() async {
+    var map = await _doHandler('/login/refresh');
+    return map;
+  }
+
   //获取歌单详情
   Future<SheetDetailsEntity> getPlayListDetails(id) async {
     SheetDetailsEntity sheetDetails;

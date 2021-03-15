@@ -2,7 +2,7 @@ import 'package:bujuan/entity/login_entity.dart';
 import 'package:bujuan/entity/user_order_entity.dart';
 import 'package:bujuan/entity/user_profile_entity.dart';
 import 'package:bujuan/global/global_config.dart';
-import 'package:bujuan/utils/net_utils.dart';
+import 'package:bujuan/utils/net_util.dart';
 import 'package:bujuan/utils/sp_util.dart';
 import 'package:get/get.dart';
 

@@ -1,6 +1,10 @@
 import 'package:bujuan/entity/new_song_entity.dart';
 import 'package:bujuan/entity/personal_entity.dart';
-import 'package:bujuan/utils/net_utils.dart';
+import 'package:bujuan/global/global_config.dart';
+import 'package:bujuan/login/login_binding.dart';
+import 'package:bujuan/login/login_view.dart';
+import 'package:bujuan/utils/net_util.dart';
+import 'package:bujuan/utils/sp_util.dart';
 import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -43,6 +47,17 @@ class FindController extends GetxController {
       newSong
         ..clear()
         ..addAll(newSongEntity.result);
+    }
+  }
+
+
+  ///进入每日推荐
+  goToTodayMusic(){
+    var userId = SpUtil.getString(USER_ID_SP,defValue: null);
+    if(userId!=null){
+      Get.toNamed("/today");
+    }else{
+      Get.to(() => LoginView(), binding: LoginBinding());
     }
   }
 }

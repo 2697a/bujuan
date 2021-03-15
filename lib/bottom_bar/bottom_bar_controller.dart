@@ -1,7 +1,7 @@
 import 'package:bujuan/api/lyric/lyric_controller.dart';
 import 'package:bujuan/entity/lyric_entity.dart';
 import 'package:bujuan/home/home_controller.dart';
-import 'package:bujuan/utils/net_utils.dart';
+import 'package:bujuan/utils/net_util.dart';
 import 'package:color_thief_flutter/color_thief_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

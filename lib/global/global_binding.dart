@@ -1,4 +1,3 @@
-import 'package:bujuan/bottom_bar/bottom_bar_controller.dart';
 import 'package:bujuan/find/find_controller.dart';
 import 'package:bujuan/global/global_controller.dart';
 import 'package:bujuan/home/home_controller.dart';
@@ -11,6 +10,7 @@ class GlobalBinding extends Bindings{
   void dependencies() {
     Get.lazyPut<GlobalController>(() => GlobalController());
     Get.lazyPut<HomeController>(() => HomeController());
+    Get.lazyPut<UserController>(() => UserController());
     Get.lazyPut<PlayListController>(() => PlayListController());
     Get.lazyPut<FindController>(() => FindController());
     Get.lazyPut<UserController>(() => UserController());
