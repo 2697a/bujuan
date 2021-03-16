@@ -5,9 +5,7 @@ import 'package:bujuan/music_bottom_bar/music_bottom_bar_view.dart';
 import 'package:bujuan/play_view/default_view.dart';
 import 'package:bujuan/search/search_view.dart';
 import 'package:bujuan/user/user_view.dart';
-import 'package:bujuan/widget/widgets.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:custom_navigation_bar/custom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -113,34 +111,4 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  Widget _buildLightDesign() {
-    return CustomNavigationBar(
-      elevation: 0,
-      iconSize: 30.0,
-      selectedColor: Theme.of(Get.context).accentColor,
-      strokeColor:  Theme.of(Get.context).accentColor,
-      unSelectedColor: Colors.grey[500],
-      backgroundColor: Theme.of(Get.context).primaryColor,
-      items: [
-        CustomNavigationBarItem(
-          icon: Icon(Icons.home),
-            title: Text("user")
-        ),
-        CustomNavigationBarItem(
-          icon: Icon(Icons.lightbulb_outline),
-            title: Text("user")
-        ),
-        CustomNavigationBarItem(
-          icon: Icon(Icons.search),
-            title: Text("user")
-        ),
-        CustomNavigationBarItem(
-          icon: Icon(Icons.account_circle),
-          title: Text("user")
-        ),
-      ],
-      currentIndex: controller.currentIndex.value,
-      onTap: (index)=> controller.changeIndex(index),
-    );
-  }
 }

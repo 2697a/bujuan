@@ -21,10 +21,10 @@ environment:
   sdk: ">=2.10.0 <3.0.0"
 
 dependencies:
-  get: ^4.0.0-nullsafety.2
+  get: ^3.26.0
   path_provider: ^2.0.1
   color_thief_flutter: ^1.0.2
-  cached_network_image: ^3.0.0-nullsafety
+  cached_network_image: ^2.5.1
   flutter_placeholder_textlines: ^1.0.4
   starry:
     path: starry
@@ -37,7 +37,6 @@ dependencies:
   dots_indicator: ^2.0.0
   progress_state_button: ^1.0.2
   introduction_screen: ^2.0.0
-  custom_navigation_bar: ^0.7.1
   flutter:
     sdk: flutter
 

@@ -26,9 +26,15 @@ class ProfileView extends GetView<ProfileController> {
                   background: Stack(
                     children: [
                       Container(
-                        decoration: BoxDecoration(
-                          color: Colors.green,
-                          borderRadius: BorderRadius.only(bottomLeft: Radius.circular(100.0)),
+                        child: Card(
+                          margin: EdgeInsets.all(0),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(bottomLeft: Radius.circular(100.0))),
+                          clipBehavior: Clip.antiAlias,
+                          child: CachedNetworkImage(
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                            imageUrl: "${profile.profile.backgroundUrl}",
+                          ),
                         ),
                       ),
                       Container(

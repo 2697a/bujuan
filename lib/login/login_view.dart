@@ -1,6 +1,5 @@
 import 'package:bujuan/login/login_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:progress_state_button/iconed_button.dart';
 import 'package:progress_state_button/progress_button.dart';
@@ -12,6 +11,7 @@ class LoginView extends GetView<LoginController> {
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         elevation: 0,
+        title: Text("登录"),
       ),
       body: Obx(() => ListView(
             children: [
