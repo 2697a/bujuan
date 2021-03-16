@@ -1,6 +1,7 @@
 import 'package:bujuan/entity/new_song_entity.dart';
 import 'package:bujuan/entity/personal_entity.dart';
 import 'package:bujuan/global/global_config.dart';
+import 'package:bujuan/home/home_controller.dart';
 import 'package:bujuan/login/login_binding.dart';
 import 'package:bujuan/login/login_view.dart';
 import 'package:bujuan/utils/net_util.dart';
@@ -53,11 +54,10 @@ class FindController extends GetxController {
 
   ///进入每日推荐
   goToTodayMusic(){
-    var userId = SpUtil.getString(USER_ID_SP,defValue: null);
-    if(userId!=null){
+    if(Get.find<HomeController>().login.value){
       Get.toNamed("/today");
     }else{
-      Get.to(() => LoginView(), binding: LoginBinding());
+      Get.find<HomeController>().goToLogin();
     }
   }
 }

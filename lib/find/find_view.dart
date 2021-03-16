@@ -10,6 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../over_scroll.dart';
+
 class FindView extends GetView<FindController> {
   @override
   Widget build(BuildContext context) {
@@ -21,12 +23,11 @@ class FindView extends GetView<FindController> {
 
   Widget _buildFindView() {
     return OrientationBuilder(builder: (context, orientation) {
-      return Obx(()=>SmartRefresher(
+      return Obx(()=>ScrollConfiguration(behavior: OverScrollBehavior(), child: SmartRefresher(
         enablePullDown: true,
         enablePullUp: false,
         controller: controller.refreshController,
         child: CustomScrollView(
-          physics: BouncingScrollPhysics(),
           slivers: [
             SliverToBoxAdapter(
               child: InkWell(
@@ -64,12 +65,12 @@ class FindView extends GetView<FindController> {
                                         Text(
                                           BuJuanUtil.dateToString(DateTime.now(),2),
                                           textAlign: TextAlign.center,
-                                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12.0,color: Theme.of(context).accentColor),
+                                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.0,color: Theme.of(context).accentColor),
                                         ),
                                         Text(
                                           BuJuanUtil.dateToString(DateTime.now(),1),
                                           textAlign: TextAlign.center,
-                                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0,color: Theme.of(context).accentColor),
+                                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0,color: Theme.of(context).accentColor),
                                         )
                                       ],
                                     ),
@@ -126,7 +127,7 @@ class FindView extends GetView<FindController> {
                             GridView.builder(
                                 physics: NeverScrollableScrollPhysics(),
                                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisSpacing: 10,
+                                    crossAxisSpacing: 10,
                                     crossAxisCount: 3, //每行三列
                                     childAspectRatio: 1),
                                 itemCount: controller.result.sublist(0, 3).length,
@@ -149,37 +150,68 @@ class FindView extends GetView<FindController> {
                 ),
               ),
             ),
-            SliverPadding(padding: EdgeInsets.symmetric(vertical: 2)),
+            SliverPadding(padding: EdgeInsets.symmetric(vertical: 6.0)),
             SliverList(
               delegate: SliverChildBuilderDelegate(
                     (BuildContext context, int index) {
-                  return ListTile(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 2.0,vertical: 0.0),
-                    leading: Card(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(6.0)),
-                      clipBehavior: Clip.antiAlias,
-                      child: CachedNetworkImage(
-                        width: 48,
-                        height: 48,
-                        imageUrl: "${controller.newSong[index].picUrl}?param=150y150",
+                  return InkWell(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 2.0, vertical: 5.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Container(
+                            alignment: Alignment.center,
+                            margin: EdgeInsets.only(right: 12.0),
+                            child: Card(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius:
+                                  BorderRadiusDirectional.circular(4.0)),
+                              clipBehavior: Clip.antiAlias,
+                              child: CachedNetworkImage(
+                                width: 48,
+                                height: 48,
+                                imageUrl:
+                                "${controller.newSong[index].picUrl}?param=200y200",
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                              child: Column(
+                                children: [
+                                  Container(
+                                    height: 25,
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(controller.newSong[index].name, maxLines: 1, overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(fontSize: 16.0)),
+                                  ),
+                                  Container(
+                                    height: 25,
+                                    alignment: Alignment.centerLeft,
+                                    child: Text("${controller.newSong[index].song.artists[0].name}", maxLines: 1, overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(fontSize: 14.0,color: Colors.grey[500])),
+                                  )
+                                ],
+                              )),
+                          IconButton(
+                            icon: Icon(Icons.more_vert,color: Colors.grey[500],),
+                            onPressed: () {},
+                          ),
+                        ],
                       ),
                     ),
-                    subtitle: Text(controller.newSong[index].song.artists[0].name),
-                    title: Text(controller.newSong[index].name),
-                    trailing: IconButton(
-                      icon: Icon(Icons.more_vert),
-                      onPressed: () {},
-                    ),
-                    onTap: () {},
+                    onTap: (){},
+
                   );
                 },
                 childCount: controller.newSong == null ? 0 : controller.newSong.length,
               ),
-            )
+            ),
+            SliverPadding(padding: EdgeInsets.symmetric(vertical: 10.0))
           ],
         ),
         onRefresh: () async => controller.loadTodaySheet(),
-      ));
+      )));
     });
   }
 
@@ -203,7 +235,7 @@ class FindView extends GetView<FindController> {
             onTap: () {
               Get.toNamed("/sheet", arguments: {"id": personalResult.id, "name": personalResult.name, "imageUrl": "${personalResult.picUrl}?param=300y300"});
             }),
-        Padding(padding: EdgeInsets.symmetric(horizontal: 6.0,vertical: 3),child: Text(personalResult.name,maxLines: 2,overflow: TextOverflow.ellipsis,style: TextStyle(fontSize: 12.0)),)
+        Padding(padding: EdgeInsets.symmetric(horizontal: 5.0,vertical: 3),child: Text(personalResult.name,maxLines: 2,overflow: TextOverflow.ellipsis,style: TextStyle(fontSize: 14.0,color: Colors.grey[500])),)
       ],
     );
   }

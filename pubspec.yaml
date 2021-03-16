@@ -22,8 +22,6 @@ environment:
 
 dependencies:
   get: ^4.0.0-nullsafety.2
-#  sliding_up_panel:
-#    path: sliding_up_panel
   path_provider: ^2.0.1
   color_thief_flutter: ^1.0.2
   cached_network_image: ^3.0.0-nullsafety
@@ -33,10 +31,13 @@ dependencies:
   shared_preferences: ^2.0.4
   cookie_jar: ^2.0.0
   encrypt: ^3.0.0
-  we_slide: ^2.0.0
+  we_slide: ^2.0.1
   pull_to_refresh: ^1.6.4
   sleek_circular_slider: ^1.2.0+web
   dots_indicator: ^2.0.0
+  progress_state_button: ^1.0.2
+  introduction_screen: ^2.0.0
+  custom_navigation_bar: ^0.7.1
   flutter:
     sdk: flutter
 

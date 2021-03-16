@@ -5,7 +5,9 @@ import 'package:bujuan/music_bottom_bar/music_bottom_bar_view.dart';
 import 'package:bujuan/play_view/default_view.dart';
 import 'package:bujuan/search/search_view.dart';
 import 'package:bujuan/user/user_view.dart';
+import 'package:bujuan/widget/widgets.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:custom_navigation_bar/custom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -43,7 +45,7 @@ class HomeView extends GetView<HomeController> {
           actions: [
             IconButton(
                 icon: Icon(Icons.settings),
-                onPressed: () => Get.toNamed("/setting"))
+                onPressed: () => Get.toNamed("/setting")),
           ]),
       body: Padding(
           padding: EdgeInsets.only(top: 0.0,left: 5.0,right: 5.0),
@@ -62,6 +64,7 @@ class HomeView extends GetView<HomeController> {
 
   Widget _buildHomeView() {
     return Scaffold(
+      resizeToAvoidBottomInset:false,
       body: AnnotatedRegion(
         child: WeSlide(
           controller: controller.weSlideController,
@@ -88,24 +91,56 @@ class HomeView extends GetView<HomeController> {
   //底部导航栏
   Widget _buildBottomNavigationBar() {
     return BottomNavigationBar(
+
       selectedItemColor: Theme.of(Get.context).accentColor,
       unselectedItemColor: Theme.of(Get.context).bottomAppBarColor,
       backgroundColor: Theme.of(Get.context).primaryColor,
       type: BottomNavigationBarType.fixed,
       elevation: 0.0,
-      iconSize: 24.0,
-      selectedIconTheme: IconThemeData(size: 26.0),
+      iconSize: 26.0,
+      selectedIconTheme: IconThemeData(size: 30.0),
       // showSelectedLabels: false,
       // showUnselectedLabels: false,
       items: [
-        BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: "home"),
-        BottomNavigationBarItem(icon: Icon(Icons.history), label: "top"),
+        BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: "home"),
+        BottomNavigationBarItem(icon: Icon(Icons.lightbulb_outline), label: "top"),
         BottomNavigationBarItem(icon: Icon(Icons.search), label: "search"),
         BottomNavigationBarItem(
             icon: Icon(Icons.person_outline), label: "user"),
       ],
       onTap: (index) => controller.changeIndex(index),
       currentIndex: controller.currentIndex.value,
+    );
+  }
+
+  Widget _buildLightDesign() {
+    return CustomNavigationBar(
+      elevation: 0,
+      iconSize: 30.0,
+      selectedColor: Theme.of(Get.context).accentColor,
+      strokeColor:  Theme.of(Get.context).accentColor,
+      unSelectedColor: Colors.grey[500],
+      backgroundColor: Theme.of(Get.context).primaryColor,
+      items: [
+        CustomNavigationBarItem(
+          icon: Icon(Icons.home),
+            title: Text("user")
+        ),
+        CustomNavigationBarItem(
+          icon: Icon(Icons.lightbulb_outline),
+            title: Text("user")
+        ),
+        CustomNavigationBarItem(
+          icon: Icon(Icons.search),
+            title: Text("user")
+        ),
+        CustomNavigationBarItem(
+          icon: Icon(Icons.account_circle),
+          title: Text("user")
+        ),
+      ],
+      currentIndex: controller.currentIndex.value,
+      onTap: (index)=> controller.changeIndex(index),
     );
   }
 }

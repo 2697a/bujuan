@@ -14,7 +14,7 @@ class GlobalController extends GetxController {
   var playPos = 0.obs;
   var song = MusicItem(
           musicId: '-99',
-          duration: 0,
+          duration: 6000,
           title: "暂无歌曲",
           artist: "暂无",
           iconUri:
@@ -24,6 +24,7 @@ class GlobalController extends GetxController {
 
   @override
   void onInit() {
+    lyric.value = null;
     var string = SpUtil.getString(LAST_PLAY_INFO, defValue: null);
     if (string != null) {
       song.value = MusicItem.fromJson(jsonDecode(string));

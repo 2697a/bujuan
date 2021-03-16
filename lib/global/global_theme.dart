@@ -5,7 +5,8 @@ final ThemeData lightTheme = ThemeData(
   brightness: Brightness.light,
   primaryColor: Colors.white,
   scaffoldBackgroundColor: Colors.white,
-  bottomAppBarColor: Colors.black,
+  bottomAppBarColor: Colors.grey[800],
+  iconTheme: IconThemeData()
   // appBarTheme: AppBarTheme(elevation: 0),
   // cardTheme: CardTheme(elevation: 0.3),
 );

@@ -1,10 +1,10 @@
 import 'package:bujuan/global/global_theme.dart';
 import 'package:bujuan/music_bottom_bar/music_bottom_bar_view.dart';
+import 'package:bujuan/over_scroll.dart';
 import 'package:bujuan/play_view/default_view.dart';
 import 'package:bujuan/sheet_info/sheet_loading_view.dart';
 import 'package:bujuan/today/today_controller.dart';
 import 'package:bujuan/utils/bujuan_util.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -22,7 +22,7 @@ class TodayView extends GetView<TodayController>{
           controller: controller.weSlideController,
           panelMaxSize: MediaQuery.of(Get.context).size.height,
           panelMinSize: 65.0,
-          body: Obx(() => CustomScrollView(
+          body: Obx(() => ScrollConfiguration(behavior: OverScrollBehavior(), child: CustomScrollView(
             slivers: [
               SliverAppBar(
                 elevation: 0.0,
@@ -69,12 +69,12 @@ class TodayView extends GetView<TodayController>{
                                               Text(
                                                 BuJuanUtil.dateToString(DateTime.now(),2),
                                                 textAlign: TextAlign.center,
-                                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12.0,color: Theme.of(Get.context).accentColor),
+                                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.0,color: Theme.of(Get.context).accentColor),
                                               ),
                                               Text(
                                                 BuJuanUtil.dateToString(DateTime.now(),1),
                                                 textAlign: TextAlign.center,
-                                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0,color: Theme.of(Get.context).accentColor),
+                                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0,color: Theme.of(Get.context).accentColor),
                                               )
                                             ],
                                           ),
@@ -90,7 +90,7 @@ class TodayView extends GetView<TodayController>{
               ),
               _buildTodayListView()
             ],
-          )),
+          ))),
           parallax: true,
           panel: DefaultView(weSlideController: controller.weSlideController),
           panelHeader: MusicBottomBarView(weSlideController: controller.weSlideController),
@@ -112,23 +112,46 @@ class TodayView extends GetView<TodayController>{
       widget: SliverList(
         delegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
-            return ListTile(
-              contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
-              leading: Container(
-                alignment: Alignment.center,
-                constraints: BoxConstraints(maxWidth: 35.0),
-                child: Text(
-                  "${index + 1}",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-                ),
-              ),
-              subtitle: Text(controller.list[index].ar[0].name,maxLines: 1,overflow: TextOverflow.ellipsis),
-              title: Text(controller.list[index].name,maxLines: 1,overflow: TextOverflow.ellipsis),
-              onTap: () {
-                controller.playSong(index);
-              },
-            );
+                return InkWell(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 2.0, vertical: 5.0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          margin: EdgeInsets.only(right: 5.0),
+                          height: 50.0,
+                          alignment: Alignment.center,
+                          constraints: BoxConstraints(maxWidth: 40, minHeight: 30.0),
+                          child: Text(
+                            "${index + 1}",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 16.0,color: Colors.grey[500]),
+                          ),
+                        ),
+                        Expanded(
+                            child: Column(
+                              children: [
+                                Container(
+                                  height: 25,
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(controller.list[index].name, maxLines: 1, overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(fontSize: 16.0)),
+                                ),
+                                Container(
+                                  height: 25,
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(controller.list[index].ar[0].name, maxLines: 1, overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(fontSize: 14.0,color: Colors.grey[500])),
+                                )
+                              ],
+                            )),
+                        IconButton(icon: Icon(Icons.more_vert,color: Colors.grey[500],),onPressed: (){},)
+                      ],
+                    ),
+                  ),
+                  onTap: () => controller.playSong(index),
+                );
           },
           childCount: controller.list == null
               ? 0

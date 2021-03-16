@@ -1,7 +1,6 @@
 import 'package:bujuan/bottom_bar/lyric_view.dart';
 import 'package:bujuan/global/global_controller.dart';
 import 'package:bujuan/play_list/play_list_view.dart';
-import 'package:bujuan/utils/bujuan_util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -17,11 +16,10 @@ class DefaultView extends GetView<GlobalController> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(child: Scaffold(
+      resizeToAvoidBottomInset: false,
       body: OrientationBuilder(
         builder: (context, orientation) {
-          return orientation == Orientation.portrait
-              ? _buildPortrait()
-              : _buildLandscape();
+          return orientation == Orientation.portrait ? _buildPortrait() : _buildLandscape();
         },
       ),
     ), onWillPop: () async {
@@ -42,17 +40,11 @@ class DefaultView extends GetView<GlobalController> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                IconButton(
-                    icon: Icon(Icons.keyboard_arrow_down_outlined),
-                    onPressed: () => weSlideController.hide()),
+                IconButton(icon: Icon(Icons.keyboard_arrow_down_outlined), onPressed: () => weSlideController.hide()),
                 Expanded(
                     child: Column(
                   children: [
-                    Text(controller.song.value.title,
-                        style: TextStyle(
-                            fontSize: 18.0, fontWeight: FontWeight.bold),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis),
+                    Text(controller.song.value.title, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis),
                     Text(
                       controller.song.value.artist,
                       style: TextStyle(color: Colors.grey[600]),
@@ -65,10 +57,12 @@ class DefaultView extends GetView<GlobalController> {
             Padding(padding: EdgeInsets.symmetric(vertical: 8.0)),
             _buildMusicCover(MediaQuery.of(Get.context).size.width / 1.4),
             Padding(padding: EdgeInsets.symmetric(vertical: 8.0)),
-            LyricView(
-              lyric: controller.lyric.value.lrc.lyric,
-              pos: controller.playPos.value,
-            ),
+            controller.lyric.value == null
+                ? Expanded(child: Container())
+                : LyricView(
+                    lyric: controller.lyric.value.lrc.lyric,
+                    pos: controller.playPos.value,
+                  ),
             Padding(padding: EdgeInsets.symmetric(vertical: 8.0)),
             // Text(
             //   "${BuJuanUtil.unix2Time(controller.playPos.value)} : ${BuJuanUtil.unix2Time(controller.song.value.duration ~/ 1000)}",
@@ -89,9 +83,7 @@ class DefaultView extends GetView<GlobalController> {
                         backgroundColor: Theme.of(Get.context).primaryColor,
                         elevation: 6.0,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(8.0),
-                              topRight: Radius.circular(8.0)),
+                          borderRadius: BorderRadius.only(topLeft: Radius.circular(8.0), topRight: Radius.circular(8.0)),
                         ),
                       );
                     }),
@@ -102,16 +94,12 @@ class DefaultView extends GetView<GlobalController> {
                     ),
                     onPressed: () => controller.skipToPrevious()),
                 Container(
-                  decoration: BoxDecoration(
-                      color: Theme.of(Get.context).accentColor.withOpacity(.85),
-                      borderRadius: BorderRadius.all(Radius.circular(52.0))),
+                  decoration: BoxDecoration(color: Theme.of(Get.context).accentColor.withOpacity(.85), borderRadius: BorderRadius.all(Radius.circular(52.0))),
                   width: 54.0,
                   height: 54.0,
                   child: IconButton(
                       icon: Icon(
-                        controller.playState.value == PlayState.PLAYING
-                            ? Icons.pause
-                            : Icons.play_arrow,
+                        controller.playState.value == PlayState.PLAYING ? Icons.pause : Icons.play_arrow,
                         color: Colors.white,
                         size: 34.0,
                       ),
@@ -143,7 +131,8 @@ class DefaultView extends GetView<GlobalController> {
             Expanded(
               child: Column(
                 children: [
-                  Expanded(child: Center(
+                  Expanded(
+                      child: Center(
                     child: _buildMusicCover(MediaQuery.of(Get.context).size.height / 1.5),
                   )),
                   Row(
@@ -159,9 +148,7 @@ class DefaultView extends GetView<GlobalController> {
                               backgroundColor: Theme.of(Get.context).primaryColor,
                               elevation: 6.0,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(8.0),
-                                    topRight: Radius.circular(8.0)),
+                                borderRadius: BorderRadius.only(topLeft: Radius.circular(8.0), topRight: Radius.circular(8.0)),
                               ),
                             );
                           }),
@@ -172,16 +159,12 @@ class DefaultView extends GetView<GlobalController> {
                           ),
                           onPressed: () => controller.skipToPrevious()),
                       Container(
-                        decoration: BoxDecoration(
-                            color: Theme.of(Get.context).accentColor.withOpacity(.85),
-                            borderRadius: BorderRadius.all(Radius.circular(52.0))),
+                        decoration: BoxDecoration(color: Theme.of(Get.context).accentColor.withOpacity(.85), borderRadius: BorderRadius.all(Radius.circular(52.0))),
                         width: 46.0,
                         height: 46.0,
                         child: IconButton(
                             icon: Icon(
-                              controller.playState.value == PlayState.PLAYING
-                                  ? Icons.pause
-                                  : Icons.play_arrow,
+                              controller.playState.value == PlayState.PLAYING ? Icons.pause : Icons.play_arrow,
                               color: Colors.white,
                               size: 26.0,
                             ),
@@ -197,8 +180,7 @@ class DefaultView extends GetView<GlobalController> {
                           icon: Icon(
                             Icons.shuffle,
                           ),
-                          onPressed: () {
-                          }),
+                          onPressed: () {}),
                     ],
                   ),
                 ],
@@ -213,15 +195,16 @@ class DefaultView extends GetView<GlobalController> {
                   ),
                   Text(
                     controller.song.value.title,
-                    style:
-                        TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
                   ),
                   Padding(padding: EdgeInsets.symmetric(vertical: 2.0)),
                   Text(
                     controller.song.value.artist,
                     style: TextStyle(color: Colors.grey[600]),
                   ),
-                  LyricView(
+                  controller.lyric.value == null
+                      ? Expanded(child: Container())
+                      : LyricView(
                     lyric: controller.lyric.value.lrc.lyric,
                     pos: controller.playPos.value,
                   ),
@@ -234,8 +217,7 @@ class DefaultView extends GetView<GlobalController> {
         ));
   }
 
-
-  Widget _buildMusicCover(size){
+  Widget _buildMusicCover(size) {
     return SleekCircularSlider(
       appearance: CircularSliderAppearance(
           size: size,
@@ -249,8 +231,7 @@ class DefaultView extends GetView<GlobalController> {
               Theme.of(Get.context).accentColor,
             ],
           ),
-          customWidths:
-          CustomSliderWidths(trackWidth: 1, progressBarWidth: 4)),
+          customWidths: CustomSliderWidths(trackWidth: 1, progressBarWidth: 4)),
       min: 0,
       max: controller.song.value.duration.toDouble(),
       initialValue: controller.playPos.value.toDouble() * 1000,
@@ -259,13 +240,10 @@ class DefaultView extends GetView<GlobalController> {
         child: Stack(
           children: [
             Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius:
-                  BorderRadiusDirectional.circular(230.0)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(230.0)),
               clipBehavior: Clip.antiAlias,
               child: CachedNetworkImage(
-                imageUrl:
-                "${controller.song.value.iconUri}?param=500y500",
+                imageUrl: "${controller.song.value.iconUri}?param=500y500",
               ),
             ),
           ],

@@ -1,9 +1,11 @@
 import 'package:bujuan/global/global_theme.dart';
 import 'package:bujuan/music_bottom_bar/music_bottom_bar_view.dart';
+import 'package:bujuan/over_scroll.dart';
 import 'package:bujuan/play_view/default_view.dart';
 import 'package:bujuan/sheet_info/sheet_info_controller.dart';
 import 'package:bujuan/sheet_info/sheet_loading_view.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_placeholder_textlines/placeholder_lines.dart';
@@ -43,81 +45,71 @@ class SheetInfoView extends GetView<SheetInfoController> {
     return OrientationBuilder(
       builder: (context, orientation) {
         return orientation == Orientation.portrait
-            ? Obx(() => CustomScrollView(
-                  slivers: [
-                    SliverAppBar(
-                      elevation: 0.0,
-                      floating: true,
-                      pinned: true,
-                      title: Text("${Get.arguments["name"]}"),
-                      expandedHeight: 220.0,
-                      flexibleSpace: FlexibleSpaceBar(
-                        collapseMode: CollapseMode.parallax,
-                        background: Padding(
-                          padding: EdgeInsets.only(
-                              left: 8.0, right: 8.0, bottom: 6.0),
-                          child: Column(
-                            children: [
-                              Expanded(child: Container()),
-                              Row(
-                                children: [
-                                  Hero(
-                                      tag: "${Get.arguments["id"]}",
-                                      child: Card(
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadiusDirectional
-                                                    .circular(8.0)),
-                                        clipBehavior: Clip.antiAlias,
-                                        child: CachedNetworkImage(
-                                          width: 150.0,
-                                          height: 150.0,
-                                          fit: BoxFit.fitWidth,
-                                          imageUrl:
-                                              "${Get.arguments["imageUrl"]}",
-                                        ),
-                                      )),
-                                  Expanded(
-                                      child: controller.loadState.value == 2
-                                          ? Container(
-                                              child: ListTile(
-                                                title: Text(
-                                                  "${controller.result.value.creator.nickname}",
-                                                  style: TextStyle(
-                                                      color:
-                                                          Theme.of(Get.context)
-                                                              .accentColor),
-                                                ),
-                                                subtitle: Text(
-                                                  "${controller.result.value.creator.signature}",
-                                                  maxLines: 4,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                ),
-                                              ),
-                                            )
-                                          : Padding(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 4.0),
-                                              child: PlaceholderLines(
-                                                count: 4,
-                                                maxWidth: 0.9,
-                                                minWidth: 0.6,
-                                                align: TextAlign.left,
-                                                animate: true,
-                                                color: Colors.grey[400],
-                                              ),
-                                            ))
-                                ],
+            ? Obx(() => ScrollConfiguration(behavior: OverScrollBehavior(), child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              elevation: 0.0,
+              floating: true,
+              pinned: true,
+              title: Text("${Get.arguments["name"]}"),
+              expandedHeight: 220.0,
+              flexibleSpace: FlexibleSpaceBar(
+                collapseMode: CollapseMode.parallax,
+                background: Padding(
+                  padding: EdgeInsets.only(left: 8.0, right: 8.0, bottom: 6.0),
+                  child: Column(
+                    children: [
+                      Expanded(child: Container()),
+                      Row(
+                        children: [
+                          Hero(
+                              tag: "${Get.arguments["id"]}",
+                              child: Card(
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(8.0)),
+                                clipBehavior: Clip.antiAlias,
+                                child: CachedNetworkImage(
+                                  width: 150.0,
+                                  height: 150.0,
+                                  fit: BoxFit.fitWidth,
+                                  imageUrl: "${Get.arguments["imageUrl"]}",
+                                ),
+                              )),
+                          Expanded(
+                              child: controller.loadState.value == 2
+                                  ? Container(
+                                child: ListTile(
+                                  title: Text(
+                                    "${controller.result.value.creator.nickname}",
+                                    style: TextStyle(color: Theme.of(Get.context).accentColor),
+                                  ),
+                                  subtitle: Text(
+                                    "${controller.result.value.creator.signature}",
+                                    maxLines: 4,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
                               )
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    _buildSheetListView()
-                  ],
-                ))
+                                  : Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 4.0),
+                                child: PlaceholderLines(
+                                  count: 4,
+                                  maxWidth: 0.9,
+                                  minWidth: 0.6,
+                                  align: TextAlign.left,
+                                  animate: true,
+                                  color: Colors.grey[400],
+                                ),
+                              ))
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            _buildSheetListView()
+          ],
+        )))
             : Obx(() => Scaffold(
                   appBar: AppBar(
                     elevation: 0.0,
@@ -133,10 +125,7 @@ class SheetInfoView extends GetView<SheetInfoController> {
                             Hero(
                                 tag: "${Get.arguments["id"]}",
                                 child: Card(
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadiusDirectional.circular(
-                                              8.0)),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(8.0)),
                                   clipBehavior: Clip.antiAlias,
                                   child: CachedNetworkImage(
                                     width: 150.0,
@@ -151,9 +140,7 @@ class SheetInfoView extends GetView<SheetInfoController> {
                                         child: ListTile(
                                           title: Text(
                                             "${controller.result.value.creator.nickname}",
-                                            style: TextStyle(
-                                                color: Theme.of(Get.context)
-                                                    .accentColor),
+                                            style: TextStyle(color: Theme.of(Get.context).accentColor),
                                           ),
                                           subtitle: Text(
                                             "${controller.result.value.creator.signature}",
@@ -163,8 +150,7 @@ class SheetInfoView extends GetView<SheetInfoController> {
                                         ),
                                       )
                                     : Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 4.0),
+                                        padding: EdgeInsets.symmetric(horizontal: 4.0),
                                         child: PlaceholderLines(
                                           count: 4,
                                           maxWidth: 0.9,
@@ -178,9 +164,9 @@ class SheetInfoView extends GetView<SheetInfoController> {
                         ),
                       )),
                       Expanded(
-                          child: CustomScrollView(
-                        slivers: [_buildSheetListView()],
-                      ))
+                          child: ScrollConfiguration(behavior: OverScrollBehavior(),child: CustomScrollView(
+                            slivers: [_buildSheetListView()],
+                          ),))
                     ],
                   ),
                 ));
@@ -194,27 +180,48 @@ class SheetInfoView extends GetView<SheetInfoController> {
       widget: SliverList(
         delegate: SliverChildBuilderDelegate(
           (BuildContext context, int index) {
-            return ListTile(
-              contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
-              leading: Container(
-                alignment: Alignment.center,
-                constraints: BoxConstraints(maxWidth: 35.0),
-                child: Text(
-                  "${index + 1}",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+            return InkWell(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 2.0, vertical: 5.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(right: 5.0),
+                      height: 50.0,
+                      alignment: Alignment.center,
+                      constraints: BoxConstraints(maxWidth: 40, minHeight: 30.0),
+                      child: Text(
+                        "${index + 1}",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 16.0,color: Colors.grey[500]),
+                      ),
+                    ),
+                    Expanded(
+                        child: Column(
+                      children: [
+                        Container(
+                          height: 25,
+                          alignment: Alignment.centerLeft,
+                          child: Text(controller.result.value.tracks[index].name, maxLines: 1, overflow: TextOverflow.ellipsis,
+                            style: TextStyle(fontSize: 16.0)),
+                        ),
+                        Container(
+                          height: 25,
+                          alignment: Alignment.centerLeft,
+                          child: Text(controller.result.value.tracks[index].ar[0].name, maxLines: 1, overflow: TextOverflow.ellipsis,
+                              style: TextStyle(fontSize: 14.0,color: Colors.grey[500])),
+                        )
+                      ],
+                    )),
+                    IconButton(icon: Icon(Icons.more_vert,color: Colors.grey[500],),onPressed: (){},)
+                  ],
                 ),
               ),
-              subtitle: Text(controller.result.value.tracks[index].ar[0].name,maxLines: 1,overflow: TextOverflow.ellipsis),
-              title: Text(controller.result.value.tracks[index].name,maxLines: 1,overflow: TextOverflow.ellipsis),
-              onTap: () {
-                controller.playSong(index);
-              },
+              onTap: () => controller.playSong(index),
             );
           },
-          childCount: controller.result.value.tracks == null
-              ? 0
-              : controller.result.value.tracks.length,
+          childCount: controller.result.value.tracks == null ? 0 : controller.result.value.tracks.length,
         ),
       ),
     );
