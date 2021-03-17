@@ -254,8 +254,8 @@ class FindView extends GetView<FindController> {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(6.0)),
                 clipBehavior: Clip.antiAlias,
                 child: CachedNetworkImage(
-                  // height: 120.0,
-                  // width: 120.0,
+                  height: 110.0,
+                  width: 110.0,
                   fit: BoxFit.cover,
                   imageUrl: "${personalResult.picUrl}?param=300y300",
                 ),
@@ -277,8 +277,8 @@ class FindView extends GetView<FindController> {
     return Wrap(
       children: [
         Container(
-          width: 105,
-          height: 105,
+          width: 110.0,
+          height: 110.0,
           decoration: BoxDecoration(
             color: Colors.grey.withOpacity(.6),
             borderRadius: BorderRadius.circular(6.0)

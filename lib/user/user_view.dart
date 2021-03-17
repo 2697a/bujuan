@@ -1,3 +1,4 @@
+import 'package:bujuan/entity/user_order_entity.dart';
 import 'package:bujuan/over_scroll.dart';
 import 'package:bujuan/user/user_controller.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -26,9 +27,33 @@ class UserView extends GetView<UserController> {
                 SliverList(
                   delegate: SliverChildBuilderDelegate(
                     (BuildContext context, int index) {
-                      return controller.playList.length > 0 ? _buildUserSheetItem(index) : _loadUserSheetView();
+                      return controller.lovePlayList.length > 0 ? _buildUserSheetItem(controller.lovePlayList[index]) : _loadUserSheetView();
                     },
-                    childCount: controller.playList.length > 0 ? controller.playList.length : 15,
+                    childCount: controller.lovePlayList.length > 0 ? controller.lovePlayList.length : 1,
+                  ),
+                ),
+                SliverToBoxAdapter(child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8.0,vertical: 6.0),
+                  child: Text("我创建的"),
+                ),),
+                SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                        (BuildContext context, int index) {
+                      return controller.createPlayList.length > 0 ? _buildUserSheetItem(controller.createPlayList[index]) : _loadUserSheetView();
+                    },
+                    childCount: controller.createPlayList.length > 0 ? controller.createPlayList.length : 5,
+                  ),
+                ),
+                SliverToBoxAdapter(child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8.0,vertical: 6.0),
+                  child: Text("我收藏的"),
+                ),),
+                SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                        (BuildContext context, int index) {
+                      return controller.collectPlayList.length > 0 ? _buildUserSheetItem(controller.collectPlayList[index]) : _loadUserSheetView();
+                    },
+                    childCount: controller.collectPlayList.length > 0 ? controller.collectPlayList.length : 5,
                   ),
                 ),
               ],
@@ -38,9 +63,9 @@ class UserView extends GetView<UserController> {
   }
 
   ///歌单itemView
-  Widget _buildUserSheetItem(index) {
+  Widget _buildUserSheetItem(UserOrderPlaylist userOrderPlaylist) {
     return Slidable(
-      key: Key("${controller.playList[index].id}"),
+      key: Key("${userOrderPlaylist.id}"),
       controller: controller.slidableController,
       actionExtentRatio: .25,
       child: InkWell(
@@ -53,14 +78,14 @@ class UserView extends GetView<UserController> {
                 alignment: Alignment.center,
                 margin: EdgeInsets.only(right: 12.0),
                 child: Hero(
-                  tag: "${controller.playList[index].id}",
+                  tag: "${userOrderPlaylist.id}",
                   child: Card(
                     shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(4.0)),
                     clipBehavior: Clip.antiAlias,
                     child: CachedNetworkImage(
                       width: 48,
                       height: 48,
-                      imageUrl: "${controller.playList[index].coverImgUrl}?param=200y200",
+                      imageUrl: "${userOrderPlaylist.coverImgUrl}?param=200y200",
                     ),
                   ),
                 ),
@@ -71,12 +96,12 @@ class UserView extends GetView<UserController> {
                   Container(
                     height: 25,
                     alignment: Alignment.centerLeft,
-                    child: Text(controller.playList[index].name, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 16.0)),
+                    child: Text(userOrderPlaylist.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 16.0)),
                   ),
                   Container(
                     height: 25,
                     alignment: Alignment.centerLeft,
-                    child: Text("${controller.playList[index].trackCount}首单曲", maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14.0, color: Colors.grey[500])),
+                    child: Text("${userOrderPlaylist.trackCount}首", maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14.0, color: Colors.grey[500])),
                   )
                 ],
               )),
@@ -84,7 +109,7 @@ class UserView extends GetView<UserController> {
           ),
         ),
         onTap: () {
-          Get.toNamed("/sheet", arguments: {"id": controller.playList[index].id, "name": controller.playList[index].name, "imageUrl": "${controller.playList[index].coverImgUrl}?param=300y300"});
+          Get.toNamed("/sheet", arguments: {"id": userOrderPlaylist.id, "name": userOrderPlaylist.name, "imageUrl": "${userOrderPlaylist.coverImgUrl}?param=300y300"});
         },
       ),
       actionPane: SlidableDrawerActionPane(),

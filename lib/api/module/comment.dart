@@ -69,7 +69,7 @@ Handler comment_music_new = (query, cookies) {
     6: 'A_EV_2_' //  动态
   }[query['type']];
   final threadId = '${query['type']}${query['id']}';
-  final pageSize = query['pageSize'] ?? 1;
+  final pageSize = query['pageSize'] ?? 20;
   final pageNo = query['pageNo'] ?? 1;
   final data = {
     'threadId': threadId,

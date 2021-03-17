@@ -3,9 +3,11 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:bujuan/api/netease_cloud_music.dart';
+import 'package:bujuan/entity/ablum_newest.dart';
 import 'package:bujuan/entity/banner_entity.dart';
 import 'package:bujuan/entity/login_entity.dart';
 import 'package:bujuan/entity/lyric_entity.dart';
+import 'package:bujuan/entity/music_talk.dart';
 import 'package:bujuan/entity/new_song_entity.dart';
 import 'package:bujuan/entity/personal_entity.dart';
 import 'package:bujuan/entity/play_history_entity.dart';
@@ -169,10 +171,18 @@ class NetUtils {
     return newSongs;
   }
 
+  //新歌推荐
+  Future<AlbumNewest> getNewAlbum() async {
+    var newAlbum;
+    var map = await _doHandler('/album/newest');
+    if (map != null) newAlbum = AlbumNewest.fromJson(map);
+    return newAlbum;
+  }
+
   //获取歌曲播放地址
   Future<String> getSongUrl(songId) async {
     var songUrl = '';
-    var map = await _doHandler('/song/url', {'id': songId, 'br': '320000'});
+    var map = await _doHandler('/song/url', {'id': songId, 'br': '999000'});
     if (map != null) songUrl = map['data'][0]['url'];
     return songUrl;
   }
@@ -234,12 +244,13 @@ class NetUtils {
     return lyric;
   }
 
-Future<SongTalkEntity> getMusicTalk(id,offset) async{
+  ///获取歌曲评论
+  Future<MusicTalk> getMusicTalk(id, type,pageNo) async {
     var talk;
-    var map =  await _doHandler("/comment/music_new",{'id':id,'type':0});
-    if (map != null) talk = SongTalkEntity.fromJson(map);
+    var map = await _doHandler("/comment/music_new", {'id': id, 'type': type,"pageNo":pageNo});
+    if (map != null) talk = MusicTalk.fromJson(map);
     return talk;
-}
+  }
 
 //播放音乐
 // Future setPlayListAndPlayById(List<SongInfo> list, int index, String id) async {

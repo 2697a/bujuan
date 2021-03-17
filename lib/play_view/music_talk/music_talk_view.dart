@@ -1,33 +1,192 @@
-import 'package:bujuan/entity/song_talk_entity.dart';
+import 'package:bujuan/entity/music_talk.dart';
 import 'package:bujuan/over_scroll.dart';
 import 'package:bujuan/play_view/music_talk/music_talk_controller.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_placeholder_textlines/placeholder_lines.dart';
 import 'package:get/get.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class MusicTalkView extends GetView<MusicTalkController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: Obx(() => ScrollConfiguration(behavior: OverScrollBehavior(), child: CustomScrollView(
-        slivers: [
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-                  (BuildContext context, int index) {
-                return controller.musicTalk.value!=null?_buildMusicTalkItem(controller.musicTalk.value.comments[index]):Text("data");
-              },
-              childCount: controller.musicTalk.value!=null? controller.musicTalk.value.comments.length : 10,
+      appBar: AppBar(
+        elevation: 0,
+        title: Row(
+          children: [
+            Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadiusDirectional.circular(6.0)),
+              clipBehavior: Clip.antiAlias,
+              child: CachedNetworkImage(
+                imageUrl: "${controller.musicItem.iconUri}",
+                height: 30.0,
+                width: 30.0,
+              ),
             ),
-          ),
-        ],
-      ))),
+            Padding(padding: EdgeInsets.symmetric(horizontal: 3.0)),
+            Expanded(
+                child: Text("${controller.musicItem.title}",
+                    overflow: TextOverflow.ellipsis))
+          ],
+        ),
+      ),
+      body: Obx(() => Column(
+            children: [
+              Expanded(
+                  child: ScrollConfiguration(
+                behavior: OverScrollBehavior(),
+                child: SmartRefresher(
+                  enablePullUp: true,
+                  controller: controller.refreshController,
+                  child: CustomScrollView(
+                    slivers: [
+                      SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (BuildContext context, int index) {
+                            return controller.musicTalks.length > 0
+                                ? _buildMusicTalkItem(
+                                    controller.musicTalks[index])
+                                : _buildLoadMusicTalkView();
+                          },
+                          childCount: controller.musicTalks.length > 0
+                              ? controller.musicTalks.length
+                              : 10,
+                        ),
+                      ),
+                    ],
+                  ),
+                  onRefresh: () => controller.refreshTalk(),
+                  onLoading: () => controller.loadMoreTalk(),
+                ),
+              )),
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 3.0, horizontal: 12.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                        child: Container(
+                      decoration: BoxDecoration(
+                          color: Colors.grey[200],
+                          borderRadius: BorderRadius.circular(6.0)),
+                      padding: EdgeInsets.symmetric(horizontal: 12.0),
+                      child: TextField(
+                        controller: controller.talkEditingController,
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: "插一嘴？",
+                        ),
+                      ),
+                    )),
+                    IconButton(icon: Icon(Icons.send), onPressed: () {})
+                  ],
+                ),
+              )
+            ],
+          )),
     );
   }
 
-  Widget _buildMusicTalkItem(SongTalkCommants songTalkCommants){
-    return ListTile(
-      title: Text("${songTalkCommants.showFloorComment}----${songTalkCommants.parentCommentId}"),
+  ///评论item
+  Widget _buildMusicTalkItem(Comments comments) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Card(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadiusDirectional.circular(30.0)),
+                clipBehavior: Clip.antiAlias,
+                child: CachedNetworkImage(
+                  imageUrl: "${comments.user.avatarUrl}",
+                  height: 30.0,
+                  width: 30.0,
+                ),
+              ),
+              Padding(padding: EdgeInsets.symmetric(horizontal: 3.0)),
+              Text(
+                "${comments.user.nickname}",
+                style: TextStyle(color: Theme.of(Get.context).accentColor),
+              )
+            ],
+          ),
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.only(left: 40.0, bottom: 5.0, top: 5.0),
+            child: Text(
+              "${comments.content}",
+              style: TextStyle(color: Colors.grey[500]),
+            ),
+          ),
+          Offstage(
+            offstage: comments.showFloorComment.replyCount == 0,
+            child: InkWell(
+              child: Container(
+                width: double.infinity,
+                padding: EdgeInsets.only(left: 40.0, bottom: 5.0, top: 5.0),
+                child: Wrap(
+                  children: [
+                    Text(
+                      "${comments.showFloorComment.replyCount}条回复 >",
+                      style: TextStyle(color: Colors.blue, fontSize: 13.0),
+                    ),
+                  ],
+                ),
+              ),
+              onTap: () {},
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  ///加载中的view
+  Widget _buildLoadMusicTalkView() {
+    return Wrap(
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 5.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                margin: EdgeInsets.only(right: 12.0),
+                width: 30,
+                height: 30,
+                decoration: BoxDecoration(
+                    color: Colors.grey.withOpacity(.6),
+                    borderRadius: BorderRadius.circular(30.0)),
+                child: Center(
+                  child: Icon(
+                    Icons.photo_size_select_actual,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                ),
+              ),
+              Expanded(
+                  child: PlaceholderLines(
+                lineHeight: 10.0,
+                maxWidth: .5,
+                minWidth: .3,
+                count: 1,
+              )),
+            ],
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 5.0),
+          child: PlaceholderLines(
+            lineHeight: 10.0,
+            count: 3,
+          ),
+        )
+      ],
     );
   }
 }

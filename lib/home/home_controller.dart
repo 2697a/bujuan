@@ -133,7 +133,7 @@ class HomeController extends GlobalController {
   }
 
   getUserProfile(userId) async {
-    login.value = true;
     userProfileEntity.value = await NetUtils().getUserProfile(userId);
+    login.value = true;
   }
 }
