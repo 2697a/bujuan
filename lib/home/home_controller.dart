@@ -77,6 +77,10 @@ class HomeController extends GlobalController {
   }
 
   void changeIndex(int index) {
+    if(!login.value&&index==3) {
+      goToLogin();
+      return;
+    }
     currentIndex.value = index;
     pageController.jumpToPage(index);
   }
@@ -112,7 +116,7 @@ class HomeController extends GlobalController {
 
   ///去登录页面
   goToLogin() {
-    Get.to(() => LoginView(), binding: LoginBinding());
+    Get.toNamed("/login");
   }
 
   ///刷新登录

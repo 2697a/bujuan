@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 //主题
 final ThemeData lightTheme = ThemeData(
-  accentColor: Colors.green[300],
+  accentColor: Colors.green[500],
   brightness: Brightness.light,
-  primaryColor: Colors.white,
-  scaffoldBackgroundColor: Colors.white,
+  primaryColor: Colors.grey[50],
+  scaffoldBackgroundColor: Colors.grey[50],
   bottomAppBarColor: Colors.grey[800],
   iconTheme: IconThemeData()
   // appBarTheme: AppBarTheme(elevation: 0),

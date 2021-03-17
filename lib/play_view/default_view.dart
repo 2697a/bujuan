@@ -51,7 +51,7 @@ class DefaultView extends GetView<GlobalController> {
                     ),
                   ],
                 )),
-                IconButton(icon: Icon(Icons.more_horiz), onPressed: () {}),
+                IconButton(icon: Icon(Icons.more_horiz), onPressed: () =>Get.toNamed("/music_talk",arguments: {"id":controller.song.value.musicId})),
               ],
             ),
             Padding(padding: EdgeInsets.symmetric(vertical: 8.0)),

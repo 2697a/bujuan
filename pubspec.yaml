@@ -37,6 +37,7 @@ dependencies:
   dots_indicator: ^2.0.0
   progress_state_button: ^1.0.2
   introduction_screen: ^2.0.0
+  flutter_slidable: ^0.5.7
   flutter:
     sdk: flutter
 

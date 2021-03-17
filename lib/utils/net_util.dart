@@ -9,11 +9,13 @@ import 'package:bujuan/entity/personal_entity.dart';
 import 'package:bujuan/entity/play_history_entity.dart';
 import 'package:bujuan/entity/search_song_entity.dart';
 import 'package:bujuan/entity/sheet_details_entity.dart';
+import 'package:bujuan/entity/song_talk_entity.dart';
 import 'package:bujuan/entity/today_song_entity.dart';
 import 'package:bujuan/entity/top_entity.dart';
 import 'package:bujuan/entity/user_order_entity.dart';
 import 'package:bujuan/entity/user_profile_entity.dart';
 import 'package:cookie_jar/cookie_jar.dart';
+import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 
 class NetUtils {
@@ -34,6 +36,7 @@ class NetUtils {
         await _saveCookie(answer.cookie);
       }
       map = answer.body;
+      print("$url======$map");
     }
     return map;
   }
@@ -221,12 +224,20 @@ class NetUtils {
     return history;
   }
 
+  //歌词
   Future<LyricEntity> getMusicLyric(id) async {
     var lyric;
     var map = await _doHandler("/lyric", {'id': id});
     if (map != null) lyric = LyricEntity.fromJson(map);
     return lyric;
   }
+
+Future<SongTalkEntity> getMusicTalk(id,offset) async{
+    var talk;
+    var map =  await _doHandler("/comment/music_new",{'id':id,'type':0});
+    if (map != null) talk = SongTalkEntity.fromJson(map);
+    return talk;
+}
 
 //播放音乐
 // Future setPlayListAndPlayById(List<SongInfo> list, int index, String id) async {

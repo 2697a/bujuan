@@ -68,6 +68,7 @@ final handles = <String, Handler>{
   "/comment/hot": comment_hot,
   "/comment/like": comment_like,
   "/comment/music": comment_music,
+  "/comment/music_new": comment_music_new,
   "/comment/mv": comment_mv,
   "/comment/playlist": comment_playlist,
   "/comment/video": comment_video,

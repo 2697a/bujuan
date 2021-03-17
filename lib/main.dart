@@ -1,6 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:bujuan/login/login_binding.dart';
+import 'package:bujuan/login/login_view.dart';
+import 'package:bujuan/play_view/music_talk/music_talk_binding.dart';
+import 'package:bujuan/play_view/music_talk/music_talk_view.dart';
 import 'package:bujuan/profile/profile_binding.dart';
 import 'package:bujuan/profile/profile_view.dart';
 import 'package:bujuan/setting/setting_binding.dart';
@@ -38,13 +42,13 @@ main(List<String> args) async {
   var isDark = SpUtil.getBool(IS_DARK_SP, defValue: false);
   var isFirstOpen = SpUtil.getBool(IS_FIRST_OPEN, defValue: true);
   if (!isDark) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-        systemNavigationBarColor: Colors.white,
-        systemNavigationBarIconBrightness: Brightness.dark));
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
+      systemNavigationBarColor: lightTheme.primaryColor,
+    ));
   } else {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-        systemNavigationBarColor: Colors.grey[900],
-        systemNavigationBarIconBrightness: Brightness.light));
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light.copyWith(
+      systemNavigationBarColor: lightTheme.primaryColor,
+    ));
   }
   runApp(RefreshConfiguration(child: GetMaterialApp(
     // showPerformanceOverlay: true,
@@ -60,14 +64,12 @@ main(List<String> args) async {
       GetPage(name: '/sheet', page: () => SheetInfoView(),binding: SheetInfoBinding()),
       GetPage(name: '/profile', page: () => ProfileView(),binding: ProfileBinding()),
       GetPage(name: '/setting', page: () => SettingView(),binding: SettingBinding()),
+      GetPage(name: '/login', page: () => LoginView(),binding: LoginBinding()),
+      GetPage(name: '/music_talk', page: () => MusicTalkView(),binding: MusicTalkBinding()),
     ],
   ),
-    headerBuilder: () => WaterDropHeader(waterDropColor: Theme.of(Get.context).accentColor,complete: Text("drink and love money~",style: TextStyle(color: Colors.grey[500],fontWeight: FontWeight.bold)),),        // 配置默认头部指示器,假如你每个页面的头部指示器都一样的话,你需要设置这个
+    headerBuilder: () => WaterDropMaterialHeader(color: Theme.of(Get.context).accentColor,backgroundColor: Theme.of(Get.context).primaryColor,),        // 配置默认头部指示器,假如你每个页面的头部指示器都一样的话,你需要设置这个
     footerBuilder:  () => ClassicFooter(),        // 配置默认底部指示器
-    headerTriggerDistance: 60.0,        // 头部触发刷新的越界距离
-    springDescription:SpringDescription(stiffness: 170, damping: 16, mass: 1.9),         // 自定义回弹动画,三个属性值意义请查询flutter api
-    maxOverScrollExtent :100, //头部最大可以拖动的范围,如果发生冲出视图范围区域,请设置这个属性
-    maxUnderScrollExtent:0, // 底部最大可以拖动的范围
     enableScrollWhenRefreshCompleted: true, //这个属性不兼容PageView和TabBarView,如果你特别需要TabBarView左右滑动,你需要把它设置为true
     enableLoadingWhenFailed : true, //在加载失败的状态下,用户仍然可以通过手势上拉来触发加载更多
     hideFooterWhenNotFull: false, // Viewport不满一屏时,禁用上拉加载更多功能

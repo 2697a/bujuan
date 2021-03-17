@@ -1,35 +1,34 @@
-import 'package:bujuan/entity/login_entity.dart';
-import 'package:bujuan/entity/user_order_entity.dart';
 import 'package:bujuan/entity/user_profile_entity.dart';
 import 'package:bujuan/global/global_config.dart';
-import 'package:bujuan/home/home_controller.dart';
 import 'package:bujuan/utils/net_util.dart';
 import 'package:bujuan/utils/sp_util.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class UserController extends GetxController {
-  var loadState = 0.obs;
-  var userProfile = UserProfileEntity().obs;
-  var playList = List<UserOrderPlaylist>().obs;
-
+  var playList = [].obs;
+   RefreshController refreshController;
+   SlidableController slidableController;
   @override
   void onInit() {
-    if (Get.find<HomeController>().login.value) {
-      // getUserProfile(userId);
-      getUserSheet();
-    }
+    refreshController = RefreshController();
+    slidableController = SlidableController();
     super.onInit();
+  }
+  @override
+  void onReady() {
+      _getUserSheet();
+    super.onReady();
   }
 
   ///获取用户歌单
-  getUserSheet() async {
+  _getUserSheet() async {
     var userId = SpUtil.getString(USER_ID_SP, defValue: null);
     var userOrderEntity = await NetUtils().getUserPlayList(userId);
     if (userOrderEntity != null && userOrderEntity.code == 200) {
       playList.addAll(userOrderEntity.playlist);
-      loadState.value = 2;
-    }else{
-      loadState.value = 1;
     }
+    refreshController.refreshCompleted();
   }
 }
