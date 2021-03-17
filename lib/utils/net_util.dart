@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:bujuan/api/netease_cloud_music.dart';
@@ -36,7 +38,7 @@ class NetUtils {
         await _saveCookie(answer.cookie);
       }
       map = answer.body;
-      print("$url======$map");
+      log("$url======${jsonEncode(map)}");
     }
     return map;
   }
