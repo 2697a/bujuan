@@ -6,7 +6,7 @@ class ErrorView extends GetView {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Text("加载失败"),
+        child: Text('加载失败'),
       ),
     );
   }

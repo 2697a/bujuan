@@ -7,7 +7,7 @@ Handler playmode_intelligence_list = (query, cookie) {
       'http://music.163.com/weapi/playmode/intelligence/list',
       {
         'songId': query['id'],
-        'type': "fromPlayOne",
+        'type': 'fromPlayOne',
         'playlistId': query['pid'],
         'startMusicId': query['sid'] ?? query['id'],
         'count': query['count'] ?? 1

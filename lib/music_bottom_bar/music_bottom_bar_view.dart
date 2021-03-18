@@ -23,15 +23,15 @@ class MusicBottomBarView extends GetView<GlobalController> {
               child: CachedNetworkImage(
                 width: 46.0,
                 height: 46.0,
-                imageUrl: "${controller.song.value.iconUri}?param=100y100",
+                imageUrl: '${controller.song.value.iconUri}?param=100y100',
               ),
             ),
             title: Text(
-              "${controller.song.value.title}",
+              '${controller.song.value.title}',
               style: TextStyle(fontSize: 16.0),
               overflow: TextOverflow.ellipsis,
             ),
-            subtitle: Text("${controller.song.value.artist}", style: TextStyle(fontSize: 14.0, color: Colors.grey[400])),
+            subtitle: Text('${controller.song.value.artist}', style: TextStyle(fontSize: 14.0, color: Colors.grey[400])),
             trailing: Wrap(
               children: [
                 IconButton(icon: Icon(controller.playState.value == PlayState.PLAYING ? Icons.pause : Icons.play_arrow), onPressed: () => controller.playOrPause(), color: Theme.of(Get.context).bottomAppBarColor),

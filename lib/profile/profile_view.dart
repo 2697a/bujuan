@@ -9,7 +9,7 @@ import 'package:get/get.dart';
 class ProfileView extends GetView<ProfileController> {
   @override
   Widget build(BuildContext context) {
-    UserProfileEntity profile = Get.arguments["profile"];
+    UserProfileEntity profile = Get.arguments['profile'];
     return Scaffold(
       body: ScrollConfiguration(
           behavior: OverScrollBehavior(),
@@ -19,7 +19,7 @@ class ProfileView extends GetView<ProfileController> {
                 elevation: 0.0,
                 floating: false,
                 pinned: true,
-                title: Text("${profile.profile.nickname}"),
+                title: Text('${profile.profile.nickname}'),
                 expandedHeight: 260.0,
                 flexibleSpace: FlexibleSpaceBar(
                   collapseMode: CollapseMode.parallax,
@@ -33,7 +33,7 @@ class ProfileView extends GetView<ProfileController> {
                           child: CachedNetworkImage(
                             width: double.infinity,
                             fit: BoxFit.cover,
-                            imageUrl: "${profile.profile.backgroundUrl}",
+                            imageUrl: '${profile.profile.backgroundUrl}',
                           ),
                         ),
                       ),
@@ -50,13 +50,13 @@ class ProfileView extends GetView<ProfileController> {
                           Container(
                             padding: EdgeInsets.symmetric(horizontal: 5.0),
                             child: Hero(
-                                tag: "avatar",
+                                tag: 'avatar',
                                 child: Card(
                                   shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(80.0)),
                                   clipBehavior: Clip.antiAlias,
                                   child: CachedNetworkImage(
                                     fit: BoxFit.cover,
-                                    imageUrl: "${profile.profile.avatarUrl}",
+                                    imageUrl: '${profile.profile.avatarUrl}',
                                     height: 100.0,
                                     width: 100.0,
                                   ),
@@ -68,19 +68,19 @@ class ProfileView extends GetView<ProfileController> {
                             children: [
                               Container(
                                 padding: EdgeInsets.symmetric(horizontal: 15.0),
-                                child: Text("${profile.profile.nickname}", style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold)),
+                                child: Text('${profile.profile.nickname}', style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold)),
                               ),
                               Container(
                                 padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
                                 decoration: BoxDecoration(color: Theme.of(context).accentColor, borderRadius: BorderRadius.circular(20.0)),
-                                child: Text("lv.${profile.level}", style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold)),
+                                child: Text('lv.${profile.level}', style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold)),
                               )
                             ],
                           ),
                           Padding(padding: EdgeInsets.symmetric(vertical: 1.5)),
                           Container(
                             child: Text(
-                              "${profile.profile.signature}",
+                              '${profile.profile.signature}',
                               style: TextStyle(fontSize: 12.0),
                             ),
                           ),
@@ -90,15 +90,15 @@ class ProfileView extends GetView<ProfileController> {
                             children: [
                               Container(
                                 padding: EdgeInsets.symmetric(horizontal: 15.0),
-                                child: Text("关注：${profile.profile.follows}", style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold)),
+                                child: Text('关注：${profile.profile.follows}', style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold)),
                               ),
                               Container(
                                 padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
-                                child: Text("粉丝：${profile.profile.followeds}", style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold)),
+                                child: Text('粉丝：${profile.profile.followeds}', style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold)),
                               ),
                               Container(
                                 padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 5.0),
-                                child: Text("听歌量：${profile.listenSongs}", style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold)),
+                                child: Text('听歌量：${profile.listenSongs}', style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold)),
                               )
                             ],
                           ),
@@ -108,11 +108,6 @@ class ProfileView extends GetView<ProfileController> {
                   ),
                 ),
               ),
-              SliverToBoxAdapter(
-                child: Container(
-                  height: 800,
-                ),
-              )
             ],
           )),
     );

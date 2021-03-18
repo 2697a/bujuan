@@ -8,6 +8,6 @@ part of '../module.dart';
 */
 Handler daily_signin = (query, cookie) {
   return request('POST', 'https://music.163.com/weapi/point/dailyTask',
-      {"type": query['type'] ?? 0},
+      {'type': query['type'] ?? 0},
       crypto: Crypto.weapi, cookies: cookie);
 };

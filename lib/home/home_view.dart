@@ -23,17 +23,17 @@ class HomeView extends GetView<HomeController> {
     return Scaffold(
       appBar: AppBar(
           elevation: 0,
-          title: Text("Bujuan"),
+          title: Text('Bujuan'),
           leading: IconButton(
             icon: Hero(
-                tag: "avatar",
+                tag: 'avatar',
                 child: Card(
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadiusDirectional.circular(30.0)),
                   clipBehavior: Clip.antiAlias,
                   child: CachedNetworkImage(
                     fit: BoxFit.cover,
-                    imageUrl: controller.userProfileEntity.value!=null?controller.userProfileEntity.value.profile.avatarUrl:"https://pic1.zhimg.com/80/v2-7ff2d917aa926cfbf2e8b85b035e2563_1440w.jpg",
+                    imageUrl: controller.userProfileEntity.value!=null?controller.userProfileEntity.value.profile.avatarUrl:'https://pic1.zhimg.com/80/v2-7ff2d917aa926cfbf2e8b85b035e2563_1440w.jpg',
                     height: 30.0,
                     width: 30.0,
                   ),
@@ -43,7 +43,7 @@ class HomeView extends GetView<HomeController> {
           actions: [
             IconButton(
                 icon: Icon(Icons.settings),
-                onPressed: () => Get.toNamed("/setting")),
+                onPressed: () => Get.toNamed('/setting')),
           ]),
       body: Padding(
           padding: EdgeInsets.only(top: 0.0,left: 5.0,right: 5.0),
@@ -63,7 +63,7 @@ class HomeView extends GetView<HomeController> {
   Widget _buildHomeView() {
     return Scaffold(
       resizeToAvoidBottomInset:false,
-      body: AnnotatedRegion(
+      body: AnnotatedRegion<SystemUiOverlayStyle>(
         child: WeSlide(
           controller: controller.weSlideController,
           panelMaxSize: MediaQuery.of(Get.context).size.height,
@@ -100,11 +100,11 @@ class HomeView extends GetView<HomeController> {
       // showSelectedLabels: false,
       // showUnselectedLabels: false,
       items: [
-        BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: "home"),
-        BottomNavigationBarItem(icon: Icon(Icons.lightbulb_outline), label: "top"),
-        BottomNavigationBarItem(icon: Icon(Icons.search), label: "search"),
+        BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: 'home'),
+        BottomNavigationBarItem(icon: Icon(Icons.lightbulb_outline), label: 'top'),
+        BottomNavigationBarItem(icon: Icon(Icons.search), label: 'search'),
         BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline), label: "user"),
+            icon: Icon(Icons.person_outline), label: 'user'),
       ],
       onTap: (index) => controller.changeIndex(index),
       currentIndex: controller.currentIndex.value,

@@ -9,7 +9,7 @@ import 'package:pointycastle/asymmetric/rsa.dart';
 
 import 'package:crypto/crypto.dart';
 
-const _keys = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+const _keys = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 
 @visibleForTesting
 const publicKey =
@@ -27,10 +27,10 @@ Map<String, String> weApi(Map obj) {
   final secKey = _createdSecretKey();
   final mode = AESMode.cbc;
   return {
-    "params": _aesEncrypt(
+    'params': _aesEncrypt(
             _aesEncrypt(text, mode, _presetKey, _iv).base64, mode, secKey, _iv)
         .base64,
-    "encSecKey": rsaEncrypt(_reverse(secKey), publicKey).base16
+    'encSecKey': rsaEncrypt(_reverse(secKey), publicKey).base16
   };
 }
 
@@ -38,7 +38,7 @@ Map<String, String> weApi(Map obj) {
 Map linuxApi(Map obj) {
   final text = json.encode(obj);
   return {
-    "eparams":
+    'eparams':
         _aesEncrypt(text, AESMode.ecb, _linuxApiKey, null).base16.toUpperCase()
   };
 }
@@ -72,7 +72,7 @@ String _createdSecretKey({int size = 16}) {
 
 Encrypted _aesEncrypt(String text, AESMode mode, String key, IV iv) {
   final encrypt =
-      Encrypter(AES(Key.fromUtf8(key), mode: mode, padding: "PKCS7"));
+      Encrypter(AES(Key.fromUtf8(key), mode: mode, padding: 'PKCS7'));
   return encrypt.encrypt(text, iv: iv);
 }
 

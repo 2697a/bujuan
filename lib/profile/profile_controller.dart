@@ -12,4 +12,8 @@ class ProfileController extends GetxController {
     super.onReady();
   }
 
+  goToCloud(){
+    Get.toNamed('/cloud');
+  }
+
 }

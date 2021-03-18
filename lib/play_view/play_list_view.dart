@@ -1,9 +1,8 @@
 import 'package:bujuan/global/global_controller.dart';
-import 'package:bujuan/play_list/play_list_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class PlayListView extends GetView<PlayListController> {
+class PlayListView extends GetView<GlobalController> {
   @override
   Widget build(BuildContext context) {
     return Obx(() => Column(
@@ -15,13 +14,13 @@ class PlayListView extends GetView<PlayListController> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "播放列表(${controller.playList.length})",
+                    '播放列表(${controller.playList.length})',
                     style:
                         TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
                   ),
                   IconButton(
-                      icon: Icon(Icons.keyboard_arrow_down, size: 24.0),
-                      onPressed: ()=>Get.back())
+                      icon: Icon(Icons.location_searching, size: 24.0),
+                      onPressed: ()=>controller.scrollToIndex())
                 ],
               ),
             ),
@@ -31,6 +30,7 @@ class PlayListView extends GetView<PlayListController> {
             ),
             Expanded(
                 child: ListView.builder(
+                  controller: controller.scrollController,
               itemBuilder: (context, index) => _buildPlayListItem(index),
               itemCount: controller.playList.length,
             ))
@@ -39,22 +39,23 @@ class PlayListView extends GetView<PlayListController> {
   }
 
   Widget _buildPlayListItem(index) {
+
     return InkWell(
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 2.0),
         height: 52.0,
         child: Row(
           children: [
-            IconButton(icon: Text("${index + 1}"), onPressed: () {}),
+            IconButton(icon: Text('${index + 1}'), onPressed: () {}),
             Container(
               constraints: BoxConstraints(
                 maxWidth: Get.width / 2.8,
               ),
               child: Text(
-                "${controller.playList[index].title}",
+                '${controller.playList[index].title}',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: Get.find<GlobalController>().song.value.musicId ==
+                  color: controller.song.value.musicId ==
                           controller.playList[index].musicId
                       ? Theme.of(Get.context).accentColor
                       : Theme.of(Get.context).bottomAppBarColor,
@@ -65,11 +66,11 @@ class PlayListView extends GetView<PlayListController> {
             ),
             Expanded(
                 child: Text(
-              " -  ${controller.playList[index].artist}",
+              ' -  ${controller.playList[index].artist}',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                color: Get.find<GlobalController>().song.value.musicId ==
+                color: controller.song.value.musicId ==
                         controller.playList[index].musicId
                     ? Theme.of(Get.context).accentColor
                     : Colors.grey[500],
@@ -81,7 +82,7 @@ class PlayListView extends GetView<PlayListController> {
           ],
         ),
       ),
-      onTap: () => controller.playMusicByIndex(index),
+      onTap: () =>controller.playMusicByIndex(index),
     );
   }
 }

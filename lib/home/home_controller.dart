@@ -4,9 +4,6 @@ import 'dart:convert';
 import 'package:bujuan/entity/user_profile_entity.dart';
 import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/global/global_controller.dart';
-import 'package:bujuan/login/login_binding.dart';
-import 'package:bujuan/login/login_view.dart';
-import 'package:bujuan/play_list/play_list_controller.dart';
 import 'package:bujuan/utils/net_util.dart';
 import 'package:bujuan/utils/sp_util.dart';
 import 'package:flutter/cupertino.dart';
@@ -99,16 +96,14 @@ class HomeController extends GlobalController {
     });
 
     Starry.onPlayerSongListChanged.listen((List<MusicItem> playList) {
-      Get.find<PlayListController>().playList
-        ..clear()
-        ..addAll(playList);
+      Get.find<GlobalController>().addPlayList(playList);
     });
   }
 
   ///去个人资料页面
   goToProfile() {
     if (login.value && userProfileEntity.value != null) {
-      Get.toNamed("/profile", arguments: {"profile": userProfileEntity.value});
+      Get.toNamed('/profile', arguments: {'profile': userProfileEntity.value});
     } else {
       goToLogin();
     }
@@ -116,14 +111,14 @@ class HomeController extends GlobalController {
 
   ///去登录页面
   goToLogin() {
-    Get.toNamed("/login");
+    Get.toNamed('/login');
   }
 
   ///刷新登录
   refreshLogin() async {
     if (login.value) {
       var loginEntity = await NetUtils().refreshLogin();
-      if (loginEntity != null && loginEntity["code"] == 200) {
+      if (loginEntity != null && loginEntity['code'] == 200) {
         //刷新成功
         await getUserProfile(SpUtil.getString(USER_ID_SP, defValue: null));
       } else {

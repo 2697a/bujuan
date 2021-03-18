@@ -11,7 +11,7 @@ class LoginView extends GetView<LoginController> {
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         elevation: 0,
-        title: Text("登录"),
+        title: Text('登录'),
       ),
       body: Obx(() => ListView(
             children: [
@@ -29,10 +29,10 @@ class LoginView extends GetView<LoginController> {
                     Expanded(
                         child: TextField(
                       controller: controller.accountController,
-                      // inputFormatters: [FilteringTextInputFormatter(RegExp("[a-zA-Z]|[0-9.]"), allow: true)],
+                      // inputFormatters: [FilteringTextInputFormatter(RegExp('[a-zA-Z]|[0-9.]'), allow: true)],
                       decoration: InputDecoration(
                         border: InputBorder.none,
-                        hintText: "手机号或者邮箱",
+                        hintText: '手机号或者邮箱',
                       ),
                     ))
                   ],
@@ -52,7 +52,7 @@ class LoginView extends GetView<LoginController> {
                           controller: controller.passController,
                           decoration: InputDecoration(
                             border: InputBorder.none,
-                            hintText: "密码",
+                            hintText: '密码',
                           ),
                         ))
                   ],
@@ -61,11 +61,11 @@ class LoginView extends GetView<LoginController> {
               Container(
                 margin: EdgeInsets.symmetric(vertical: 30.0, horizontal: 25.0),
                 child: ProgressButton.icon(iconedButtons: {
-                  ButtonState.idle: IconedButton(text: "Login", icon: Icon(Icons.send, color: Colors.white), color: Theme.of(context).accentColor),
-                  ButtonState.loading: IconedButton(text: "Loading", color: Theme.of(context).accentColor),
-                  ButtonState.fail: IconedButton(text: "Failed", icon: Icon(Icons.cancel, color: Colors.white), color: Colors.red.shade300),
+                  ButtonState.idle: IconedButton(text: 'Login', icon: Icon(Icons.send, color: Colors.white), color: Theme.of(context).accentColor),
+                  ButtonState.loading: IconedButton(text: 'Loading', color: Theme.of(context).accentColor),
+                  ButtonState.fail: IconedButton(text: 'Failed', icon: Icon(Icons.cancel, color: Colors.white), color: Colors.red.shade300),
                   ButtonState.success: IconedButton(
-                      text: "Success",
+                      text: 'Success',
                       icon: Icon(
                         Icons.check_circle,
                         color: Colors.white,

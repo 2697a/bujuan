@@ -49,38 +49,38 @@ class Starry {
   ///add播放类表并根据下标播放
   static Future<void> playMusic(List song, int index) async {
     var jsonEncode2 = jsonEncode(song);
-    await _channel.invokeMethod('PLAY_MUSIC', {"PLAY_LIST": jsonEncode2, "INDEX": index});
+    await _channel.invokeMethod('PLAY_MUSIC', {'PLAY_LIST': jsonEncode2, 'INDEX': index});
   }
 
   ///根据下标播放歌曲
   static Future<void> playMusicByIndex(int index) async {
-    await _channel.invokeMethod('PLAY_BY_INDEX', {"INDEX": index});
+    await _channel.invokeMethod('PLAY_BY_INDEX', {'INDEX': index});
   }
 
   ///暂停
   static Future<void> pauseMusic() async {
-    await _channel.invokeMethod("PAUSE");
+    await _channel.invokeMethod('PAUSE');
   }
 
   ///恢复播放
   static Future<void> restoreMusic() async {
-    await _channel.invokeMethod("RESTORE");
+    await _channel.invokeMethod('RESTORE');
   }
 
   ///上一首
   static Future<void> skipToPrevious() async {
-    await _channel.invokeMethod("PREVIOUS");
+    await _channel.invokeMethod('PREVIOUS');
   }
 
   ///下一首
   static Future<void> skipToNext() async {
-    await _channel.invokeMethod("NEXT");
+    await _channel.invokeMethod('NEXT');
   }
 
   ///下一首
   static Future<MusicItem> getNowPlaying() async {
-    var musicItemStr = await _channel.invokeMethod("NOW_PLAYING");
-    if (musicItemStr != null && musicItemStr != "") {
+    var musicItemStr = await _channel.invokeMethod('NOW_PLAYING');
+    if (musicItemStr != null && musicItemStr != '') {
       return MusicItem.fromJson(jsonDecode(musicItemStr));
     }
     return null;
@@ -88,13 +88,13 @@ class Starry {
 
   ///切换歌曲播放进度
   static Future<void> changeSongSeek(seek) async {
-    await _channel.invokeMethod("CHANGE_SEEK", {"SEEK": seek});
+    await _channel.invokeMethod('CHANGE_SEEK', {'SEEK': seek});
   }
 
   ///获取播放列表
   static Future<List<MusicItem>> getPlayList() async {
-    var musicItemStr = await _channel.invokeMethod("PLAY_LIST");
-    if (musicItemStr != null && musicItemStr != "") {
+    var musicItemStr = await _channel.invokeMethod('PLAY_LIST');
+    if (musicItemStr != null && musicItemStr != '') {
       List jsonDecode2 = jsonDecode(musicItemStr);
       var list = jsonDecode2.map((e) => MusicItem.fromJson(e)).toList();
       return list;
@@ -103,11 +103,11 @@ class Starry {
   }
 
   static Future<void> audioEffect() async {
-    await _channel.invokeMethod("AUDIO_EFFECT");
+    await _channel.invokeMethod('AUDIO_EFFECT');
   }
 
   static Future<int> toggleAudioFocus(bool value) async {
-   return await _channel.invokeMethod("TOGGLE_IGNORE_AUDIO_FOCUS", {"IS_IGNORE": value});
+   return await _channel.invokeMethod('TOGGLE_IGNORE_AUDIO_FOCUS', {'IS_IGNORE': value});
   }
 
   static Future<dynamic> _platformCallHandler(MethodCall call) async {

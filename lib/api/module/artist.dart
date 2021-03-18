@@ -4,7 +4,7 @@ part of '../module.dart';
 Handler artist_album = (Map query, List<Cookie> cookie) {
   return request(
       'POST',
-      "https://music.163.com/weapi/artist/albums/${query['id']}",
+      'https://music.163.com/weapi/artist/albums/${query['id']}',
       {
         'limit': query['limit'] ?? 30,
         'offset': query['offset'] ?? 0,

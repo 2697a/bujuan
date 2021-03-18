@@ -1,6 +1,6 @@
 part of '../module.dart';
 
-const _keys = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+const _keys = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 
 // 歌曲详情
 Handler song_detail = (query, cookie) {

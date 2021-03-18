@@ -57,8 +57,8 @@ Handler comment_music = (query, cookies) {
   return request('POST', 'https://music.163.com/weapi/v1/resource/comments/R_SO_4_${query['id']}', data, crypto: Crypto.weapi, cookies: cookies);
 };
 
-//歌曲评论
-Handler comment_music_new = (query, cookies) {
+//评论(新)
+Handler comment_new = (query, cookies) {
   query['type'] = const {
     0: 'R_SO_4_', //  歌曲
     1: 'R_MV_5_', //  MV
@@ -76,9 +76,30 @@ Handler comment_music_new = (query, cookies) {
     'pageNo': pageNo,
     'showInner': query['showInner'] ?? true,
     'pageSize': pageSize,
-    'cursor': query["sortType"] == 3 ? query["cursor"] ?? '0' : (pageNo - 1) * pageSize,
+    'cursor': query['sortType'] == 3 ? query['cursor'] ?? '0' : (pageNo - 1) * pageSize,
     'sortType': query['sortType'] ?? 1, //1:按推荐排序,2:按热度排序,3:按时间排序
   };
+  return request('POST', 'https://music.163.com/api/v2/resource/comments', data, crypto: Crypto.weapi, cookies: cookies);
+};
+
+//楼层评论
+Handler comment_floor = (query, cookies) {
+  query['type'] = const {
+    0: 'R_SO_4_', //  歌曲
+    1: 'R_MV_5_', //  MV
+    2: 'A_PL_0_', //  歌单
+    3: 'R_AL_3_', //  专辑
+    4: 'A_DJ_1_', //  电台,
+    5: 'R_VI_62_', //  视频
+    6: 'A_EV_2_' //  动态
+  }[query['type']];
+  final data = {
+    'parentCommentId': query['parentCommentId'],
+    'threadId': '${query['type']}${query['id']}',
+    'time': query['time'] ?? -1,
+    'limit': query['limit'] ?? 20,
+  };
+
   return request('POST', 'https://music.163.com/api/v2/resource/comments', data, crypto: Crypto.weapi, cookies: cookies);
 };
 //mv评论

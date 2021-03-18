@@ -25,8 +25,8 @@ Handler event_forward = (query, cookie) {
 Handler event = (query, cookie) {
   cookie.add(Cookie('os', 'pc'));
   final data = {
-    "pagesize": query['pagesize'] ?? 20,
-    "lasttime": query['lasttime'] ?? -1
+    'pagesize': query['pagesize'] ?? 20,
+    'lasttime': query['lasttime'] ?? -1
   };
   return request('POST', 'https://music.163.com/weapi/v1/event/get', data,
       crypto: Crypto.weapi, cookies: cookie);

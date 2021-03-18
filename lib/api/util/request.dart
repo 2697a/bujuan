@@ -31,7 +31,7 @@ String _chooseUserAgent({String ua}) {
   int index;
   if (ua == 'mobile') {
     index = (r.nextDouble() * 7).floor();
-  } else if (ua == "pc") {
+  } else if (ua == 'pc') {
     index = (r.nextDouble() * 5).floor() + 8;
   } else {
     index = (r.nextDouble() * (userAgentList.length - 1)).floor();
@@ -46,7 +46,7 @@ Map<String, String> _buildHeader(
     headers['Content-Type'] = 'application/x-www-form-urlencoded';
   if (url.contains('music.163.com'))
     headers['Referer'] = 'https://music.163.com';
-  headers['Cookie'] = cookies.join("; ");
+  headers['Cookie'] = cookies.join('; ');
   return headers;
 }
 
@@ -68,27 +68,27 @@ Future<Answer> eapiRequest(
   final csrfToken = cookie['__csrf'] ?? '';
   final header = {
     //系统版本
-    "osver": cookie['osver'],
+    'osver': cookie['osver'],
     //encrypt.base64.encode(imei + '\t02:00:00:00:00:00\t5106025eb79a5247\t70ffbaac7')
-    "deviceId": cookie['deviceId'],
+    'deviceId': cookie['deviceId'],
     // app版本
-    "appver": cookie['appver'] ?? "6.1.1",
+    'appver': cookie['appver'] ?? '6.1.1',
     //版本号
-    "versioncode": cookie['versioncode'] ?? "140",
+    'versioncode': cookie['versioncode'] ?? '140',
     //设备model
-    "mobilename": cookie['mobilename'],
-    "buildver": cookie['buildver'] ??
+    'mobilename': cookie['mobilename'],
+    'buildver': cookie['buildver'] ??
         (DateTime.now().millisecondsSinceEpoch.toString().substring(0, 10)),
     //设备分辨率
-    "resolution": cookie['resolution'] ?? "1920x1080",
-    "__csrf": csrfToken,
-    "os": cookie['os'] ?? 'android',
-    "channel": cookie['channel'],
-    "requestId":
+    'resolution': cookie['resolution'] ?? '1920x1080',
+    '__csrf': csrfToken,
+    'os': cookie['os'] ?? 'android',
+    'channel': cookie['channel'],
+    'requestId':
         '${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(1000).toString().padLeft(4, '0')}'
   };
-  if (cookie['MUSIC_U'] != null) header["MUSIC_U"] = cookie['MUSIC_U'];
-  if (cookie['MUSIC_A'] != null) header["MUSIC_A"] = cookie['MUSIC_A'];
+  if (cookie['MUSIC_U'] != null) header['MUSIC_U'] = cookie['MUSIC_U'];
+  if (cookie['MUSIC_A'] != null) header['MUSIC_A'] = cookie['MUSIC_A'];
   headers['Cookie'] = header.keys
       .map((key) =>
           '${Uri.encodeComponent(key)}=${Uri.encodeComponent(header[key] ?? '')}')
@@ -96,7 +96,7 @@ Future<Answer> eapiRequest(
 
   data['header'] = header;
   data = eapi(optionUrl, data);
-  url = url.replaceAll(RegExp(r"\w*api"), 'eapi');
+  url = url.replaceAll(RegExp(r'\w*api'), 'eapi');
 
   return _doRequest(url, headers, data, method).then((response) async {
     final bytes = (await response.expand((e) => e).toList()).cast<int>();
@@ -124,7 +124,7 @@ Future<Answer> eapiRequest(
         status: ans.status > 100 && ans.status < 600 ? ans.status : 400);
     return ans;
   }).catchError((e, s) {
-//    debugPrint("request error " + e.toString());
+//    debugPrint('request error ' + e.toString());
 //    debugPrint(s.toString());
     return Answer(status: 502, body: {'code': 502, 'msg': e.toString()});
   });
@@ -142,15 +142,15 @@ Future<Answer> request(
   final headers = _buildHeader(url, ua, method, cookies);
   if (crypto == Crypto.weapi) {
     var csrfToken =
-        cookies.firstWhere((c) => c.name == "__csrf", orElse: () => null);
-    data["csrf_token"] = csrfToken?.value ?? "";
+        cookies.firstWhere((c) => c.name == '__csrf', orElse: () => null);
+    data['csrf_token'] = csrfToken?.value ?? '';
     data = weApi(data);
-    url = url.replaceAll(RegExp(r"\w*api"), 'weapi');
+    url = url.replaceAll(RegExp(r'\w*api'), 'weapi');
   } else if (crypto == Crypto.linuxapi) {
     data = linuxApi({
-      "params": data,
-      "url": url.replaceAll(RegExp(r"\w*api"), 'api'),
-      "method": method,
+      'params': data,
+      'url': url.replaceAll(RegExp(r'\w*api'), 'api'),
+      'method': method,
     });
     headers['User-Agent'] =
         'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36';

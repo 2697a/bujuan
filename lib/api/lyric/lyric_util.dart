@@ -4,12 +4,12 @@ class LyricUtil {
   /// 格式化歌词
   static List<Lyric> formatLyric(String lyricStr) {
     RegExp reg =
-        RegExp(r"(?<=\[)\d{2}:\d{2}.\d{2,3}.*?(?=\[)|[^\[]+$", dotAll: true);
+        RegExp(r'(?<=\[)\d{2}:\d{2}.\d{2,3}.*?(?=\[)|[^\[]+$', dotAll: true);
 
     var matches = reg.allMatches(lyricStr);
     var lyrics = matches.map((m) {
-      var matchStr = m.group(0).replaceAll("\n", "");
-      var symbolIndex = matchStr.indexOf("]");
+      var matchStr = m.group(0).replaceAll('\n', '');
+      var symbolIndex = matchStr.indexOf(']');
       var time = matchStr.substring(0, symbolIndex);
       var lyric = matchStr.substring(symbolIndex + 1);
       var duration = lyricTimeToDuration(time);
@@ -25,8 +25,8 @@ class LyricUtil {
   }
 
   static Duration lyricTimeToDuration(String time) {
-    int hourSeparatorIndex = time.indexOf(":");
-    int minuteSeparatorIndex = time.indexOf(".");
+    int hourSeparatorIndex = time.indexOf(':');
+    int minuteSeparatorIndex = time.indexOf('.');
 
     var milliseconds = time.substring(minuteSeparatorIndex + 1);
     var microseconds = 0;

@@ -9,15 +9,15 @@ class SplashView extends GetView<SplashController>{
     return IntroductionScreen(
       pages: controller.modes,
       onDone: () async{
-       await Get.offAndToNamed("/home");
+       await Get.offAndToNamed('/home');
       },
       onSkip: () async{
-        await Get.offAndToNamed("/home");
+        await Get.offAndToNamed('/home');
       },
       showSkipButton: true,
-      skip:  Text("Skip", style: TextStyle(fontWeight: FontWeight.w600,color: Theme.of(context).accentColor)),
-      next:  Text("Next", style: TextStyle(fontWeight: FontWeight.w600,color: Theme.of(context).accentColor)),
-      done:  Text("Done", style: TextStyle(fontWeight: FontWeight.w600,color: Theme.of(context).accentColor)),
+      skip:  Text('Skip', style: TextStyle(fontWeight: FontWeight.w600,color: Theme.of(context).accentColor)),
+      next:  Text('Next', style: TextStyle(fontWeight: FontWeight.w600,color: Theme.of(context).accentColor)),
+      done:  Text('Done', style: TextStyle(fontWeight: FontWeight.w600,color: Theme.of(context).accentColor)),
       dotsDecorator: DotsDecorator(
           size: const Size.square(8.0),
           activeSize: const Size(16.0, 8.0),

@@ -30,9 +30,14 @@ class FindController extends GetxController {
   loadTodaySheet() async {
     var personalEntity = await NetUtils().getRecommendResource();
     if (personalEntity != null && personalEntity.code == 200) {
-      result
-        ..clear()
-        ..addAll(personalEntity.result);
+      var sheets = personalEntity.result;
+      result.clear();
+      if (sheets.length ==6) {
+        var i = sheets.length ~/ 3;
+        for (int j = 0; j < i; j++) {
+          result.add(sheets.sublist(j*3,(j+1)*3));
+        }
+      }
     }
     await loadNewSong();
   }
@@ -47,12 +52,11 @@ class FindController extends GetxController {
     refreshController?.refreshCompleted();
   }
 
-
   ///进入每日推荐
-  goToTodayMusic(){
-    if(Get.find<HomeController>().login.value){
-      Get.toNamed("/today");
-    }else{
+  goToTodayMusic() {
+    if (Get.find<HomeController>().login.value) {
+      Get.toNamed('/today');
+    } else {
       Get.find<HomeController>().goToLogin();
     }
   }

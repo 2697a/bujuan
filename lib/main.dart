@@ -9,15 +9,18 @@ import 'package:bujuan/profile/profile_binding.dart';
 import 'package:bujuan/profile/profile_view.dart';
 import 'package:bujuan/setting/setting_binding.dart';
 import 'package:bujuan/setting/setting_view.dart';
+import 'package:bujuan/sheet_classify/sheet_classify_binding.dart';
+import 'package:bujuan/sheet_classify/sheet_classify_view.dart';
 import 'package:bujuan/sheet_info/sheet_info_binding.dart';
 import 'package:bujuan/sheet_info/sheet_info_view.dart';
 import 'package:bujuan/splash/splash_binding.dart';
 import 'package:bujuan/splash/splash_view.dart';
 import 'package:bujuan/today/today_binding.dart';
 import 'package:bujuan/today/today_view.dart';
+import 'package:bujuan/user/cloud/cloud_binding.dart';
+import 'package:bujuan/user/cloud/cloud_view.dart';
 import 'package:bujuan/utils/sp_util.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/physics.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get/get_utils/src/platform/platform.dart';
@@ -56,15 +59,17 @@ main(List<String> args) async {
     debugShowCheckedModeBanner: false,
     theme: isDark ? darkTheme : lightTheme,
     enableLog: true,
-    initialRoute: isFirstOpen?"/splash":"/home",
+    initialRoute: isFirstOpen?'/splash':'/home',
     getPages: [
       GetPage(name: '/splash', page: () => SplashView(),binding: SplashBinding()),
-      GetPage(name: "/home", page: () => HomeView(), binding: HomeBinding()),
+      GetPage(name: '/home', page: () => HomeView(), binding: HomeBinding()),
       GetPage(name: '/today', page: () => TodayView(),binding: TodayBinding()),
       GetPage(name: '/sheet', page: () => SheetInfoView(),binding: SheetInfoBinding()),
       GetPage(name: '/profile', page: () => ProfileView(),binding: ProfileBinding()),
       GetPage(name: '/setting', page: () => SettingView(),binding: SettingBinding()),
       GetPage(name: '/login', page: () => LoginView(),binding: LoginBinding()),
+      GetPage(name: '/cloud', page: () => CloudView(),binding: CloudBinding()),
+      GetPage(name: '/sheet_classify', page: () => SheetClassifyView(),binding: SheetClassifyBinding()),
       GetPage(name: '/music_talk', page: () => MusicTalkView(),binding: MusicTalkBinding()),
     ],
   ),
@@ -77,9 +82,9 @@ main(List<String> args) async {
   ));
 }
 
-Future<HttpServer> _startServer({address = "localhost", int port = 3000}) {
+Future<HttpServer> _startServer({address = 'localhost', int port = 3000}) {
   return HttpServer.bind(address, port, shared: true).then((server) {
-    print("start listen at: http://$address:$port");
+    print('start listen at: http://$address:$port');
     server.listen((request) {
       _handleRequest(request);
     });
@@ -100,5 +105,5 @@ void _handleRequest(HttpRequest request) async {
   request.response.write(json.encode(answer.body));
   request.response.close();
 
-  print("request[${answer.status}] : ${request.uri}");
+  print('request[${answer.status}] : ${request.uri}');
 }

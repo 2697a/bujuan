@@ -27,7 +27,7 @@ class LoginController extends GetxController {
     state.value = ButtonState.loading;
     var pass = passController.text;
     var account = accountController.text;
-    if (account == "" || pass == "") {
+    if (account == '' || pass == '') {
       state.value = ButtonState.fail;
       restState();
       return;
@@ -36,8 +36,8 @@ class LoginController extends GetxController {
     var loginEntity = isEmail ? await NetUtils().loginByEmail(account, pass) : await NetUtils().loginByPhone(account, pass);
     if (loginEntity != null && loginEntity.code == 200) {
       state.value = ButtonState.success;
-     await SpUtil.putString(USER_ID_SP, "${loginEntity.profile.userId}");
-     await Get.find<HomeController>().getUserProfile("${loginEntity.profile.userId}");
+     await SpUtil.putString(USER_ID_SP, '${loginEntity.profile.userId}');
+     await Get.find<HomeController>().getUserProfile('${loginEntity.profile.userId}');
      Future.delayed(Duration(milliseconds: 600),()=>Get.back());
     } else {
       state.value = ButtonState.fail;
@@ -47,8 +47,8 @@ class LoginController extends GetxController {
 
   @override
   void onClose() {
-    accountController.text = "";
-    passController.text = "";
+    accountController.text = '';
+    passController.text = '';
     super.onClose();
   }
 

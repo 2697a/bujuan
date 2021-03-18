@@ -11,9 +11,8 @@ import 'package:starry/starry.dart';
 import 'package:we_slide/we_slide.dart';
 
 class TodayController extends GlobalController {
-  var loadState = 0.obs;
   WeSlideController weSlideController;
-  var list = List<SheetDetailsPlaylistTrack>().obs;
+  var list = [].obs;
   var color = Theme
       .of(Get.context)
       .primaryColor
@@ -42,10 +41,7 @@ class TodayController extends GlobalController {
     var list = await NetUtils().getTodaySongs();
     if(list!=null) {
       this.list..clear()..addAll(list);
-      loadState.value = 2;
     }
-    else
-      loadState.value = 1;
   }
 
   playSong(index) async {
@@ -58,11 +54,11 @@ class TodayController extends GlobalController {
       //当前歌单未在播放
       list.forEach((track) {
         MusicItem musicItem = MusicItem(
-          musicId: "${track.id}",
+          musicId: '${track.id}',
           duration: track.dt,
           iconUri: track.al.picUrl,
           title: track.name,
-          uri: "${track.id}",
+          uri: '${track.id}',
           artist: track.ar[0].name,
         );
         songs.add(musicItem);

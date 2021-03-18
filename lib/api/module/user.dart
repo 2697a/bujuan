@@ -26,7 +26,7 @@ Handler user_cloud_del = (query, cookie) {
 
 // 云盘数据详情
 Handler user_cloud_detail = (query, cookie) {
-  final id = query['id'].toString().replaceAll(' ', "").split(",");
+  final id = query['id'].toString().replaceAll(' ', '').split(',');
   return request(
       'POST', 'https://music.163.com/weapi/v1/cloud/get/byids', {'songIds': id},
       crypto: Crypto.weapi, cookies: cookie);
@@ -164,7 +164,7 @@ Handler user_update = (query, cookie) {
     'POST',
     'https://music.163.com/weapi/user/profile/update',
     {
-      'avatarImgId': "0",
+      'avatarImgId': '0',
       'birthday': query['birthday'],
       'city': query['city'],
       'gender': query['gender'],

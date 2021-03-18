@@ -1,8 +1,8 @@
+import 'package:bujuan/global/global_loding_view.dart';
 import 'package:bujuan/global/global_theme.dart';
 import 'package:bujuan/music_bottom_bar/music_bottom_bar_view.dart';
 import 'package:bujuan/over_scroll.dart';
 import 'package:bujuan/play_view/default_view.dart';
-import 'package:bujuan/sheet_info/sheet_loading_view.dart';
 import 'package:bujuan/today/today_controller.dart';
 import 'package:bujuan/utils/bujuan_util.dart';
 import 'package:flutter/material.dart';
@@ -22,13 +22,13 @@ class TodayView extends GetView<TodayController>{
           controller: controller.weSlideController,
           panelMaxSize: MediaQuery.of(Get.context).size.height,
           panelMinSize: 65.0,
-          body: Obx(() => ScrollConfiguration(behavior: OverScrollBehavior(), child: CustomScrollView(
+          body: ScrollConfiguration(behavior: OverScrollBehavior(), child: CustomScrollView(
             slivers: [
               SliverAppBar(
                 elevation: 0.0,
                 floating: true,
                 pinned: true,
-                title: Text("Today"),
+                title: Text('Today'),
                 expandedHeight: 170.0,
                 flexibleSpace: FlexibleSpaceBar(
                   collapseMode: CollapseMode.parallax,
@@ -36,7 +36,7 @@ class TodayView extends GetView<TodayController>{
                     children: [
                       Expanded(child: Container()),
                       Hero(
-                          tag: "today",
+                          tag: 'today',
                           child: Card(
                             shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(6.0)),
                             clipBehavior: Clip.antiAlias,
@@ -45,7 +45,7 @@ class TodayView extends GetView<TodayController>{
                                 Container(
                                   padding: EdgeInsets.all(5.0),
                                   height: 120.0,
-                                  child: Image.asset("assets/images/today.png"),
+                                  child: Image.asset('assets/images/today.png'),
                                 ),
                                 Expanded(
                                     child: Stack(
@@ -54,7 +54,7 @@ class TodayView extends GetView<TodayController>{
                                           height: 120,
                                           alignment: Alignment.center,
                                           child: Text(
-                                            "每日推荐",
+                                            '每日推荐',
                                             textAlign: TextAlign.center,
                                             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
                                           ),
@@ -90,7 +90,7 @@ class TodayView extends GetView<TodayController>{
               ),
               _buildTodayListView()
             ],
-          ))),
+          )),
           parallax: true,
           panel: DefaultView(weSlideController: controller.weSlideController),
           panelHeader: MusicBottomBarView(weSlideController: controller.weSlideController),
@@ -107,57 +107,55 @@ class TodayView extends GetView<TodayController>{
   }
 
   Widget _buildTodayListView() {
-    return SheetLoadingView(
-      state: controller.loadState.value,
-      widget: SliverList(
-        delegate: SliverChildBuilderDelegate(
-              (BuildContext context, int index) {
-                return InkWell(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 2.0, vertical: 5.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Container(
-                          margin: EdgeInsets.only(right: 5.0),
-                          height: 50.0,
-                          alignment: Alignment.center,
-                          constraints: BoxConstraints(maxWidth: 40, minHeight: 30.0),
-                          child: Text(
-                            "${index + 1}",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 16.0,color: Colors.grey[500]),
-                          ),
-                        ),
-                        Expanded(
-                            child: Column(
-                              children: [
-                                Container(
-                                  height: 25,
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(controller.list[index].name, maxLines: 1, overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(fontSize: 16.0)),
-                                ),
-                                Container(
-                                  height: 25,
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(controller.list[index].ar[0].name, maxLines: 1, overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(fontSize: 14.0,color: Colors.grey[500])),
-                                )
-                              ],
-                            )),
-                        IconButton(icon: Icon(Icons.more_vert,color: Colors.grey[500],),onPressed: (){},)
-                      ],
+    return Obx(()=>SliverList(
+      delegate: SliverChildBuilderDelegate(
+            (BuildContext context, int index) {
+          return controller.list.length>0?InkWell(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 2.0, vertical: 5.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(right: 5.0),
+                    height: 50.0,
+                    alignment: Alignment.center,
+                    constraints: BoxConstraints(maxWidth: 40, minHeight: 30.0),
+                    child: Text(
+                      '${index + 1}',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 16.0,color: Colors.grey[500]),
                     ),
                   ),
-                  onTap: () => controller.playSong(index),
-                );
-          },
-          childCount: controller.list == null
-              ? 0
-              : controller.list.length,
-        ),
+                  Expanded(
+                      child: Column(
+                        children: [
+                          Container(
+                            height: 25,
+                            alignment: Alignment.centerLeft,
+                            child: Text(controller.list[index].name, maxLines: 1, overflow: TextOverflow.ellipsis,
+                                style: TextStyle(fontSize: 16.0)),
+                          ),
+                          Container(
+                            height: 25,
+                            alignment: Alignment.centerLeft,
+                            child: Text(controller.list[index].ar[0].name, maxLines: 1, overflow: TextOverflow.ellipsis,
+                                style: TextStyle(fontSize: 14.0,color: Colors.grey[500])),
+                          )
+                        ],
+                      )),
+                  IconButton(icon: Icon(Icons.more_vert,color: Colors.grey[500],),onPressed: (){},)
+                ],
+              ),
+            ),
+            onTap: () => controller.playSong(index),
+          ):LoadingView.buildGeneralLoadingView();
+        },
+        childCount: controller.list.length > 0
+            ? controller.list.length
+            : 20,
       ),
-    );
+    ));
   }
+
 }

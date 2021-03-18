@@ -1,5 +1,6 @@
 import 'package:bujuan/entity/personal_entity.dart';
 import 'package:bujuan/find/find_controller.dart';
+import 'package:bujuan/global/global_loding_view.dart';
 import 'package:bujuan/global/global_state_view.dart';
 import 'package:bujuan/utils/bujuan_util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -30,7 +31,7 @@ class FindView extends GetView<FindController> {
                 SliverToBoxAdapter(
                   child: InkWell(
                     child: Hero(
-                        tag: "today",
+                        tag: 'today',
                         child: Card(
                           shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(6.0)),
                           clipBehavior: Clip.antiAlias,
@@ -39,7 +40,7 @@ class FindView extends GetView<FindController> {
                               Container(
                                 padding: EdgeInsets.all(5.0),
                                 height: 120.0,
-                                child: Image.asset("assets/images/today.png"),
+                                child: Image.asset('assets/images/today.png'),
                               ),
                               Expanded(
                                   child: Stack(
@@ -48,7 +49,7 @@ class FindView extends GetView<FindController> {
                                     height: 120,
                                     alignment: Alignment.center,
                                     child: Text(
-                                      "每日推荐",
+                                      '每日推荐',
                                       textAlign: TextAlign.center,
                                       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
                                     ),
@@ -98,7 +99,7 @@ class FindView extends GetView<FindController> {
                                   shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(6.0)),
                                   clipBehavior: Clip.antiAlias,
                                   child: Image.asset(
-                                    "assets/images/p_two.png",
+                                    'assets/images/p_two.png',
                                     height: 100,
                                     width: double.infinity,
                                     fit: BoxFit.cover,
@@ -112,7 +113,7 @@ class FindView extends GetView<FindController> {
                                   padding: EdgeInsets.symmetric(vertical: 2.0, horizontal: 6.0),
                                   decoration: BoxDecoration(color: Theme.of(context).accentColor, borderRadius: BorderRadius.circular(10.0)),
                                   child: Text(
-                                    "radio",
+                                    'radio',
                                     style: TextStyle(color: Colors.white),
                                   ),
                                 ),
@@ -132,7 +133,7 @@ class FindView extends GetView<FindController> {
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(6.0)),
                                     clipBehavior: Clip.antiAlias,
                                     child: Image.asset(
-                                      "assets/images/fm.png",
+                                      'assets/images/fm.png',
                                       height: 100,
                                       width: double.infinity,
                                       fit: BoxFit.cover,
@@ -146,7 +147,7 @@ class FindView extends GetView<FindController> {
                                     padding: EdgeInsets.symmetric(vertical: 2.0, horizontal: 6.0),
                                     decoration: BoxDecoration(color: Theme.of(context).accentColor, borderRadius: BorderRadius.circular(10.0)),
                                     child: Text(
-                                      "fm",
+                                      'fm',
                                       style: TextStyle(color: Colors.white),
                                     ),
                                   ),
@@ -187,39 +188,30 @@ class FindView extends GetView<FindController> {
                                 padding: EdgeInsets.symmetric(horizontal: 8.0),
                                 child: Wrap(
                                   alignment: WrapAlignment.center,
-                                  children: [Text("更多", style: TextStyle(color: Colors.grey[500], fontSize: 12.0)), Icon(Icons.keyboard_arrow_right, size: 18.0, color: Colors.grey[500])],
+                                  children: [Text('更多', style: TextStyle(color: Colors.grey[500], fontSize: 12.0)), Icon(Icons.keyboard_arrow_right, size: 18.0, color: Colors.grey[500])],
                                 ),
                               ),
-                              onTap: () {},
+                              onTap: () =>Get.toNamed('/sheet_classify'),
                             )
                           ],
                         ),
                         Padding(padding: EdgeInsets.only(bottom: 6.0)),
                         Expanded(
-                            child: PageView(
+                            child: PageView.builder(
                           onPageChanged: (index) => controller.currentIndexPage.value = index,
-                          children: [
-                            GridView.builder(
+                          itemBuilder: (context, index) {
+                            return GridView.builder(
                                 physics: NeverScrollableScrollPhysics(),
                                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                                     crossAxisSpacing: 10,
                                     crossAxisCount: 3, //每行三列
                                     childAspectRatio: 1),
-                                itemCount: controller.result.length > 0 ? controller.result.sublist(0, 3).length : 3,
-                                itemBuilder: (context, index) {
-                                  return controller.result.length > 0 ?_sheetItem(controller.result.sublist(0, 3)[index]):_loadSheetItem();
-                                }),
-                            GridView.builder(
-                                physics: NeverScrollableScrollPhysics(),
-                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisSpacing: 10,
-                                    crossAxisCount: 3, //每行三列
-                                    childAspectRatio: 1),
-                                itemCount: controller.result.length > 0 ? controller.result.sublist(3, 6).length : 3,
-                                itemBuilder: (context, index) {
-                                  return controller.result.length > 0 ?_sheetItem(controller.result.sublist(3, 6)[index]):_loadSheetItem();
-                                }),
-                          ],
+                                itemCount: controller.result.length > 0 ? controller.result[index].length : 3,
+                                itemBuilder: (context, index1) {
+                                  return controller.result.length > 0 ? _sheetItem(controller.result[index][index1]) : LoadingView.buildGridViewSheetLoadingView();
+                                });
+                          },
+                          itemCount: controller.result.length > 0 ? controller.result.length : 1,
                         )),
                       ],
                     ),
@@ -229,7 +221,7 @@ class FindView extends GetView<FindController> {
                 SliverList(
                   delegate: SliverChildBuilderDelegate(
                     (BuildContext context, int index) {
-                      return controller.newSong.length > 0?_newSongItem(index):_loadNewSongView();
+                      return controller.newSong.length > 0 ? _newSongItem(index) : _loadNewSongView();
                     },
                     childCount: controller.newSong.length > 0 ? controller.newSong.length : 10,
                   ),
@@ -248,8 +240,8 @@ class FindView extends GetView<FindController> {
       children: [
         InkWell(
             child: Hero(
-              tag: "${personalResult.id}",
-              child: Card(
+              tag: '${personalResult.id}',
+              child: Center(child: Card(
                 // margin: EdgeInsets.all(0),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(6.0)),
                 clipBehavior: Clip.antiAlias,
@@ -257,12 +249,12 @@ class FindView extends GetView<FindController> {
                   height: 110.0,
                   width: 110.0,
                   fit: BoxFit.cover,
-                  imageUrl: "${personalResult.picUrl}?param=300y300",
+                  imageUrl: '${personalResult.picUrl}?param=180y180',
                 ),
-              ),
+              ),),
             ),
             onTap: () {
-              Get.toNamed("/sheet", arguments: {"id": personalResult.id, "name": personalResult.name, "imageUrl": "${personalResult.picUrl}?param=300y300"});
+              Get.toNamed('/sheet', arguments: {'id': personalResult.id, 'name': personalResult.name, 'imageUrl': '${personalResult.picUrl}?param=300y300'});
             }),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 3),
@@ -272,39 +264,8 @@ class FindView extends GetView<FindController> {
     );
   }
 
-  ///歌单加载中view
-  Widget _loadSheetItem() {
-    return Wrap(
-      children: [
-        Container(
-          width: 110.0,
-          height: 110.0,
-          decoration: BoxDecoration(
-            color: Colors.grey.withOpacity(.6),
-            borderRadius: BorderRadius.circular(6.0)
-          ),
-          child: Center(
-            child: Icon(
-              Icons.photo_size_select_actual,
-              color: Colors.white,
-              size: 42,
-            ),
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 6.0),
-          child: PlaceholderLines(
-            lineHeight: 10.0,
-            count: 2,
-          ),
-        )
-      ],
-    );
-  }
-
-
   ///新歌itemView
-  Widget _newSongItem(index){
+  Widget _newSongItem(index) {
     return InkWell(
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 2.0, vertical: 5.0),
@@ -320,25 +281,25 @@ class FindView extends GetView<FindController> {
                 child: CachedNetworkImage(
                   width: 48,
                   height: 48,
-                  imageUrl: "${controller.newSong[index].picUrl}?param=200y200",
+                  imageUrl: '${controller.newSong[index].picUrl}?param=130y130',
                 ),
               ),
             ),
             Expanded(
                 child: Column(
-                  children: [
-                    Container(
-                      height: 25,
-                      alignment: Alignment.centerLeft,
-                      child: Text(controller.newSong[index].name, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 16.0)),
-                    ),
-                    Container(
-                      height: 25,
-                      alignment: Alignment.centerLeft,
-                      child: Text("${controller.newSong[index].song.artists[0].name}", maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14.0, color: Colors.grey[500])),
-                    )
-                  ],
-                )),
+              children: [
+                Container(
+                  height: 25,
+                  alignment: Alignment.centerLeft,
+                  child: Text(controller.newSong[index].name, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 16.0)),
+                ),
+                Container(
+                  height: 25,
+                  alignment: Alignment.centerLeft,
+                  child: Text('${controller.newSong[index].song.artists[0].name}', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14.0, color: Colors.grey[500])),
+                )
+              ],
+            )),
             IconButton(
               icon: Icon(
                 Icons.more_vert,
@@ -353,9 +314,8 @@ class FindView extends GetView<FindController> {
     );
   }
 
-
   ///新歌加载中View
-  Widget _loadNewSongView(){
+  Widget _loadNewSongView() {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 2.0, vertical: 5.0),
       child: Row(
@@ -365,10 +325,7 @@ class FindView extends GetView<FindController> {
             margin: EdgeInsets.only(right: 12.0),
             width: 48,
             height: 48,
-            decoration: BoxDecoration(
-                color: Colors.grey.withOpacity(.6),
-                borderRadius: BorderRadius.circular(6.0)
-            ),
+            decoration: BoxDecoration(color: Colors.grey.withOpacity(.6), borderRadius: BorderRadius.circular(6.0)),
             child: Center(
               child: Icon(
                 Icons.photo_size_select_actual,
@@ -379,9 +336,9 @@ class FindView extends GetView<FindController> {
           ),
           Expanded(
               child: PlaceholderLines(
-                lineHeight: 10.0,
-                count: 2,
-              )),
+            lineHeight: 10.0,
+            count: 2,
+          )),
         ],
       ),
     );

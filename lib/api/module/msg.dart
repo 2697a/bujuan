@@ -3,9 +3,9 @@ part of '../module.dart';
 // 评论
 Handler msg_comment = (query, cookie) {
   final data = {
-    'beforeTime': query['beforeTime'] ?? "-1",
+    'beforeTime': query['beforeTime'] ?? '-1',
     'limit': query['limit'] ?? 30,
-    'total': "true",
+    'total': 'true',
     'uid': query['uid']
   };
   return request('POST',
@@ -18,7 +18,7 @@ Handler msg_forwards = (query, cookie) {
   final data = {
     'offset': query['offset'] ?? 0,
     'limit': query['limit'] ?? 30,
-    'total': "true"
+    'total': 'true'
   };
   return request('POST', 'https://music.163.com/api/forwards/get', data,
       crypto: Crypto.weapi, cookies: cookie);
@@ -40,7 +40,7 @@ Handler msg_notice = (query, cookie) {
   final data = {
     'offset': query['offset'] ?? 0,
     'limit': query['limit'] ?? 30,
-    'total': "true"
+    'total': 'true'
   };
   return request('POST', 'https://music.163.com/api/msg/notices', data,
       crypto: Crypto.weapi, cookies: cookie);
@@ -52,7 +52,7 @@ Handler msg_private_history = (query, cookie) {
     'userId': query['uid'],
     'offset': query['offset'] ?? 0,
     'limit': query['limit'] ?? 30,
-    'total': "true"
+    'total': 'true'
   };
   return request('POST', 'https://music.163.com/api/msg/private/history', data,
       crypto: Crypto.weapi, cookies: cookie);
@@ -63,7 +63,7 @@ Handler msg_private = (query, cookie) {
   final data = {
     'offset': query['offset'] ?? 0,
     'limit': query['limit'] ?? 30,
-    'total': "true"
+    'total': 'true'
   };
   return request('POST', 'https://music.163.com/api/msg/private/users', data,
       crypto: Crypto.weapi, cookies: cookie);

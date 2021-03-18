@@ -1,11 +1,99 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter_placeholder_textlines/placeholder_lines.dart';
 
-class LoadingView extends GetView {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text("加载中..."),
+class LoadingView {
+
+  ///普通列表加载试图
+  static Widget buildGeneralLoadingView() {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 12.0,horizontal: 15.0),
+      width: 100,
+      child: PlaceholderLines(
+        count: 2,
+        maxWidth: 0.9,
+        minWidth: 0.6,
+        align: TextAlign.left,
+        animate: true,
+        color: Colors.grey[400],
+      ),
     );
   }
+
+  ///评论加载中的view
+  static Widget buildLoadingTalkView() {
+    return Wrap(
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 5.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                margin: EdgeInsets.only(right: 12.0),
+                width: 30,
+                height: 30,
+                decoration: BoxDecoration(
+                    color: Colors.grey.withOpacity(.6),
+                    borderRadius: BorderRadius.circular(30.0)),
+                child: Center(
+                  child: Icon(
+                    Icons.photo_size_select_actual,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                ),
+              ),
+              Expanded(
+                  child: PlaceholderLines(
+                    lineHeight: 10.0,
+                    maxWidth: .5,
+                    minWidth: .3,
+                    count: 1,
+                  )),
+            ],
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.only(left: 40.0, bottom: 5.0, top: 5.0),
+          child: PlaceholderLines(
+            lineHeight: 10.0,
+            count: 3,
+          ),
+        )
+      ],
+    );
+  }
+
+  ///gridView形式的歌单加载中的View
+ static Widget buildGridViewSheetLoadingView(){
+    return  Wrap(
+      children: [
+       Center(
+         child:  Container(
+           width: 110.0,
+           height: 110.0,
+           margin: EdgeInsets.all(4.0),
+           decoration: BoxDecoration(
+               color: Colors.grey.withOpacity(.6),
+               borderRadius: BorderRadius.circular(6.0)
+           ),
+           child: Center(
+             child: Icon(
+               Icons.photo_size_select_actual,
+               color: Colors.white,
+               size: 42,
+             ),
+           ),
+         ),
+       ),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 6.0),
+          child: PlaceholderLines(
+            lineHeight: 10.0,
+            count: 2,
+          ),
+        )
+      ],
+    );
+ }
 }

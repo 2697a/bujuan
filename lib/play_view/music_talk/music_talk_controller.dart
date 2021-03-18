@@ -10,7 +10,7 @@ class MusicTalkController extends GetxController {
   var loadPageIndex = 1.obs;
   TextEditingController talkEditingController;
   RefreshController refreshController;
-  MusicItem musicItem = Get.arguments["music"];
+  MusicItem musicItem = Get.arguments['music'];
 
   @override
   void onInit() {

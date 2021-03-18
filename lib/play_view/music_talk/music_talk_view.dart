@@ -1,4 +1,5 @@
 import 'package:bujuan/entity/music_talk.dart';
+import 'package:bujuan/global/global_loding_view.dart';
 import 'package:bujuan/over_scroll.dart';
 import 'package:bujuan/play_view/music_talk/music_talk_controller.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -21,14 +22,14 @@ class MusicTalkView extends GetView<MusicTalkController> {
                   borderRadius: BorderRadiusDirectional.circular(6.0)),
               clipBehavior: Clip.antiAlias,
               child: CachedNetworkImage(
-                imageUrl: "${controller.musicItem.iconUri}",
+                imageUrl: '${controller.musicItem.iconUri}',
                 height: 30.0,
                 width: 30.0,
               ),
             ),
             Padding(padding: EdgeInsets.symmetric(horizontal: 3.0)),
             Expanded(
-                child: Text("${controller.musicItem.title}",
+                child: Text('${controller.musicItem.title}',
                     overflow: TextOverflow.ellipsis))
           ],
         ),
@@ -49,7 +50,7 @@ class MusicTalkView extends GetView<MusicTalkController> {
                             return controller.musicTalks.length > 0
                                 ? _buildMusicTalkItem(
                                     controller.musicTalks[index])
-                                : _buildLoadMusicTalkView();
+                                : LoadingView.buildLoadingTalkView();
                           },
                           childCount: controller.musicTalks.length > 0
                               ? controller.musicTalks.length
@@ -67,19 +68,16 @@ class MusicTalkView extends GetView<MusicTalkController> {
                 child: Row(
                   children: [
                     Expanded(
-                        child: Container(
-                      decoration: BoxDecoration(
-                          color: Colors.grey[200],
-                          borderRadius: BorderRadius.circular(6.0)),
-                      padding: EdgeInsets.symmetric(horizontal: 12.0),
-                      child: TextField(
-                        controller: controller.talkEditingController,
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: "插一嘴？",
-                        ),
-                      ),
-                    )),
+                        child: TextField(
+                          controller: controller.talkEditingController,
+
+                          decoration: InputDecoration(
+                            contentPadding: EdgeInsets.symmetric(vertical: 0.0,horizontal: 8.0),
+
+                            border: InputBorder.none,
+                            hintText: '插一嘴？',
+                          ),
+                        )),
                     IconButton(icon: Icon(Icons.send), onPressed: () {})
                   ],
                 ),
@@ -92,7 +90,7 @@ class MusicTalkView extends GetView<MusicTalkController> {
   ///评论item
   Widget _buildMusicTalkItem(Comments comments) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+      padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
       child: Column(
         children: [
           Row(
@@ -102,15 +100,14 @@ class MusicTalkView extends GetView<MusicTalkController> {
                     borderRadius: BorderRadiusDirectional.circular(30.0)),
                 clipBehavior: Clip.antiAlias,
                 child: CachedNetworkImage(
-                  imageUrl: "${comments.user.avatarUrl}",
+                  imageUrl: '${comments.user.avatarUrl}',
                   height: 30.0,
                   width: 30.0,
                 ),
               ),
               Padding(padding: EdgeInsets.symmetric(horizontal: 3.0)),
               Text(
-                "${comments.user.nickname}",
-                style: TextStyle(color: Theme.of(Get.context).accentColor),
+                '${comments.user.nickname}'
               )
             ],
           ),
@@ -118,7 +115,7 @@ class MusicTalkView extends GetView<MusicTalkController> {
             width: double.infinity,
             padding: EdgeInsets.only(left: 40.0, bottom: 5.0, top: 5.0),
             child: Text(
-              "${comments.content}",
+              '${comments.content}',
               style: TextStyle(color: Colors.grey[500]),
             ),
           ),
@@ -131,7 +128,7 @@ class MusicTalkView extends GetView<MusicTalkController> {
                 child: Wrap(
                   children: [
                     Text(
-                      "${comments.showFloorComment.replyCount}条回复 >",
+                      '${comments.showFloorComment.replyCount}条回复 >',
                       style: TextStyle(color: Colors.blue, fontSize: 13.0),
                     ),
                   ],
@@ -145,48 +142,4 @@ class MusicTalkView extends GetView<MusicTalkController> {
     );
   }
 
-  ///加载中的view
-  Widget _buildLoadMusicTalkView() {
-    return Wrap(
-      children: [
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 5.0),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                margin: EdgeInsets.only(right: 12.0),
-                width: 30,
-                height: 30,
-                decoration: BoxDecoration(
-                    color: Colors.grey.withOpacity(.6),
-                    borderRadius: BorderRadius.circular(30.0)),
-                child: Center(
-                  child: Icon(
-                    Icons.photo_size_select_actual,
-                    color: Colors.white,
-                    size: 20,
-                  ),
-                ),
-              ),
-              Expanded(
-                  child: PlaceholderLines(
-                lineHeight: 10.0,
-                maxWidth: .5,
-                minWidth: .3,
-                count: 1,
-              )),
-            ],
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 5.0),
-          child: PlaceholderLines(
-            lineHeight: 10.0,
-            count: 3,
-          ),
-        )
-      ],
-    );
-  }
 }

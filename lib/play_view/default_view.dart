@@ -1,6 +1,7 @@
 import 'package:bujuan/bottom_bar/lyric_view.dart';
 import 'package:bujuan/global/global_controller.dart';
-import 'package:bujuan/play_list/play_list_view.dart';
+import 'package:bujuan/home/home_controller.dart';
+import 'package:bujuan/play_view/play_list_view.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -51,7 +52,13 @@ class DefaultView extends GetView<GlobalController> {
                     ),
                   ],
                 )),
-                IconButton(icon: Icon(Icons.more_horiz), onPressed: () =>Get.toNamed("/music_talk",arguments: {"music":controller.song.value})),
+                IconButton(icon: Icon(Icons.more_horiz), onPressed: (){
+                  if(!Get.find<HomeController>().login.value){
+                    Get.find<HomeController>().goToLogin();
+                  }else{
+                    Get.toNamed('/music_talk',arguments: {'music':controller.song.value});
+                  }
+                }),
               ],
             ),
             Padding(padding: EdgeInsets.symmetric(vertical: 8.0)),
@@ -65,7 +72,7 @@ class DefaultView extends GetView<GlobalController> {
                   ),
             Padding(padding: EdgeInsets.symmetric(vertical: 8.0)),
             // Text(
-            //   "${BuJuanUtil.unix2Time(controller.playPos.value)} : ${BuJuanUtil.unix2Time(controller.song.value.duration ~/ 1000)}",
+            //   '${BuJuanUtil.unix2Time(controller.playPos.value)} : ${BuJuanUtil.unix2Time(controller.song.value.duration ~/ 1000)}',
             //   style:
             //   TextStyle(color: Theme.of(Get.context).accentColor,fontWeight: FontWeight.bold,fontSize: 20.0),
             // ),
@@ -243,7 +250,7 @@ class DefaultView extends GetView<GlobalController> {
               shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(230.0)),
               clipBehavior: Clip.antiAlias,
               child: CachedNetworkImage(
-                imageUrl: "${controller.song.value.iconUri}?param=500y500",
+                imageUrl: '${controller.song.value.iconUri}?param=500y500',
               ),
             ),
           ],

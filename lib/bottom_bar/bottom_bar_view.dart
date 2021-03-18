@@ -34,7 +34,7 @@ class BottomBarView extends GetView<BottomBarController> {
           )
         : Scaffold(
             body: Center(
-              child: Text("aa bb aa"),
+              child: Text('aa bb aa'),
             ),
           );
   }
@@ -62,7 +62,7 @@ class BottomBarView extends GetView<BottomBarController> {
               child: CachedNetworkImage(
                 width: 230.0,
                 height: 230.0,
-                imageUrl: "${controller.song.value.iconUri}?param=500y500",
+                imageUrl: '${controller.song.value.iconUri}?param=500y500',
               ),
             ),
             Padding(padding: EdgeInsets.symmetric(vertical: 8.0)),
@@ -71,7 +71,7 @@ class BottomBarView extends GetView<BottomBarController> {
               pos: controller.playPos.value,
             ),
             Padding(padding: EdgeInsets.symmetric(vertical: 8.0)),
-            Text("${controller.playPos}"),
+            Text('${controller.playPos}'),
             Padding(padding: EdgeInsets.symmetric(vertical: 8.0)),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -134,7 +134,7 @@ class BottomBarView extends GetView<BottomBarController> {
                       width: 200.0,
                       height: 200.0,
                       imageUrl:
-                          "${controller.song.value.iconUri}?param=500y500",
+                          '${controller.song.value.iconUri}?param=500y500',
                     ),
                   ),
                   Expanded(child: Container()),
@@ -213,11 +213,11 @@ class BottomBarView extends GetView<BottomBarController> {
       elevation: 0.0,
       iconSize: 26.0,
       items: [
-        BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: "home"),
-        BottomNavigationBarItem(icon: Icon(Icons.history), label: "top"),
-        BottomNavigationBarItem(icon: Icon(Icons.search), label: "search"),
+        BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'home'),
+        BottomNavigationBarItem(icon: Icon(Icons.history), label: 'top'),
+        BottomNavigationBarItem(icon: Icon(Icons.search), label: 'search'),
         BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline), label: "user"),
+            icon: Icon(Icons.person_outline), label: 'user'),
       ],
       onTap: (index) => controller.changeIndex(index),
       currentIndex: controller.currentIndex.value,
@@ -243,18 +243,18 @@ class BottomBarView extends GetView<BottomBarController> {
             width: 46.0,
             height: 46.0,
             imageUrl: controller.isPlay.value
-                ? "${controller.song.value.iconUri}?param=100y100"
-                : "https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fn.sinaimg.cn%2Ffront%2F342%2Fw700h442%2F20190321%2FxqrY-huqrnan7527352.jpg&refer=http%3A%2F%2Fn.sinaimg.cn&app=2002&size=f9999,"
-                    "10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1617447095&t=49ad10b2c81c151cfa993b98ace7f6f1",
+                ? '${controller.song.value.iconUri}?param=100y100'
+                : 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fn.sinaimg.cn%2Ffront%2F342%2Fw700h442%2F20190321%2FxqrY-huqrnan7527352.jpg&refer=http%3A%2F%2Fn.sinaimg.cn&app=2002&size=f9999,'
+                    '10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1617447095&t=49ad10b2c81c151cfa993b98ace7f6f1',
           ),
         ),
         title: Text(
-          controller.isPlay.value ? "${controller.song.value.title}" : "七里香",
+          controller.isPlay.value ? '${controller.song.value.title}' : '七里香',
           style: TextStyle(fontSize: 16.0),
           overflow: TextOverflow.ellipsis,
         ),
         subtitle: Text(
-            controller.isPlay.value ? "${controller.song.value.artist}" : "周杰伦",
+            controller.isPlay.value ? '${controller.song.value.artist}' : '周杰伦',
             style: TextStyle(fontSize: 14.0, color: Colors.grey[400])),
         trailing: Wrap(
           children: [

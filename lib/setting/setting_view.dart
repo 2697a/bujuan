@@ -20,7 +20,7 @@ class SettingView extends GetView<SettingController> {
                   elevation: 0.0,
                   floating: false,
                   pinned: true,
-                  title: Text("设置"),
+                  title: Text('设置'),
                   expandedHeight: 240.0,
                   flexibleSpace: FlexibleSpaceBar(
                     collapseMode: CollapseMode.parallax,
@@ -46,7 +46,7 @@ class SettingView extends GetView<SettingController> {
                                 clipBehavior: Clip.antiAlias,
                                 child: CachedNetworkImage(
                                   fit: BoxFit.cover,
-                                  imageUrl: "https://pic3.zhimg.com/80/v2-c954015fa97a2986de8d4557376c587c_1440w.jpg",
+                                  imageUrl: 'https://pic3.zhimg.com/80/v2-c954015fa97a2986de8d4557376c587c_1440w.jpg',
                                   height: 100.0,
                                   width: 100.0,
                                 ),
@@ -55,14 +55,14 @@ class SettingView extends GetView<SettingController> {
                             Padding(padding: EdgeInsets.symmetric(vertical: 5.0)),
                             Container(
                               child: Text(
-                                "不倦App",
+                                '不倦App',
                                 style: TextStyle(fontSize: 16.0,fontWeight: FontWeight.bold),
                               ),
                             ),
                             Padding(padding: EdgeInsets.symmetric(vertical: 5.0)),
                             Container(
                               child: Text(
-                                "版本号：1.0.5",
+                                '版本号：1.0.5',
                                 style: TextStyle(fontSize: 14.0),
                               ),
                             )
@@ -74,15 +74,15 @@ class SettingView extends GetView<SettingController> {
                 ),
                 SliverToBoxAdapter(
                   child: SwitchListTile(
-                    title: Text("夜间模式"),
+                    title: Text('夜间模式'),
                     value: controller.isDark.value,
                     onChanged: (value) => controller.changeTheme(value),
                   ),
                 ),
                 SliverToBoxAdapter(
                     child: SwitchListTile(
-                      title: Text("忽略音频焦点"),
-                      subtitle: Text("其他音频应用开始播放时不会自动暂停"),
+                      title: Text('忽略音频焦点'),
+                      subtitle: Text('其他音频应用开始播放时不会自动暂停'),
                       value: controller.isIgnoreAudioFocus.value,
                       onChanged: (value) => controller.toggleAudioFocus(value),
                     )
@@ -93,7 +93,7 @@ class SettingView extends GetView<SettingController> {
                 offstage: !Get.find<HomeController>().login.value,
                 child: ListTile(
                   title: Text(
-                    "退出登录",
+                    '退出登录',
                     style: TextStyle(color: Colors.red),
                     textAlign: TextAlign.center,
                   ),
@@ -116,7 +116,7 @@ class SettingView extends GetView<SettingController> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        title: Text("设置"),
+        title: Text('设置'),
       ),
       body: Column(
         children: [
@@ -126,13 +126,13 @@ class SettingView extends GetView<SettingController> {
                   child: ListView(
                     children: [
                       SwitchListTile(
-                        title: Text("夜间模式"),
+                        title: Text('夜间模式'),
                         value: controller.isDark.value,
                         onChanged: (value) => controller.changeTheme(value),
                       ),
                       SwitchListTile(
-                        title: Text("忽略音频焦点"),
-                        subtitle: Text("其他音频应用开始播放时不会自动暂停"),
+                        title: Text('忽略音频焦点'),
+                        subtitle: Text('其他音频应用开始播放时不会自动暂停'),
                         value: controller.isIgnoreAudioFocus.value,
                         onChanged: (value) => controller.toggleAudioFocus(value),
                       ),
@@ -142,7 +142,7 @@ class SettingView extends GetView<SettingController> {
               offstage: !Get.find<HomeController>().login.value,
               child: ListTile(
                 title: Text(
-                  "退出登录",
+                  '退出登录',
                   style: TextStyle(color: Colors.red),
                   textAlign: TextAlign.center,
                 ),

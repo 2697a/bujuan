@@ -17,7 +17,7 @@ Handler like_song = (query, cookie) {
 // 喜欢的歌曲(无序)
 Handler likelist = (query, cookie) {
   return request('POST', 'https://music.163.com/weapi/song/like/get',
-      {"uid": query['uid']},
+      {'uid': query['uid']},
       crypto: Crypto.weapi, cookies: cookie);
 };
 //302618605

@@ -24,6 +24,13 @@ class UserView extends GetView<UserController> {
             onRefresh: () => controller.onReady(),
             child: CustomScrollView(
               slivers: [
+                SliverToBoxAdapter(
+                  child: ListTile(
+                    title: Text('云盘'),
+                    subtitle: Text('data'),
+                    onTap: ()=>Get.toNamed('/cloud'),
+                  ),
+                ),
                 SliverList(
                   delegate: SliverChildBuilderDelegate(
                     (BuildContext context, int index) {
@@ -34,7 +41,7 @@ class UserView extends GetView<UserController> {
                 ),
                 SliverToBoxAdapter(child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 8.0,vertical: 6.0),
-                  child: Text("我创建的"),
+                  child: Text('我创建的'),
                 ),),
                 SliverList(
                   delegate: SliverChildBuilderDelegate(
@@ -46,7 +53,7 @@ class UserView extends GetView<UserController> {
                 ),
                 SliverToBoxAdapter(child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 8.0,vertical: 6.0),
-                  child: Text("我收藏的"),
+                  child: Text('我收藏的'),
                 ),),
                 SliverList(
                   delegate: SliverChildBuilderDelegate(
@@ -65,7 +72,7 @@ class UserView extends GetView<UserController> {
   ///歌单itemView
   Widget _buildUserSheetItem(UserOrderPlaylist userOrderPlaylist) {
     return Slidable(
-      key: Key("${userOrderPlaylist.id}"),
+      key: Key('${userOrderPlaylist.id}'),
       controller: controller.slidableController,
       actionExtentRatio: .25,
       child: InkWell(
@@ -78,14 +85,14 @@ class UserView extends GetView<UserController> {
                 alignment: Alignment.center,
                 margin: EdgeInsets.only(right: 12.0),
                 child: Hero(
-                  tag: "${userOrderPlaylist.id}",
+                  tag: '${userOrderPlaylist.id}',
                   child: Card(
                     shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(4.0)),
                     clipBehavior: Clip.antiAlias,
                     child: CachedNetworkImage(
                       width: 48,
                       height: 48,
-                      imageUrl: "${userOrderPlaylist.coverImgUrl}?param=200y200",
+                      imageUrl: '${userOrderPlaylist.coverImgUrl}?param=200y200',
                     ),
                   ),
                 ),
@@ -101,7 +108,7 @@ class UserView extends GetView<UserController> {
                   Container(
                     height: 25,
                     alignment: Alignment.centerLeft,
-                    child: Text("${userOrderPlaylist.trackCount}首", maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14.0, color: Colors.grey[500])),
+                    child: Text('${userOrderPlaylist.trackCount}首', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14.0, color: Colors.grey[500])),
                   )
                 ],
               )),
@@ -109,7 +116,7 @@ class UserView extends GetView<UserController> {
           ),
         ),
         onTap: () {
-          Get.toNamed("/sheet", arguments: {"id": userOrderPlaylist.id, "name": userOrderPlaylist.name, "imageUrl": "${userOrderPlaylist.coverImgUrl}?param=300y300"});
+          Get.toNamed('/sheet', arguments: {'id': userOrderPlaylist.id, 'name': userOrderPlaylist.name, 'imageUrl': '${userOrderPlaylist.coverImgUrl}?param=300y300'});
         },
       ),
       actionPane: SlidableDrawerActionPane(),
