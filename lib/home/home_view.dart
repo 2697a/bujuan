@@ -5,6 +5,7 @@ import 'package:bujuan/music_bottom_bar/music_bottom_bar_view.dart';
 import 'package:bujuan/play_view/default_view.dart';
 import 'package:bujuan/search/search_view.dart';
 import 'package:bujuan/user/user_view.dart';
+import 'package:bujuan/utils/bujuan_util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -63,25 +64,16 @@ class HomeView extends GetView<HomeController> {
   Widget _buildHomeView() {
     return Scaffold(
       resizeToAvoidBottomInset:false,
-      body: AnnotatedRegion<SystemUiOverlayStyle>(
-        child: WeSlide(
-          controller: controller.weSlideController,
-          panelMaxSize: MediaQuery.of(Get.context).size.height,
-          panelMinSize: 120.0,
-          body: _buildContent(),
-          parallax: true,
-          panel: DefaultView(weSlideController: controller.weSlideController),
-          panelHeader: MusicBottomBarView(
-              weSlideController: controller.weSlideController),
-          footer: _buildBottomNavigationBar(),
-        ),
-        value: !Get.isDarkMode
-            ? SystemUiOverlayStyle.light.copyWith(
-                systemNavigationBarColor: lightTheme.primaryColor,
-              )
-            : SystemUiOverlayStyle.dark.copyWith(
-                systemNavigationBarColor: darkTheme.primaryColor,
-              ),
+      body: WeSlide(
+        controller: controller.weSlideController,
+        panelMaxSize: MediaQuery.of(Get.context).size.height,
+        panelMinSize: 120.0,
+        body: _buildContent(),
+        parallax: true,
+        panel: DefaultView(weSlideController: controller.weSlideController),
+        panelHeader: MusicBottomBarView(
+            weSlideController: controller.weSlideController),
+        footer: _buildBottomNavigationBar(),
       ),
     );
   }

@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:bujuan/entity/user_profile_entity.dart';
 import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/global/global_controller.dart';
+import 'package:bujuan/utils/bujuan_util.dart';
 import 'package:bujuan/utils/net_util.dart';
 import 'package:bujuan/utils/sp_util.dart';
 import 'package:flutter/cupertino.dart';

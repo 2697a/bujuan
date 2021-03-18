@@ -2,9 +2,9 @@ import 'package:bujuan/global/global_theme.dart';
 import 'package:bujuan/home/home_controller.dart';
 import 'package:bujuan/over_scroll.dart';
 import 'package:bujuan/setting/setting_controller.dart';
+import 'package:bujuan/utils/bujuan_util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 class SettingView extends GetView<SettingController> {
@@ -102,13 +102,7 @@ class SettingView extends GetView<SettingController> {
           ],
         ),
       )),
-      value: !Get.isDarkMode
-          ? SystemUiOverlayStyle.light.copyWith(
-              systemNavigationBarColor: lightTheme.primaryColor,
-            )
-          : SystemUiOverlayStyle.dark.copyWith(
-              systemNavigationBarColor: darkTheme.primaryColor,
-            ),
+      value: BuJuanUtil.setNavigationBarTextColor(Get.isDarkMode),
     );
   }
 

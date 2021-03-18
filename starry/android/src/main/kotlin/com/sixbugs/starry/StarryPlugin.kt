@@ -2,7 +2,6 @@ package com.sixbugs.starry
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.os.Bundle
 import android.util.Log
 import androidx.annotation.NonNull
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -18,7 +17,6 @@ import snow.player.PlayerClient
 import snow.player.audio.MusicItem
 import snow.player.playlist.Playlist
 import snow.player.playlist.PlaylistManager
-import snow.player.ui.equalizer.EqualizerActivity
 
 
 /** StarryPlugin */

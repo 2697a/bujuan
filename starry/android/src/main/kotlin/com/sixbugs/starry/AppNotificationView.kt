@@ -11,7 +11,7 @@ import snow.player.PlayerService
 import kotlin.system.exitProcess
 
 class AppNotificationView() : PlayerService.MediaNotificationView() {
-    val ACTION_TOGGLE_FAVORITE = "stop_play"
+    private val ACTION_TOGGLE_FAVORITE = "stop_play"
     private val ACTION_SWITCH_PLAY_MODE = "switch_play_mode"
     private lateinit var mSwitchPlayMode: PendingIntent
     private var mContentIntent: PendingIntent? = null

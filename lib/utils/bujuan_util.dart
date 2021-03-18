@@ -1,4 +1,6 @@
+import 'package:bujuan/global/global_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class BuJuanUtil {
   static String unix2Time(unix) {
@@ -28,6 +30,20 @@ class BuJuanUtil {
   }
 
 
+  /// 设置沉浸式导航栏文字颜色
+  ///
+  /// [light] 状态栏文字是否为白色
+  static SystemUiOverlayStyle setNavigationBarTextColor(bool dark) {
+    return !dark?SystemUiOverlayStyle(
+      systemNavigationBarColor: lightTheme.primaryColor,
+      systemNavigationBarDividerColor: lightTheme.primaryColor,
+      systemNavigationBarIconBrightness: Brightness.dark,
+    ):SystemUiOverlayStyle(
+      systemNavigationBarColor: darkTheme.primaryColor,
+      systemNavigationBarDividerColor: darkTheme.primaryColor,
+      systemNavigationBarIconBrightness: Brightness.light,
+    );
+  }
 
 
   static List<Lyric> getLyric(String lyric) {
