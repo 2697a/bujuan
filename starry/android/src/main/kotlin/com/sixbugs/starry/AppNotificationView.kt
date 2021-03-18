@@ -57,7 +57,7 @@ class AppNotificationView() : PlayerService.MediaNotificationView() {
     }
 
     override fun getSmallIconId(): Int {
-        return R.mipmap.ic_notif_small_icon
+        return R.drawable.ic_noti_icon
     }
 
     override fun onBuildMediaStyle(mediaStyle: NotificationCompat.MediaStyle?) {
@@ -77,7 +77,7 @@ class AppNotificationView() : PlayerService.MediaNotificationView() {
         builder?.setContentIntent(mContentIntent)
     }
     private fun addToggleFavorite(builder: androidx.core.app.NotificationCompat.Builder?) {
-        builder?.addAction(R.drawable.ic_baseline_stop_24, "stop", mStopPlay)
+        builder?.addAction(R.drawable.ic_baseline_stop, "stop", mStopPlay)
     }
     private fun addSkipToPrevious(builder: androidx.core.app.NotificationCompat.Builder?) {
         builder?.addAction(R.mipmap.ic_notif_skip_to_previous, "skip to previous", doSkipToPrevious())
