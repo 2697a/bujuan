@@ -54,7 +54,7 @@ class LyricWidget extends StatefulWidget {
     this.lyricStyle ??= TextStyle(color: Colors.grey, fontSize: 16);
     this.remarkStyle ??= TextStyle(color: Colors.grey, fontSize: 16);
     this.currLyricStyle ??=
-        TextStyle(color: Theme.of(Get.context).accentColor, fontSize: 18);
+        TextStyle(color: Theme.of(Get.context).accentColor, fontSize: 16,fontWeight: FontWeight.bold);
     this.currRemarkLyricStyle ??= this.currLyricStyle;
     this.draggingLyricStyle ??= lyricStyle.copyWith(color: Colors.greenAccent);
     this.draggingRemarkLyricStyle ??=

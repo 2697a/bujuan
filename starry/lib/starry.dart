@@ -18,6 +18,7 @@ class Starry {
   static const MethodChannel _channel = const MethodChannel('starry');
   static SongUrl songUrl;
   static const EventChannel eventChannel = const EventChannel('starry/event');
+  static const EventChannel timingChannel = const EventChannel('starry/timing');
 
   ///歌曲播放状态
   static final StreamController<PlayState> _playerStateController = StreamController<PlayState>.broadcast();
@@ -29,10 +30,10 @@ class Starry {
 
   static Stream<MusicItem> get onPlayerSongChanged => _playerSongController.stream;
 
-  ///当前播放歌曲进度
-  static final StreamController<int> _playerSongPosController = StreamController<int>.broadcast();
+  ///当前播放模式
+  static final StreamController<int> _playerModeController = StreamController<int>.broadcast();
 
-  static Stream<int> get onPlayerSongPosChanged => _playerSongPosController.stream;
+  static Stream<int> get onPlayerModeChanged => _playerModeController.stream;
 
   ///播放列表发生变化
   static final StreamController<List<MusicItem>> _playerSongListController = StreamController<List<MusicItem>>.broadcast();
@@ -77,13 +78,23 @@ class Starry {
     await _channel.invokeMethod('NEXT');
   }
 
-  ///下一首
+  ///获取正在播放
   static Future<MusicItem> getNowPlaying() async {
     var musicItemStr = await _channel.invokeMethod('NOW_PLAYING');
     if (musicItemStr != null && musicItemStr != '') {
       return MusicItem.fromJson(jsonDecode(musicItemStr));
     }
     return null;
+  }
+
+  ///开启计时器
+  static Future<void> startTiming(int value) async{
+    await _channel.invokeMethod('START_TIMING',{"VALUE":value});
+  }
+
+  ///关闭计时器
+  static Future<void> stopTiming() async{
+    await _channel.invokeMethod('STOP_TIMING');
   }
 
   ///切换歌曲播放进度
@@ -106,8 +117,14 @@ class Starry {
     await _channel.invokeMethod('AUDIO_EFFECT');
   }
 
+  ///是否开启抢占焦点
   static Future<int> toggleAudioFocus(bool value) async {
    return await _channel.invokeMethod('TOGGLE_IGNORE_AUDIO_FOCUS', {'IS_IGNORE': value});
+  }
+
+  ///设置循环方式
+  static Future<int> setPlayMode(int value) async {
+    return await _channel.invokeMethod('SET_PLAY_MODE', {'VALUE': value});
   }
 
   static Future<dynamic> _platformCallHandler(MethodCall call) async {
@@ -118,7 +135,6 @@ class Starry {
       return future;
     } else if (method == 'PLAYING_SONG_INFO') {
       //当前播放歌曲
-      _playerSongPosController.add(arguments);
       _playerStateController.add(PlayState.PLAYING);
     } else if (method == 'SWITCH_SONG_INFO') {
       //切歌
@@ -131,9 +147,9 @@ class Starry {
     } else if (method == 'PLAY_ERROR') {
       //播放错误
       _playerStateController.add(PlayState.ERROR);
-    } else if (method == 'PLAY_PROGRESS') {
+    } else if (method == 'PLAY_MODE_CHANGE') {
       //播放进度
-      _playerSongPosController.add(arguments);
+      _playerModeController.add(arguments);
     } else if (method == 'PLAY_LIST_CHANGE') {
       //播放列表发生变化
       List list = jsonDecode(arguments);

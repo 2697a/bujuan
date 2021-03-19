@@ -84,10 +84,10 @@ class SheetInfoView extends GetView<SheetInfoController> {
                                 padding: EdgeInsets.symmetric(horizontal: 4.0),
                                 child: PlaceholderLines(
                                   count: 4,
+                                  lineHeight: 10.0,
                                   maxWidth: 0.9,
                                   minWidth: 0.6,
                                   align: TextAlign.left,
-                                  animate: true,
                                   color: Colors.grey[400],
                                 ),
                               ))
@@ -144,10 +144,10 @@ class SheetInfoView extends GetView<SheetInfoController> {
                                         padding: EdgeInsets.symmetric(horizontal: 4.0),
                                         child: PlaceholderLines(
                                           count: 4,
+                                          lineHeight: 10.0,
                                           maxWidth: 0.9,
                                           minWidth: 0.6,
                                           align: TextAlign.left,
-                                          animate: true,
                                           color: Colors.grey[400],
                                         ),
                                       ))

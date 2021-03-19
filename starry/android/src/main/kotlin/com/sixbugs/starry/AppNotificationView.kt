@@ -80,23 +80,23 @@ class AppNotificationView() : PlayerService.MediaNotificationView() {
         builder?.addAction(R.drawable.ic_baseline_stop, "stop", mStopPlay)
     }
     private fun addSkipToPrevious(builder: androidx.core.app.NotificationCompat.Builder?) {
-        builder?.addAction(R.mipmap.ic_notif_skip_to_previous, "skip to previous", doSkipToPrevious())
+        builder?.addAction(R.drawable.ic_baseline_skip_previous, "skip to previous", doSkipToPrevious())
     }
 
     private fun addPlayPause(builder: androidx.core.app.NotificationCompat.Builder?) {
-        var iconId: Int = if (isPlayingState) R.mipmap.ic_notif_pause else R.mipmap.ic_notif_play
+        var iconId: Int = if (isPlayingState) R.drawable.ic_baseline_pause else R.drawable.ic_baseline_play
         builder?.addAction(iconId, "play pause", doPlayPause())
     }
 
     private fun addSkipToNext(builder: androidx.core.app.NotificationCompat.Builder?) {
-        builder?.addAction(R.mipmap.ic_notif_skip_to_next, "skip to next", doSkipToNext())
+        builder?.addAction(R.drawable.ic_baseline_skip_next, "skip to next", doSkipToNext())
     }
 
     private fun addSwitchPlayMode(builder: androidx.core.app.NotificationCompat.Builder?) {
         when (playMode) {
-            PlayMode.PLAYLIST_LOOP -> builder?.addAction(R.mipmap.ic_notif_play_mode_playlist_loop, "sequential", mSwitchPlayMode)
-            PlayMode.LOOP -> builder?.addAction(R.mipmap.ic_notif_play_mode_loop, "sequential", mSwitchPlayMode)
-            PlayMode.SHUFFLE -> builder?.addAction(R.mipmap.ic_notif_play_mode_shuffle, "sequential", mSwitchPlayMode)
+            PlayMode.PLAYLIST_LOOP -> builder?.addAction(R.drawable.ic_baseline_repeat, "sequential", mSwitchPlayMode)
+            PlayMode.LOOP -> builder?.addAction(R.drawable.ic_baseline_repeat_one, "sequential", mSwitchPlayMode)
+            PlayMode.SHUFFLE -> builder?.addAction(R.drawable.ic_baseline_shuffle, "sequential", mSwitchPlayMode)
         }
     }
 }

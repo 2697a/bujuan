@@ -1,7 +1,6 @@
 import 'package:bujuan/entity/personal_entity.dart';
 import 'package:bujuan/find/find_controller.dart';
 import 'package:bujuan/global/global_loding_view.dart';
-import 'package:bujuan/global/global_state_view.dart';
 import 'package:bujuan/utils/bujuan_util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dots_indicator/dots_indicator.dart';
@@ -28,6 +27,85 @@ class FindView extends GetView<FindController> {
             controller: controller.refreshController,
             child: CustomScrollView(
               slivers: [
+                // SliverToBoxAdapter(
+                //   child: Container(
+                //     height: 110.0,
+                //     child: Row(
+                //       children: [
+                //         Expanded(
+                //             child: InkWell(
+                //               child: Stack(
+                //                 children: [
+                //                   Container(
+                //                     height: 110.0,
+                //                     child: Card(
+                //                       shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(6.0)),
+                //                       clipBehavior: Clip.antiAlias,
+                //                       child: Image.asset(
+                //                         'assets/images/p_two.png',
+                //                         height: 100,
+                //                         width: double.infinity,
+                //                         fit: BoxFit.cover,
+                //                       ),
+                //                     ),
+                //                   ),
+                //                   Positioned(
+                //                     bottom: 5.0,
+                //                     right: 8.0,
+                //                     child: Container(
+                //                       padding: EdgeInsets.symmetric(vertical: 2.0, horizontal: 6.0),
+                //                       decoration: BoxDecoration(color: Theme.of(context).accentColor, borderRadius: BorderRadius.circular(10.0)),
+                //                       child: Text(
+                //                         'radio',
+                //                         style: TextStyle(color: Colors.white),
+                //                       ),
+                //                     ),
+                //                   )
+                //                 ],
+                //               ),
+                //               onTap: () {},
+                //             )),
+                //         Padding(padding: EdgeInsets.symmetric(horizontal: 2.0)),
+                //         Expanded(
+                //           child: InkWell(
+                //             child: Stack(
+                //               children: [
+                //                 Container(
+                //                   height: 110.0,
+                //                   child: Card(
+                //                     shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(6.0)),
+                //                     clipBehavior: Clip.antiAlias,
+                //                     child: Image.asset(
+                //                       'assets/images/fm.png',
+                //                       height: 100,
+                //                       width: double.infinity,
+                //                       fit: BoxFit.cover,
+                //                     ),
+                //                   ),
+                //                 ),
+                //                 Positioned(
+                //                   bottom: 6.0,
+                //                   right: 8.0,
+                //                   child: Container(
+                //                     padding: EdgeInsets.symmetric(vertical: 2.0, horizontal: 6.0),
+                //                     decoration: BoxDecoration(color: Theme.of(context).accentColor, borderRadius: BorderRadius.circular(10.0)),
+                //                     child: Text(
+                //                       'fm',
+                //                       style: TextStyle(color: Colors.white),
+                //                     ),
+                //                   ),
+                //                 )
+                //               ],
+                //             ),
+                //             onTap: () {},
+                //           ),
+                //           flex: 2,
+                //         ),
+                //       ],
+                //     ),
+                //   ),
+                // ),
+                // SliverPadding(padding: EdgeInsets.symmetric(vertical: 6.0)),
                 SliverToBoxAdapter(
                   child: InkWell(
                     child: Hero(
@@ -83,86 +161,7 @@ class FindView extends GetView<FindController> {
                   ),
                 ),
                 SliverPadding(padding: EdgeInsets.symmetric(vertical: 5.0)),
-                SliverToBoxAdapter(
-                  child: Container(
-                    padding: EdgeInsets.symmetric(),
-                    height: 110.0,
-                    child: Row(
-                      children: [
-                        Expanded(
-                            child: InkWell(
-                          child: Stack(
-                            children: [
-                              Container(
-                                height: 110.0,
-                                child: Card(
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(6.0)),
-                                  clipBehavior: Clip.antiAlias,
-                                  child: Image.asset(
-                                    'assets/images/p_two.png',
-                                    height: 100,
-                                    width: double.infinity,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              ),
-                              Positioned(
-                                bottom: 5.0,
-                                right: 8.0,
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(vertical: 2.0, horizontal: 6.0),
-                                  decoration: BoxDecoration(color: Theme.of(context).accentColor, borderRadius: BorderRadius.circular(10.0)),
-                                  child: Text(
-                                    'radio',
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                          onTap: () {},
-                        )),
-                        Padding(padding: EdgeInsets.symmetric(horizontal: 2.0)),
-                        Expanded(
-                          child: InkWell(
-                            child: Stack(
-                              children: [
-                                Container(
-                                  height: 110.0,
-                                  child: Card(
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(6.0)),
-                                    clipBehavior: Clip.antiAlias,
-                                    child: Image.asset(
-                                      'assets/images/fm.png',
-                                      height: 100,
-                                      width: double.infinity,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
-                                Positioned(
-                                  bottom: 6.0,
-                                  right: 8.0,
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(vertical: 2.0, horizontal: 6.0),
-                                    decoration: BoxDecoration(color: Theme.of(context).accentColor, borderRadius: BorderRadius.circular(10.0)),
-                                    child: Text(
-                                      'fm',
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                            onTap: () {},
-                          ),
-                          flex: 2,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                SliverPadding(padding: EdgeInsets.symmetric(vertical: 6.0)),
+
                 SliverToBoxAdapter(
                   child: Container(
                     height: 200.0,
@@ -172,17 +171,17 @@ class FindView extends GetView<FindController> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Obx(() => DotsIndicator(
-                                  dotsCount: 2,
-                                  position: controller.currentIndexPage.value.toDouble(),
-                                  decorator: DotsDecorator(
-                                      size: const Size.square(6.0),
-                                      activeSize: const Size(12.0, 6.0),
-                                      activeShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6.0)),
-                                      color: Colors.grey[500],
-                                      // Inactive color
-                                      activeColor: Theme.of(Get.context).accentColor),
-                                )),
+                            Obx(() => Padding(padding: EdgeInsets.symmetric(horizontal: 5.0),child: DotsIndicator(
+                              dotsCount: 2,
+                              position: controller.currentIndexPage.value.toDouble(),
+                              decorator: DotsDecorator(
+                                  size: const Size.square(6.0),
+                                  activeSize: const Size(12.0, 6.0),
+                                  activeShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6.0)),
+                                  color: Colors.grey[500],
+                                  // Inactive color
+                                  activeColor: Theme.of(Get.context).accentColor),
+                            ),)),
                             InkWell(
                               child: Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 8.0),
@@ -203,7 +202,6 @@ class FindView extends GetView<FindController> {
                             return GridView.builder(
                                 physics: NeverScrollableScrollPhysics(),
                                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisSpacing: 10,
                                     crossAxisCount: 3, //每行三列
                                     childAspectRatio: 1),
                                 itemCount: controller.result.length > 0 ? controller.result[index].length : 3,

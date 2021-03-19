@@ -9,11 +9,11 @@ class LoadingView {
       padding: EdgeInsets.symmetric(vertical: 12.0,horizontal: 15.0),
       width: 100,
       child: PlaceholderLines(
+        lineHeight: 10.0,
         count: 2,
         maxWidth: 0.9,
         minWidth: 0.6,
         align: TextAlign.left,
-        animate: true,
         color: Colors.grey[400],
       ),
     );
@@ -48,6 +48,7 @@ class LoadingView {
                     lineHeight: 10.0,
                     maxWidth: .5,
                     minWidth: .3,
+                    color: Colors.grey[400],
                     count: 1,
                   )),
             ],
@@ -57,6 +58,7 @@ class LoadingView {
           padding: EdgeInsets.only(left: 40.0, bottom: 5.0, top: 5.0),
           child: PlaceholderLines(
             lineHeight: 10.0,
+            color: Colors.grey[400],
             count: 3,
           ),
         )
@@ -90,6 +92,7 @@ class LoadingView {
           padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 6.0),
           child: PlaceholderLines(
             lineHeight: 10.0,
+            color: Colors.grey[400],
             count: 2,
           ),
         )
