@@ -49,7 +49,7 @@ class LyricViewState extends State<LyricView> {
                       orientation == Orientation.landscape
                           ? MediaQuery.of(context).size.width / 1.4
                           : MediaQuery.of(context).size.width / 1.4,
-                      double.infinity));
+                      100));
             }));
   }
 }

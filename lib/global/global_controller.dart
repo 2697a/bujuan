@@ -13,14 +13,8 @@ import 'global_config.dart';
 class GlobalController extends GetxController {
   var playState = PlayState.STOP.obs;
   var playPos = 0.obs;
-  var song = MusicItem(
-          musicId: '-99',
-          duration: 6000,
-          title: '暂无歌曲',
-          artist: '暂无',
-          iconUri:
-              'https://p2.music.126.net/pCJ3_kG8FeLR749dbkpT2A==/109951165784923841.jpg')
-      .obs;
+  var playMode = 1.obs;
+  var song = MusicItem(musicId: '-99', duration: 6000, title: '暂无歌曲', artist: '暂无', iconUri: 'https://p2.music.126.net/pCJ3_kG8FeLR749dbkpT2A==/109951165784923841.jpg').obs;
   var lyric = LyricEntity().obs;
   var playList = [].obs;
   ScrollController scrollController;
@@ -42,22 +36,24 @@ class GlobalController extends GetxController {
     song.value = musicItem;
   }
 
-  scrollToIndex(){
+  ///滚动到指定位置
+  scrollToIndex() {
     var indexWhere = playList.indexWhere((element) => element.musicId == song.value.musicId);
-    if(indexWhere>-1)
-      scrollController?.jumpTo(indexWhere*52.0);
+    if (indexWhere > -1) scrollController?.jumpTo(indexWhere * 52.0);
   }
 
-  playMusicByIndex(index){
+  playMusicByIndex(index) {
     Starry.playMusicByIndex(index);
     Get.back();
   }
+
   ///更改当前播放列表
   addPlayList(list) async {
     playList
       ..clear()
       ..addAll(list);
   }
+
   ///更新当前歌曲(弃用)
   changeSong(MusicItem song) async {
     var lyricEntity = await NetUtils().getMusicLyric(song.musicId);
@@ -77,6 +73,24 @@ class GlobalController extends GetxController {
     }
   }
 
+  ///设置播放模式
+  changePlayMode() {
+    //1->2->3
+    var value = 1;
+    switch (playMode.value) {
+      case 1:
+        value = 2;
+        break;
+      case 2:
+        value = 3;
+        break;
+      case 3:
+        value = 1;
+        break;
+    }
+    Starry.setPlayMode(value);
+  }
+
   ///上一首
   skipToPrevious() async {
     await Starry.skipToPrevious();
@@ -87,6 +101,7 @@ class GlobalController extends GetxController {
     await Starry.skipToNext();
   }
 
+  ///播放跳转
   seekTo(int seek) async {
     await Starry.changeSongSeek(seek);
   }

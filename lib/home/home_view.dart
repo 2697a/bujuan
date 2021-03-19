@@ -1,14 +1,11 @@
 import 'package:bujuan/find/find_view.dart';
 import 'package:bujuan/keep.dart';
-import 'package:bujuan/global/global_theme.dart';
 import 'package:bujuan/music_bottom_bar/music_bottom_bar_view.dart';
 import 'package:bujuan/play_view/default_view.dart';
 import 'package:bujuan/search/search_view.dart';
 import 'package:bujuan/user/user_view.dart';
-import 'package:bujuan/utils/bujuan_util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:we_slide/we_slide.dart';
 
@@ -29,12 +26,11 @@ class HomeView extends GetView<HomeController> {
             icon: Hero(
                 tag: 'avatar',
                 child: Card(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadiusDirectional.circular(30.0)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(30.0)),
                   clipBehavior: Clip.antiAlias,
                   child: CachedNetworkImage(
                     fit: BoxFit.cover,
-                    imageUrl: controller.userProfileEntity.value!=null?controller.userProfileEntity.value.profile.avatarUrl:'https://pic1.zhimg.com/80/v2-7ff2d917aa926cfbf2e8b85b035e2563_1440w.jpg',
+                    imageUrl: controller.userProfileEntity.value != null ? controller.userProfileEntity.value.profile.avatarUrl : 'https://pic1.zhimg.com/80/v2-7ff2d917aa926cfbf2e8b85b035e2563_1440w.jpg',
                     height: 30.0,
                     width: 30.0,
                   ),
@@ -42,28 +38,24 @@ class HomeView extends GetView<HomeController> {
             onPressed: () => controller.goToProfile(),
           ),
           actions: [
-            IconButton(
-                icon: Icon(Icons.settings),
-                onPressed: () => Get.toNamed('/setting')),
+            IconButton(icon: Icon(Icons.settings), onPressed: () => Get.toNamed('/setting')),
           ]),
       body: Padding(
-          padding: EdgeInsets.only(top: 0.0,left: 5.0,right: 5.0),
-          child: PageView(
-              controller: controller.pageController,
-              physics: NeverScrollableScrollPhysics(),
+          padding: EdgeInsets.only(top: 0.0, left: 5.0, right: 5.0),
+          child: PageView(controller: controller.pageController, physics: NeverScrollableScrollPhysics(),
               // onPageChanged: (index) => controller.changeIndex(index),
               children: [
-                KeepAliveWrapper( child: FindView()),
-                KeepAliveWrapper( child: SearchView()),
-                KeepAliveWrapper( child: SearchView()),
-                KeepAliveWrapper( child: UserView()),
+                KeepAliveWrapper(child: FindView()),
+                KeepAliveWrapper(child: SearchView()),
+                KeepAliveWrapper(child: SearchView()),
+                KeepAliveWrapper(child: UserView()),
               ])),
     );
   }
 
   Widget _buildHomeView() {
     return Scaffold(
-      resizeToAvoidBottomInset:false,
+      resizeToAvoidBottomInset: false,
       body: WeSlide(
         controller: controller.weSlideController,
         panelMaxSize: MediaQuery.of(Get.context).size.height,
@@ -71,8 +63,7 @@ class HomeView extends GetView<HomeController> {
         body: _buildContent(),
         parallax: true,
         panel: DefaultView(weSlideController: controller.weSlideController),
-        panelHeader: MusicBottomBarView(
-            weSlideController: controller.weSlideController),
+        panelHeader: MusicBottomBarView(weSlideController: controller.weSlideController),
         footer: _buildBottomNavigationBar(),
       ),
     );
@@ -81,7 +72,6 @@ class HomeView extends GetView<HomeController> {
   //底部导航栏
   Widget _buildBottomNavigationBar() {
     return BottomNavigationBar(
-
       selectedItemColor: Theme.of(Get.context).accentColor,
       unselectedItemColor: Theme.of(Get.context).bottomAppBarColor,
       backgroundColor: Theme.of(Get.context).primaryColor,
@@ -95,8 +85,7 @@ class HomeView extends GetView<HomeController> {
         BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: 'home'),
         BottomNavigationBarItem(icon: Icon(Icons.lightbulb_outline), label: 'top'),
         BottomNavigationBarItem(icon: Icon(Icons.search), label: 'search'),
-        BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline), label: 'user'),
+        BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'user'),
       ],
       onTap: (index) => controller.changeIndex(index),
       currentIndex: controller.currentIndex.value,

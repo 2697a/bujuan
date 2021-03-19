@@ -75,7 +75,7 @@ class HomeController extends GlobalController {
   }
 
   void changeIndex(int index) {
-    if(!login.value&&index==3) {
+    if (!login.value && index == 3) {
       goToLogin();
       return;
     }
@@ -98,6 +98,12 @@ class HomeController extends GlobalController {
 
     Starry.onPlayerSongListChanged.listen((List<MusicItem> playList) {
       Get.find<GlobalController>().addPlayList(playList);
+    });
+
+    Starry.onPlayerModeChanged.listen((value) {
+      if (value != null) {
+        Get.find<GlobalController>().playMode.value = value;
+      }
     });
   }
 

@@ -1,6 +1,7 @@
 import 'package:bujuan/find/find_controller.dart';
 import 'package:bujuan/global/global_controller.dart';
 import 'package:bujuan/home/home_controller.dart';
+import 'package:bujuan/play_view/timing/timing_controller.dart';
 import 'package:bujuan/user/user_controller.dart';
 import 'package:get/get.dart';
 
@@ -12,6 +13,7 @@ class GlobalBinding extends Bindings{
     Get.lazyPut<UserController>(() => UserController());
     Get.lazyPut<FindController>(() => FindController());
     Get.lazyPut<UserController>(() => UserController());
+    Get.lazyPut<TimingController>(() => TimingController());
   }
 
 }

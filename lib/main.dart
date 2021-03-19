@@ -38,16 +38,14 @@ import 'home/home_view.dart';
 main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
   if (GetPlatform.isAndroid) {
-    SystemChrome.setSystemUIOverlayStyle(
-        SystemUiOverlayStyle(statusBarColor: Colors.transparent));
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(statusBarColor: Colors.transparent));
   }
   GlobalBinding().dependencies();
   await _startServer();
   await SpUtil.getInstance();
   var isDark = SpUtil.getBool(IS_DARK_SP, defValue: false);
   var isFirstOpen = SpUtil.getBool(IS_FIRST_OPEN, defValue: true);
-  SystemChrome.setSystemUIOverlayStyle(
-      BuJuanUtil.setNavigationBarTextColor(isDark));
+  SystemChrome.setSystemUIOverlayStyle(BuJuanUtil.setNavigationBarTextColor(isDark));
 
   runApp(RefreshConfiguration(
     child: GetMaterialApp(
@@ -58,37 +56,16 @@ main(List<String> args) async {
       enableLog: true,
       initialRoute: isFirstOpen ? '/splash' : '/home',
       getPages: [
-        GetPage(
-            name: '/splash',
-            page: () => SplashView(),
-            binding: SplashBinding()),
+        GetPage(name: '/splash', page: () => SplashView(), binding: SplashBinding()),
         GetPage(name: '/home', page: () => HomeView(), binding: HomeBinding()),
-        GetPage(
-            name: '/today', page: () => TodayView(), binding: TodayBinding()),
-        GetPage(
-            name: '/sheet',
-            page: () => SheetInfoView(),
-            binding: SheetInfoBinding()),
-        GetPage(
-            name: '/profile',
-            page: () => ProfileView(),
-            binding: ProfileBinding()),
-        GetPage(
-            name: '/setting',
-            page: () => SettingView(),
-            binding: SettingBinding()),
-        GetPage(
-            name: '/login', page: () => LoginView(), binding: LoginBinding()),
-        GetPage(
-            name: '/cloud', page: () => CloudView(), binding: CloudBinding()),
-        GetPage(
-            name: '/sheet_classify',
-            page: () => SheetClassifyView(),
-            binding: SheetClassifyBinding()),
-        GetPage(
-            name: '/music_talk',
-            page: () => MusicTalkView(),
-            binding: MusicTalkBinding()),
+        GetPage(name: '/today', page: () => TodayView(), binding: TodayBinding()),
+        GetPage(name: '/sheet', page: () => SheetInfoView(), binding: SheetInfoBinding()),
+        GetPage(name: '/profile', page: () => ProfileView(), binding: ProfileBinding()),
+        GetPage(name: '/setting', page: () => SettingView(), binding: SettingBinding()),
+        GetPage(name: '/login', page: () => LoginView(), binding: LoginBinding()),
+        GetPage(name: '/cloud', page: () => CloudView(), binding: CloudBinding()),
+        GetPage(name: '/sheet_classify', page: () => SheetClassifyView(), binding: SheetClassifyBinding()),
+        GetPage(name: '/music_talk', page: () => MusicTalkView(), binding: MusicTalkBinding()),
       ],
     ),
     headerBuilder: () => WaterDropMaterialHeader(
@@ -119,9 +96,7 @@ Future<HttpServer> _startServer({address = 'localhost', int port = 3000}) {
 }
 
 void _handleRequest(HttpRequest request) async {
-  final answer = await cloudMusicApi(request.uri.path,
-          parameter: request.uri.queryParameters, cookie: request.cookies)
-      .catchError((e, s) async {
+  final answer = await cloudMusicApi(request.uri.path, parameter: request.uri.queryParameters, cookie: request.cookies).catchError((e, s) async {
     print(e.toString());
     return Answer();
   });
