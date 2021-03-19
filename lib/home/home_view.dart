@@ -5,6 +5,7 @@ import 'package:bujuan/play_view/default_view.dart';
 import 'package:bujuan/search/search_view.dart';
 import 'package:bujuan/user/user_view.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:we_slide/we_slide.dart';
@@ -89,6 +90,23 @@ class HomeView extends GetView<HomeController> {
       ],
       onTap: (index) => controller.changeIndex(index),
       currentIndex: controller.currentIndex.value,
+    );
+  }
+
+  Widget _buildNavigationBarq(){
+    return CurvedNavigationBar(
+      index: controller.currentIndex.value,
+      animationDuration: Duration(milliseconds: 300),
+      height: 45.0,
+      color: Theme.of(Get.context).primaryColor,
+      backgroundColor: Theme.of(Get.context).primaryColor,
+      items: <Widget>[
+        Icon(Icons.home_filled, size: 22),
+        Icon(Icons.lightbulb_outline, size: 22),
+        Icon(Icons.search, size: 22),
+        Icon(Icons.person_outline, size: 22)
+      ],
+      onTap: (index) => controller.changeIndex(index),
     );
   }
 

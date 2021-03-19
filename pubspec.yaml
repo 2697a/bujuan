@@ -39,6 +39,7 @@ dependencies:
   introduction_screen: ^2.0.0
   flutter_slidable: ^0.5.7
   direct_select_flutter: ^1.1.0
+  curved_navigation_bar: ^0.3.7
   flutter:
     sdk: flutter
 

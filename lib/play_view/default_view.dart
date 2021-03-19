@@ -125,20 +125,21 @@ class DefaultView extends GetView<GlobalController> {
                       Icons.favorite_border,
                     ),
                     onPressed: () {}),
-                IconButton(
-                    icon: Icon(
-                      Icons.snooze,
-                    ),
-                    onPressed: () {
-                      Get.bottomSheet(
-                        TimingView(),
-                        backgroundColor: Theme.of(Get.context).primaryColor,
-                        elevation: 6.0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.only(topLeft: Radius.circular(8.0), topRight: Radius.circular(8.0)),
-                        ),
-                      );
-                    }),
+
+                // IconButton(
+                //     icon: Icon(
+                //       Icons.snooze,
+                //     ),
+                //     onPressed: () {
+                //       Get.bottomSheet(
+                //         TimingView(),
+                //         backgroundColor: Theme.of(Get.context).primaryColor,
+                //         elevation: 6.0,
+                //         shape: RoundedRectangleBorder(
+                //           borderRadius: BorderRadius.only(topLeft: Radius.circular(8.0), topRight: Radius.circular(8.0)),
+                //         ),
+                //       );
+                //     }),
                 IconButton(
                     icon: Icon(
                       Icons.sms_outlined,

@@ -99,6 +99,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.2"
+  curved_navigation_bar:
+    dependency: "direct main"
+    description:
+      name: curved_navigation_bar
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.3.7"
   direct_select_flutter:
     dependency: "direct main"
     description:
