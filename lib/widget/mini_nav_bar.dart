@@ -47,7 +47,7 @@ class MinNiNavBar extends StatelessWidget {
       ),
       child: Container(
         width: double.infinity,
-        height: 25,
+        height: 26,
         padding:  EdgeInsets.symmetric(vertical: 9, horizontal: 10),
         child: Row(
           mainAxisAlignment: mainAxisAlignment,

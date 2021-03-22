@@ -22,11 +22,11 @@ class MusicBottomBarView extends GetView<GlobalController> {
           dense: true,
           contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
           leading: Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(6.0)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(46.0)),
             clipBehavior: Clip.antiAlias,
             child: CachedNetworkImage(
-              width: 40.0,
-              height: 40.0,
+              width: 46.0,
+              height: 46.0,
               imageUrl: '${controller.song.value.iconUri}?param=80y80',
             ),
           ),
