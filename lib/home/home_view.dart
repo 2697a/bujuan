@@ -4,10 +4,11 @@ import 'package:bujuan/music_bottom_bar/music_bottom_bar_view.dart';
 import 'package:bujuan/play_view/default_view.dart';
 import 'package:bujuan/search/search_view.dart';
 import 'package:bujuan/user/user_view.dart';
+import 'package:bujuan/widget/mini_nav_bar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:preload_page_view/preload_page_view.dart';
 import 'package:we_slide/we_slide.dart';
 
 import 'home_controller.dart';
@@ -15,7 +16,7 @@ import 'home_controller.dart';
 class HomeView extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
-    return Obx(() => _buildHomeView());
+    return _buildHomeView();
   }
 
   Widget _buildContent() {
@@ -23,7 +24,7 @@ class HomeView extends GetView<HomeController> {
       appBar: AppBar(
           elevation: 0,
           title: Text('Bujuan'),
-          leading: IconButton(
+          leading: Obx(()=>IconButton(
             icon: Hero(
                 tag: 'avatar',
                 child: Card(
@@ -37,20 +38,27 @@ class HomeView extends GetView<HomeController> {
                   ),
                 )),
             onPressed: () => controller.goToProfile(),
-          ),
+          )),
           actions: [
             IconButton(icon: Icon(Icons.settings), onPressed: () => Get.toNamed('/setting')),
           ]),
-      body: Padding(
+      body: Container(
           padding: EdgeInsets.only(top: 0.0, left: 5.0, right: 5.0),
-          child: PageView(controller: controller.pageController, physics: NeverScrollableScrollPhysics(),
-              // onPageChanged: (index) => controller.changeIndex(index),
-              children: [
-                KeepAliveWrapper(child: FindView()),
-                KeepAliveWrapper(child: SearchView()),
-                KeepAliveWrapper(child: SearchView()),
-                KeepAliveWrapper(child: UserView()),
-              ])),
+          child: Column(
+            children: [
+              Obx(()=>_buildNavigationBarq(!controller.bottomBar.value)),
+              Expanded(child: PreloadPageView(controller: controller.pageController,
+                  // physics: BouncingScrollPhysics(),
+                  preloadPagesCount: 4,
+                  onPageChanged: (index)async => controller.changeIndex2(index),
+                  children: [
+                    KeepAliveWrapper(child: UserView()),
+                    KeepAliveWrapper(child: FindView()),
+                    KeepAliveWrapper(child: SearchView()),
+                    KeepAliveWrapper(child: SearchView()),
+                  ]))
+            ],
+          )),
     );
   }
 
@@ -60,12 +68,15 @@ class HomeView extends GetView<HomeController> {
       body: WeSlide(
         controller: controller.weSlideController,
         panelMaxSize: MediaQuery.of(Get.context).size.height,
-        panelMinSize: 120.0,
+        panelMinSize: 65.0,
+        footerOffset: 0,
+        overlayColor: Colors.transparent,
+        panelBackground: Colors.transparent,
         body: _buildContent(),
         parallax: true,
         panel: DefaultView(weSlideController: controller.weSlideController),
         panelHeader: MusicBottomBarView(weSlideController: controller.weSlideController),
-        footer: _buildBottomNavigationBar(),
+        // footer: Obx(()=>_buildNavigationBarq(controller.bottomBar.value)),
       ),
     );
   }
@@ -76,38 +87,39 @@ class HomeView extends GetView<HomeController> {
       selectedItemColor: Theme.of(Get.context).accentColor,
       unselectedItemColor: Theme.of(Get.context).bottomAppBarColor,
       backgroundColor: Theme.of(Get.context).primaryColor,
-      type: BottomNavigationBarType.fixed,
+      type: BottomNavigationBarType.shifting,
       elevation: 0.0,
-      iconSize: 26.0,
-      selectedIconTheme: IconThemeData(size: 30.0),
       // showSelectedLabels: false,
       // showUnselectedLabels: false,
       items: [
-        BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: 'home'),
-        BottomNavigationBarItem(icon: Icon(Icons.lightbulb_outline), label: 'top'),
+        BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'home'),
+        BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'top'),
         BottomNavigationBarItem(icon: Icon(Icons.search), label: 'search'),
-        BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'user'),
+        BottomNavigationBarItem(icon: Icon(Icons.lightbulb_outline), label: 'user'),
       ],
       onTap: (index) => controller.changeIndex(index),
       currentIndex: controller.currentIndex.value,
     );
   }
 
-  Widget _buildNavigationBarq(){
-    return CurvedNavigationBar(
-      index: controller.currentIndex.value,
-      animationDuration: Duration(milliseconds: 300),
-      height: 45.0,
-      color: Theme.of(Get.context).primaryColor,
-      backgroundColor: Theme.of(Get.context).primaryColor,
-      items: <Widget>[
-        Icon(Icons.home_filled, size: 22),
-        Icon(Icons.lightbulb_outline, size: 22),
-        Icon(Icons.search, size: 22),
-        Icon(Icons.person_outline, size: 22)
-      ],
-      onTap: (index) => controller.changeIndex(index),
-    );
+  Widget _buildNavigationBarq(isBottom){
+    return isBottom?MinNiNavBar(
+        items: [
+          BottomMiniNavyBarItem(
+            activeColor: const Color.fromRGBO(213, 15, 37, 1),
+          ),
+          BottomMiniNavyBarItem(activeColor: const Color.fromRGBO(238, 178, 17, 1)),
+          BottomMiniNavyBarItem(
+            activeColor: const Color.fromRGBO(0, 153, 37, 1),
+          ),
+          BottomMiniNavyBarItem(
+            activeColor: const Color.fromRGBO(66, 153, 244, 1),
+          ),
+        ],
+        showElevation: false,
+        selectedIndex: controller.currentIndex1.value,
+        onItemSelected: (index) {
+        }):Container(height: 0,color:Theme.of(Get.context).primaryColor);
   }
 
 }

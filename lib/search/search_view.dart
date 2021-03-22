@@ -4,10 +4,8 @@ import 'package:get/get.dart';
 class SearchView extends GetView{
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-
-      ],
+    return Container(
+      color: Colors.blue,
     );
   }
 

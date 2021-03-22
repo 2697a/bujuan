@@ -12,34 +12,39 @@ class MusicBottomBarView extends GetView<GlobalController> {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() => Container(
-          decoration: BoxDecoration(color: Theme.of(Get.context).primaryColor, border: Border(top: BorderSide(color: Theme.of(Get.context).bottomAppBarColor.withAlpha(30), width: .1))),
-          height: 65.0,
-          child: ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
-            leading: Card(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(46.0)),
-              clipBehavior: Clip.antiAlias,
-              child: CachedNetworkImage(
-                width: 46.0,
-                height: 46.0,
-                imageUrl: '${controller.song.value.iconUri}?param=100y100',
-              ),
+    return Container(
+      height: 65.0,
+      child: Obx(()=>Card(
+        color: Theme.of(context).primaryColor,
+        elevation: 0.0,
+        margin: EdgeInsets.all(0),
+        child: ListTile(
+          dense: true,
+          contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+          leading: Card(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(6.0)),
+            clipBehavior: Clip.antiAlias,
+            child: CachedNetworkImage(
+              width: 40.0,
+              height: 40.0,
+              imageUrl: '${controller.song.value.iconUri}?param=80y80',
             ),
-            title: Text(
-              '${controller.song.value.title}',
-              style: TextStyle(fontSize: 16.0),
-              overflow: TextOverflow.ellipsis,
-            ),
-            subtitle: Text('${controller.song.value.artist}', style: TextStyle(fontSize: 14.0, color: Colors.grey[400])),
-            trailing: Wrap(
-              children: [
-                IconButton(icon: Icon(controller.playState.value == PlayState.PLAYING ? Icons.pause : Icons.play_arrow), onPressed: () => controller.playOrPause(), color: Theme.of(Get.context).bottomAppBarColor),
-                IconButton(icon: Icon(Icons.skip_next), onPressed: () => controller.skipToNext(), color: Theme.of(Get.context).bottomAppBarColor),
-              ],
-            ),
-            onTap: () => weSlideController?.show(),
           ),
-        ));
+          title: Text(
+            '${controller.song.value.title}',
+            style: TextStyle(fontSize: 14.0),
+            overflow: TextOverflow.ellipsis,
+          ),
+          subtitle: Text('${controller.song.value.artist}', style: TextStyle(fontSize: 15.0, color: Colors.grey[500])),
+          trailing: Wrap(
+            children: [
+              IconButton(icon: Icon(controller.playState.value == PlayState.PLAYING ? Icons.pause : Icons.play_arrow), onPressed: () => controller.playOrPause(), color: Theme.of(Get.context).bottomAppBarColor),
+              IconButton(icon: Icon(Icons.skip_next), onPressed: () => controller.skipToNext(), color: Theme.of(Get.context).bottomAppBarColor),
+            ],
+          ),
+          onTap: ()=>weSlideController?.show(),
+        ),
+      )),
+    );
   }
 }

@@ -10,22 +10,25 @@ import 'package:bujuan/utils/sp_util.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:preload_page_view/preload_page_view.dart';
 import 'package:starry/music_item.dart';
 import 'package:starry/starry.dart';
 import 'package:we_slide/we_slide.dart';
 
 class HomeController extends GlobalController {
-  var currentIndex = 0.obs;
+  var currentIndex = 1.obs;
+  var currentIndex1 = 1.obs;
   var userProfileEntity = UserProfileEntity().obs;
-  PageController pageController;
+  PreloadPageController pageController;
   WeSlideController weSlideController;
   StreamSubscription _streamSubscription;
   var login = false.obs;
+  var bottomBar = false.obs;
 
   @override
   void onInit() {
     userProfileEntity.value = null;
-    pageController = PageController(initialPage: currentIndex.value);
+    pageController = PreloadPageController(initialPage: currentIndex.value);
     weSlideController = WeSlideController();
     login.value = !GetUtils.isNullOrBlank(SpUtil.getString(USER_ID_SP));
     super.onInit();
@@ -80,7 +83,15 @@ class HomeController extends GlobalController {
       return;
     }
     currentIndex.value = index;
-    pageController.jumpToPage(index);
+    pageController.animateToPage(index,duration: Duration(milliseconds: 300), curve: Curves.ease);
+  }
+  void changeIndex2(int index) async{
+    // if (!login.value && index == 3) {
+    //   goToLogin();
+    //   return;
+    // }
+    currentIndex1.value = index;
+    // Future.delayed(Duration(milliseconds: 800),()=>currentIndex1.value = index);
   }
 
   //监听播放音乐状态以及进度！
@@ -132,6 +143,10 @@ class HomeController extends GlobalController {
         ///太久未登录，重新登录吧！！！！！
       }
     }
+  }
+
+  changeBottomState(){
+    bottomBar.value = !bottomBar.value;
   }
 
   getUserProfile(userId) async {

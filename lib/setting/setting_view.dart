@@ -11,10 +11,10 @@ class SettingView extends GetView<SettingController> {
   @override
   Widget build(BuildContext context) {
     return AnnotatedRegion(
-      child: Obx(() => Scaffold(
+      child: Scaffold(
         body: Column(
           children: [
-            Expanded(child: CustomScrollView(
+            Expanded(child: Obx(()=>CustomScrollView(
               slivers: [
                 SliverAppBar(
                   elevation: 0.0,
@@ -81,6 +81,14 @@ class SettingView extends GetView<SettingController> {
                 ),
                 SliverToBoxAdapter(
                     child: SwitchListTile(
+                      title: Text('底部导航栏'),
+                      subtitle: Text('导航栏会在底部显示'),
+                      value: Get.find<HomeController>().bottomBar.value,
+                      onChanged: (value) => Get.find<HomeController>().changeBottomState(),
+                    )
+                ),
+                SliverToBoxAdapter(
+                    child: SwitchListTile(
                       title: Text('忽略音频焦点'),
                       subtitle: Text('其他音频应用开始播放时不会自动暂停'),
                       value: controller.isIgnoreAudioFocus.value,
@@ -88,7 +96,7 @@ class SettingView extends GetView<SettingController> {
                     )
                 )
               ],
-            )),
+            ))),
             Offstage(
                 offstage: !Get.find<HomeController>().login.value,
                 child: ListTile(
@@ -101,7 +109,7 @@ class SettingView extends GetView<SettingController> {
                 ))
           ],
         ),
-      )),
+      ),
       value: BuJuanUtil.setNavigationBarTextColor(Get.isDarkMode),
     );
   }

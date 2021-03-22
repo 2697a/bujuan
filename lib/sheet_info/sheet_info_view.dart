@@ -1,5 +1,4 @@
 import 'package:bujuan/global/global_loding_view.dart';
-import 'package:bujuan/global/global_theme.dart';
 import 'package:bujuan/music_bottom_bar/music_bottom_bar_view.dart';
 import 'package:bujuan/over_scroll.dart';
 import 'package:bujuan/play_view/default_view.dart';
@@ -7,7 +6,6 @@ import 'package:bujuan/sheet_info/sheet_info_controller.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_placeholder_textlines/placeholder_lines.dart';
 import 'package:get/get.dart';
 import 'package:we_slide/we_slide.dart';
@@ -24,6 +22,7 @@ class SheetInfoView extends GetView<SheetInfoController> {
         controller: controller.weSlideController,
         panelMaxSize: MediaQuery.of(Get.context).size.height,
         panelMinSize: 65.0,
+        panelBackground: Colors.transparent,
         body: _buildContent(),
         parallax: true,
         panel: DefaultView(weSlideController: controller.weSlideController),

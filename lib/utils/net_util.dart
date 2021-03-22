@@ -178,7 +178,7 @@ class NetUtils {
   ///获取歌曲播放地址
   Future<String> getSongUrl(songId) async {
     var songUrl = '';
-    var map = await _doHandler('/song/url', {'id': songId, 'br': '999000'});
+    var map = await _doHandler('/song/url', {'id': songId, 'br': '320000'});
     if (map != null) songUrl = map['data'][0]['url'];
     return songUrl;
   }
@@ -261,6 +261,11 @@ class NetUtils {
     var map = await _doHandler('/comment/new', {'id': id, 'type': type, 'pageNo': pageNo});
     if (map != null) talk = MusicTalk.fromJson(map);
     return talk;
+  }
+
+  ///获取歌曲楼层评论
+  Future<void> getMusicFloorTalk() async{
+    await _doHandler('');
   }
 
 

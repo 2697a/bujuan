@@ -33,7 +33,7 @@ class LoadingView {
                 width: 30,
                 height: 30,
                 decoration: BoxDecoration(
-                    color: Colors.grey.withOpacity(.6),
+                    color: Colors.grey[300],
                     borderRadius: BorderRadius.circular(30.0)),
                 child: Center(
                   child: Icon(
@@ -49,6 +49,7 @@ class LoadingView {
                     maxWidth: .5,
                     minWidth: .3,
                     color: Colors.grey[400],
+                    animate: true,
                     count: 1,
                   )),
             ],
@@ -59,6 +60,7 @@ class LoadingView {
           child: PlaceholderLines(
             lineHeight: 10.0,
             color: Colors.grey[400],
+            animate: true,
             count: 3,
           ),
         )
@@ -76,7 +78,7 @@ class LoadingView {
            height: 110.0,
            margin: EdgeInsets.all(4.0),
            decoration: BoxDecoration(
-               color: Colors.grey.withOpacity(.6),
+               color: Colors.grey[300],
                borderRadius: BorderRadius.circular(6.0)
            ),
            child: Center(
@@ -93,6 +95,7 @@ class LoadingView {
           child: PlaceholderLines(
             lineHeight: 10.0,
             color: Colors.grey[400],
+            animate: true,
             count: 2,
           ),
         )

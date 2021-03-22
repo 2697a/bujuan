@@ -127,6 +127,7 @@ class Starry {
     return await _channel.invokeMethod('SET_PLAY_MODE', {'VALUE': value});
   }
 
+
   static Future<dynamic> _platformCallHandler(MethodCall call) async {
     var method = call.method;
     var arguments = call.arguments;

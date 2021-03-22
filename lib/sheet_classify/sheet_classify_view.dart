@@ -102,7 +102,7 @@ class SheetClassifyView extends GetView<SheetClassifyController> {
                                     height: 110.0,
                                     width: 110.0,
                                     fit: BoxFit.fill,
-                                    imageUrl: '${controller.classifyData[index].coverImgUrl}?param=150y150',
+                                    imageUrl: '${controller.classifyData[index].coverImgUrl}?param=250y250',
                                   ),
                                 ),
                               ),
