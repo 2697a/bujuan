@@ -18,44 +18,46 @@ class LoginView extends GetView<LoginController> {
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 20.0),
               ),
-              Container(
-                decoration: BoxDecoration(color: Colors.grey[200], borderRadius: BorderRadius.circular(30.0)),
+              Card(
                 margin: EdgeInsets.symmetric(vertical: 30.0, horizontal: 25.0),
-                padding: EdgeInsets.symmetric(horizontal: 12.0),
-                child: Row(
-                  children: [
-                    Icon(Icons.account_circle),
-                    Padding(padding: EdgeInsets.symmetric(horizontal: 1.5)),
-                    Expanded(
-                        child: TextField(
-                      controller: controller.accountController,
-                      // inputFormatters: [FilteringTextInputFormatter(RegExp('[a-zA-Z]|[0-9.]'), allow: true)],
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: '手机号或者邮箱',
-                      ),
-                    ))
-                  ],
+                child: Container(
+                  child: Row(
+                    children: [
+                      Padding(padding: EdgeInsets.symmetric(horizontal: 6.0)),
+                      Icon(Icons.account_circle),
+                      Padding(padding: EdgeInsets.symmetric(horizontal: 3)),
+                      Expanded(
+                          child: TextField(
+                            controller: controller.accountController,
+                            // inputFormatters: [FilteringTextInputFormatter(RegExp('[a-zA-Z]|[0-9.]'), allow: true)],
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText: '手机号或者邮箱',
+                            ),
+                          ))
+                    ],
+                  ),
                 ),
               ),
-              Container(
-                decoration: BoxDecoration(color: Colors.grey[200], borderRadius: BorderRadius.circular(30.0)),
+              Card(
                 margin: EdgeInsets.symmetric(vertical: 30.0, horizontal: 25.0),
-                padding: EdgeInsets.symmetric(horizontal: 12.0),
-                child: Row(
-                  children: [
-                    Icon(Icons.verified),
-                    Padding(padding: EdgeInsets.symmetric(horizontal: 1.5)),
-                    Expanded(
-                        child: TextField(
-                          obscureText: true,
-                          controller: controller.passController,
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            hintText: '密码',
-                          ),
-                        ))
-                  ],
+                child: Container(
+                  child: Row(
+                    children: [
+                      Padding(padding: EdgeInsets.symmetric(horizontal: 6.0)),
+                      Icon(Icons.verified),
+                      Padding(padding: EdgeInsets.symmetric(horizontal: 3)),
+                      Expanded(
+                          child: TextField(
+                            obscureText: true,
+                            controller: controller.passController,
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText: '密码',
+                            ),
+                          ))
+                    ],
+                  ),
                 ),
               ),
               Container(

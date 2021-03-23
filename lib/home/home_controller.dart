@@ -79,7 +79,7 @@ class HomeController extends GlobalController {
   }
 
   void changeIndex(int index) {
-    if (!login.value && index == 1) {
+    if (!login.value && index == 0) {
       goToLogin();
       return;
     }

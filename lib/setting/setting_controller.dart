@@ -1,11 +1,9 @@
 import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/global/global_theme.dart';
 import 'package:bujuan/home/home_controller.dart';
-import 'package:bujuan/utils/bujuan_util.dart';
 import 'package:bujuan/utils/sp_util.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:starry/starry.dart';
 
@@ -49,6 +47,8 @@ class SettingController extends GetxController {
         onConfirm: () {
           SpUtil.putString(USER_ID_SP, '');
           Get.find<HomeController>().login.value = false;
+          Get.find<HomeController>().changeIndex(1);
+          Get.back();
           Get.back();
         });
   }

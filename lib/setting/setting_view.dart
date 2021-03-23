@@ -1,6 +1,4 @@
-import 'package:bujuan/global/global_theme.dart';
 import 'package:bujuan/home/home_controller.dart';
-import 'package:bujuan/over_scroll.dart';
 import 'package:bujuan/setting/setting_controller.dart';
 import 'package:bujuan/utils/bujuan_util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -114,44 +112,4 @@ class SettingView extends GetView<SettingController> {
     );
   }
 
-  Widget _buildAa(){
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        title: Text('设置'),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-              child: ScrollConfiguration(
-                  behavior: OverScrollBehavior(),
-                  child: ListView(
-                    children: [
-                      SwitchListTile(
-                        title: Text('夜间模式'),
-                        value: controller.isDark.value,
-                        onChanged: (value) => controller.changeTheme(value),
-                      ),
-                      SwitchListTile(
-                        title: Text('忽略音频焦点'),
-                        subtitle: Text('其他音频应用开始播放时不会自动暂停'),
-                        value: controller.isIgnoreAudioFocus.value,
-                        onChanged: (value) => controller.toggleAudioFocus(value),
-                      ),
-                    ],
-                  ))),
-          Offstage(
-              offstage: !Get.find<HomeController>().login.value,
-              child: ListTile(
-                title: Text(
-                  '退出登录',
-                  style: TextStyle(color: Colors.red),
-                  textAlign: TextAlign.center,
-                ),
-                onTap: () => controller.exit(),
-              ))
-        ],
-      ),
-    );
-  }
 }

@@ -18,12 +18,12 @@ class UserController extends GetxController {
 
   @override
   void onReady() {
-    _getUserSheet();
+    getUserSheet();
     super.onReady();
   }
 
   ///获取用户歌单
-  _getUserSheet() async {
+  getUserSheet() async {
     var userId = SpUtil.getString(USER_ID_SP, defValue: null);
     var userOrderEntity = await NetUtils().getUserPlayList(userId);
     if (userOrderEntity != null && userOrderEntity.code == 200) {
