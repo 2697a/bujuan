@@ -44,7 +44,6 @@ class DefaultView extends GetView<GlobalController> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                IconButton(icon: Icon(Icons.keyboard_arrow_down_outlined), onPressed: () => weSlideController.hide()),
                 Expanded(
                     child: Column(
                   children: [
@@ -55,7 +54,6 @@ class DefaultView extends GetView<GlobalController> {
                     ),
                   ],
                 )),
-                IconButton(icon: Icon(Icons.more_horiz), onPressed: () {}),
               ],
             ),
             Padding(padding: EdgeInsets.symmetric(vertical: 8.0)),
@@ -76,6 +74,11 @@ class DefaultView extends GetView<GlobalController> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
+                IconButton(
+                    icon: Icon(
+                      Icons.favorite_border,
+                    ),
+                    onPressed: () {}),
                 IconButton(
                     icon: Icon(
                       Icons.skip_previous,
@@ -100,67 +103,56 @@ class DefaultView extends GetView<GlobalController> {
                       size: 32.0,
                     ),
                     onPressed: () => controller.skipToNext()),
-              ],
-            ),
-            Padding(padding: EdgeInsets.symmetric(vertical: 12.0)),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                IconButton(
-                    icon: Icon(
-                      Icons.format_list_bulleted_outlined,
-                    ),
-                    onPressed: () {
-                      Get.bottomSheet(
-                        PlayListView(),
-                        backgroundColor: Theme.of(Get.context).primaryColor,
-                        elevation: 6.0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.only(topLeft: Radius.circular(8.0), topRight: Radius.circular(8.0)),
-                        ),
-                      );
-                    }),
-                IconButton(
-                    icon: Icon(
-                      Icons.favorite_border,
-                    ),
-                    onPressed: () {}),
-
-                // IconButton(
-                //     icon: Icon(
-                //       Icons.snooze,
-                //     ),
-                //     onPressed: () {
-                //       Get.bottomSheet(
-                //         TimingView(),
-                //         backgroundColor: Theme.of(Get.context).primaryColor,
-                //         elevation: 6.0,
-                //         shape: RoundedRectangleBorder(
-                //           borderRadius: BorderRadius.only(topLeft: Radius.circular(8.0), topRight: Radius.circular(8.0)),
-                //         ),
-                //       );
-                //     }),
-                IconButton(
-                    icon: Icon(
-                      Icons.sms_outlined,
-                    ),
-                    onPressed: () {
-                      if (!Get.find<HomeController>().login.value) {
-                        Get.find<HomeController>().goToLogin();
-                      } else {
-                        Get.toNamed('/music_talk', arguments: {'music': controller.song.value});
-                      }
-                    }),
                 IconButton(
                     icon: Icon(
                       controller.playMode.value == 1
                           ? Icons.repeat
                           : controller.playMode.value == 2
-                              ? Icons.repeat_one
-                              : Icons.shuffle,
+                          ? Icons.repeat_one
+                          : Icons.shuffle,
                     ),
                     onPressed: () =>controller.changePlayMode()),
               ],
+            ),
+            Padding(padding: EdgeInsets.symmetric(vertical: 12.0)),
+            Material(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(topLeft: Radius.circular(14.0), topRight: Radius.circular(14.0)),
+              ),
+              elevation: 8.0,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  IconButton(icon: Icon(Icons.keyboard_arrow_down_outlined), onPressed: () => weSlideController.hide()),
+                  Expanded(child: Container()),
+                  IconButton(
+                      icon: Icon(
+                        Icons.format_list_bulleted_outlined,
+                      ),
+                      onPressed: () {
+                        Get.bottomSheet(
+                          PlayListView(),
+                          backgroundColor: Theme.of(Get.context).primaryColor,
+                          elevation: 6.0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(topLeft: Radius.circular(8.0), topRight: Radius.circular(8.0)),
+                          ),
+                        );
+                      }),
+                  IconButton(
+                      icon: Icon(
+                        Icons.sms_outlined,
+                      ),
+                      onPressed: () {
+                        if (!Get.find<HomeController>().login.value) {
+                          Get.find<HomeController>().goToLogin();
+                        } else {
+                          Get.toNamed('/music_talk', arguments: {'music': controller.song.value});
+                        }
+                      }),
+
+                ],
+              ),
             ),
             // Padding(
             //   padding: EdgeInsets.symmetric(vertical: 8.0),

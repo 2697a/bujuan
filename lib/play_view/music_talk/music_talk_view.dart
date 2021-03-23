@@ -18,9 +18,6 @@ class MusicTalkView extends GetView<MusicTalkController> {
         title: Row(
           children: [
             Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadiusDirectional.circular(6.0)),
-              clipBehavior: Clip.antiAlias,
               child: CachedNetworkImage(
                 imageUrl: '${controller.musicItem.iconUri}',
                 height: 30.0,

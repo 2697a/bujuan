@@ -81,9 +81,9 @@ class SettingView extends GetView<SettingController> {
                 ),
                 SliverToBoxAdapter(
                     child: SwitchListTile(
-                      title: Text('底部导航栏'),
-                      subtitle: Text('导航栏会在底部显示'),
-                      value: Get.find<HomeController>().bottomBar.value,
+                      title: Text('开启滑动'),
+                      subtitle: Text('开启主页滑动功能'),
+                      value: Get.find<HomeController>().scroller.value,
                       onChanged: (value) => Get.find<HomeController>().changeBottomState(),
                     )
                 ),

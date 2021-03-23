@@ -36,12 +36,9 @@ dependencies:
   sleek_circular_slider: ^1.2.0+web
   dots_indicator: ^2.0.0
   progress_state_button: ^1.0.2
-  introduction_screen: ^2.0.0
-  flutter_slidable: ^0.5.7
   direct_select_flutter: ^1.1.0
-  dot_navigation_bar: ^0.1.1
   preload_page_view: ^0.1.5
-  bottom_navy_bar: ^5.6.0
+  material_floating_search_bar: ^0.3.3
   flutter:
     sdk: flutter
 

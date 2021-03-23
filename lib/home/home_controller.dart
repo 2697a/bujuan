@@ -23,7 +23,7 @@ class HomeController extends GlobalController {
   WeSlideController weSlideController;
   StreamSubscription _streamSubscription;
   var login = false.obs;
-  var bottomBar = false.obs;
+  var scroller = false.obs;
 
   @override
   void onInit() {
@@ -31,8 +31,9 @@ class HomeController extends GlobalController {
     pageController = PreloadPageController(initialPage: currentIndex.value);
     weSlideController = WeSlideController();
     login.value = !GetUtils.isNullOrBlank(SpUtil.getString(USER_ID_SP));
+    scroller.value = SpUtil.getBool(OPEN_SCROLL,defValue: false);
     super.onInit();
-    SpUtil.putBool(IS_FIRST_OPEN, false);
+    // SpUtil.putBool(IS_FIRST_OPEN, false);
   }
 
   @override
@@ -78,20 +79,12 @@ class HomeController extends GlobalController {
   }
 
   void changeIndex(int index) {
-    if (!login.value && index == 3) {
+    if (!login.value && index == 1) {
       goToLogin();
       return;
     }
     currentIndex.value = index;
-    pageController.animateToPage(index,duration: Duration(milliseconds: 300), curve: Curves.ease);
-  }
-  void changeIndex2(int index) async{
-    // if (!login.value && index == 3) {
-    //   goToLogin();
-    //   return;
-    // }
-    currentIndex1.value = index;
-    // Future.delayed(Duration(milliseconds: 800),()=>currentIndex1.value = index);
+    pageController.jumpToPage(index);
   }
 
   //监听播放音乐状态以及进度！
@@ -146,7 +139,8 @@ class HomeController extends GlobalController {
   }
 
   changeBottomState(){
-    bottomBar.value = !bottomBar.value;
+    scroller.value = !scroller.value;
+    SpUtil.putBool(OPEN_SCROLL, scroller.value);
   }
 
   getUserProfile(userId) async {

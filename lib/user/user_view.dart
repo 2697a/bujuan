@@ -4,14 +4,13 @@ import 'package:bujuan/user/user_controller.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_placeholder_textlines/placeholder_lines.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class UserView extends GetView<UserController> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: _buildLoginView());
+    return _buildLoginView();
   }
 
   ///展示我的歌单
@@ -83,8 +82,6 @@ class UserView extends GetView<UserController> {
               child: Hero(
                 tag: '${userOrderPlaylist.id}',
                 child: Card(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(4.0)),
-                  clipBehavior: Clip.antiAlias,
                   child: CachedNetworkImage(
                     width: 48,
                     height: 48,

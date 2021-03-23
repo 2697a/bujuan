@@ -22,7 +22,8 @@ class CloudView extends GetView<CloudController>{
       body: WeSlide(
         controller: controller.weSlideController,
         panelMaxSize: MediaQuery.of(Get.context).size.height,
-        panelMinSize: 65.0,
+        panelMinSize: 62.0,
+        panelBackground: Colors.transparent,
         body: _buildContent(),
         parallax: true,
         panel: DefaultView(weSlideController: controller.weSlideController),

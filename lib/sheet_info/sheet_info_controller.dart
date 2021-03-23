@@ -54,7 +54,7 @@ class SheetInfoController extends GetxController {
         MusicItem musicItem = MusicItem(
           musicId: '${track.id}',
           duration: track.dt,
-          iconUri: track.al.picUrl,
+          iconUri: "${track.al.picUrl}?param=250y250",
           title: track.name,
           uri: '${track.id}',
           artist: track.ar[0].name,

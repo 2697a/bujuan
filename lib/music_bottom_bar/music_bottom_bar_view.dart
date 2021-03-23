@@ -13,29 +13,33 @@ class MusicBottomBarView extends GetView<GlobalController> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 65.0,
-      child: Obx(()=>Card(
-        color: Theme.of(context).primaryColor,
-        elevation: 0.0,
-        margin: EdgeInsets.all(0),
+      color: Colors.transparent,
+      margin: EdgeInsets.only(top: 3),
+      height: 59.0,
+      child: Obx(()=>Material(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(topLeft: Radius.circular(14.0), topRight: Radius.circular(14.0)),
+        ),
+        elevation: 8,
         child: ListTile(
           dense: true,
-          contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+          contentPadding: EdgeInsets.only(left: 18.0,right: 8.0),
           leading: Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(46.0)),
+            margin: EdgeInsets.all(0),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(44.0)),
             clipBehavior: Clip.antiAlias,
             child: CachedNetworkImage(
-              width: 46.0,
-              height: 46.0,
+              width: 44.0,
+              height: 44.0,
               imageUrl: '${controller.song.value.iconUri}?param=80y80',
             ),
           ),
           title: Text(
             '${controller.song.value.title}',
-            style: TextStyle(fontSize: 14.0),
+            style: TextStyle(fontSize: 16.0),
             overflow: TextOverflow.ellipsis,
           ),
-          subtitle: Text('${controller.song.value.artist}', style: TextStyle(fontSize: 15.0, color: Colors.grey[500])),
+          subtitle: Text('${controller.song.value.artist}', style: TextStyle(fontSize: 14.0, color: Colors.grey[500])),
           trailing: Wrap(
             children: [
               IconButton(icon: Icon(controller.playState.value == PlayState.PLAYING ? Icons.pause : Icons.play_arrow), onPressed: () => controller.playOrPause(), color: Theme.of(Get.context).bottomAppBarColor),

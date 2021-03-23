@@ -31,7 +31,6 @@ class TimingView extends GetView<TimingController> {
               itemBuilder: (context, index) {
                 return InkWell(
                   child: Card(
-                    elevation: 0,
                     color: controller.selectIndex.value==index?Theme.of(context).accentColor:CardTheme.of(context).color,
                     child: Container(
                       padding: EdgeInsets.only(bottom: 6.0),

@@ -21,7 +21,7 @@ class SheetInfoView extends GetView<SheetInfoController> {
       body: WeSlide(
         controller: controller.weSlideController,
         panelMaxSize: MediaQuery.of(Get.context).size.height,
-        panelMinSize: 65.0,
+        panelMinSize: 62.0,
         panelBackground: Colors.transparent,
         body: _buildContent(),
         parallax: true,
@@ -55,8 +55,6 @@ class SheetInfoView extends GetView<SheetInfoController> {
                           Hero(
                               tag: '${Get.arguments['id']}',
                               child: Card(
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(8.0)),
-                                clipBehavior: Clip.antiAlias,
                                 child: CachedNetworkImage(
                                   width: 150.0,
                                   height: 150.0,
@@ -115,8 +113,6 @@ class SheetInfoView extends GetView<SheetInfoController> {
                             Hero(
                                 tag: '${Get.arguments['id']}',
                                 child: Card(
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(8.0)),
-                                  clipBehavior: Clip.antiAlias,
                                   child: CachedNetworkImage(
                                     width: 150.0,
                                     height: 150.0,

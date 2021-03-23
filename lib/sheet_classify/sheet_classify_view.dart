@@ -35,7 +35,8 @@ class SheetClassifyView extends GetView<SheetClassifyController> {
       body: WeSlide(
         controller: controller.weSlideController,
         panelMaxSize: MediaQuery.of(Get.context).size.height,
-        panelMinSize: 65.0,
+        panelMinSize: 62.0,
+        panelBackground: Colors.transparent,
         body: Scaffold(
           appBar: AppBar(
             elevation: 0,
@@ -70,8 +71,6 @@ class SheetClassifyView extends GetView<SheetClassifyController> {
                 maxHeight: 58.0,
                 minHeight: 58.0,
                 child: Card(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(8.0)),
-                  clipBehavior: Clip.antiAlias,
                   child: Row(
                     children: [Expanded(child: Padding(
                         child: DirectSelectList<String>(
@@ -96,8 +95,6 @@ class SheetClassifyView extends GetView<SheetClassifyController> {
                               child: Center(
                                 child: Card(
                                   // margin: EdgeInsets.all(0),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(6.0)),
-                                  clipBehavior: Clip.antiAlias,
                                   child: CachedNetworkImage(
                                     height: 110.0,
                                     width: 110.0,

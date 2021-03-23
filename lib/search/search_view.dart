@@ -5,7 +5,6 @@ class SearchView extends GetView{
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.blue,
     );
   }
 

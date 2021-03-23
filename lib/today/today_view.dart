@@ -21,7 +21,7 @@ class TodayView extends GetView<TodayController>{
         child: WeSlide(
           controller: controller.weSlideController,
           panelMaxSize: MediaQuery.of(Get.context).size.height,
-          panelMinSize: 65.0,
+          panelMinSize: 62.0,
           body: ScrollConfiguration(behavior: OverScrollBehavior(), child: CustomScrollView(
             slivers: [
               SliverAppBar(
@@ -38,8 +38,6 @@ class TodayView extends GetView<TodayController>{
                       Hero(
                           tag: 'today',
                           child: Card(
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(6.0)),
-                            clipBehavior: Clip.antiAlias,
                             child: Row(
                               children: [
                                 Container(

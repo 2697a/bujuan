@@ -1,8 +1,6 @@
-import 'package:bujuan/entity/user_profile_entity.dart';
 import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/utils/net_util.dart';
 import 'package:bujuan/utils/sp_util.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -11,12 +9,10 @@ class UserController extends GetxController {
   var createPlayList = [].obs;
   var collectPlayList = [].obs;
   RefreshController refreshController;
-  SlidableController slidableController;
 
   @override
   void onInit() {
     refreshController = RefreshController();
-    slidableController = SlidableController();
     super.onInit();
   }
 

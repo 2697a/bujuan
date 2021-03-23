@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_placeholder_textlines/placeholder_lines.dart';
+import 'package:get/get.dart';
 
 class LoadingView {
 
@@ -72,31 +73,42 @@ class LoadingView {
  static Widget buildGridViewSheetLoadingView(){
     return  Wrap(
       children: [
-       Center(
-         child:  Container(
-           width: 110.0,
-           height: 110.0,
-           margin: EdgeInsets.all(4.0),
-           decoration: BoxDecoration(
-               color: Colors.grey[300],
-               borderRadius: BorderRadius.circular(6.0)
-           ),
-           child: Center(
-             child: Icon(
-               Icons.photo_size_select_actual,
-               color: Colors.white,
-               size: 42,
-             ),
-           ),
-         ),
-       ),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 6.0),
-          child: PlaceholderLines(
-            lineHeight: 10.0,
-            color: Colors.grey[400],
-            animate: true,
-            count: 2,
+        Card(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(12.0)),
+          shadowColor: Theme.of(Get.context).accentColor.withOpacity(.1),
+          clipBehavior: Clip.antiAlias,
+          child: Container(
+            height: 170,
+            child: Column(
+              children: [
+                Container(
+                  width: 120.0,
+                  height: 120.0,
+                  margin: EdgeInsets.all(4.0),
+                  decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(6.0)
+                  ),
+                  child: Center(
+                    child: Icon(
+                      Icons.photo_size_select_actual,
+                      color: Colors.white,
+                      size: 42,
+                    ),
+                  ),
+                ),
+                Container(
+                  alignment: Alignment.centerLeft,
+                  constraints: BoxConstraints(maxWidth: 110.0),
+                  child: PlaceholderLines(
+                    lineHeight: 10.0,
+                    color: Colors.grey[400],
+                    animate: true,
+                    count: 2,
+                  ),
+                )
+              ],
+            ),
           ),
         )
       ],

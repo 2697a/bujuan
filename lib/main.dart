@@ -13,8 +13,6 @@ import 'package:bujuan/sheet_classify/sheet_classify_binding.dart';
 import 'package:bujuan/sheet_classify/sheet_classify_view.dart';
 import 'package:bujuan/sheet_info/sheet_info_binding.dart';
 import 'package:bujuan/sheet_info/sheet_info_view.dart';
-import 'package:bujuan/splash/splash_binding.dart';
-import 'package:bujuan/splash/splash_view.dart';
 import 'package:bujuan/today/today_binding.dart';
 import 'package:bujuan/today/today_view.dart';
 import 'package:bujuan/user/cloud/cloud_binding.dart';
@@ -44,7 +42,7 @@ main(List<String> args) async {
   await _startServer();
   await SpUtil.getInstance();
   var isDark = SpUtil.getBool(IS_DARK_SP, defValue: false);
-  var isFirstOpen = SpUtil.getBool(IS_FIRST_OPEN, defValue: true);
+  // var isFirstOpen = SpUtil.getBool(IS_FIRST_OPEN, defValue: true);
   SystemChrome.setSystemUIOverlayStyle(BuJuanUtil.setNavigationBarTextColor(isDark));
 
   runApp(RefreshConfiguration(
@@ -54,9 +52,8 @@ main(List<String> args) async {
       debugShowCheckedModeBanner: false,
       theme: isDark ? darkTheme : lightTheme,
       enableLog: true,
-      initialRoute: isFirstOpen ? '/splash' : '/home',
+      initialRoute: '/home',
       getPages: [
-        GetPage(name: '/splash', page: () => SplashView(), binding: SplashBinding()),
         GetPage(name: '/home', page: () => HomeView(), binding: HomeBinding()),
         GetPage(name: '/today', page: () => TodayView(), binding: TodayBinding()),
         GetPage(name: '/sheet', page: () => SheetInfoView(), binding: SheetInfoBinding()),

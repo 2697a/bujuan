@@ -1,13 +1,17 @@
+import 'dart:math';
+
 import 'package:bujuan/find/find_view.dart';
 import 'package:bujuan/keep.dart';
 import 'package:bujuan/music_bottom_bar/music_bottom_bar_view.dart';
 import 'package:bujuan/play_view/default_view.dart';
 import 'package:bujuan/search/search_view.dart';
 import 'package:bujuan/user/user_view.dart';
-import 'package:bujuan/widget/mini_nav_bar.dart';
+import 'package:bujuan/widget/bottom_bar/custom_navigation_bar_item.dart';
+import 'package:bujuan/widget/bottom_bar/custome_navigation_bar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 import 'package:preload_page_view/preload_page_view.dart';
 import 'package:we_slide/we_slide.dart';
 
@@ -19,15 +23,96 @@ class HomeView extends GetView<HomeController> {
     return _buildHomeView();
   }
 
+  // Widget _buildContent() {
+  //   return Scaffold(
+  //     appBar: AppBar(
+  //         elevation: 0,
+  //         title: Text('Bujuan'),
+  //         leading: Obx(()=>IconButton(
+  //           icon: Hero(
+  //               tag: 'avatar',
+  //               child: Card(
+  //                 shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(30.0)),
+  //                 clipBehavior: Clip.antiAlias,
+  //                 child: CachedNetworkImage(
+  //                   fit: BoxFit.cover,
+  //                   imageUrl: controller.userProfileEntity.value != null ? controller.userProfileEntity.value.profile.avatarUrl : 'https://pic1.zhimg.com/80/v2-7ff2d917aa926cfbf2e8b85b035e2563_1440w.jpg',
+  //                   height: 30.0,
+  //                   width: 30.0,
+  //                 ),
+  //               )),
+  //           onPressed: () => controller.goToProfile(),
+  //         )),
+  //         actions: [
+  //           IconButton(icon: Icon(Icons.settings), onPressed: () => Get.toNamed('/setting')),
+  //         ]),
+  //     body: Container(
+  //         padding: EdgeInsets.only(top: 0.0, left: 5.0, right: 5.0),
+  //         child: PreloadPageView(controller: controller.pageController,
+  //             // physics: BouncingScrollPhysics(),
+  //             preloadPagesCount: 1,
+  //             onPageChanged: (index)async => controller.changeIndex2(index),
+  //             children: [
+  //               KeepAliveWrapper(child: UserView()),
+  //               KeepAliveWrapper(child: FindView()),
+  //               KeepAliveWrapper(child: SearchView()),
+  //               KeepAliveWrapper(child: SearchView()),
+  //             ])),
+  //   );
+  // }
   Widget _buildContent() {
-    return Scaffold(
-      appBar: AppBar(
-          elevation: 0,
-          title: Text('Bujuan'),
-          leading: Obx(()=>IconButton(
+    return Stack(
+      children: [
+        SafeArea(child: Container(
+            padding: EdgeInsets.only(top: 60.0, left: 5.0, right: 5.0),
+            child: Obx(()=>PreloadPageView(
+                controller: controller.pageController,
+                physics: controller.scroller.value?BouncingScrollPhysics():NeverScrollableScrollPhysics(),
+                preloadPagesCount: 2,
+                onPageChanged: (index)  => controller.currentIndex.value = index,
+                children: [
+                  KeepAliveWrapper(child: UserView()),
+                  KeepAliveWrapper(child: FindView()),
+                  KeepAliveWrapper(child: SearchView()),
+                  KeepAliveWrapper(child: SearchView()),
+                ])))),
+        buildFloatingSearchBar()
+      ],
+    );
+  }
+
+  Widget buildFloatingSearchBar() {
+    final isPortrait = MediaQuery.of(Get.context).orientation == Orientation.portrait;
+
+    return FloatingSearchBar(
+      hint: 'Search...',
+      padding: EdgeInsets.symmetric(horizontal: 1.0),
+      scrollPadding: const EdgeInsets.only(top: 16, bottom: 56),
+      transitionDuration: const Duration(milliseconds: 800),
+      transitionCurve: Curves.easeInOut,
+      shadowColor: Theme.of(Get.context).accentColor.withOpacity(.1),
+      physics: const BouncingScrollPhysics(),
+      axisAlignment: isPortrait ? 0.0 : -1.0,
+      openAxisAlignment: 0.0,
+      elevation: 1,
+      iconColor: Theme.of(Get.context).bottomAppBarColor,
+      // width: isPortrait ? 600 : 500,
+      borderRadius: BorderRadius.circular(12.0),
+      debounceDelay: const Duration(milliseconds: 500),
+      onQueryChanged: (query) {
+        // Call your model, bloc, controller here.
+      },
+      // Specify a custom transition to be used for
+      // animating between opened and closed stated.
+      transition: CircularFloatingSearchBarTransition(),
+      leadingActions: [
+        FloatingSearchBarAction(
+          showIfOpened: false,
+          child: CircularButton(
             icon: Hero(
                 tag: 'avatar',
-                child: Card(
+                child: Obx(()=>Card(
+                  margin: EdgeInsets.all(0.0),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(30.0)),
                   clipBehavior: Clip.antiAlias,
                   child: CachedNetworkImage(
@@ -36,29 +121,38 @@ class HomeView extends GetView<HomeController> {
                     height: 30.0,
                     width: 30.0,
                   ),
-                )),
+                ))),
             onPressed: () => controller.goToProfile(),
-          )),
-          actions: [
-            IconButton(icon: Icon(Icons.settings), onPressed: () => Get.toNamed('/setting')),
-          ]),
-      body: Container(
-          padding: EdgeInsets.only(top: 0.0, left: 5.0, right: 5.0),
-          child: Column(
-            children: [
-              Obx(()=>_buildNavigationBarq(!controller.bottomBar.value)),
-              Expanded(child: PreloadPageView(controller: controller.pageController,
-                  // physics: BouncingScrollPhysics(),
-                  preloadPagesCount: 4,
-                  onPageChanged: (index)async => controller.changeIndex2(index),
-                  children: [
-                    KeepAliveWrapper(child: UserView()),
-                    KeepAliveWrapper(child: FindView()),
-                    KeepAliveWrapper(child: SearchView()),
-                    KeepAliveWrapper(child: SearchView()),
-                  ]))
-            ],
-          )),
+          ),
+        ),
+        FloatingSearchBarAction.back(
+          showIfClosed: false,
+        ),
+      ],
+      actions: [
+        FloatingSearchBarAction(
+          showIfOpened: false,
+          child: CircularButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () =>Get.toNamed('/setting'),
+          ),
+        ),
+        FloatingSearchBarAction.searchToClear(
+          showIfClosed: false,
+        ),
+      ],
+      builder: (context, transition) {
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: Material(
+            color: Colors.white,
+            elevation: 4.0,
+            child: Container(
+              height: 300,
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -68,15 +162,15 @@ class HomeView extends GetView<HomeController> {
       body: WeSlide(
         controller: controller.weSlideController,
         panelMaxSize: MediaQuery.of(Get.context).size.height,
-        panelMinSize: 65.0,
-        footerOffset: 0,
+        panelMinSize: 118.0,
+        footerOffset: 56,
         overlayColor: Colors.transparent,
         panelBackground: Colors.transparent,
         body: _buildContent(),
         parallax: true,
         panel: DefaultView(weSlideController: controller.weSlideController),
         panelHeader: MusicBottomBarView(weSlideController: controller.weSlideController),
-        // footer: Obx(()=>_buildNavigationBarq(controller.bottomBar.value)),
+        footer: Obx(() => _buildNavigationBarq()),
       ),
     );
   }
@@ -89,6 +183,7 @@ class HomeView extends GetView<HomeController> {
       backgroundColor: Theme.of(Get.context).primaryColor,
       type: BottomNavigationBarType.shifting,
       elevation: 0.0,
+      iconSize: 26.0,
       // showSelectedLabels: false,
       // showUnselectedLabels: false,
       items: [
@@ -102,24 +197,36 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  Widget _buildNavigationBarq(isBottom){
-    return isBottom?MinNiNavBar(
-        items: [
-          BottomMiniNavyBarItem(
-            activeColor: const Color.fromRGBO(213, 15, 37, 1),
-          ),
-          BottomMiniNavyBarItem(activeColor: const Color.fromRGBO(238, 178, 17, 1)),
-          BottomMiniNavyBarItem(
-            activeColor: const Color.fromRGBO(0, 153, 37, 1),
-          ),
-          BottomMiniNavyBarItem(
-            activeColor: const Color.fromRGBO(66, 153, 244, 1),
-          ),
-        ],
-        showElevation: false,
-        selectedIndex: controller.currentIndex1.value,
-        onItemSelected: (index) {
-        }):Container(height: 0,color:Theme.of(Get.context).primaryColor);
+  Widget _buildNavigationBarq() {
+    return CustomNavigationBar(
+      iconSize: 28.0,
+      selectedColor: Theme.of(Get.context).accentColor,
+      strokeColor: Theme.of(Get.context).accentColor.withOpacity(.1),
+      unSelectedColor: Theme.of(Get.context).bottomAppBarColor,
+      elevation: 0.0,
+      backgroundColor: Theme.of(Get.context).canvasColor,
+      items: [
+        CustomNavigationBarItem(
+          icon: Icon(Icons.person_pin),
+          selectedIcon: Icon(Icons.person_pin_rounded),
+        ),
+        CustomNavigationBarItem(
+          icon: Icon(Icons.lightbulb_outline),
+          selectedIcon: Icon(Icons.lightbulb),
+        ),
+        CustomNavigationBarItem(
+          icon: Icon(Icons.whatshot_outlined),
+          selectedIcon: Icon(Icons.whatshot),
+        ),
+        CustomNavigationBarItem(
+          icon: Icon(Icons.music_note_outlined),
+          selectedIcon: Icon(Icons.music_note),
+        ),
+      ],
+      currentIndex: controller.currentIndex.value,
+      onTap: (index) {
+        controller.changeIndex(index);
+      },
+    );
   }
-
 }

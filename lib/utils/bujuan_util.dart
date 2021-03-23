@@ -35,13 +35,15 @@ class BuJuanUtil {
   /// [light] 状态栏文字是否为白色
   static SystemUiOverlayStyle setNavigationBarTextColor(bool dark) {
     return !dark?SystemUiOverlayStyle(
-      systemNavigationBarColor: lightTheme.primaryColor,
-      systemNavigationBarDividerColor: lightTheme.primaryColor,
+      systemNavigationBarColor: lightTheme.canvasColor,
+      systemNavigationBarDividerColor: lightTheme.canvasColor,
       systemNavigationBarIconBrightness: Brightness.dark,
+      statusBarIconBrightness: Brightness.dark,
     ):SystemUiOverlayStyle(
-      systemNavigationBarColor: darkTheme.primaryColor,
-      systemNavigationBarDividerColor: darkTheme.primaryColor,
+      systemNavigationBarColor: darkTheme.canvasColor,
+      systemNavigationBarDividerColor: darkTheme.canvasColor,
       systemNavigationBarIconBrightness: Brightness.light,
+      statusBarIconBrightness: Brightness.dark,
     );
   }
 
