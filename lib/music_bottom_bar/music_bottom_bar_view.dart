@@ -18,7 +18,7 @@ class MusicBottomBarView extends GetView<GlobalController> {
       height: 59.0,
       child: Obx(()=>Material(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(topLeft: Radius.circular(14.0), topRight: Radius.circular(14.0)),
+          borderRadius: BorderRadius.only(topLeft: Radius.circular(12.0), topRight: Radius.circular(12.0)),
         ),
         elevation: 8,
         child: ListTile(
@@ -31,7 +31,7 @@ class MusicBottomBarView extends GetView<GlobalController> {
             child: CachedNetworkImage(
               width: 44.0,
               height: 44.0,
-              imageUrl: '${controller.song.value.iconUri}?param=80y80',
+              imageUrl: controller.song.value.musicId!='-99'?'${controller.song.value.iconUri}?param=80y80':'${controller.song.value.iconUri}',
             ),
           ),
           title: Text(

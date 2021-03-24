@@ -4,13 +4,10 @@ import 'dart:convert';
 import 'package:bujuan/entity/user_profile_entity.dart';
 import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/global/global_controller.dart';
-import 'package:bujuan/utils/bujuan_util.dart';
 import 'package:bujuan/utils/net_util.dart';
 import 'package:bujuan/utils/sp_util.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:preload_page_view/preload_page_view.dart';
+import 'package:bujuan/widget/preload_page_view.dart';
 import 'package:starry/music_item.dart';
 import 'package:starry/starry.dart';
 import 'package:we_slide/we_slide.dart';
@@ -31,7 +28,7 @@ class HomeController extends GlobalController {
     pageController = PreloadPageController(initialPage: currentIndex.value);
     weSlideController = WeSlideController();
     login.value = !GetUtils.isNullOrBlank(SpUtil.getString(USER_ID_SP));
-    scroller.value = SpUtil.getBool(OPEN_SCROLL,defValue: false);
+    scroller.value = SpUtil.getBool(OPEN_SCROLL, defValue: false);
     super.onInit();
     // SpUtil.putBool(IS_FIRST_OPEN, false);
   }
@@ -138,9 +135,12 @@ class HomeController extends GlobalController {
     }
   }
 
-  changeBottomState(){
+  changeBottomState() {
     scroller.value = !scroller.value;
+    pageController.jumpToPage(1);
+    currentIndex.value = 1;
     SpUtil.putBool(OPEN_SCROLL, scroller.value);
+
   }
 
   getUserProfile(userId) async {

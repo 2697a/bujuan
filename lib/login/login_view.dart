@@ -16,7 +16,10 @@ class LoginView extends GetView<LoginController> {
       body: Obx(() => ListView(
             children: [
               Padding(
-                padding: EdgeInsets.symmetric(vertical: 20.0),
+                padding: EdgeInsets.symmetric(vertical: 6.0),
+              ),
+              Center(
+                child: Image.asset('assets/images/logo.png',height: 106.0,width: 106.0,),
               ),
               Card(
                 margin: EdgeInsets.symmetric(vertical: 30.0, horizontal: 25.0),

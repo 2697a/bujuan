@@ -79,8 +79,8 @@ class SettingView extends GetView<SettingController> {
                 ),
                 SliverToBoxAdapter(
                     child: SwitchListTile(
-                      title: Text('开启滑动'),
-                      subtitle: Text('开启主页滑动功能'),
+                      title: Text('开启主屏滑动'),
+                      subtitle: Text('隐藏底部导航栏(更多空间)'),
                       value: Get.find<HomeController>().scroller.value,
                       onChanged: (value) => Get.find<HomeController>().changeBottomState(),
                     )
@@ -92,9 +92,22 @@ class SettingView extends GetView<SettingController> {
                       value: controller.isIgnoreAudioFocus.value,
                       onChanged: (value) => controller.toggleAudioFocus(value),
                     )
-                )
+                ),
+
+                SliverToBoxAdapter(
+                    child: ListTile(
+                      title: Text('音质选择'),
+                      trailing: Wrap(
+                        children: [
+                          Text('128k'),
+                          Icon(Icons.keyboard_arrow_right_rounded)
+                        ],
+                      ),
+                    )
+                ),
               ],
             ))),
+
             Offstage(
                 offstage: !Get.find<HomeController>().login.value,
                 child: ListTile(

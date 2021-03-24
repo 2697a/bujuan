@@ -14,6 +14,18 @@ class BuJuanUtil {
     return '$minStr:$secStr';
   }
 
+  static String unix2TimeTo(unix) {
+    unix = unix~/1000;
+    var minStr, secStr;
+    var min = unix ~/ 60;
+    var sec = (unix - min * 60);
+    minStr = '$min';
+    secStr = '$sec';
+    if (min < 10) minStr = '0$min';
+    if (sec < 10) secStr = '0$sec';
+    return '$minStr:$secStr';
+  }
+
   static String dateToString(DateTime dateTime,type){
     var monthStr, dayStr;
     var month = dateTime.month;

@@ -1,18 +1,18 @@
-import 'dart:math';
 
 import 'package:bujuan/find/find_view.dart';
 import 'package:bujuan/keep.dart';
 import 'package:bujuan/music_bottom_bar/music_bottom_bar_view.dart';
 import 'package:bujuan/play_view/default_view.dart';
 import 'package:bujuan/search/search_view.dart';
+import 'package:bujuan/top/top_view.dart';
 import 'package:bujuan/user/user_view.dart';
 import 'package:bujuan/widget/bottom_bar/custom_navigation_bar_item.dart';
 import 'package:bujuan/widget/bottom_bar/custome_navigation_bar.dart';
+import 'package:bujuan/widget/preload_page_view.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
-import 'package:preload_page_view/preload_page_view.dart';
 import 'package:we_slide/we_slide.dart';
 
 import 'home_controller.dart';
@@ -61,22 +61,48 @@ class HomeView extends GetView<HomeController> {
   //   );
   // }
   Widget _buildContent() {
-    return Stack(
+    return Column(
       children: [
-        SafeArea(child: Container(
-            padding: EdgeInsets.only(top: 60.0, left: 5.0, right: 5.0),
-            child: Obx(()=>PreloadPageView(
-                controller: controller.pageController,
-                physics: controller.scroller.value?BouncingScrollPhysics():NeverScrollableScrollPhysics(),
-                preloadPagesCount: 2,
-                onPageChanged: (index)  => controller.currentIndex.value = index,
-                children: [
-                  KeepAliveWrapper(child: UserView()),
-                  KeepAliveWrapper(child: FindView()),
-                  KeepAliveWrapper(child: SearchView()),
-                  KeepAliveWrapper(child: SearchView()),
-                ])))),
-        buildFloatingSearchBar()
+        AppBar(
+          leading: IconButton(
+            icon: Hero(
+                tag: 'avatar',
+                child: Obx(() => Card(
+                      margin: EdgeInsets.all(0.0),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(30.0)),
+                      clipBehavior: Clip.antiAlias,
+                      child: controller.userProfileEntity.value != null
+                          ? CachedNetworkImage(
+                              fit: BoxFit.cover,
+                              imageUrl: controller.userProfileEntity.value.profile.avatarUrl,
+                              height: 34.0,
+                              width: 34.0,
+                            )
+                          : Image.asset('assets/images/logo.png', width: 34.0, height: 34.0),
+                    ))),
+            onPressed: () => controller.goToProfile(),
+          ),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.search),
+              onPressed: () {},
+            ),
+            IconButton(
+              icon: Icon(Icons.settings),
+              onPressed: () => Get.toNamed('/setting'),
+            )
+          ],
+        ),
+        Expanded(
+            child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 5.0),
+          child: PreloadPageView(controller: controller.pageController, physics: controller.scroller.value ? ClampingScrollPhysics() : NeverScrollableScrollPhysics(), preloadPagesCount: 1, children: [
+            KeepAliveWrapper(child: UserView()),
+            KeepAliveWrapper(child: FindView()),
+            KeepAliveWrapper(child: TopView()),
+            KeepAliveWrapper(child: SearchView()),
+          ]),
+        ))
       ],
     );
   }
@@ -111,17 +137,17 @@ class HomeView extends GetView<HomeController> {
           child: CircularButton(
             icon: Hero(
                 tag: 'avatar',
-                child: Obx(()=>Card(
-                  margin: EdgeInsets.all(0.0),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(30.0)),
-                  clipBehavior: Clip.antiAlias,
-                  child: CachedNetworkImage(
-                    fit: BoxFit.cover,
-                    imageUrl: controller.userProfileEntity.value != null ? controller.userProfileEntity.value.profile.avatarUrl : 'https://pic1.zhimg.com/80/v2-7ff2d917aa926cfbf2e8b85b035e2563_1440w.jpg',
-                    height: 30.0,
-                    width: 30.0,
-                  ),
-                ))),
+                child: Obx(() => Card(
+                      margin: EdgeInsets.all(0.0),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(30.0)),
+                      clipBehavior: Clip.antiAlias,
+                      child: CachedNetworkImage(
+                        fit: BoxFit.cover,
+                        imageUrl: controller.userProfileEntity.value != null ? controller.userProfileEntity.value.profile.avatarUrl : 'https://pic1.zhimg.com/80/v2-7ff2d917aa926cfbf2e8b85b035e2563_1440w.jpg',
+                        height: 30.0,
+                        width: 30.0,
+                      ),
+                    ))),
             onPressed: () => controller.goToProfile(),
           ),
         ),
@@ -134,7 +160,7 @@ class HomeView extends GetView<HomeController> {
           showIfOpened: false,
           child: CircularButton(
             icon: const Icon(Icons.settings),
-            onPressed: () =>Get.toNamed('/setting'),
+            onPressed: () => Get.toNamed('/setting'),
           ),
         ),
         FloatingSearchBarAction.searchToClear(
@@ -159,19 +185,19 @@ class HomeView extends GetView<HomeController> {
   Widget _buildHomeView() {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: WeSlide(
-        controller: controller.weSlideController,
-        panelMaxSize: MediaQuery.of(Get.context).size.height,
-        panelMinSize: 118.0,
-        footerOffset: 56,
-        overlayColor: Colors.transparent,
-        panelBackground: Colors.transparent,
-        body: _buildContent(),
-        parallax: true,
-        panel: DefaultView(weSlideController: controller.weSlideController),
-        panelHeader: MusicBottomBarView(weSlideController: controller.weSlideController),
-        footer: Obx(() => _buildNavigationBarq()),
-      ),
+      body: Obx(() => WeSlide(
+            controller: controller.weSlideController,
+            panelMaxSize: MediaQuery.of(Get.context).size.height,
+            panelMinSize: controller.scroller.value ? 56.0 : 118.0,
+            footerOffset: controller.scroller.value ? 0 : 56.0,
+            overlayColor: Colors.transparent,
+            panelBackground: Colors.transparent,
+            body: _buildContent(),
+            parallax: true,
+            panel: DefaultView(weSlideController: controller.weSlideController),
+            panelHeader: MusicBottomBarView(weSlideController: controller.weSlideController),
+            footer: controller.scroller.value ? Container() : _buildNavigationBarq(),
+          )),
     );
   }
 

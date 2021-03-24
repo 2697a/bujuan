@@ -14,7 +14,7 @@ class GlobalController extends GetxController {
   var playState = PlayState.STOP.obs;
   var playPos = 0.obs;
   var playMode = 1.obs;
-  var song = MusicItem(musicId: '-99', duration: 6000, title: '暂无歌曲', artist: '暂无', iconUri: 'https://p2.music.126.net/pCJ3_kG8FeLR749dbkpT2A==/109951165784923841.jpg').obs;
+  var song = MusicItem(musicId: '-99', duration: 6000, title: '暂无歌曲', artist: '暂无', iconUri: 'https://pic1.zhimg.com/80/v2-7ff2d917aa926cfbf2e8b85b035e2563_1440w.jpg').obs;
   var lyric = LyricEntity().obs;
   var playList = [].obs;
   ScrollController scrollController;

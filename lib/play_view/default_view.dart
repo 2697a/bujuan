@@ -276,7 +276,7 @@ class DefaultView extends GetView<GlobalController> {
               shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(230.0)),
               clipBehavior: Clip.antiAlias,
               child: CachedNetworkImage(
-                imageUrl: '${controller.song.value.iconUri}?param=500y500',
+                imageUrl: controller.song.value.musicId!='-99'?'${controller.song.value.iconUri}?param=500y500':'${controller.song.value.iconUri}',
               ),
             ),
           ],

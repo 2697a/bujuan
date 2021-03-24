@@ -37,7 +37,7 @@ dependencies:
   dots_indicator: ^2.0.0
   progress_state_button: ^1.0.2
   direct_select_flutter: ^1.1.0
-  preload_page_view: ^0.1.5
+  adaptive_dialog: ^0.10.0+5
   material_floating_search_bar: ^0.3.3
   flutter:
     sdk: flutter
