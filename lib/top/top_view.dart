@@ -49,14 +49,14 @@ class TopView extends GetView<TopController> {
         child: Card(
           child: InkWell(
               child: Container(
-                height: 135.0,
+                height: 120.0,
                 child: Row(
                   children: [
                     Hero(
                         tag: id,
                         child: CachedNetworkImage(
-                          height: 135.0,
-                          width: 135.0,
+                          height: 120.0,
+                          width: 120.0,
                           fit: BoxFit.cover,
                           imageUrl: imageUrl,
                         )),
@@ -67,7 +67,7 @@ class TopView extends GetView<TopController> {
                       physics: NeverScrollableScrollPhysics(),
                       itemBuilder: (context, index) {
                         return Container(
-                          height: 45,
+                          height: 40.0,
                           alignment: Alignment.centerLeft,
                           child: RichText(
                               maxLines: 1,
@@ -103,14 +103,14 @@ class TopView extends GetView<TopController> {
         padding: EdgeInsets.symmetric(vertical: 4.0),
         child: Card(
           child: Container(
-            height: 135.0,
+            height: 120.0,
             child: Row(
               children: [
                 Hero(
                     tag: id,
                     child: CachedNetworkImage(
-                      height: 135.0,
-                      width: 135.0,
+                      height: 120.0,
+                      width: 120.0,
                       fit: BoxFit.cover,
                       imageUrl: imageUrl,
                     )),
