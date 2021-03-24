@@ -2,6 +2,7 @@
 import 'package:bujuan/find/find_view.dart';
 import 'package:bujuan/keep.dart';
 import 'package:bujuan/music_bottom_bar/music_bottom_bar_view.dart';
+import 'package:bujuan/over_scroll.dart';
 import 'package:bujuan/play_view/default_view.dart';
 import 'package:bujuan/search/search_view.dart';
 import 'package:bujuan/top/top_view.dart';
@@ -82,6 +83,7 @@ class HomeView extends GetView<HomeController> {
                     ))),
             onPressed: () => controller.goToProfile(),
           ),
+          title: Text("Bujuan"),
           actions: [
             IconButton(
               icon: Icon(Icons.search),
@@ -96,12 +98,12 @@ class HomeView extends GetView<HomeController> {
         Expanded(
             child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 5.0),
-          child: PreloadPageView(controller: controller.pageController, physics: controller.scroller.value ? ClampingScrollPhysics() : NeverScrollableScrollPhysics(), preloadPagesCount: 1, children: [
+          child: ScrollConfiguration(behavior: OverScrollBehavior(),child: PreloadPageView(controller: controller.pageController, physics: controller.scroller.value ? ClampingScrollPhysics() : NeverScrollableScrollPhysics(), preloadPagesCount: 1, children: [
             KeepAliveWrapper(child: UserView()),
             KeepAliveWrapper(child: FindView()),
             KeepAliveWrapper(child: TopView()),
             KeepAliveWrapper(child: SearchView()),
-          ]),
+          ]),),
         ))
       ],
     );
@@ -188,7 +190,7 @@ class HomeView extends GetView<HomeController> {
       body: Obx(() => WeSlide(
             controller: controller.weSlideController,
             panelMaxSize: MediaQuery.of(Get.context).size.height,
-            panelMinSize: controller.scroller.value ? 56.0 : 118.0,
+            panelMinSize: controller.scroller.value ? 62.0 : 118.0,
             footerOffset: controller.scroller.value ? 0 : 56.0,
             overlayColor: Colors.transparent,
             panelBackground: Colors.transparent,
