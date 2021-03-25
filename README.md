@@ -1,16 +1,34 @@
-# bujuan
+# 不倦（简洁的三方网易播放器）
 
-A new Flutter application.
 
-## Getting Started
+### 简介
+本项目接口是由github开源项目修改而来的，项目主打简洁轻量。
+_发奋忘食，乐以忘优，不知老之将至。_
+### 开始
+`git clone https://github.com/2697a/bujuan.git`
+下载flutter2.0 SDK
+运行flutter run --release
+### 功能
 
-This project is a starting point for a Flutter application.
+- [x] 手机号/邮箱登录
+- [x] 获取歌单数据
+- [x] 获取每日推荐
+- [x] 云盘
+- [x] 排行榜
+- [x] 日夜间模式
+- [x] 忽略音频焦点
+- [x] 系统通知栏
+- [ ] 音效均衡器
+- [ ] 私人fm
+- [ ] 电台
+- [ ] 等等
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### 截图
+暂无
+### 免责声明
+不将本程序以及与之相关的网络服务用作非法用途以及非正当用途。
+本程序内容仅代表作者本人的观点，不代表本程序的观点和看法，与本程序立场无关，相关责任作者自负。
+使用本程序所带来的责任，由使用者承担。
+本程序有部分内容来自互联网，如无意中侵犯了哪个媒体、公司、企业或个人等的知识产权，请来电或致函告之，本程序将在规定时间内给予删除等相关处理。
