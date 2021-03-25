@@ -6,8 +6,10 @@
 _发奋忘食，乐以忘优，不知老之将至。_
 ### 开始
 `git clone https://github.com/2697a/bujuan.git`
-下载flutter2.0 SDK
-运行flutter run --release
+
+install flutter2.0
+
+run flutter run --release
 ### 功能
 
 - [x] 手机号/邮箱登录
