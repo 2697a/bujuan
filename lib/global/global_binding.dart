@@ -1,7 +1,7 @@
-import 'package:bujuan/find/find_controller.dart';
 import 'package:bujuan/global/global_controller.dart';
-import 'package:bujuan/top/top_controller.dart';
-import 'package:bujuan/user/user_controller.dart';
+import 'package:bujuan/pages/find/find_controller.dart';
+import 'package:bujuan/pages/top/top_controller.dart';
+import 'package:bujuan/pages/user/user_controller.dart';
 import 'package:get/get.dart';
 
 class GlobalBinding extends Bindings{
