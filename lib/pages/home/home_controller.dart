@@ -4,28 +4,46 @@ import 'dart:convert';
 import 'package:bujuan/entity/user_profile_entity.dart';
 import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/global/global_controller.dart';
+import 'package:bujuan/global/global_theme.dart';
+import 'package:bujuan/pages/find/find_view.dart';
+import 'package:bujuan/pages/search/search_view.dart';
+import 'package:bujuan/pages/top/top_controller.dart';
+import 'package:bujuan/pages/top/top_view.dart';
+import 'package:bujuan/pages/user/user_controller.dart';
+import 'package:bujuan/pages/user/user_view.dart';
+import 'package:bujuan/utils/bujuan_util.dart';
 import 'package:bujuan/utils/net_util.dart';
 import 'package:bujuan/utils/sp_util.dart';
+import 'package:bujuan/widget/keep.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:bujuan/widget/preload_page_view.dart';
 import 'package:starry/music_item.dart';
 import 'package:starry/starry.dart';
 import 'package:we_slide/we_slide.dart';
 
-class HomeController extends GlobalController {
+class HomeController extends SuperController {
   var currentIndex = 1.obs;
   var currentIndex1 = 1.obs;
   var userProfileEntity = UserProfileEntity().obs;
+  var isSystemTheme = true.obs;
   PreloadPageController pageController;
   WeSlideController weSlideController;
   StreamSubscription _streamSubscription;
   var login = false.obs;
   var scroller = false.obs;
+  final pages = [
+    KeepAliveWrapper(child: UserView()),
+    KeepAliveWrapper(child: FindView()),
+    KeepAliveWrapper(child: TopView()),
+    KeepAliveWrapper(child: SearchView()),
+  ];
 
   @override
   void onInit() {
     userProfileEntity.value = null;
     pageController = PreloadPageController(initialPage: currentIndex.value);
+    isSystemTheme.value = SpUtil.getBool(IS_SYSTEM_THEME_SP, defValue: true);
     weSlideController = WeSlideController();
     login.value = !GetUtils.isNullOrBlank(SpUtil.getString(USER_ID_SP));
     scroller.value = SpUtil.getBool(OPEN_SCROLL, defValue: false);
@@ -140,11 +158,42 @@ class HomeController extends GlobalController {
     pageController.jumpToPage(1);
     currentIndex.value = 1;
     SpUtil.putBool(OPEN_SCROLL, scroller.value);
-
   }
 
   getUserProfile(userId) async {
     userProfileEntity.value = await NetUtils().getUserProfile(userId);
     login.value = true;
   }
+
+  @override
+  void didChangePlatformBrightness() {
+    if (isSystemTheme.value) {
+      Get.changeTheme(!Get.isPlatformDarkMode ? lightTheme : darkTheme);
+      Future.delayed(Duration(milliseconds: 300), () => SystemChrome.setSystemUIOverlayStyle(BuJuanUtil.setNavigationBarTextColor(Get.isPlatformDarkMode)));
+    }
+    super.didChangePlatformBrightness();
+  }
+
+  onPageChange(index) {
+    var userController = Get.find<UserController>();
+    var topController = Get.find<TopController>();
+    if (index == 0 && !userController.isLoad) {
+      userController.getUserSheet();
+    }
+    if (index == 2 && !topController.isLoad) {
+      topController.getData();
+    }
+  }
+
+  @override
+  void onDetached() {}
+
+  @override
+  void onInactive() {}
+
+  @override
+  void onPaused() {}
+
+  @override
+  void onResumed() {}
 }

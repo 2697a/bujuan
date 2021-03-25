@@ -572,7 +572,7 @@ class _PreloadPageViewState extends State<PreloadPageView> {
       onNotification: (ScrollNotification notification) {
         if (notification.depth == 0 &&
             widget.onPageChanged != null &&
-            notification is ScrollUpdateNotification) {
+            notification is ScrollEndNotification) {
           final PageMetrics metrics = notification.metrics;
           final int currentPage = metrics.page.round();
           if (currentPage != _lastReportedPage) {

@@ -20,7 +20,7 @@ class UserView extends GetView<UserController> {
       child: Obx(()=>SmartRefresher(
         enablePullUp: false,
         controller: controller.refreshController,
-        onRefresh: () => controller.onReady(),
+        onRefresh: () => controller.getUserSheet(),
         child: CustomScrollView(
           slivers: [
             SliverToBoxAdapter(

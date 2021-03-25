@@ -42,15 +42,22 @@ main(List<String> args) async {
   await _startServer();
   await SpUtil.getInstance();
   var isDark = SpUtil.getBool(IS_DARK_SP, defValue: false);
-  // var isFirstOpen = SpUtil.getBool(IS_FIRST_OPEN, defValue: true);
-  SystemChrome.setSystemUIOverlayStyle(BuJuanUtil.setNavigationBarTextColor(isDark));
+  var isSystemTheme = SpUtil.getBool(IS_SYSTEM_THEME_SP, defValue: true);
+  var theme;
+  if (isSystemTheme) {
+    theme = Get.isPlatformDarkMode ? darkTheme : lightTheme;
+    SystemChrome.setSystemUIOverlayStyle(BuJuanUtil.setNavigationBarTextColor(Get.isPlatformDarkMode));
+  } else {
+    theme = isDark ? darkTheme : lightTheme;
+    SystemChrome.setSystemUIOverlayStyle(BuJuanUtil.setNavigationBarTextColor(isDark));
+  }
 
   runApp(RefreshConfiguration(
     child: GetMaterialApp(
       // showPerformanceOverlay: true,
-      darkTheme: darkTheme,
+      // darkTheme: darkTheme,
       debugShowCheckedModeBanner: false,
-      theme: isDark ? darkTheme : lightTheme,
+      theme: theme,
       enableLog: true,
       initialRoute: '/home',
       getPages: [

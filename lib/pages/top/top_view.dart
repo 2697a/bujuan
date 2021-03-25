@@ -13,7 +13,7 @@ class TopView extends GetView<TopController> {
       behavior: OverScrollBehavior(),
       child: Obx(() => SmartRefresher(
           controller: controller.refreshController,
-          onRefresh: () => controller.onReady(),
+          onRefresh: () => controller.getData(),
           child: CustomScrollView(
             slivers: [
               SliverToBoxAdapter(

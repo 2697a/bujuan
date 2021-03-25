@@ -1,12 +1,8 @@
+import 'dart:math';
 
-import 'package:bujuan/pages/find/find_view.dart';
-import 'package:bujuan/widget/keep.dart';
 import 'package:bujuan/pages/music_bottom_bar/music_bottom_bar_view.dart';
 import 'package:bujuan/widget/over_scroll.dart';
 import 'package:bujuan/pages/play_view/default_view.dart';
-import 'package:bujuan/pages/search/search_view.dart';
-import 'package:bujuan/pages/top/top_view.dart';
-import 'package:bujuan/pages/user/user_view.dart';
 import 'package:bujuan/widget/bottom_bar/custom_navigation_bar_item.dart';
 import 'package:bujuan/widget/bottom_bar/custome_navigation_bar.dart';
 import 'package:bujuan/widget/preload_page_view.dart';
@@ -94,16 +90,26 @@ class HomeView extends GetView<HomeController> {
               onPressed: () => Get.toNamed('/setting'),
             )
           ],
-        ),
+        ),//The name 'PageMetrics' is defined in the libraries 'package
         Expanded(
             child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 5.0),
-          child: ScrollConfiguration(behavior: OverScrollBehavior(),child: PreloadPageView(controller: controller.pageController, physics: controller.scroller.value ? ClampingScrollPhysics() : NeverScrollableScrollPhysics(), preloadPagesCount: 1, children: [
-            KeepAliveWrapper(child: UserView()),
-            KeepAliveWrapper(child: FindView()),
-            KeepAliveWrapper(child: TopView()),
-            KeepAliveWrapper(child: SearchView()),
-          ]),),
+          child: ScrollConfiguration(
+              behavior: OverScrollBehavior(),
+              child: PreloadPageView.builder(
+                onPageChanged: (index){
+                  if (index != controller.currentIndex.value) {
+                    controller.currentIndex.value = index;
+                    controller.onPageChange(index);
+                  }
+                  print("object=========$index");
+                },
+                controller: controller.pageController,
+                physics: controller.scroller.value ? ClampingScrollPhysics() : NeverScrollableScrollPhysics(),
+                preloadPagesCount: 0,
+                itemBuilder: (context, index) => controller.pages[index],
+                itemCount: controller.pages.length,
+              )),
         ))
       ],
     );
@@ -257,4 +263,51 @@ class HomeView extends GetView<HomeController> {
       },
     );
   }
+}
+class PageMetrics extends FixedScrollMetrics {
+  /// Creates an immutable snapshot of values associated with a [PreloadPageView].
+  PageMetrics({
+    @required double minScrollExtent,
+    @required double maxScrollExtent,
+    @required double pixels,
+    @required double viewportDimension,
+    @required AxisDirection axisDirection,
+    @required this.viewportFraction,
+  }) : super(
+    minScrollExtent: minScrollExtent,
+    maxScrollExtent: maxScrollExtent,
+    pixels: pixels,
+    viewportDimension: viewportDimension,
+    axisDirection: axisDirection,
+  );
+
+  @override
+  PageMetrics copyWith({
+    double minScrollExtent,
+    double maxScrollExtent,
+    double pixels,
+    double viewportDimension,
+    AxisDirection axisDirection,
+    double viewportFraction,
+  }) {
+    return PageMetrics(
+      minScrollExtent: minScrollExtent ?? this.minScrollExtent,
+      maxScrollExtent: maxScrollExtent ?? this.maxScrollExtent,
+      pixels: pixels ?? this.pixels,
+      viewportDimension: viewportDimension ?? this.viewportDimension,
+      axisDirection: axisDirection ?? this.axisDirection,
+      viewportFraction: viewportFraction ?? this.viewportFraction,
+    );
+  }
+
+  /// The current page displayed in the [PreloadPageView].
+  double get page {
+    return max(0.0, pixels.clamp(minScrollExtent, maxScrollExtent)) /
+        max(1.0, viewportDimension * viewportFraction);
+  }
+
+  /// The fraction of the viewport that each page occupies.
+  ///
+  /// Used to compute [page] from the current [pixels].
+  final double viewportFraction;
 }

@@ -10,6 +10,7 @@ class TopController extends GetxController {
   var hotSong = [].obs;
   var hotSongImageUrl = 'http://p2.music.126.net/GhhuF6Ep5Tq9IEvLsyCN7w==/18708190348409091.jpg?param=300y300';
   RefreshController refreshController;
+  var isLoad = false;
 
   @override
   void onInit() {
@@ -18,12 +19,17 @@ class TopController extends GetxController {
   }
 
   @override
-  void onReady() async {
+  void onReady() {
+    super.onReady();
+  }
+
+  ///获取排行榜数据
+  getData() async {
     await loadTopData("19723756", soaring);
     await loadTopData("3779629", newSong);
     await loadTopData("3778678", hotSong);
+    isLoad = true;
     refreshController.refreshCompleted();
-    super.onReady();
   }
 
   loadTopData(id, result) async {

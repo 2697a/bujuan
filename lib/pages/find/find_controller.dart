@@ -1,5 +1,6 @@
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/utils/net_util.dart';
+import 'package:bujuan/widget/preload_page_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -9,13 +10,13 @@ class FindController extends GetxController {
   var sheet = [].obs;
   var newSong = [].obs;
   var currentIndexPage = 0.obs;
-  PageController pageController;
+  PreloadPageController pageController;
   RefreshController refreshController;
 
   @override
   void onInit() async {
     refreshController = RefreshController(initialRefresh: false);
-    pageController = PageController();
+    pageController = PreloadPageController();
     super.onInit();
   }
 

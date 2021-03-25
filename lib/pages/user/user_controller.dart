@@ -9,6 +9,7 @@ class UserController extends GetxController {
   var createPlayList = [].obs;
   var collectPlayList = [].obs;
   RefreshController refreshController;
+  var isLoad = false;
 
   @override
   void onInit() {
@@ -18,7 +19,6 @@ class UserController extends GetxController {
 
   @override
   void onReady() {
-    getUserSheet();
     super.onReady();
   }
 
@@ -44,6 +44,7 @@ class UserController extends GetxController {
           ..addAll(where);
       }
     }
+    isLoad = true;
     refreshController.refreshCompleted();
   }
 }

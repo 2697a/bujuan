@@ -3,6 +3,7 @@ import 'package:bujuan/entity/personal_entity.dart';
 import 'package:bujuan/global/global_loding_view.dart';
 import 'package:bujuan/utils/bujuan_util.dart';
 import 'package:bujuan/widget/over_scroll.dart';
+import 'package:bujuan/widget/preload_page_view.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/cupertino.dart';
@@ -117,7 +118,7 @@ class FindView extends GetView<FindController> {
                 SliverToBoxAdapter(
                   child: Container(
                       height: 180.0,
-                      child: PageView.builder(
+                      child: PreloadPageView.builder(
                         controller: controller.pageController,
                         onPageChanged: (index)=>controller.currentIndexPage.value = index,
                         itemBuilder: (context, index) {
