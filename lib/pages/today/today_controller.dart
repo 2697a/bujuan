@@ -46,11 +46,11 @@ class TodayController extends GlobalController {
 
   playSong(index) async {
     var songs = [];
-    var playSheetId = SpUtil.getInt(PLAY_SONG_SHEET_ID, defValue: -1);
-    if (playSheetId == -999) {
-      //当前歌单正在播放，直接根据下标播放
-      Starry.playMusicByIndex(index);
-    } else {
+    // var playSheetId = SpUtil.getInt(PLAY_SONG_SHEET_ID, defValue: -1);
+    // if (playSheetId == -999) {
+    //   //当前歌单正在播放，直接根据下标播放
+    //   Starry.playMusicByIndex(index);
+    // } else {
       //当前歌单未在播放
       list.forEach((track) {
         MusicItem musicItem = MusicItem(
@@ -65,7 +65,7 @@ class TodayController extends GlobalController {
       });
       await Starry.playMusic(songs, index);
       SpUtil.putInt(PLAY_SONG_SHEET_ID, -999);
-    }
+    // }
   }
 
 
