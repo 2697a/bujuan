@@ -178,7 +178,8 @@ class NetUtils {
   ///获取歌曲播放地址
   Future<String> getSongUrl(songId) async {
     var songUrl = '';
-    var map = await _doHandler('/song/url', {'id': songId, 'br': '320000'});
+    var map = await _doHandler('/song/url', {'id': songId, 'br': '128000'});
+    print("object$map");
     if (map != null) songUrl = map['data'][0]['url'];
     return songUrl;
   }
@@ -267,6 +268,7 @@ class NetUtils {
   Future<void> getMusicFloorTalk() async{
     await _doHandler('');
   }
+
 
 
 
