@@ -1,9 +1,13 @@
+import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/utils/net_util.dart';
+import 'package:bujuan/utils/sp_util.dart';
 import 'package:bujuan/widget/preload_page_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:starry/music_item.dart';
+import 'package:starry/starry.dart';
 
 class FindController extends GetxController {
   var banner = [].obs;
@@ -54,7 +58,7 @@ class FindController extends GetxController {
     if (newSongEntity != null && newSongEntity.code == 200) {
       newSong
         ..clear()
-        ..addAll(newSongEntity.result);
+        ..addAll(newSongEntity.result.sublist(0,6));
     }
     refreshController?.refreshCompleted();
   }
@@ -65,6 +69,31 @@ class FindController extends GetxController {
       Get.toNamed('/today');
     } else {
       Get.find<HomeController>().goToLogin();
+    }
+  }
+
+
+  playSong(index) async {
+    var songs = [];
+    var playSheetId = SpUtil.getInt(PLAY_SONG_SHEET_ID, defValue: -1);
+    if (playSheetId == -997) {
+      //当前歌单正在播放，直接根据下标播放
+      Starry.playMusicByIndex(index);
+    } else {
+      //当前歌单未在播放
+      newSong.forEach((track) {
+        MusicItem musicItem = MusicItem(
+          musicId: '${track.song.id}',
+          duration: track.song.duration,
+          iconUri: "${track.picUrl}",
+          title: track.name,
+          uri: '${track.song.id}',
+          artist: track.song.artists[0].name,
+        );
+        songs.add(musicItem);
+      });
+      await Starry.playMusic(songs, index);
+      SpUtil.putInt(PLAY_SONG_SHEET_ID, -997);
     }
   }
 }

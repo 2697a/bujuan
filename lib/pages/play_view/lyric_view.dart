@@ -1,6 +1,7 @@
 import 'package:bujuan/api/lyric/lyric_controller.dart';
 import 'package:bujuan/api/lyric/lyric_util.dart';
 import 'package:bujuan/api/lyric/lyric_widget.dart';
+import 'package:bujuan/api/module.dart';
 import 'package:flutter/material.dart';
 
 class LyricView extends StatefulWidget {
@@ -35,21 +36,25 @@ class LyricViewState extends State<LyricView> {
       lyricController.progress = Duration(seconds: widget.pos);
     }
     return Expanded(
-        child: OrientationBuilder(
-            key: globalKey,
-            builder: (context, orientation) {
-              return LyricWidget(
-                  lyricMaxWidth: orientation == Orientation.landscape
-                      ? MediaQuery.of(context).size.width / 1.4
-                      : MediaQuery.of(context).size.width / 1.4,
-                  enableDrag: false,
-                  controller: lyricController,
-                  lyrics: LyricUtil.formatLyric(widget.lyric),
-                  size: Size(
-                      orientation == Orientation.landscape
+        child: lyric != null
+            ? OrientationBuilder(
+                key: globalKey,
+                builder: (context, orientation) {
+                  return LyricWidget(
+                      lyricMaxWidth: orientation == Orientation.landscape
                           ? MediaQuery.of(context).size.width / 1.4
                           : MediaQuery.of(context).size.width / 1.4,
-                      100));
-            }));
+                      enableDrag: false,
+                      controller: lyricController,
+                      lyrics: LyricUtil.formatLyric(widget.lyric),
+                      size: Size(
+                          orientation == Orientation.landscape
+                              ? MediaQuery.of(context).size.width / 1.4
+                              : MediaQuery.of(context).size.width / 1.4,
+                          100));
+                })
+            : Center(
+                child: Text('暂无歌词'),
+              ));
   }
 }

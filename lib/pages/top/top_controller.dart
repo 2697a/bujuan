@@ -1,3 +1,4 @@
+import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/utils/net_util.dart';
 import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -11,6 +12,7 @@ class TopController extends GetxController {
   var hotSongImageUrl = 'http://p2.music.126.net/GhhuF6Ep5Tq9IEvLsyCN7w==/18708190348409091.jpg?param=300y300';
   RefreshController refreshController;
   var isLoad = false;
+  var otherTops = [];
 
   @override
   void onInit() {
@@ -20,6 +22,7 @@ class TopController extends GetxController {
 
   @override
   void onReady() {
+    otherTops..add(TopInfo('10520166', '电音榜', dy_top))..add(TopInfo('180106', 'UK榜',  uk_top))..add(TopInfo('60131', '日本榜',  rb_top))..add(TopInfo('60198', 'Billl榜',  billl_top))..add(TopInfo('21845217', 'KTV榜',  krv_top))..add(TopInfo('11641012', 'Itunes榜',  itunes_top));
     super.onReady();
   }
 
@@ -41,4 +44,11 @@ class TopController extends GetxController {
           ..addAll(sheetDetailsEntity.playlist.tracks.sublist(0, 3));
     }
   }
+}
+class TopInfo {
+  String id;
+  String name;
+  String picUrl;
+
+  TopInfo(this.id, this.name, this.picUrl);
 }

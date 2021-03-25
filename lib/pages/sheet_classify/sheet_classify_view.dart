@@ -121,7 +121,7 @@ class SheetClassifyView extends GetView<SheetClassifyController> {
               crossAxisCount: 3,
               crossAxisSpacing: 15.0,
               mainAxisSpacing: 12.0,
-              childAspectRatio: .75,
+              childAspectRatio: .69,
             )))
       ],
     );

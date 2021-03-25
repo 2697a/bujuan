@@ -32,7 +32,8 @@ class NetUtils {
 
   ///统一请求'msg' -> 'data inconstant when unbooked playlist, pid:2427280345 userId:302618605'
   Future<Map> _doHandler(String url, [Map param = const {}]) async {
-    var answer = await cloudMusicApi(url, parameter: param, cookie: await _getCookie());
+    var answer =
+        await cloudMusicApi(url, parameter: param, cookie: await _getCookie());
     var map;
     if (answer.status == 200) {
       if (answer.cookie != null && answer.cookie.length > 0) {
@@ -63,7 +64,8 @@ class NetUtils {
   ///手机号登录
   Future<LoginEntity> loginByPhone(String phone, String password) async {
     var login;
-    var map = await _doHandler('/login/cellphone', {'phone': phone, 'password': password});
+    var map = await _doHandler(
+        '/login/cellphone', {'phone': phone, 'password': password});
     if (map != null) {
       login = LoginEntity.fromJson(map);
     }
@@ -73,7 +75,8 @@ class NetUtils {
   ///邮箱登录
   Future<LoginEntity> loginByEmail(String email, String password) async {
     var login;
-    var map = await _doHandler('/login', {'email': email, 'password': password});
+    var map =
+        await _doHandler('/login', {'email': email, 'password': password});
     if (map != null) login = LoginEntity.fromJson(map);
     return login;
   }
@@ -106,7 +109,8 @@ class NetUtils {
       var body = map['songs'];
       List<SheetDetailsPlaylistTrack> songs = [];
       await Future.forEach(body, (element) {
-        var sheetDetailsPlaylistTrack = SheetDetailsPlaylistTrack.fromJson(element);
+        var sheetDetailsPlaylistTrack =
+            SheetDetailsPlaylistTrack.fromJson(element);
         songs.add(sheetDetailsPlaylistTrack);
       });
       songDetails = songs;
@@ -131,7 +135,8 @@ class NetUtils {
   Future<UserProfileEntity> getUserProfile(userId) async {
     var profile;
     var map = await _doHandler('/user/detail', {'uid': userId});
-    if (map != null) profile = UserProfileEntity.fromJson(Map<String, dynamic>.from(map));
+    if (map != null)
+      profile = UserProfileEntity.fromJson(Map<String, dynamic>.from(map));
     return profile;
   }
 
@@ -203,7 +208,8 @@ class NetUtils {
   ///1收藏0取消收藏
   Future<bool> subPlaylist(bool isSub, id) async {
     bool sub = false;
-    var map = await _doHandler('/playlist/subscribe', {'t': isSub ? 1 : 0, 'id': id});
+    var map =
+        await _doHandler('/playlist/subscribe', {'t': isSub ? 1 : 0, 'id': id});
     sub = map != null;
     return sub;
   }
@@ -241,11 +247,14 @@ class NetUtils {
   }
 
   ///获取云盘数据
-  Future<CloudEntity> getCloudData(offset) async {
-    var cloud;
+  Future<List<SheetDetailsPlaylistTrack>> getCloudData(offset) async {
+    CloudEntity cloud;
     var map = await _doHandler('/user/cloud', {'offset': offset});
     if (map != null) cloud = CloudEntity.fromJson(map);
-    return cloud;
+    List<int> ids = [];
+    await Future.forEach(cloud.data, (id) => ids.add(id.songId));
+    var list = await getSongDetails(ids.join(','));
+    return list;
   }
 
   ///根据分类获取歌单
@@ -259,18 +268,16 @@ class NetUtils {
   ///获取歌曲评论
   Future<MusicTalk> getMusicTalk(id, type, pageNo) async {
     var talk;
-    var map = await _doHandler('/comment/new', {'id': id, 'type': type, 'pageNo': pageNo});
+    var map = await _doHandler(
+        '/comment/new', {'id': id, 'type': type, 'pageNo': pageNo});
     if (map != null) talk = MusicTalk.fromJson(map);
     return talk;
   }
 
   ///获取歌曲楼层评论
-  Future<void> getMusicFloorTalk() async{
+  Future<void> getMusicFloorTalk() async {
     await _doHandler('');
   }
-
-
-
 
 //播放音乐
 // Future setPlayListAndPlayById(List<SongInfo> list, int index, String id) async {

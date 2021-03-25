@@ -69,14 +69,16 @@ class HomeController extends SuperController {
   }
 
   void pauseStream() {
-    if (_streamSubscription != null && !_streamSubscription.isPaused) _streamSubscription.pause();
+    if (_streamSubscription != null && !_streamSubscription.isPaused)
+      _streamSubscription.pause();
   }
 
   void resumeStream() {
     if (_streamSubscription != null && _streamSubscription.isPaused) {
       _streamSubscription.resume();
     } else {
-      _streamSubscription = Starry.eventChannel.receiveBroadcastStream().listen((pos) {
+      _streamSubscription =
+          Starry.eventChannel.receiveBroadcastStream().listen((pos) {
         if (pos != null) {
           Get.find<GlobalController>().playPos.value = pos;
         }
@@ -98,7 +100,8 @@ class HomeController extends SuperController {
       goToLogin();
       return;
     }
-    currentIndex.value = index;
+    // currentIndex.value = index;
+    onPageChange(index);
     pageController.jumpToPage(index);
   }
 
@@ -112,7 +115,8 @@ class HomeController extends SuperController {
     });
     Starry.onPlayerStateChanged.listen((PlayState playState) {
       Get.find<GlobalController>().playState.value = playState;
-      if (playState == PlayState.ERROR) Get.find<GlobalController>().skipToNext();
+      if (playState == PlayState.ERROR)
+        Get.find<GlobalController>().skipToNext();
     });
 
     Starry.onPlayerSongListChanged.listen((List<MusicItem> playList) {
@@ -169,19 +173,25 @@ class HomeController extends SuperController {
   void didChangePlatformBrightness() {
     if (isSystemTheme.value) {
       Get.changeTheme(!Get.isPlatformDarkMode ? lightTheme : darkTheme);
-      Future.delayed(Duration(milliseconds: 300), () => SystemChrome.setSystemUIOverlayStyle(BuJuanUtil.setNavigationBarTextColor(Get.isPlatformDarkMode)));
+      Future.delayed(
+          Duration(milliseconds: 300),
+          () => SystemChrome.setSystemUIOverlayStyle(
+              BuJuanUtil.setNavigationBarTextColor(Get.isPlatformDarkMode)));
     }
     super.didChangePlatformBrightness();
   }
 
   onPageChange(index) {
-    var userController = Get.find<UserController>();
-    var topController = Get.find<TopController>();
-    if (index == 0 && !userController.isLoad) {
-      userController.getUserSheet();
-    }
-    if (index == 2 && !topController.isLoad) {
-      topController.getData();
+    if (index != currentIndex.value) {
+      currentIndex.value = index;
+      var userController = Get.find<UserController>();
+      var topController = Get.find<TopController>();
+      if (index == 0 && !userController.isLoad) {
+        userController.getUserSheet();
+      }
+      if (index == 2 && !topController.isLoad) {
+        topController.getData();
+      }
     }
   }
 

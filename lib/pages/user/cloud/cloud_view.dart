@@ -3,7 +3,6 @@ import 'package:bujuan/pages/music_bottom_bar/music_bottom_bar_view.dart';
 import 'package:bujuan/widget/over_scroll.dart';
 import 'package:bujuan/pages/play_view/default_view.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_placeholder_textlines/placeholder_lines.dart';
 import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:we_slide/we_slide.dart';
@@ -34,19 +33,24 @@ class CloudView extends GetView<CloudController>{
   }
 
   Widget _buildContent(){
-    return ScrollConfiguration(behavior: OverScrollBehavior(), child: SmartRefresher(
+    return Obx(()=>ScrollConfiguration(behavior: OverScrollBehavior(), child: SmartRefresher(
       controller: controller.refreshController,
       enablePullUp: controller.enableLoadMore.value,
       onRefresh: ()=>controller.refreshData(),
       onLoading: ()=>controller.loadMoreData(),
-      child: Obx(()=>CustomScrollView(
+      child: CustomScrollView(
         slivers: [
-          SliverAppBar(title: Text('云盘'),),
+          SliverAppBar(
+            elevation: 0.0,
+            floating: true,
+            pinned: true,
+            title: Text('云盘'),
+          ),
           SliverList(
             delegate: SliverChildBuilderDelegate(
                   (BuildContext context, int index) {
                 return controller.clouds.length >0?InkWell(
-                  child: Padding(
+                  child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 2.0, vertical: 5.0),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -68,13 +72,13 @@ class CloudView extends GetView<CloudController>{
                                 Container(
                                   height: 25,
                                   alignment: Alignment.centerLeft,
-                                  child: Text(controller.clouds[index].songName, maxLines: 1, overflow: TextOverflow.ellipsis,
+                                  child: Text(controller.clouds[index].name==null?'未知':controller.clouds[index].name, maxLines: 1, overflow: TextOverflow.ellipsis,
                                       style: TextStyle(fontSize: 16.0)),
                                 ),
                                 Container(
                                   height: 25,
                                   alignment: Alignment.centerLeft,
-                                  child: Text(controller.clouds[index].artist, maxLines: 1, overflow: TextOverflow.ellipsis,
+                                  child: Text(controller.clouds[index].ar[0].name != null?controller.clouds[index].ar[0].name:'未知', maxLines: 1, overflow: TextOverflow.ellipsis,
                                       style: TextStyle(fontSize: 14.0,color: Colors.grey[500])),
                                 )
                               ],
@@ -83,6 +87,7 @@ class CloudView extends GetView<CloudController>{
                       ],
                     ),
                   ),
+                  onTap: ()=>controller.playSong(index),
                 ):LoadingView.buildGeneralLoadingView();
               },
               childCount: controller.clouds.length >0
@@ -91,8 +96,8 @@ class CloudView extends GetView<CloudController>{
             ),
           )
         ],
-      )),
-    ));
+      ),
+    )));
   }
 
 }

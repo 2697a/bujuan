@@ -1,21 +1,27 @@
+import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/utils/net_util.dart';
+import 'package:bujuan/utils/sp_util.dart';
 import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:starry/music_item.dart';
+import 'package:starry/starry.dart';
 import 'package:we_slide/we_slide.dart';
 
-class CloudController extends GetxController{
+class CloudController extends GetxController {
   WeSlideController weSlideController;
   RefreshController refreshController;
   var clouds = [].obs;
   var loadPageIndex = 0.obs;
   var enableLoadMore = true.obs;
+
   @override
   void onInit() {
     weSlideController = WeSlideController();
     refreshController = RefreshController();
     super.onInit();
   }
+
   @override
   void onReady() {
     _getCloudData();
@@ -29,26 +35,28 @@ class CloudController extends GetxController{
     super.onReady();
   }
 
-
   ///获云盘数据
   _getCloudData() async {
-    var cloudEntity = await NetUtils().getCloudData(loadPageIndex*15);
+    var cloudEntity = await NetUtils().getCloudData(loadPageIndex * 15);
     print('$cloudEntity');
-    if (cloudEntity != null && cloudEntity.code == 200) {
+    if (cloudEntity != null) {
       //获取成功
       if (loadPageIndex.value == 0) {
-        // if(cloudEntity.data.length<15)enableLoadMore.value = false;
-        clouds..clear()..addAll(cloudEntity.data);
+        clouds
+          ..clear()
+          ..addAll(cloudEntity);
         refreshController.refreshCompleted();
-        if(cloudEntity.data.length<15)enableLoadMore.value = false;
+        if (cloudEntity.length < 15) enableLoadMore.value = false;
       } else {
-        if(cloudEntity.data.length>0){
-          clouds.addAll(cloudEntity.data);
+        if (cloudEntity.length > 0) {
+          clouds.addAll(cloudEntity);
           refreshController?.loadComplete();
-        }else{
+        } else {
           refreshController.loadNoData();
         }
       }
+    }else{
+      refreshController.loadNoData();
     }
   }
 
@@ -61,9 +69,34 @@ class CloudController extends GetxController{
     loadPageIndex.value++;
     onReady();
   }
+
   @override
   void onClose() {
     // refreshController?.dispose();
     super.onClose();
+  }
+
+  playSong(index) async {
+    var songs = [];
+    var playSheetId = SpUtil.getInt(PLAY_SONG_SHEET_ID, defValue: -1);
+    if (playSheetId == -998) {
+      //当前歌单正在播放，直接根据下标播放
+      Starry.playMusicByIndex(index);
+    } else {
+      //当前歌单未在播放
+      clouds.forEach((track) {
+        MusicItem musicItem = MusicItem(
+          musicId: '${track.id}',
+          duration: track.dt,
+          iconUri: "${track.al.picUrl}",
+          title: track.name,
+          uri: '${track.id}',
+          artist: track.ar[0].name == null ? '未知' : track.ar[0].name,
+        );
+        songs.add(musicItem);
+      });
+      await Starry.playMusic(songs, index);
+      SpUtil.putInt(PLAY_SONG_SHEET_ID, -998);
+    }
   }
 }

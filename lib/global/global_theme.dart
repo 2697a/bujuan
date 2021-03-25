@@ -7,9 +7,8 @@ final ThemeData lightTheme = ThemeData(
     primaryColor: Colors.grey[50],
     scaffoldBackgroundColor: Colors.grey[50],
     secondaryHeaderColor: Colors.black,
-    bottomAppBarColor: Colors.grey[600],
+    bottomAppBarColor: Colors.black,
     iconTheme: IconThemeData(),
-    // appBarTheme: AppBarTheme(elevation: 0),
     cardTheme: CardTheme(
       shadowColor: Colors.green[300].withOpacity(.1),
       shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(12.0)),
@@ -23,7 +22,7 @@ final ThemeData darkTheme = ThemeData(
     accentColor: Colors.blue[300],
     brightness: Brightness.dark,
     secondaryHeaderColor: Colors.white,
-    bottomAppBarColor: Colors.grey[500],
+    bottomAppBarColor: Colors.white,
     primaryColor: Colors.grey[850],
     scaffoldBackgroundColor: Colors.grey[850],
     cardTheme: CardTheme(

@@ -9,7 +9,6 @@ import 'package:bujuan/widget/preload_page_view.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 import 'package:we_slide/we_slide.dart';
 
 import 'home_controller.dart';
@@ -20,43 +19,6 @@ class HomeView extends GetView<HomeController> {
     return _buildHomeView();
   }
 
-  // Widget _buildContent() {
-  //   return Scaffold(
-  //     appBar: AppBar(
-  //         elevation: 0,
-  //         title: Text('Bujuan'),
-  //         leading: Obx(()=>IconButton(
-  //           icon: Hero(
-  //               tag: 'avatar',
-  //               child: Card(
-  //                 shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(30.0)),
-  //                 clipBehavior: Clip.antiAlias,
-  //                 child: CachedNetworkImage(
-  //                   fit: BoxFit.cover,
-  //                   imageUrl: controller.userProfileEntity.value != null ? controller.userProfileEntity.value.profile.avatarUrl : 'https://pic1.zhimg.com/80/v2-7ff2d917aa926cfbf2e8b85b035e2563_1440w.jpg',
-  //                   height: 30.0,
-  //                   width: 30.0,
-  //                 ),
-  //               )),
-  //           onPressed: () => controller.goToProfile(),
-  //         )),
-  //         actions: [
-  //           IconButton(icon: Icon(Icons.settings), onPressed: () => Get.toNamed('/setting')),
-  //         ]),
-  //     body: Container(
-  //         padding: EdgeInsets.only(top: 0.0, left: 5.0, right: 5.0),
-  //         child: PreloadPageView(controller: controller.pageController,
-  //             // physics: BouncingScrollPhysics(),
-  //             preloadPagesCount: 1,
-  //             onPageChanged: (index)async => controller.changeIndex2(index),
-  //             children: [
-  //               KeepAliveWrapper(child: UserView()),
-  //               KeepAliveWrapper(child: FindView()),
-  //               KeepAliveWrapper(child: SearchView()),
-  //               KeepAliveWrapper(child: SearchView()),
-  //             ])),
-  //   );
-  // }
   Widget _buildContent() {
     return Column(
       children: [
@@ -66,16 +28,19 @@ class HomeView extends GetView<HomeController> {
                 tag: 'avatar',
                 child: Obx(() => Card(
                       margin: EdgeInsets.all(0.0),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(30.0)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadiusDirectional.circular(30.0)),
                       clipBehavior: Clip.antiAlias,
                       child: controller.userProfileEntity.value != null
                           ? CachedNetworkImage(
                               fit: BoxFit.cover,
-                              imageUrl: controller.userProfileEntity.value.profile.avatarUrl,
+                              imageUrl: controller
+                                  .userProfileEntity.value.profile.avatarUrl,
                               height: 34.0,
                               width: 34.0,
                             )
-                          : Image.asset('assets/images/logo.png', width: 34.0, height: 34.0),
+                          : Image.asset('assets/images/logo.png',
+                              width: 34.0, height: 34.0),
                     ))),
             onPressed: () => controller.goToProfile(),
           ),
@@ -90,103 +55,24 @@ class HomeView extends GetView<HomeController> {
               onPressed: () => Get.toNamed('/setting'),
             )
           ],
-        ),//The name 'PageMetrics' is defined in the libraries 'package
+        ), //The name 'PageMetrics' is defined in the libraries 'package
         Expanded(
             child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 5.0),
           child: ScrollConfiguration(
               behavior: OverScrollBehavior(),
               child: PreloadPageView.builder(
-                onPageChanged: (index){
-                  if (index != controller.currentIndex.value) {
-                    controller.currentIndex.value = index;
-                    controller.onPageChange(index);
-                  }
-                  print("object=========$index");
-                },
+                onPageChanged: (index) => controller.onPageChange(index),
                 controller: controller.pageController,
-                physics: controller.scroller.value ? ClampingScrollPhysics() : NeverScrollableScrollPhysics(),
-                preloadPagesCount: 0,
+                physics: controller.scroller.value
+                    ? ClampingScrollPhysics()
+                    : NeverScrollableScrollPhysics(),
+                preloadPagesCount: 1,
                 itemBuilder: (context, index) => controller.pages[index],
                 itemCount: controller.pages.length,
               )),
         ))
       ],
-    );
-  }
-
-  Widget buildFloatingSearchBar() {
-    final isPortrait = MediaQuery.of(Get.context).orientation == Orientation.portrait;
-
-    return FloatingSearchBar(
-      hint: 'Search...',
-      padding: EdgeInsets.symmetric(horizontal: 1.0),
-      scrollPadding: const EdgeInsets.only(top: 16, bottom: 56),
-      transitionDuration: const Duration(milliseconds: 800),
-      transitionCurve: Curves.easeInOut,
-      shadowColor: Theme.of(Get.context).accentColor.withOpacity(.1),
-      physics: const BouncingScrollPhysics(),
-      axisAlignment: isPortrait ? 0.0 : -1.0,
-      openAxisAlignment: 0.0,
-      elevation: 1,
-      iconColor: Theme.of(Get.context).bottomAppBarColor,
-      // width: isPortrait ? 600 : 500,
-      borderRadius: BorderRadius.circular(12.0),
-      debounceDelay: const Duration(milliseconds: 500),
-      onQueryChanged: (query) {
-        // Call your model, bloc, controller here.
-      },
-      // Specify a custom transition to be used for
-      // animating between opened and closed stated.
-      transition: CircularFloatingSearchBarTransition(),
-      leadingActions: [
-        FloatingSearchBarAction(
-          showIfOpened: false,
-          child: CircularButton(
-            icon: Hero(
-                tag: 'avatar',
-                child: Obx(() => Card(
-                      margin: EdgeInsets.all(0.0),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(30.0)),
-                      clipBehavior: Clip.antiAlias,
-                      child: CachedNetworkImage(
-                        fit: BoxFit.cover,
-                        imageUrl: controller.userProfileEntity.value != null ? controller.userProfileEntity.value.profile.avatarUrl : 'https://pic1.zhimg.com/80/v2-7ff2d917aa926cfbf2e8b85b035e2563_1440w.jpg',
-                        height: 30.0,
-                        width: 30.0,
-                      ),
-                    ))),
-            onPressed: () => controller.goToProfile(),
-          ),
-        ),
-        FloatingSearchBarAction.back(
-          showIfClosed: false,
-        ),
-      ],
-      actions: [
-        FloatingSearchBarAction(
-          showIfOpened: false,
-          child: CircularButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () => Get.toNamed('/setting'),
-          ),
-        ),
-        FloatingSearchBarAction.searchToClear(
-          showIfClosed: false,
-        ),
-      ],
-      builder: (context, transition) {
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: Material(
-            color: Colors.white,
-            elevation: 4.0,
-            child: Container(
-              height: 300,
-            ),
-          ),
-        );
-      },
     );
   }
 
@@ -203,35 +89,16 @@ class HomeView extends GetView<HomeController> {
             body: _buildContent(),
             parallax: true,
             panel: DefaultView(weSlideController: controller.weSlideController),
-            panelHeader: MusicBottomBarView(weSlideController: controller.weSlideController),
-            footer: controller.scroller.value ? Container() : _buildNavigationBarq(),
+            panelHeader: MusicBottomBarView(
+                weSlideController: controller.weSlideController),
+            footer: controller.scroller.value ? null : _buildBottomNavigationBar(),
           )),
     );
   }
 
   //底部导航栏
-  Widget _buildBottomNavigationBar() {
-    return BottomNavigationBar(
-      selectedItemColor: Theme.of(Get.context).accentColor,
-      unselectedItemColor: Theme.of(Get.context).bottomAppBarColor,
-      backgroundColor: Theme.of(Get.context).primaryColor,
-      type: BottomNavigationBarType.shifting,
-      elevation: 0.0,
-      iconSize: 26.0,
-      // showSelectedLabels: false,
-      // showUnselectedLabels: false,
-      items: [
-        BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'home'),
-        BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'top'),
-        BottomNavigationBarItem(icon: Icon(Icons.search), label: 'search'),
-        BottomNavigationBarItem(icon: Icon(Icons.lightbulb_outline), label: 'user'),
-      ],
-      onTap: (index) => controller.changeIndex(index),
-      currentIndex: controller.currentIndex.value,
-    );
-  }
 
-  Widget _buildNavigationBarq() {
+  Widget _buildBottomNavigationBar() {
     return CustomNavigationBar(
       iconSize: 28.0,
       selectedColor: Theme.of(Get.context).accentColor,
@@ -263,51 +130,4 @@ class HomeView extends GetView<HomeController> {
       },
     );
   }
-}
-class PageMetrics extends FixedScrollMetrics {
-  /// Creates an immutable snapshot of values associated with a [PreloadPageView].
-  PageMetrics({
-    @required double minScrollExtent,
-    @required double maxScrollExtent,
-    @required double pixels,
-    @required double viewportDimension,
-    @required AxisDirection axisDirection,
-    @required this.viewportFraction,
-  }) : super(
-    minScrollExtent: minScrollExtent,
-    maxScrollExtent: maxScrollExtent,
-    pixels: pixels,
-    viewportDimension: viewportDimension,
-    axisDirection: axisDirection,
-  );
-
-  @override
-  PageMetrics copyWith({
-    double minScrollExtent,
-    double maxScrollExtent,
-    double pixels,
-    double viewportDimension,
-    AxisDirection axisDirection,
-    double viewportFraction,
-  }) {
-    return PageMetrics(
-      minScrollExtent: minScrollExtent ?? this.minScrollExtent,
-      maxScrollExtent: maxScrollExtent ?? this.maxScrollExtent,
-      pixels: pixels ?? this.pixels,
-      viewportDimension: viewportDimension ?? this.viewportDimension,
-      axisDirection: axisDirection ?? this.axisDirection,
-      viewportFraction: viewportFraction ?? this.viewportFraction,
-    );
-  }
-
-  /// The current page displayed in the [PreloadPageView].
-  double get page {
-    return max(0.0, pixels.clamp(minScrollExtent, maxScrollExtent)) /
-        max(1.0, viewportDimension * viewportFraction);
-  }
-
-  /// The fraction of the viewport that each page occupies.
-  ///
-  /// Used to compute [page] from the current [pixels].
-  final double viewportFraction;
 }

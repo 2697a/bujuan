@@ -109,7 +109,8 @@ class LoadingView {
 
   ///普通列表加载试图
   static Widget buildNewSongLoadingView() {
-    return Padding(
+    return Container(
+      height: 110.0,
       padding: EdgeInsets.symmetric(horizontal: 2.0, vertical: 5.0),
       child: Row(
         children: [

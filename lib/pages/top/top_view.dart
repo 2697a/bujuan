@@ -27,7 +27,7 @@ class TopView extends GetView<TopController> {
               ),
               controller.soaring.length > 0 ? buildBigTopItem('19723756', '飙升榜', controller.soaringImageUrl, controller.soaring) : buildLoadingBigTopItem('19723756', controller.soaringImageUrl),
               controller.newSong.length > 0 ? buildBigTopItem('3779629', '新歌榜', controller.newSongImageUrl, controller.newSong) : buildLoadingBigTopItem('3779629', controller.newSongImageUrl),
-              controller.newSong.length > 0 ? buildBigTopItem('3778678', '热歌榜', controller.hotSongImageUrl, controller.hotSong) : buildLoadingBigTopItem('3778678', controller.hotSongImageUrl),
+              controller.hotSong.length > 0 ? buildBigTopItem('3778678', '热歌榜', controller.hotSongImageUrl, controller.hotSong) : buildLoadingBigTopItem('3778678', controller.hotSongImageUrl),
               SliverToBoxAdapter(
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
@@ -37,6 +37,45 @@ class TopView extends GetView<TopController> {
                   ),
                 ),
               ),
+              SliverGrid(
+                  delegate: SliverChildBuilderDelegate(
+                        (BuildContext context, int index) {
+                      return InkWell(
+                          child: Wrap(
+                            children: [
+                              Hero(
+                                tag: '${controller.otherTops[index].id}',
+                                child: Center(
+                                  child: Card(
+                                    // margin: EdgeInsets.all(0),
+                                    child: CachedNetworkImage(
+                                      height: 110.0,
+                                      width: 110.0,
+                                      fit: BoxFit.fill,
+                                      imageUrl: '${controller.otherTops[index].picUrl}',
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                alignment: Alignment.center,
+                                padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 3),
+                                child: Text(controller.otherTops[index].name, maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14.0, color: Colors.grey[500])),
+                              )
+                            ],
+                          ),
+                          onTap: () {
+                            Get.toNamed('/sheet', arguments: {'id': controller.otherTops[index].id, 'name': controller.otherTops[index].name, 'imageUrl': '${controller.otherTops[index].picUrl}'});
+                          });
+                    },
+                    childCount: controller.otherTops.length,
+                  ),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: 15.0,
+                    mainAxisSpacing: 12.0,
+                    childAspectRatio: .8,
+                  ))
             ],
           ))),
     );
@@ -75,7 +114,7 @@ class TopView extends GetView<TopController> {
                               text: TextSpan(children: [
                                 TextSpan(
                                   text: '${data[index].name}',
-                                  style: TextStyle(color: Theme.of(Get.context).secondaryHeaderColor, fontSize: 14, height: 1.5, textBaseline: TextBaseline.alphabetic),
+                                  style: TextStyle(color: Theme.of(Get.context).bottomAppBarColor, fontSize: 14, height: 1.5, textBaseline: TextBaseline.alphabetic),
                                   // recognizer: _tapRecognizer
                                 ),
                                 TextSpan(

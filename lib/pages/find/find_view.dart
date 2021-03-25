@@ -138,27 +138,16 @@ class FindView extends GetView<FindController> {
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 8.0,vertical: 10.0),
                     child: Text(
-                      "每日新歌",
+                      "新歌推荐",
                       style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
-                // SliverToBoxAdapter(
-                //   child:SizedBox(
-                //     height: 162.0,
-                //     child: ListView.builder(
-                //       scrollDirection: Axis.horizontal,
-                //       itemBuilder: (context, index) {
-                //         return controller.newSong.length > 0 ? _newSongItem(controller.newSong[index]) : _loadNewSongView();
-                //       },
-                //       itemCount: controller.newSong.length > 0 ? controller.newSong.length : 10,
-                //     ),
-                //   ),
-                // ),
-
-                SliverList(delegate: SliverChildBuilderDelegate(
+                SliverFixedExtentList(
+                  itemExtent: 110.0,
+                    delegate: SliverChildBuilderDelegate(
                       (BuildContext context, int index) {
-                    return controller.newSong.length==0 ?LoadingView.buildNewSongLoadingView():_newSongItem(controller.newSong[index]);
+                    return controller.newSong.length==0 ?LoadingView.buildNewSongLoadingView():_newSongItem(controller.newSong[index],index);
                   },
                   childCount: controller.newSong.length==0 ? 10 : controller.newSong.length,
                 ))
@@ -169,7 +158,7 @@ class FindView extends GetView<FindController> {
     });
   }
 
-  ///歌单itemView
+  ///歌单itemView15556333717
   Widget _sheetItem(PersonalResult personalResult) {
     return Container(
       width: (MediaQuery.of(Get.context).size.width-10)/3,
@@ -205,9 +194,10 @@ class FindView extends GetView<FindController> {
   }
 
   ///新歌itemView
-  Widget _newSongItem(NewSongResult newSongResult) {
+  Widget _newSongItem(NewSongResult newSongResult,index) {
     return InkWell(
-      child: Padding(
+      child: Container(
+        height: 110.0,
         padding: EdgeInsets.symmetric(horizontal: 2.0, vertical: 5.0),
         child: Row(
           children: [
@@ -247,11 +237,13 @@ class FindView extends GetView<FindController> {
                     )
                   ],
                 ),)),
-            IconButton(icon: Icon(Icons.more_horiz), onPressed: () {  },)
+            IconButton(icon: Icon(Icons.more_vert), onPressed: () {
+
+            },)
           ],
         ),
       ),
-      onTap: () {},
+      onTap: () =>controller.playSong(index),
     );
   }
 
