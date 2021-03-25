@@ -3,7 +3,7 @@
 
 ### 简介
 本项目接口是由github开源项目修改而来的，项目主打简洁轻量。
-_发奋忘食，乐以忘优，不知老之将至。_
+
 ### 开始
 `git clone https://github.com/2697a/bujuan.git`
 
