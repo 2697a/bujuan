@@ -18,6 +18,15 @@ class OverScrollBehavior extends ScrollBehavior{
           axisDirection: axisDirection,
           color: Theme.of(context).accentColor,
         );
+      case TargetPlatform.linux:
+        // TODO: Handle this case.
+        break;
+      case TargetPlatform.macOS:
+        // TODO: Handle this case.
+        break;
+      case TargetPlatform.windows:
+        // TODO: Handle this case.
+        break;
     }
     return null;
   }

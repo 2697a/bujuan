@@ -13,7 +13,7 @@ class TopView extends GetView<TopController> {
       behavior: OverScrollBehavior(),
       child: Obx(() => SmartRefresher(
           controller: controller.refreshController,
-          onRefresh: () => controller.getData(),
+          onRefresh: () => controller.getData(forcedRefresh: true),
           child: CustomScrollView(
             slivers: [
               SliverToBoxAdapter(
@@ -159,7 +159,6 @@ class TopView extends GetView<TopController> {
                   child: PlaceholderLines(
                     lineHeight: 10.0,
                     color: Colors.grey[400],
-                    animate: true,
                     count: 3,
                   ),
                 )),

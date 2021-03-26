@@ -27,16 +27,16 @@ class TopController extends GetxController {
   }
 
   ///获取排行榜数据
-  getData() async {
-    await loadTopData("19723756", soaring);
-    await loadTopData("3779629", newSong);
-    await loadTopData("3778678", hotSong);
+  getData({forcedRefresh = false}) async {
+    await loadTopData("19723756", soaring,forcedRefresh: forcedRefresh);
+    await loadTopData("3779629", newSong,forcedRefresh: forcedRefresh);
+    await loadTopData("3778678", hotSong,forcedRefresh: forcedRefresh);
     isLoad = true;
     refreshController.refreshCompleted();
   }
 
-  loadTopData(id, result) async {
-    var sheetDetailsEntity = await NetUtils().getPlayListDetails(id);
+  loadTopData(id, result,{forcedRefresh = false}) async {
+    var sheetDetailsEntity = await NetUtils().getPlayListDetails(id,count:3,forcedRefresh: forcedRefresh);
     if (sheetDetailsEntity != null && sheetDetailsEntity.code == 200) {
       if (sheetDetailsEntity.playlist.tracks != null && sheetDetailsEntity.playlist.tracks.length >= 3)
         result

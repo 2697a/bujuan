@@ -4,6 +4,8 @@ import 'dart:io';
 import 'dart:math';
 
 
+import 'package:bujuan/api/netease_cloud_music.dart';
+
 import '../answer.dart';
 import 'crypto.dart';
 
@@ -124,8 +126,8 @@ Future<Answer> eapiRequest(
         status: ans.status > 100 && ans.status < 600 ? ans.status : 400);
     return ans;
   }).catchError((e, s) {
-//    debugPrint('request error ' + e.toString());
-//    debugPrint(s.toString());
+   debugPrint('request error ' + e.toString());
+   debugPrint(s.toString());
     return Answer(status: 502, body: {'code': 502, 'msg': e.toString()});
   });
 }

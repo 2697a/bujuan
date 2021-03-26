@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bujuan/api/netease_cloud_music.dart';
 import 'package:bujuan/utils/sp_util.dart';
 import 'package:get/get.dart';
 import 'package:starry/starry.dart';
@@ -34,7 +35,7 @@ class TimingController extends GetxController {
     _streamSubscription = Starry.eventChannel.receiveBroadcastStream().listen((pos) {
       if (pos != null) {
         time.value = pos;
-        print("object======$pos");
+        debugPrint("object======$pos");
       }
     }, cancelOnError: true);
     super.onReady();

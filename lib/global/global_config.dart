@@ -27,3 +27,10 @@ const String krv_top = 'http://p1.music.126.net/H4Y7jxd_zwygcAmPMfwJnQ==/1917438
 const String rb_top = 'http://p2.music.126.net/Rgqbqsf4b3gNOzZKxOMxuw==/19029247741938160.jpg?param=300y300';
 
 const String itunes_top = 'http://p2.music.126.net/WTpbsVfxeB6qDs_3_rnQtg==/109951163601178881.jpg?param=300y300';
+
+
+const String CACHE_LYRIC = 'CACHE_LYRIC';
+const String CACHE_TODAY_SHEET = 'CACHE_TODAY_SHEET';
+const String CACHE_NEW_SONG = 'CACHE_NEW_SONG';
+const String CACHE_USER_PLAY_LIST = 'CACHE_USER_PLAY_LIST';
+const String CACHE_USER_PROFILE = 'CACHE_USER_PROFILE';

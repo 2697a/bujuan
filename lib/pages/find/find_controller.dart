@@ -1,9 +1,11 @@
+import 'dart:io';
+
 import 'package:bujuan/global/global_config.dart';
+import 'package:bujuan/main.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/utils/net_util.dart';
 import 'package:bujuan/utils/sp_util.dart';
 import 'package:bujuan/widget/preload_page_view.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:starry/music_item.dart';
@@ -38,8 +40,10 @@ class FindController extends GetxController {
     }
     await loadTodaySheet();
   }
-  loadTodaySheet() async {
-    var personalEntity = await NetUtils().getRecommendResource();
+
+
+  loadTodaySheet({forcedRefresh = false}) async {
+    var personalEntity = await NetUtils().getRecommendResource(forcedRefresh: forcedRefresh);
     if (personalEntity != null && personalEntity.code == 200) {
       var sheets = personalEntity.result;
       sheet..clear();
@@ -53,8 +57,8 @@ class FindController extends GetxController {
     await loadNewSong();
   }
 
-  loadNewSong() async {
-    var newSongEntity = await NetUtils().getNewSongs();
+  loadNewSong({forcedRefresh = false}) async {
+    var newSongEntity = await NetUtils().getNewSongs(forcedRefresh: forcedRefresh);
     if (newSongEntity != null && newSongEntity.code == 200) {
       newSong
         ..clear()

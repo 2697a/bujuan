@@ -63,10 +63,10 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 liveProgress = LiveProgress(playerClient) { progressSec, _, _, _ -> eventSink?.success(progressSec) }
                 liveProgress.subscribe()
                 //播放列表发生变化
-                playlistChangeListener = { playlistManager, _ ->
+                playlistChangeListener = { playlistManager, position ->
                     playlistManager.getPlaylist { playlist ->
                         val listStr = GsonUtil.GsonString(playlist.allMusicItem.toList())
-                        channel.invokeMethod("PLAY_LIST_CHANGE", listStr)
+                        channel.invokeMethod("PLAY_LIST_CHANGE", hashMapOf("LIST" to listStr,"POSITION" to position))
                     }
                 }
                 playerClient.addOnPlaylistChangeListener(playlistChangeListener)

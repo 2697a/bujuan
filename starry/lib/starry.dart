@@ -36,9 +36,9 @@ class Starry {
   static Stream<int> get onPlayerModeChanged => _playerModeController.stream;
 
   ///播放列表发生变化
-  static final StreamController<List<MusicItem>> _playerSongListController = StreamController<List<MusicItem>>.broadcast();
+  static final StreamController<PlayListInfo> _playerSongListController = StreamController<PlayListInfo>.broadcast();
 
-  static Stream<List<MusicItem>> get onPlayerSongListChanged => _playerSongListController.stream;
+  static Stream<PlayListInfo> get onPlayerSongListChanged => _playerSongListController.stream;
 
   ///初始化
   static Future<void> init({SongUrl url}) async {
@@ -153,9 +153,17 @@ class Starry {
       _playerModeController.add(arguments);
     } else if (method == 'PLAY_LIST_CHANGE') {
       //播放列表发生变化
-      List list = jsonDecode(arguments);
-      var playList = list.map((e) => MusicItem.fromJson(e)).toList();
-      _playerSongListController.add(playList);
+      List list = jsonDecode(arguments['LIST']);
+      int position = arguments['POSITION'];
+      var playlist = list.map((e) => MusicItem.fromJson(e)).toList();
+      _playerSongListController.add(PlayListInfo(playlist, position));
     }
   }
+}
+
+class PlayListInfo{
+  final List<MusicItem> playlist;
+  final int position;
+
+  PlayListInfo(this.playlist, this.position);
 }

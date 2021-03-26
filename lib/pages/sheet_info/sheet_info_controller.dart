@@ -5,6 +5,7 @@ import 'package:bujuan/utils/net_util.dart';
 import 'package:bujuan/utils/sp_util.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:starry/music_item.dart';
 import 'package:starry/starry.dart';
 import 'package:we_slide/we_slide.dart';
@@ -13,17 +14,18 @@ class SheetInfoController extends GetxController {
   WeSlideController weSlideController;
   var result = SheetDetailsPlaylist().obs;
   var color = Theme.of(Get.context).primaryColor.obs;
-
+  RefreshController refreshController;
   @override
   void onInit() {
     result.value = null;
     weSlideController = WeSlideController();
+    refreshController = RefreshController();
     super.onInit();
   }
 
   @override
   void onReady() {
-    getSheetInfo(Get.arguments['id']);
+    getSheetInfo();
     weSlideController.addListener(() {
       if (weSlideController.isOpened) {
         Get.find<HomeController>().resumeStream();
@@ -35,11 +37,12 @@ class SheetInfoController extends GetxController {
   }
 
   ///获取歌单详情
-  getSheetInfo(id) async {
-    var sheetDetailsEntity = await NetUtils().getPlayListDetails(id);
+  getSheetInfo({forcedRefresh = false}) async {
+    var sheetDetailsEntity = await NetUtils().getPlayListDetails(Get.arguments['id'],forcedRefresh:forcedRefresh);
     if (sheetDetailsEntity != null && sheetDetailsEntity.code == 200) {
       if (sheetDetailsEntity.playlist.tracks != null) result.value = sheetDetailsEntity.playlist;
     }
+    refreshController?.refreshCompleted();
   }
 
   playSong(index) async {
@@ -69,6 +72,7 @@ class SheetInfoController extends GetxController {
   @override
   void onClose() {
     weSlideController = null;
+    refreshController?.dispose();
     super.onClose();
   }
 }

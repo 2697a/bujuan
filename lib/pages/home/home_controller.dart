@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'dart:convert';
 
+import 'package:bujuan/api/netease_cloud_music.dart';
 import 'package:bujuan/entity/user_profile_entity.dart';
 import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/global/global_controller.dart';
@@ -69,16 +69,14 @@ class HomeController extends SuperController {
   }
 
   void pauseStream() {
-    if (_streamSubscription != null && !_streamSubscription.isPaused)
-      _streamSubscription.pause();
+    if (_streamSubscription != null && !_streamSubscription.isPaused) _streamSubscription.pause();
   }
 
   void resumeStream() {
     if (_streamSubscription != null && _streamSubscription.isPaused) {
       _streamSubscription.resume();
     } else {
-      _streamSubscription =
-          Starry.eventChannel.receiveBroadcastStream().listen((pos) {
+      _streamSubscription = Starry.eventChannel.receiveBroadcastStream().listen((pos) {
         if (pos != null) {
           Get.find<GlobalController>().playPos.value = pos;
         }
@@ -90,7 +88,6 @@ class HomeController extends SuperController {
   void onClose() {
     _streamSubscription?.cancel();
     _streamSubscription = null;
-    weSlideController?.dispose();
     weSlideController = null;
     super.onClose();
   }
@@ -100,29 +97,39 @@ class HomeController extends SuperController {
       goToLogin();
       return;
     }
-    // currentIndex.value = index;
+    currentIndex.value = index;
     onPageChange(index);
     pageController.jumpToPage(index);
   }
 
   //监听播放音乐状态以及进度！
   _listenerStarry() {
+    ///歌曲发生变化
     Starry.onPlayerSongChanged.listen((MusicItem songInfo) async {
       var lyricEntity = await NetUtils().getMusicLyric(songInfo.musicId);
       Get.find<GlobalController>().lyric.value = lyricEntity;
       Get.find<GlobalController>().song.value = songInfo;
-      SpUtil.putString(LAST_PLAY_INFO, jsonEncode(songInfo));
+      // SpUtil.putString(LAST_PLAY_INFO, jsonEncode(songInfo));
     });
+    ///播放状态发生变化
     Starry.onPlayerStateChanged.listen((PlayState playState) {
       Get.find<GlobalController>().playState.value = playState;
-      if (playState == PlayState.ERROR)
-        Get.find<GlobalController>().skipToNext();
+      if (playState == PlayState.ERROR) Get.find<GlobalController>().skipToNext();
     });
 
-    Starry.onPlayerSongListChanged.listen((List<MusicItem> playList) {
-      Get.find<GlobalController>().addPlayList(playList);
+    ///播放列表发生变化
+    Starry.onPlayerSongListChanged.listen((PlayListInfo playListInfo) async {
+      Get.find<GlobalController>().addPlayList(playListInfo.playlist);
+      var currSong = playListInfo.playlist[playListInfo.position];
+      Get.find<GlobalController>().song.value = currSong;
+      var lyric = Get.find<GlobalController>().lyric.value;
+      if (lyric == null) {
+        var lyricEntity = await NetUtils().getMusicLyric(currSong.musicId);
+        Get.find<GlobalController>().lyric.value = lyricEntity;
+      }
     });
 
+    ///b
     Starry.onPlayerModeChanged.listen((value) {
       if (value != null) {
         Get.find<GlobalController>().playMode.value = value;
@@ -147,13 +154,13 @@ class HomeController extends SuperController {
   ///刷新登录
   refreshLogin() async {
     if (login.value) {
-      var loginEntity = await NetUtils().refreshLogin();
-      if (loginEntity != null && loginEntity['code'] == 200) {
+      await NetUtils().refreshLogin();
+      // if (loginEntity != null && loginEntity['code'] == 200) {
         //刷新成功
         await getUserProfile(SpUtil.getString(USER_ID_SP, defValue: null));
-      } else {
-        ///太久未登录，重新登录吧！！！！！
-      }
+      // } else {
+      //   ///太久未登录，重新登录吧！！！！！
+      // }
     }
   }
 
@@ -165,33 +172,42 @@ class HomeController extends SuperController {
   }
 
   getUserProfile(userId) async {
-    userProfileEntity.value = await NetUtils().getUserProfile(userId);
-    login.value = true;
+    var profile = await NetUtils().getUserProfile(userId);
+    if(profile!=null&&profile.code==200){
+      userProfileEntity.value = profile;
+      login.value = true;
+    }else{
+      if (await BuJuanUtil.checkFileExists(CACHE_USER_PROFILE)) {
+        debugPrint("用户资料已缓存，获取失败用缓存");
+        var data = await BuJuanUtil.readStringFile(CACHE_USER_PROFILE);
+        if (data != null) {
+          userProfileEntity.value = UserProfileEntity.fromJson(Map<String, dynamic>.from(data));
+          login.value = true;
+        }
+      }
+    }
   }
 
   @override
   void didChangePlatformBrightness() {
     if (isSystemTheme.value) {
       Get.changeTheme(!Get.isPlatformDarkMode ? lightTheme : darkTheme);
-      Future.delayed(
-          Duration(milliseconds: 300),
-          () => SystemChrome.setSystemUIOverlayStyle(
-              BuJuanUtil.setNavigationBarTextColor(Get.isPlatformDarkMode)));
+      Future.delayed(Duration(milliseconds: 300), () => SystemChrome.setSystemUIOverlayStyle(BuJuanUtil.setNavigationBarTextColor(Get.isPlatformDarkMode)));
     }
     super.didChangePlatformBrightness();
   }
 
   onPageChange(index) {
     if (index != currentIndex.value) {
-      currentIndex.value = index;
-      var userController = Get.find<UserController>();
-      var topController = Get.find<TopController>();
-      if (index == 0 && !userController.isLoad) {
-        userController.getUserSheet();
-      }
-      if (index == 2 && !topController.isLoad) {
-        topController.getData();
-      }
+      Future.delayed(Duration(microseconds: 500), () {
+        var userController = Get.find<UserController>();
+        var topController = Get.find<TopController>();
+        if (index == 0 && !userController.isLoad) {
+          userController.getUserSheet();
+        } else if (index == 2 && !topController.isLoad) {
+          topController.getData();
+        }
+      });
     }
   }
 

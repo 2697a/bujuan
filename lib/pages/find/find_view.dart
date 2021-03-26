@@ -153,7 +153,7 @@ class FindView extends GetView<FindController> {
                 ))
               ],
             ),
-            onRefresh: () async => controller.onReady(),
+            onRefresh: () async => controller.loadTodaySheet(forcedRefresh: true),
           )));
     });
   }

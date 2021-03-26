@@ -139,4 +139,10 @@ class SheetClassifyController extends GetxController {
     loadPageIndex.value ++;
     getSheetData(classifySelect.value);
   }
+
+  @override
+  void onClose() {
+    weSlideController=null;
+    super.onClose();
+  }
 }

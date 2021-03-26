@@ -38,7 +38,7 @@ Handler user_cloud = (query, cookie) {
       'POST',
       'https://music.163.com/weapi/v1/cloud/get',
       {
-        'limit': query['limit'] ?? 15,
+        'limit': query['limit'] ?? 30,
         'offset': query['offset'] ?? 0,
       },
       crypto: Crypto.weapi,

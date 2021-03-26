@@ -37,8 +37,7 @@ class CloudController extends GetxController {
 
   ///获云盘数据
   _getCloudData() async {
-    var cloudEntity = await NetUtils().getCloudData(loadPageIndex * 15);
-    print('$cloudEntity');
+    var cloudEntity = await NetUtils().getCloudData(loadPageIndex * 30);
     if (cloudEntity != null) {
       //获取成功
       if (loadPageIndex.value == 0) {
@@ -46,7 +45,7 @@ class CloudController extends GetxController {
           ..clear()
           ..addAll(cloudEntity);
         refreshController.refreshCompleted();
-        if (cloudEntity.length < 15) enableLoadMore.value = false;
+        if (cloudEntity.length < 30) enableLoadMore.value = false;
       } else {
         if (cloudEntity.length > 0) {
           clouds.addAll(cloudEntity);
@@ -72,7 +71,8 @@ class CloudController extends GetxController {
 
   @override
   void onClose() {
-    // refreshController?.dispose();
+    refreshController?.dispose();
+    weSlideController=null;
     super.onClose();
   }
 

@@ -23,9 +23,9 @@ class UserController extends GetxController {
   }
 
   ///获取用户歌单
-  getUserSheet() async {
+  getUserSheet({forcedRefresh = false}) async {
     var userId = SpUtil.getString(USER_ID_SP, defValue: null);
-    var userOrderEntity = await NetUtils().getUserPlayList(userId);
+    var userOrderEntity = await NetUtils().getUserPlayList(userId, forcedRefresh: forcedRefresh);
     if (userOrderEntity != null && userOrderEntity.code == 200) {
       var list = userOrderEntity.playlist;
       if (list.length > 0) {
@@ -37,8 +37,7 @@ class UserController extends GetxController {
         createPlayList
           ..clear()
           ..addAll(item);
-        var where =
-            list.where((element) => element.userId != num.parse(userId));
+        var where = list.where((element) => element.userId != num.parse(userId));
         collectPlayList
           ..clear()
           ..addAll(where);

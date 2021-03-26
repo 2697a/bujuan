@@ -1,14 +1,11 @@
-import 'dart:convert';
 
 import 'package:bujuan/entity/lyric_entity.dart';
 import 'package:bujuan/utils/net_util.dart';
-import 'package:bujuan/utils/sp_util.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:starry/music_item.dart';
 import 'package:starry/starry.dart';
 
-import 'global_config.dart';
 
 class GlobalController extends GetxController {
   var playState = PlayState.STOP.obs;
@@ -23,10 +20,10 @@ class GlobalController extends GetxController {
   void onInit() {
     lyric.value = null;
     scrollController = ScrollController();
-    var string = SpUtil.getString(LAST_PLAY_INFO, defValue: null);
-    if (string != null) {
-      song.value = MusicItem.fromJson(jsonDecode(string));
-    }
+    // var string = SpUtil.getString(LAST_PLAY_INFO, defValue: null);
+    // if (string != null) {
+    //   song.value = MusicItem.fromJson(jsonDecode(string));
+    // }
     super.onInit();
   }
 

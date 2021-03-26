@@ -47,7 +47,6 @@ class LoadingView {
                 maxWidth: .5,
                 minWidth: .3,
                 color: Colors.grey[400],
-                animate: true,
                 count: 1,
               )),
             ],
@@ -58,7 +57,6 @@ class LoadingView {
           child: PlaceholderLines(
             lineHeight: 10.0,
             color: Colors.grey[400],
-            animate: true,
             count: 3,
           ),
         )
@@ -96,7 +94,6 @@ class LoadingView {
                 child: PlaceholderLines(
                   lineHeight: 10.0,
                   color: Colors.grey[400],
-                  animate: true,
                   count: 2,
                 ),
               )
@@ -133,7 +130,6 @@ class LoadingView {
             child: PlaceholderLines(
               lineHeight: 10.0,
               color: Colors.grey[400],
-              animate: true,
               count: 3,
             ),
           )),
