@@ -5,37 +5,37 @@ import 'package:get/get.dart';
 class PlayListView extends GetView<GlobalController> {
   @override
   Widget build(BuildContext context) {
-    return Obx(() => Column(
-          children: [
-            Container(
-              padding: EdgeInsets.only(left: 14.0, right: 3.0),
-              height: 56.0,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '播放列表(${controller.playList.length})',
-                    style:
-                        TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-                  ),
-                  IconButton(
-                      icon: Icon(Icons.location_searching, size: 24.0),
-                      onPressed: ()=>controller.scrollToIndex())
-                ],
+    return Column(
+      children: [
+        Container(
+          padding: EdgeInsets.only(left: 14.0, right: 3.0),
+          height: 56.0,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '播放列表(${controller.playList.length})',
+                style:
+                TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
               ),
-            ),
-            Container(
-              color: Theme.of(Get.context).bottomAppBarColor.withAlpha(60),
-              height: .2,
-            ),
-            Expanded(
-                child: ListView.builder(
-                  controller: controller.scrollController,
+              IconButton(
+                  icon: Icon(Icons.location_searching, size: 24.0),
+                  onPressed: ()=>controller.scrollToIndex())
+            ],
+          ),
+        ),
+        Container(
+          color: Theme.of(Get.context).bottomAppBarColor.withAlpha(60),
+          height: .2,
+        ),
+        Expanded(
+            child: Obx(()=>ListView.builder(
+              controller: controller.scrollController,
               itemBuilder: (context, index) => _buildPlayListItem(index),
               itemCount: controller.playList.length,
-            ))
-          ],
-        ));
+            )))
+      ],
+    );
   }
 
   Widget _buildPlayListItem(index) {

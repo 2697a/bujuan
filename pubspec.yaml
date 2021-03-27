@@ -21,7 +21,7 @@ environment:
   sdk: ">=2.10.0 <3.0.0"
 
 dependencies:
-  get: ^3.26.0
+  get:
   path_provider: ^2.0.1
   color_thief_flutter: ^1.0.2
   cached_network_image: ^2.5.1
@@ -37,7 +37,6 @@ dependencies:
   dots_indicator: ^2.0.0
   progress_state_button: ^1.0.2
   direct_select_flutter: ^1.1.0
-  adaptive_dialog: ^0.10.0+5
   flutter:
     sdk: flutter
 

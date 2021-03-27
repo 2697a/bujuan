@@ -171,7 +171,8 @@ class SheetInfoView extends GetView<SheetInfoController> {
   }
 
   Widget _buildSheetListView() {
-    return SliverList(
+    return SliverFixedExtentList(
+      itemExtent: 60.0,
       delegate: SliverChildBuilderDelegate(
         (BuildContext context, int index) {
           return controller.result.value == null

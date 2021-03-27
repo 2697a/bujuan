@@ -1,7 +1,5 @@
 package com.sixbugs.starry
 
-import android.annotation.SuppressLint
-import android.app.Activity
 import android.util.Log
 import androidx.annotation.NonNull
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -28,7 +26,6 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     private lateinit var playlistChangeListener: (PlaylistManager, Int) -> Unit
     private lateinit var playModeListener: (PlayMode) -> Unit
     private lateinit var starryPlaybackStateChangeListener: StarryPlaybackStateChangeListener
-    private lateinit var starrySleepTimerStateChangeListener: StarrySleepTimerStateChangeListener
     private lateinit var liveProgress: LiveProgress
     private lateinit var eventChannel: EventChannel
     private lateinit var timingChannel: EventChannel
@@ -37,9 +34,6 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
     companion object {
         lateinit var channel: MethodChannel
-
-        @SuppressLint("StaticFieldLeak")
-        lateinit var activity: Activity
     }
 
 
@@ -66,13 +60,10 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 playlistChangeListener = { playlistManager, position ->
                     playlistManager.getPlaylist { playlist ->
                         val listStr = GsonUtil.GsonString(playlist.allMusicItem.toList())
-                        channel.invokeMethod("PLAY_LIST_CHANGE", hashMapOf("LIST" to listStr,"POSITION" to position))
+                        channel.invokeMethod("PLAY_LIST_CHANGE", hashMapOf("LIST" to listStr, "POSITION" to position))
                     }
                 }
                 playerClient.addOnPlaylistChangeListener(playlistChangeListener)
-                //计时器监听
-//                starrySleepTimerStateChangeListener = StarrySleepTimerStateChangeListener(this.timingSink)
-//                playerClient.addOnSleepTimerStateChangeListener(starrySleepTimerStateChangeListener)
 
                 //播放模式监听
                 playModeListener = { playMode ->
@@ -103,6 +94,22 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                     }
                 }
                 result.success("success")
+            }
+            "ADD_SONG" -> {
+                val songList = call.argument<String>("ADD_PLAY_LIST")!!
+                val jsonToList = GsonUtil.jsonToList(songList, MusicItem::class.java)
+                if (jsonToList.size > 0)
+                    jsonToList.forEach {
+                        playerClient.appendMusicItem(it)
+                    }
+            }
+            "REMOVE_SONG" -> {
+                val songList = call.argument<String>("REMOVE_PLAY_LIST")!!
+                val jsonToList = GsonUtil.jsonToList(songList, MusicItem::class.java)
+                if (jsonToList.size > 0)
+                    jsonToList.forEach {
+                        playerClient.removeMusicItem(it)
+                    }
             }
             "NOW_PLAYING" -> {
                 //获取当前播放的歌曲
@@ -212,7 +219,6 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
-        activity = binding.activity
         // 创建一个 PlayerClient 对象
         playerClient = PlayerClient.newInstance(binding.activity.applicationContext, MyPlayerService::class.java)
         if (!playerClient.isConnected) {
@@ -233,7 +239,7 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         //睡眠计时器
         timingChannel.setStreamHandler(object : EventChannel.StreamHandler {
             override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
-                timingSink = events;
+                timingSink = events
             }
 
             override fun onCancel(arguments: Any?) {

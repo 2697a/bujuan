@@ -116,6 +116,7 @@ class UserView extends GetView<UserController> {
     );
   }
 
+
   ///歌单加载中View
   Widget _loadUserSheetView() {
     return Container(

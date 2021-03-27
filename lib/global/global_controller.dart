@@ -53,8 +53,6 @@ class GlobalController extends GetxController {
 
   ///更新当前歌曲(弃用)
   changeSong(MusicItem song) async {
-    var lyricEntity = await NetUtils().getMusicLyric(song.musicId);
-    lyric.value = lyricEntity;
     this.song.value = song;
   }
 

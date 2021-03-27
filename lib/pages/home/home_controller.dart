@@ -32,12 +32,7 @@ class HomeController extends SuperController {
   StreamSubscription _streamSubscription;
   var login = false.obs;
   var scroller = false.obs;
-  final pages = [
-    KeepAliveWrapper(child: UserView()),
-    KeepAliveWrapper(child: FindView()),
-    KeepAliveWrapper(child: TopView()),
-    KeepAliveWrapper(child: SearchView()),
-  ];
+  final pages = [UserView(), FindView(), TopView(), SearchView()];
 
   @override
   void onInit() {
@@ -69,14 +64,16 @@ class HomeController extends SuperController {
   }
 
   void pauseStream() {
-    if (_streamSubscription != null && !_streamSubscription.isPaused) _streamSubscription.pause();
+    if (_streamSubscription != null && !_streamSubscription.isPaused)
+      _streamSubscription.pause();
   }
 
   void resumeStream() {
     if (_streamSubscription != null && _streamSubscription.isPaused) {
       _streamSubscription.resume();
     } else {
-      _streamSubscription = Starry.eventChannel.receiveBroadcastStream().listen((pos) {
+      _streamSubscription =
+          Starry.eventChannel.receiveBroadcastStream().listen((pos) {
         if (pos != null) {
           Get.find<GlobalController>().playPos.value = pos;
         }
@@ -97,24 +94,24 @@ class HomeController extends SuperController {
       goToLogin();
       return;
     }
-    currentIndex.value = index;
-    onPageChange(index);
     pageController.jumpToPage(index);
+    onPageChange(index);
   }
 
   //监听播放音乐状态以及进度！
   _listenerStarry() {
     ///歌曲发生变化
     Starry.onPlayerSongChanged.listen((MusicItem songInfo) async {
+      Get.find<GlobalController>().song.value = songInfo;
       var lyricEntity = await NetUtils().getMusicLyric(songInfo.musicId);
       Get.find<GlobalController>().lyric.value = lyricEntity;
-      Get.find<GlobalController>().song.value = songInfo;
-      // SpUtil.putString(LAST_PLAY_INFO, jsonEncode(songInfo));
     });
+
     ///播放状态发生变化
     Starry.onPlayerStateChanged.listen((PlayState playState) {
       Get.find<GlobalController>().playState.value = playState;
-      if (playState == PlayState.ERROR) Get.find<GlobalController>().skipToNext();
+      if (playState == PlayState.ERROR)
+        Get.find<GlobalController>().skipToNext();
     });
 
     ///播放列表发生变化
@@ -156,8 +153,8 @@ class HomeController extends SuperController {
     if (login.value) {
       await NetUtils().refreshLogin();
       // if (loginEntity != null && loginEntity['code'] == 200) {
-        //刷新成功
-        await getUserProfile(SpUtil.getString(USER_ID_SP, defValue: null));
+      //刷新成功
+      await getUserProfile(SpUtil.getString(USER_ID_SP, defValue: null));
       // } else {
       //   ///太久未登录，重新登录吧！！！！！
       // }
@@ -173,15 +170,16 @@ class HomeController extends SuperController {
 
   getUserProfile(userId) async {
     var profile = await NetUtils().getUserProfile(userId);
-    if(profile!=null&&profile.code==200){
+    if (profile != null && profile.code == 200) {
       userProfileEntity.value = profile;
       login.value = true;
-    }else{
+    } else {
       if (await BuJuanUtil.checkFileExists(CACHE_USER_PROFILE)) {
         debugPrint("用户资料已缓存，获取失败用缓存");
         var data = await BuJuanUtil.readStringFile(CACHE_USER_PROFILE);
         if (data != null) {
-          userProfileEntity.value = UserProfileEntity.fromJson(Map<String, dynamic>.from(data));
+          userProfileEntity.value =
+              UserProfileEntity.fromJson(Map<String, dynamic>.from(data));
           login.value = true;
         }
       }
@@ -192,13 +190,17 @@ class HomeController extends SuperController {
   void didChangePlatformBrightness() {
     if (isSystemTheme.value) {
       Get.changeTheme(!Get.isPlatformDarkMode ? lightTheme : darkTheme);
-      Future.delayed(Duration(milliseconds: 300), () => SystemChrome.setSystemUIOverlayStyle(BuJuanUtil.setNavigationBarTextColor(Get.isPlatformDarkMode)));
+      Future.delayed(
+          Duration(milliseconds: 300),
+          () => SystemChrome.setSystemUIOverlayStyle(
+              BuJuanUtil.setNavigationBarTextColor(Get.isPlatformDarkMode)));
     }
     super.didChangePlatformBrightness();
   }
 
   onPageChange(index) {
     if (index != currentIndex.value) {
+      currentIndex.value = index;
       Future.delayed(Duration(microseconds: 500), () {
         var userController = Get.find<UserController>();
         var topController = Get.find<TopController>();

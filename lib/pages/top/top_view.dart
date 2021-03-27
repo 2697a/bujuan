@@ -11,7 +11,7 @@ class TopView extends GetView<TopController> {
   Widget build(BuildContext context) {
     return ScrollConfiguration(
       behavior: OverScrollBehavior(),
-      child: Obx(() => SmartRefresher(
+      child:Obx(()=> SmartRefresher(
           controller: controller.refreshController,
           onRefresh: () => controller.getData(forcedRefresh: true),
           child: CustomScrollView(
@@ -27,8 +27,8 @@ class TopView extends GetView<TopController> {
               ),
               controller.soaring.length > 0 ? buildBigTopItem('19723756', '飙升榜', controller.soaringImageUrl, controller.soaring) : buildLoadingBigTopItem('19723756', controller.soaringImageUrl),
               controller.newSong.length > 0 ? buildBigTopItem('3779629', '新歌榜', controller.newSongImageUrl, controller.newSong) : buildLoadingBigTopItem('3779629', controller.newSongImageUrl),
-              controller.hotSong.length > 0 ? buildBigTopItem('3778678', '热歌榜', controller.hotSongImageUrl, controller.hotSong) : buildLoadingBigTopItem('3778678', controller.hotSongImageUrl),
-              SliverToBoxAdapter(
+              controller.hotSong.length > 0 ?  buildBigTopItem('3778678', '热歌榜', controller.hotSongImageUrl, controller.hotSong) : buildLoadingBigTopItem('3778678', controller.hotSongImageUrl),
+              const SliverToBoxAdapter(
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
                   child: Text(
@@ -101,32 +101,32 @@ class TopView extends GetView<TopController> {
                         )),
                     Padding(padding: EdgeInsets.symmetric(horizontal: 6.0)),
                     Expanded(
-                        child: ListView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        return Container(
-                          height: 40.0,
-                          alignment: Alignment.centerLeft,
-                          child: RichText(
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              text: TextSpan(children: [
-                                TextSpan(
-                                  text: '${data[index].name}',
-                                  style: TextStyle(color: Theme.of(Get.context).bottomAppBarColor, fontSize: 14, height: 1.5, textBaseline: TextBaseline.alphabetic),
-                                  // recognizer: _tapRecognizer
-                                ),
-                                TextSpan(
-                                  text: ' - ${data[index].ar[0].name}',
-                                  style: TextStyle(color: Colors.grey[500], fontSize: 12, height: 1.5, textBaseline: TextBaseline.alphabetic),
-                                ),
-                              ])),
-                        );
-                      },
-                      itemCount: data.length,
-                      padding: EdgeInsets.all(0),
-                    ))
+                        child:ListView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemBuilder: (context, index) {
+                            return Container(
+                              height: 40.0,
+                              alignment: Alignment.centerLeft,
+                              child: RichText(
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  text: TextSpan(children: [
+                                    TextSpan(
+                                      text: '${data[index].name}',
+                                      style: TextStyle(color: Theme.of(Get.context).bottomAppBarColor, fontSize: 14, height: 1.5, textBaseline: TextBaseline.alphabetic),
+                                      // recognizer: _tapRecognizer
+                                    ),
+                                    TextSpan(
+                                      text: ' - ${data[index].ar[0].name}',
+                                      style: TextStyle(color: Colors.grey[500], fontSize: 12, height: 1.5, textBaseline: TextBaseline.alphabetic),
+                                    ),
+                                  ])),
+                            );
+                          },
+                          itemCount: data.length,
+                          padding: EdgeInsets.all(0),
+                        ))
                   ],
                 ),
               ),
@@ -156,9 +156,8 @@ class TopView extends GetView<TopController> {
                 Expanded(
                     child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 8.0),
-                  child: PlaceholderLines(
+                  child: const PlaceholderLines(
                     lineHeight: 10.0,
-                    color: Colors.grey[400],
                     count: 3,
                   ),
                 )),

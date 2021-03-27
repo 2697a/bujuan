@@ -5,6 +5,7 @@ import 'package:bujuan/global/global_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:starry/music_item.dart';
 
 import '../main.dart';
 
@@ -44,9 +45,6 @@ class BuJuanUtil {
     return '$monthStr / ';
   }
 
-  static isEmail(String email) {
-    return new RegExp(r'^(\w-*\.*)+@(\w-?)+(\.\w{2,})+$').hasMatch(email);
-  }
 
   /// 设置沉浸式导航栏文字颜色
   ///
@@ -77,13 +75,20 @@ class BuJuanUtil {
     List<String> list = lyric.split('\n');
     list.forEach((String str) {
       if (str != '') {
-        if ((str.indexOf('[ar:') != -1) || (str.indexOf('[ti:') != -1) || (str.indexOf('[by:') != -1) || (str.indexOf('[al:') != -1) || str == ' ') {
+        if ((str.indexOf('[ar:') != -1) ||
+            (str.indexOf('[ti:') != -1) ||
+            (str.indexOf('[by:') != -1) ||
+            (str.indexOf('[al:') != -1) ||
+            str == ' ') {
           return;
         }
         int pos1 = str.indexOf('[');
         int pos2 = str.indexOf(']');
         if (pos1 == 0 && pos2 != -1) {
-          var substring = str.substring(pos1, pos2 + 1).replaceAll('[', '').replaceAll(']', '');
+          var substring = str
+              .substring(pos1, pos2 + 1)
+              .replaceAll('[', '')
+              .replaceAll(']', '');
           var text = str.substring(pos2 + 1, str.length);
           int str2millisecond = str2Millisecond(substring);
           Lyric lyricBeanEntity = Lyric(str2millisecond, text);
@@ -97,10 +102,12 @@ class BuJuanUtil {
     return lyricList;
   }
 
-  static TextStyle getLyricStyle(List<Lyric> lyricBean, int index, int currPos) {
+  static TextStyle getLyricStyle(
+      List<Lyric> lyricBean, int index, int currPos) {
     TextStyle textStyle = TextStyle(fontSize: 16, fontWeight: FontWeight.w300);
     if (lyricBean[index].time <= currPos) {
-      textStyle = TextStyle(fontSize: 20, fontWeight: FontWeight.w400, color: Colors.blue);
+      textStyle = TextStyle(
+          fontSize: 20, fontWeight: FontWeight.w400, color: Colors.blue);
     }
     return textStyle;
   }
@@ -113,22 +120,15 @@ class BuJuanUtil {
       int minute = int.parse(timeData[0]); //数组里的第1个数据是分0
       int second = int.parse(timeData[1]); //数组里的第2个数据是秒40
       int millisecond = int.parse(timeData[2]); //数组里的第3个数据是秒57
-      return (minute * 60 * 1000 + second * 1000 + millisecond); //40000+570=40570
+      return (minute * 60 * 1000 +
+          second * 1000 +
+          millisecond); //40000+570=40570
     }
     return 0;
   }
 
-  static showToast(msg) {
-//    Fluttertoast.showToast(
-//        msg: msg,
-//        toastLength: Toast.LENGTH_SHORT,
-//        gravity: ToastGravity.BOTTOM,
-//        timeInSecForIos: 1,
-//        backgroundColor: Colors.white,
-//        textColor: Colors.black,
-//        fontSize: 14.0);
-  }
 
+  ///检查文件是否存在
   static Future<bool> checkFileExists(path) async {
     var directory = Get.find<FileService>().directory.value;
     File file = File('${directory.path}$path');
@@ -141,7 +141,13 @@ class BuJuanUtil {
     File file = File('${directory.path}$path');
     return jsonDecode(await file.readAsString());
   }
+
+  static playSongByIndex(List<MusicItem> playlist,index){
+
+  }
 }
+
+
 
 class Lyric {
   int time;

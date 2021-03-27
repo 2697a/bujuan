@@ -282,13 +282,13 @@ class NetUtils {
   ///歌词
   Future<LyricEntity> getMusicLyric(id) async {
     var lyric;
-    if (await BuJuanUtil.checkFileExists(CACHE_LYRIC)) {
+    if (await BuJuanUtil.checkFileExists('$id')) {
       debugPrint("lyric已缓存，直接拿哈");
-      var data = await BuJuanUtil.readStringFile(CACHE_LYRIC);
+      var data = await BuJuanUtil.readStringFile('$id');
       if (data != null) lyric = LyricEntity.fromJson(data);
     } else {
       debugPrint("lyric未缓存");
-      var map = await _doHandler('/lyric', param: {'id': id}, cacheName: CACHE_LYRIC);
+      var map = await _doHandler('/lyric', param: {'id': id}, cacheName: '$id');
       if (map != null) lyric = LyricEntity.fromJson(map);
     }
     return lyric;

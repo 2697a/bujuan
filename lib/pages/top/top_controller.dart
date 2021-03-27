@@ -16,13 +16,13 @@ class TopController extends GetxController {
 
   @override
   void onInit() {
+    otherTops..add(TopInfo('10520166', '电音榜', dy_top))..add(TopInfo('180106', 'UK榜',  uk_top))..add(TopInfo('60131', '日本榜',  rb_top))..add(TopInfo('60198', 'Billl榜',  billl_top))..add(TopInfo('21845217', 'KTV榜',  krv_top))..add(TopInfo('11641012', 'Itunes榜',  itunes_top));
     refreshController = RefreshController();
     super.onInit();
   }
 
   @override
   void onReady() {
-    otherTops..add(TopInfo('10520166', '电音榜', dy_top))..add(TopInfo('180106', 'UK榜',  uk_top))..add(TopInfo('60131', '日本榜',  rb_top))..add(TopInfo('60198', 'Billl榜',  billl_top))..add(TopInfo('21845217', 'KTV榜',  krv_top))..add(TopInfo('11641012', 'Itunes榜',  itunes_top));
     super.onReady();
   }
 

@@ -16,7 +16,7 @@ class MusicBottomBarView extends GetView<GlobalController> {
       color: Colors.transparent,
       margin: EdgeInsets.only(top: 3),
       height: 59.0,
-      child: Obx(()=>Material(
+      child: Material(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.only(topLeft: Radius.circular(12.0), topRight: Radius.circular(12.0)),
         ),
@@ -28,27 +28,27 @@ class MusicBottomBarView extends GetView<GlobalController> {
             margin: EdgeInsets.all(0),
             shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(44.0)),
             clipBehavior: Clip.antiAlias,
-            child: CachedNetworkImage(
+            child: Obx(()=>CachedNetworkImage(
               width: 44.0,
               height: 44.0,
               imageUrl: controller.song.value.musicId!='-99'?'${controller.song.value.iconUri}?param=80y80':'${controller.song.value.iconUri}',
-            ),
+            )),
           ),
-          title: Text(
+          title: Obx(()=>Text(
             '${controller.song.value.title}',
             style: TextStyle(fontSize: 16.0),
             overflow: TextOverflow.ellipsis,
-          ),
-          subtitle: Text('${controller.song.value.artist}', style: TextStyle(fontSize: 14.0, color: Colors.grey[500])),
+          )),
+          subtitle: Obx(()=>Text('${controller.song.value.artist}', style: TextStyle(fontSize: 14.0, color: Colors.grey[500]))),
           trailing: Wrap(
             children: [
-              IconButton(icon: Icon(controller.playState.value == PlayState.PLAYING ? Icons.pause : Icons.play_arrow), onPressed: () => controller.playOrPause(), color: Theme.of(Get.context).bottomAppBarColor),
+              Obx(()=>IconButton(icon: Icon(controller.playState.value == PlayState.PLAYING ? Icons.pause : Icons.play_arrow), onPressed: () => controller.playOrPause(), color: Theme.of(Get.context).bottomAppBarColor)),
               IconButton(icon: Icon(Icons.skip_next), onPressed: () => controller.skipToNext(), color: Theme.of(Get.context).bottomAppBarColor),
             ],
           ),
           onTap: ()=>weSlideController?.show(),
         ),
-      )),
+      ),
     );
   }
 }

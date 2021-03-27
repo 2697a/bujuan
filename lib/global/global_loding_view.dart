@@ -104,12 +104,12 @@ class LoadingView {
     );
   }
 
-  ///普通列表加载试图
+  ///普通列表加载试图The values in a const list literal must be constants.
   static Widget buildNewSongLoadingView() {
-    return Container(
+    return  Container(
       height: 110.0,
       padding: EdgeInsets.symmetric(horizontal: 2.0, vertical: 5.0),
-      child: Row(
+      child:  Row(
         children: [
           Container(
             margin: EdgeInsets.only(right: 6.0),
