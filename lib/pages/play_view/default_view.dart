@@ -48,18 +48,18 @@ class DefaultView extends GetView<GlobalController> {
           children: [
             Expanded(
                 child: Column(
-                  children: [
-                    Obx(()=>Text(controller.song.value.title,
-                        style: TextStyle(
-                            fontSize: 18.0, fontWeight: FontWeight.bold),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis)),
-                    Obx(()=>Text(
+              children: [
+                Obx(() => Text(controller.song.value.title,
+                    style:
+                        TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis)),
+                Obx(() => Text(
                       controller.song.value.artist,
                       style: TextStyle(color: Colors.grey[600]),
                     )),
-                  ],
-                )),
+              ],
+            )),
           ],
         ),
         Padding(padding: EdgeInsets.symmetric(vertical: 8.0)),
@@ -67,10 +67,10 @@ class DefaultView extends GetView<GlobalController> {
         Padding(padding: EdgeInsets.symmetric(vertical: 10.0)),
         controller.lyric.value == null || controller.lyric.value.lrc == null
             ? Expanded(child: Container())
-            : LyricView(
-          lyric: controller.lyric.value.lrc.lyric,
-          pos: controller.playPos.value,
-        ),
+            : Obx(() => LyricView(
+                  lyric: controller.lyric.value.lrc.lyric,
+                  pos: controller.playPos.value,
+                )),
         Padding(padding: EdgeInsets.symmetric(vertical: 18.0)),
         // Text(定时
         //   '${BuJuanUtil.unix2Time(controller.playPos.value)} : ${BuJuanUtil.unix2Time(controller.song.value.duration ~/ 1000)}',
@@ -113,13 +113,13 @@ class DefaultView extends GetView<GlobalController> {
                   size: 32.0,
                 ),
                 onPressed: () => controller.skipToNext()),
-            Obx(()=>IconButton(
+            Obx(() => IconButton(
                 icon: Icon(
                   controller.playMode.value == 1
                       ? Icons.repeat
                       : controller.playMode.value == 2
-                      ? Icons.repeat_one
-                      : Icons.shuffle,
+                          ? Icons.repeat_one
+                          : Icons.shuffle,
                 ),
                 onPressed: () => controller.changePlayMode())),
           ],
@@ -180,9 +180,9 @@ class DefaultView extends GetView<GlobalController> {
             children: [
               Expanded(
                   child: Center(
-                    child: _buildMusicCover(
-                        MediaQuery.of(Get.context).size.height / 1.5),
-                  )),
+                child: _buildMusicCover(
+                    MediaQuery.of(Get.context).size.height / 1.5),
+              )),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -193,8 +193,7 @@ class DefaultView extends GetView<GlobalController> {
                       onPressed: () {
                         Get.bottomSheet(
                           PlayListView(),
-                          backgroundColor:
-                          Theme.of(Get.context).primaryColor,
+                          backgroundColor: Theme.of(Get.context).primaryColor,
                           elevation: 6.0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.only(
@@ -211,11 +210,9 @@ class DefaultView extends GetView<GlobalController> {
                       onPressed: () => controller.skipToPrevious()),
                   Container(
                     decoration: BoxDecoration(
-                        color: Theme.of(Get.context)
-                            .accentColor
-                            .withOpacity(.85),
-                        borderRadius:
-                        BorderRadius.all(Radius.circular(52.0))),
+                        color:
+                            Theme.of(Get.context).accentColor.withOpacity(.85),
+                        borderRadius: BorderRadius.all(Radius.circular(52.0))),
                     width: 46.0,
                     height: 46.0,
                     child: IconButton(
@@ -251,23 +248,23 @@ class DefaultView extends GetView<GlobalController> {
               Padding(
                 padding: EdgeInsets.only(top: Get.statusBarHeight / 2),
               ),
-              Obx(()=>Text(
-                controller.song.value.title,
-                style:
-                TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-              )),
+              Obx(() => Text(
+                    controller.song.value.title,
+                    style:
+                        TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                  )),
               Padding(padding: EdgeInsets.symmetric(vertical: 2.0)),
-              Obx(()=>Text(
-                controller.song.value.artist,
-                style: TextStyle(color: Colors.grey[600]),
-              )),
+              Obx(() => Text(
+                    controller.song.value.artist,
+                    style: TextStyle(color: Colors.grey[600]),
+                  )),
               controller.lyric.value.lrc == null ||
-                  controller.lyric.value == null
+                      controller.lyric.value == null
                   ? Expanded(child: Container())
-                  : LyricView(
-                lyric: controller.lyric.value.lrc.lyric,
-                pos: controller.playPos.value,
-              ),
+                  : Obx(() => LyricView(
+                        lyric: controller.lyric.value.lrc.lyric,
+                        pos: controller.playPos.value,
+                      )),
               Padding(padding: EdgeInsets.symmetric(vertical: 10.0)),
             ],
           ),
@@ -278,42 +275,43 @@ class DefaultView extends GetView<GlobalController> {
   }
 
   Widget _buildMusicCover(size) {
-    return Obx(()=>SleekCircularSlider(
-      appearance: CircularSliderAppearance(
-          size: size,
-          animationEnabled: false,
-          startAngle: 45,
-          angleRange: 320,
-          customColors: CustomSliderColors(
-            trackColor: Colors.grey[500].withOpacity(.6),
-            progressBarColors: [
-              Theme.of(Get.context).accentColor,
-              Theme.of(Get.context).accentColor,
-            ],
-          ),
-          customWidths: CustomSliderWidths(trackWidth: 1, progressBarWidth: 4)),
-      min: 0,
-      max: controller.song.value.duration.toDouble(),
-      initialValue: controller.playPos.value.toDouble() * 1000,
-      innerWidget: (value) => Container(
-        margin: EdgeInsets.all(3.0),
-        child: Stack(
-          children: [
-            Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadiusDirectional.circular(230.0)),
-              clipBehavior: Clip.antiAlias,
-              child: CachedNetworkImage(
-                imageUrl: controller.song.value.musicId != '-99'
-                    ? '${controller.song.value.iconUri}?param=500y500'
-                    : '${controller.song.value.iconUri}',
+    return Obx(() => SleekCircularSlider(
+          appearance: CircularSliderAppearance(
+              size: size,
+              animationEnabled: false,
+              startAngle: 45,
+              angleRange: 320,
+              customColors: CustomSliderColors(
+                trackColor: Colors.grey[500].withOpacity(.6),
+                progressBarColors: [
+                  Theme.of(Get.context).accentColor,
+                  Theme.of(Get.context).accentColor,
+                ],
               ),
+              customWidths:
+                  CustomSliderWidths(trackWidth: 1, progressBarWidth: 4)),
+          min: 0,
+          max: controller.song.value.duration.toDouble(),
+          initialValue: controller.playPos.value.toDouble() * 1000,
+          innerWidget: (value) => Container(
+            margin: EdgeInsets.all(3.0),
+            child: Stack(
+              children: [
+                Card(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadiusDirectional.circular(230.0)),
+                  clipBehavior: Clip.antiAlias,
+                  child: CachedNetworkImage(
+                    imageUrl: controller.song.value.musicId != '-99'
+                        ? '${controller.song.value.iconUri}?param=500y500'
+                        : '${controller.song.value.iconUri}',
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
-      // onChange: (v) => controller.seekTo(v.toInt()),
-      onChangeEnd: (v) => controller.seekTo(v.toInt()),
-    ));
+          ),
+          // onChange: (v) => controller.seekTo(v.toInt()),
+          onChangeEnd: (v) => controller.seekTo(v.toInt()),
+        ));
   }
 }
