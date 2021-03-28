@@ -65,7 +65,7 @@ class HomeView extends GetView<HomeController> {
                 onPageChanged: (index) => controller.onPageChange(index),
                 controller: controller.pageController,
                 physics: controller.scroller.value
-                    ? ClampingScrollPhysics()
+                    ? BouncingScrollPhysics()
                     : NeverScrollableScrollPhysics(),
                 preloadPagesCount: 2,
                 itemBuilder: (context, index) => controller.pages[index],

@@ -26,9 +26,9 @@ class Starry {
   static Stream<PlayState> get onPlayerStateChanged => _playerStateController.stream;
 
   ///当前播放歌曲
-  static final StreamController<MusicItem> _playerSongController = StreamController<MusicItem>.broadcast();
+  static final StreamController<PlayMusicInfo> _playerSongController = StreamController<PlayMusicInfo>.broadcast();
 
-  static Stream<MusicItem> get onPlayerSongChanged => _playerSongController.stream;
+  static Stream<PlayMusicInfo> get onPlayerSongChanged => _playerSongController.stream;
 
   ///当前播放模式
   static final StreamController<int> _playerModeController = StreamController<int>.broadcast();
@@ -51,6 +51,23 @@ class Starry {
   static Future<void> playMusic(List song, int index) async {
     var jsonEncode2 = jsonEncode(song);
     await _channel.invokeMethod('PLAY_MUSIC', {'PLAY_LIST': jsonEncode2, 'INDEX': index});
+  }
+  ///add播放类表并根据下标播放
+  static Future<void> setPlayList(List song) async {
+    var jsonEncode2 = jsonEncode(song);
+    await _channel.invokeMethod('SET_PLAYLIST', {'PLAY_LIST': jsonEncode2});
+  }
+
+  ///add播放类表并根据下标播放
+  static Future<void> addSong(List song) async {
+    var jsonEncode2 = jsonEncode(song);
+    await _channel.invokeMethod('ADD_SONG', {'ADD_PLAY_LIST': jsonEncode2});
+  }
+
+
+  ///add播放类表并根据下标播放
+  static Future<void> removeSong(int size) async {
+    await _channel.invokeMethod('REMOVE_SONG', {'SIZE': size});
   }
 
   ///根据下标播放歌曲
@@ -139,9 +156,9 @@ class Starry {
       _playerStateController.add(PlayState.PLAYING);
     } else if (method == 'SWITCH_SONG_INFO') {
       //切歌
-      var songMap = jsonDecode(arguments);
+      var songMap = jsonDecode(arguments['MUSIC']);
       var musicItem = MusicItem.fromJson(songMap);
-      _playerSongController.add(musicItem);
+      _playerSongController.add(PlayMusicInfo(musicItem,arguments['POSITION']));
     } else if (method == 'PAUSE_OR_IDEA_SONG_INFO') {
       //暂停或初始化
       _playerStateController.add(PlayState.PAUSE);
@@ -166,4 +183,12 @@ class PlayListInfo{
   final int position;
 
   PlayListInfo(this.playlist, this.position);
+}
+
+
+class PlayMusicInfo{
+  final MusicItem musicItem;
+  final int position;
+
+  PlayMusicInfo(this.musicItem, this.position);
 }

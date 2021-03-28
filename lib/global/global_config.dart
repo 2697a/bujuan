@@ -37,4 +37,4 @@ const String CACHE_USER_PROFILE = 'CACHE_USER_PROFILE';
 
 
 
-enum PlayListMode { SHEET, CLOUD, TODAY, FM }
+enum PlayListMode { SONG, FM }

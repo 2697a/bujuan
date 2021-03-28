@@ -1,4 +1,6 @@
 import 'package:bujuan/entity/user_order_entity.dart';
+import 'package:bujuan/global/global_config.dart';
+import 'package:bujuan/global/global_controller.dart';
 import 'package:bujuan/widget/over_scroll.dart';
 import 'package:bujuan/pages/user/user_controller.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -17,56 +19,86 @@ class UserView extends GetView<UserController> {
   Widget _buildLoginView() {
     return ScrollConfiguration(
       behavior: OverScrollBehavior(),
-      child: Obx(()=>SmartRefresher(
-        controller: controller.refreshController,
-        onRefresh: () => controller.getUserSheet(forcedRefresh: true),
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: ListTile(
-                title: Text('云盘'),
-                subtitle: Text('data'),
-                onTap: ()=>Get.toNamed('/cloud'),
-              ),
-            ),
-            SliverFixedExtentList(
-              itemExtent: 60.0,
-              delegate: SliverChildBuilderDelegate(
+      child: Obx(() => SmartRefresher(
+            controller: controller.refreshController,
+            onRefresh: () => controller.getUserSheet(forcedRefresh: true),
+            child: CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: ListTile(
+                    title: Text('云盘'),
+                    subtitle: Text('data'),
+                    onTap: () => Get.toNamed('/cloud'),
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: ListTile(
+                    title: Text('私人FM'),
+                    subtitle: Text('data'),
+                    onTap: () {
+                      if (Get.find<GlobalController>().playListMode.value ==
+                          PlayListMode.SONG) controller.getFM();
+                    },
+                  ),
+                ),
+                SliverFixedExtentList(
+                  itemExtent: 60.0,
+                  delegate: SliverChildBuilderDelegate(
                     (BuildContext context, int index) {
-                  return controller.lovePlayList.length > 0 ? _buildUserSheetItem(controller.lovePlayList[index]) : _loadUserSheetView();
-                },
-                childCount: controller.lovePlayList.length > 0 ? controller.lovePlayList.length : 1,
-              ),
-            ),
-            SliverToBoxAdapter(child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8.0,vertical: 6.0),
-              child: Text('我创建的'),
-            ),),
-            SliverFixedExtentList(
-              itemExtent: 60.0,
-              delegate: SliverChildBuilderDelegate(
+                      return controller.lovePlayList.length > 0
+                          ? _buildUserSheetItem(controller.lovePlayList[index])
+                          : _loadUserSheetView();
+                    },
+                    childCount: controller.lovePlayList.length > 0
+                        ? controller.lovePlayList.length
+                        : 1,
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
+                    child: Text('我创建的'),
+                  ),
+                ),
+                SliverFixedExtentList(
+                  itemExtent: 60.0,
+                  delegate: SliverChildBuilderDelegate(
                     (BuildContext context, int index) {
-                  return controller.createPlayList.length > 0 ? _buildUserSheetItem(controller.createPlayList[index]) : _loadUserSheetView();
-                },
-                childCount: controller.createPlayList.length > 0 ? controller.createPlayList.length : 5,
-              ),
-            ),
-            SliverToBoxAdapter(child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8.0,vertical: 6.0),
-              child: Text('我收藏的'),
-            ),),
-            SliverFixedExtentList(
-              itemExtent: 60.0,
-              delegate: SliverChildBuilderDelegate(
+                      return controller.createPlayList.length > 0
+                          ? _buildUserSheetItem(
+                              controller.createPlayList[index])
+                          : _loadUserSheetView();
+                    },
+                    childCount: controller.createPlayList.length > 0
+                        ? controller.createPlayList.length
+                        : 5,
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
+                    child: Text('我收藏的'),
+                  ),
+                ),
+                SliverFixedExtentList(
+                  itemExtent: 60.0,
+                  delegate: SliverChildBuilderDelegate(
                     (BuildContext context, int index) {
-                  return controller.collectPlayList.length > 0 ? _buildUserSheetItem(controller.collectPlayList[index]) : _loadUserSheetView();
-                },
-                childCount: controller.collectPlayList.length > 0 ? controller.collectPlayList.length : 5,
-              ),
+                      return controller.collectPlayList.length > 0
+                          ? _buildUserSheetItem(
+                              controller.collectPlayList[index])
+                          : _loadUserSheetView();
+                    },
+                    childCount: controller.collectPlayList.length > 0
+                        ? controller.collectPlayList.length
+                        : 5,
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      )),
+          )),
     );
   }
 
@@ -94,28 +126,38 @@ class UserView extends GetView<UserController> {
             ),
             Expanded(
                 child: Column(
-                  children: [
-                    Container(
-                      height: 30,
-                      alignment: Alignment.centerLeft,
-                      child: Text(userOrderPlaylist.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 16.0)),
-                    ),
-                    Container(
-                      height: 30,
-                      alignment: Alignment.centerLeft,
-                      child: Text('${userOrderPlaylist.trackCount}首', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14.0, color: Colors.grey[500])),
-                    )
-                  ],
-                )),
+              children: [
+                Container(
+                  height: 30,
+                  alignment: Alignment.centerLeft,
+                  child: Text(userOrderPlaylist.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontSize: 16.0)),
+                ),
+                Container(
+                  height: 30,
+                  alignment: Alignment.centerLeft,
+                  child: Text('${userOrderPlaylist.trackCount}首',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style:
+                          TextStyle(fontSize: 14.0, color: Colors.grey[500])),
+                )
+              ],
+            )),
           ],
         ),
       ),
       onTap: () {
-        Get.toNamed('/sheet', arguments: {'id': userOrderPlaylist.id, 'name': userOrderPlaylist.name, 'imageUrl': '${userOrderPlaylist.coverImgUrl}?param=300y300'});
+        Get.toNamed('/sheet', arguments: {
+          'id': userOrderPlaylist.id,
+          'name': userOrderPlaylist.name,
+          'imageUrl': '${userOrderPlaylist.coverImgUrl}?param=300y300'
+        });
       },
     );
   }
-
 
   ///歌单加载中View
   Widget _loadUserSheetView() {
@@ -128,7 +170,9 @@ class UserView extends GetView<UserController> {
             margin: EdgeInsets.only(right: 12.0),
             width: 48,
             height: 48,
-            decoration: BoxDecoration(color: Colors.grey.withOpacity(.6), borderRadius: BorderRadius.circular(6.0)),
+            decoration: BoxDecoration(
+                color: Colors.grey.withOpacity(.6),
+                borderRadius: BorderRadius.circular(6.0)),
             child: Center(
               child: Icon(
                 Icons.photo_size_select_actual,

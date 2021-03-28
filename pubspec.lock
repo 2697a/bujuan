@@ -167,6 +167,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.1.2"
+  flutter_music_query:
+    dependency: "direct main"
+    description:
+      name: flutter_music_query
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.4.0"
   flutter_placeholder_textlines:
     dependency: "direct main"
     description:
@@ -174,6 +181,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.0.4"
+  flutter_plugin_android_lifecycle:
+    dependency: transitive
+    description:
+      name: flutter_plugin_android_lifecycle
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.11"
   flutter_test:
     dependency: "direct dev"
     description: flutter

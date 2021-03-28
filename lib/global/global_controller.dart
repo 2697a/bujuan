@@ -1,5 +1,6 @@
 
 import 'package:bujuan/entity/lyric_entity.dart';
+import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/utils/net_util.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
@@ -14,6 +15,7 @@ class GlobalController extends GetxController {
   var song = MusicItem(musicId: '-99', duration: 6000, title: '暂无歌曲', artist: '暂无', iconUri: 'https://pic1.zhimg.com/80/v2-7ff2d917aa926cfbf2e8b85b035e2563_1440w.jpg').obs;
   var lyric = LyricEntity().obs;
   var playList = [].obs;
+  var playListMode = PlayListMode.SONG.obs;
   ScrollController scrollController;
 
   @override

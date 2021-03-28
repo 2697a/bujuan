@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:bujuan/api/netease_cloud_music.dart';
 import 'package:bujuan/entity/ablum_newest.dart';
+import 'package:bujuan/entity/fm_entity.dart';
 import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/main.dart';
 import 'package:bujuan/entity/banner_entity.dart';
@@ -35,14 +36,16 @@ class NetUtils {
 
   ///统一请求'msg' -> 'data inconstant when unbooked playlist, pid:2427280345 userId:302618605'
   Future<Map> _doHandler(String url, {cacheName, Map param = const {}}) async {
-    var answer = await cloudMusicApi(url, parameter: param, cookie: await _getCookie());
+    var answer =
+        await cloudMusicApi(url, parameter: param, cookie: await _getCookie());
     var map;
     if (answer.status == 200) {
       if (answer.cookie != null && answer.cookie.length > 0) {
         await _saveCookie(answer.cookie);
       }
       map = answer.body;
-      if (!GetUtils.isNullOrBlank(cacheName) && map['code'] == 200) _saveCache(cacheName, map);
+      if (!GetUtils.isNullOrBlank(cacheName) && map['code'] == 200)
+        _saveCache(cacheName, map);
       // log('$url======${jsonEncode(map)}');
     }
     return map;
@@ -77,7 +80,8 @@ class NetUtils {
   ///手机号登录
   Future<LoginEntity> loginByPhone(String phone, String password) async {
     var login;
-    var map = await _doHandler('/login/cellphone', param: {'phone': phone, 'password': password});
+    var map = await _doHandler('/login/cellphone',
+        param: {'phone': phone, 'password': password});
     if (map != null) {
       login = LoginEntity.fromJson(map);
     }
@@ -87,7 +91,8 @@ class NetUtils {
   ///邮箱登录
   Future<LoginEntity> loginByEmail(String email, String password) async {
     var login;
-    var map = await _doHandler('/login', param: {'email': email, 'password': password});
+    var map = await _doHandler('/login',
+        param: {'email': email, 'password': password});
     if (map != null) login = LoginEntity.fromJson(map);
     return login;
   }
@@ -99,7 +104,8 @@ class NetUtils {
   }
 
   ///获取歌单详情
-  Future<SheetDetailsEntity> getPlayListDetails(id, {count, forcedRefresh = false}) async {
+  Future<SheetDetailsEntity> getPlayListDetails(id,
+      {count, forcedRefresh = false}) async {
     SheetDetailsEntity sheetDetails;
     if (await BuJuanUtil.checkFileExists('$id') && !forcedRefresh) {
       debugPrint("$id歌单已缓存，直接拿哈");
@@ -133,7 +139,8 @@ class NetUtils {
       var body = map['songs'];
       List<SheetDetailsPlaylistTrack> songs = [];
       await Future.forEach(body, (element) {
-        var sheetDetailsPlaylistTrack = SheetDetailsPlaylistTrack.fromJson(element);
+        var sheetDetailsPlaylistTrack =
+            SheetDetailsPlaylistTrack.fromJson(element);
         songs.add(sheetDetailsPlaylistTrack);
       });
       songDetails = songs;
@@ -157,21 +164,26 @@ class NetUtils {
   ///获取个人信息
   Future<UserProfileEntity> getUserProfile(userId) async {
     var profile;
-    var map = await _doHandler('/user/detail', param: {'uid': userId}, cacheName: CACHE_USER_PROFILE);
-    if (map != null) profile = UserProfileEntity.fromJson(Map<String, dynamic>.from(map));
+    var map = await _doHandler('/user/detail',
+        param: {'uid': userId}, cacheName: CACHE_USER_PROFILE);
+    if (map != null)
+      profile = UserProfileEntity.fromJson(Map<String, dynamic>.from(map));
     return profile;
   }
 
   ///获取用户歌单
-  Future<UserOrderEntity> getUserPlayList(userId,{forcedRefresh = false}) async {
+  Future<UserOrderEntity> getUserPlayList(userId,
+      {forcedRefresh = false}) async {
     var playlist;
-    if (await BuJuanUtil.checkFileExists(CACHE_USER_PLAY_LIST)&&!forcedRefresh) {
+    if (await BuJuanUtil.checkFileExists(CACHE_USER_PLAY_LIST) &&
+        !forcedRefresh) {
       debugPrint("用户歌单已缓存，直接拿哈");
       var data = await BuJuanUtil.readStringFile(CACHE_USER_PLAY_LIST);
       if (data != null) playlist = UserOrderEntity.fromJson(data);
     } else {
       debugPrint("用户歌单未缓存");
-      var map = await _doHandler('/user/playlist', param: {'uid': userId}, cacheName: CACHE_USER_PLAY_LIST);
+      var map = await _doHandler('/user/playlist',
+          param: {'uid': userId}, cacheName: CACHE_USER_PLAY_LIST);
       if (map != null) playlist = UserOrderEntity.fromJson(map);
     }
     return playlist;
@@ -180,7 +192,7 @@ class NetUtils {
   ///推荐歌单
   Future<PersonalEntity> getRecommendResource({forcedRefresh = false}) async {
     var playlist;
-    if (await BuJuanUtil.checkFileExists(CACHE_TODAY_SHEET)&&!forcedRefresh) {
+    if (await BuJuanUtil.checkFileExists(CACHE_TODAY_SHEET) && !forcedRefresh) {
       debugPrint("推荐歌单已缓存，直接拿哈");
       var data = await BuJuanUtil.readStringFile(CACHE_TODAY_SHEET);
       if (data != null) playlist = PersonalEntity.fromJson(data);
@@ -203,13 +215,14 @@ class NetUtils {
   ///新歌推荐
   Future<NewSongEntity> getNewSongs({forcedRefresh = false}) async {
     var newSongs;
-    if (await BuJuanUtil.checkFileExists(CACHE_NEW_SONG)&&!forcedRefresh) {
+    if (await BuJuanUtil.checkFileExists(CACHE_NEW_SONG) && !forcedRefresh) {
       debugPrint("新歌推荐已缓存，直接拿哈");
       var data = await BuJuanUtil.readStringFile(CACHE_NEW_SONG);
       if (data != null) newSongs = NewSongEntity.fromJson(data);
     } else {
       debugPrint("新歌推荐未缓存");
-      var map = await _doHandler('/personalized/newsong', cacheName: CACHE_NEW_SONG);
+      var map =
+          await _doHandler('/personalized/newsong', cacheName: CACHE_NEW_SONG);
       if (map != null) newSongs = NewSongEntity.fromJson(map);
     }
     return newSongs;
@@ -226,7 +239,8 @@ class NetUtils {
   ///获取歌曲播放地址
   Future<String> getSongUrl(songId) async {
     var songUrl = '';
-    var map = await _doHandler('/song/url', param: {'id': songId, 'br': '128000'});
+    var map =
+        await _doHandler('/song/url', param: {'id': songId, 'br': '128000'});
     if (map != null) songUrl = map['data'][0]['url'];
     return songUrl;
   }
@@ -250,7 +264,8 @@ class NetUtils {
   ///1收藏0取消收藏
   Future<bool> subPlaylist(bool isSub, id) async {
     bool sub = false;
-    var map = await _doHandler('/playlist/subscribe', param: {'t': isSub ? 1 : 0, 'id': id});
+    var map = await _doHandler('/playlist/subscribe',
+        param: {'t': isSub ? 1 : 0, 'id': id});
     sub = map != null;
     return sub;
   }
@@ -266,7 +281,8 @@ class NetUtils {
   ///搜索// 1: 单曲, 10: 专辑, 100: 歌手, 1000: 歌单, 1002: 用户, 1004: MV, 1006: 歌词, 1009: 电台, 1014: 视频
   Future<SearchSongEntity> search(content, type) async {
     var searchData;
-    var map = await _doHandler('/search', param: {'keywords': content, 'type': type});
+    var map =
+        await _doHandler('/search', param: {'keywords': content, 'type': type});
     if (map != null) searchData = SearchSongEntity.fromJson(map);
     return searchData;
   }
@@ -308,7 +324,8 @@ class NetUtils {
   ///根据分类获取歌单
   Future<SheetByClassify> getSheetByClassify(cat, offset) async {
     var sheetByClassify;
-    var map = await _doHandler('/top/playlist', param: {'cat': cat, 'offset': offset});
+    var map = await _doHandler('/top/playlist',
+        param: {'cat': cat, 'offset': offset});
     if (map != null) sheetByClassify = SheetByClassify.fromJson(map);
     return sheetByClassify;
   }
@@ -316,7 +333,8 @@ class NetUtils {
   ///获取歌曲评论
   Future<MusicTalk> getMusicTalk(id, type, pageNo) async {
     var talk;
-    var map = await _doHandler('/comment/new', param: {'id': id, 'type': type, 'pageNo': pageNo});
+    var map = await _doHandler('/comment/new',
+        param: {'id': id, 'type': type, 'pageNo': pageNo});
     if (map != null) talk = MusicTalk.fromJson(map);
     return talk;
   }
@@ -324,6 +342,13 @@ class NetUtils {
   ///获取歌曲楼层评论
   Future<void> getMusicFloorTalk() async {
     await _doHandler('');
+  }
+
+  Future<FmEntity> getFm() async {
+    var fm;
+    var map = await _doHandler('/personal_fm');
+    if (map != null) fm = FmEntity.fromJson(map);
+    return fm;
   }
 
 //播放音乐

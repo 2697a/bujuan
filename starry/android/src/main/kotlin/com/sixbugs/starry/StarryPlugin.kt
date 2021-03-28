@@ -51,7 +51,7 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 starryPlaybackStateChangeListener = StarryPlaybackStateChangeListener()
                 playerClient.addOnPlaybackStateChangeListener(starryPlaybackStateChangeListener)
                 //播放歌曲发生变化
-                changeListener = { musicItem, _, _ -> channel.invokeMethod("SWITCH_SONG_INFO", GsonUtil.GsonString(musicItem)) }
+                changeListener = { musicItem, position, _ -> channel.invokeMethod("SWITCH_SONG_INFO", hashMapOf("MUSIC" to GsonUtil.GsonString(musicItem), "POSITION" to position)) }
                 playerClient.addOnPlayingMusicItemChangeListener(changeListener)
                 //监听歌曲播放进度
                 liveProgress = LiveProgress(playerClient) { progressSec, _, _, _ -> eventSink?.success(progressSec) }
@@ -85,6 +85,13 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 playerClient.setPlaylist(appendAll, index, true)
                 result.success("success")
             }
+            "SET_PLAYLIST" -> {
+                val songList = call.argument<String>("PLAY_LIST")!!
+                val jsonToList = GsonUtil.jsonToList(songList, MusicItem::class.java)
+                val appendAll = Playlist.Builder().appendAll(jsonToList.toMutableList()).build()
+                playerClient.setPlaylist(appendAll)
+                result.success("success")
+            }
             "PLAY_BY_INDEX" -> {
                 //根据INDEX播放
                 val index = call.argument<Int>("INDEX")!!
@@ -102,14 +109,15 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                     jsonToList.forEach {
                         playerClient.appendMusicItem(it)
                     }
+                result.success("success")
             }
             "REMOVE_SONG" -> {
-                val songList = call.argument<String>("REMOVE_PLAY_LIST")!!
-                val jsonToList = GsonUtil.jsonToList(songList, MusicItem::class.java)
-                if (jsonToList.size > 0)
-                    jsonToList.forEach {
-                        playerClient.removeMusicItem(it)
+                val size = call.argument<Int>("SIZE")!!
+                if (size > 0)
+                    for (index in 0..size) {
+                        playerClient.removeMusicItem(index)
                     }
+                result.success("success")
             }
             "NOW_PLAYING" -> {
                 //获取当前播放的歌曲

@@ -6,6 +6,8 @@ import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/global/global_controller.dart';
 import 'package:bujuan/global/global_theme.dart';
 import 'package:bujuan/pages/find/find_view.dart';
+import 'package:bujuan/pages/music/music_controller.dart';
+import 'package:bujuan/pages/music/music_view.dart';
 import 'package:bujuan/pages/search/search_view.dart';
 import 'package:bujuan/pages/top/top_controller.dart';
 import 'package:bujuan/pages/top/top_view.dart';
@@ -14,7 +16,6 @@ import 'package:bujuan/pages/user/user_view.dart';
 import 'package:bujuan/utils/bujuan_util.dart';
 import 'package:bujuan/utils/net_util.dart';
 import 'package:bujuan/utils/sp_util.dart';
-import 'package:bujuan/widget/keep.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:bujuan/widget/preload_page_view.dart';
@@ -32,7 +33,7 @@ class HomeController extends SuperController {
   StreamSubscription _streamSubscription;
   var login = false.obs;
   var scroller = false.obs;
-  final pages = [UserView(), FindView(), TopView(), SearchView()];
+  final pages = [UserView(), FindView(), TopView(), MusicView()];
 
   @override
   void onInit() {
@@ -101,10 +102,25 @@ class HomeController extends SuperController {
   //监听播放音乐状态以及进度！
   _listenerStarry() {
     ///歌曲发生变化
-    Starry.onPlayerSongChanged.listen((MusicItem songInfo) async {
-      Get.find<GlobalController>().song.value = songInfo;
-      var lyricEntity = await NetUtils().getMusicLyric(songInfo.musicId);
+    Starry.onPlayerSongChanged.listen((PlayMusicInfo playMusicInfo) async {
+      Get.find<GlobalController>().song.value = playMusicInfo.musicItem;
+      var lyricEntity =
+          await NetUtils().getMusicLyric(playMusicInfo.musicItem.musicId);
       Get.find<GlobalController>().lyric.value = lyricEntity;
+
+      var playListMode = Get.find<GlobalController>().playListMode.value;
+      var playList = Get.find<GlobalController>().playList;
+
+      ///fm播放到倒数第二首了，删除之前所有的歌曲，添加新的歌曲
+      if (playListMode == PlayListMode.FM &&
+          playMusicInfo.position == playList.length - 2) {
+        ///要删除的歌曲列表
+        await Starry.removeSong(playList.length - 2);
+
+        ///要添加的歌曲列表
+        var addList = await getFM();
+        await Starry.addSong(addList);
+      }
     });
 
     ///播放状态发生变化
@@ -201,16 +217,37 @@ class HomeController extends SuperController {
   onPageChange(index) {
     if (index != currentIndex.value) {
       currentIndex.value = index;
-      Future.delayed(Duration(microseconds: 500), () {
-        var userController = Get.find<UserController>();
-        var topController = Get.find<TopController>();
-        if (index == 0 && !userController.isLoad) {
-          userController.getUserSheet();
-        } else if (index == 2 && !topController.isLoad) {
-          topController.getData();
-        }
+      // Future.delayed(Duration(microseconds: 500), () {
+      var userController = Get.find<UserController>();
+      var topController = Get.find<TopController>();
+      if (index == 0 && !userController.isLoad) {
+        userController.getUserSheet();
+      } else if (index == 2 && !topController.isLoad) {
+        topController.getData();
+      }else if (index == 3) {
+        Get.find<MusicController>().getAllMusic();
+      }
+      // });
+    }
+  }
+
+  Future<List<MusicItem>> getFM() async {
+    List<MusicItem> fmSong = [];
+    var fmEntity = await NetUtils().getFm();
+    if (fmEntity != null && fmEntity.code == 200) {
+      fmEntity.data.forEach((track) {
+        MusicItem musicItem = MusicItem(
+          musicId: '${track.id}',
+          duration: track.duration,
+          iconUri: "${track.album.picUrl}",
+          title: track.name,
+          uri: '${track.id}',
+          artist: track.artists[0].name,
+        );
+        fmSong.add(musicItem);
       });
     }
+    return fmSong;
   }
 
   @override

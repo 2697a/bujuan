@@ -16,15 +16,6 @@ class TopView extends GetView<TopController> {
           onRefresh: () => controller.getData(forcedRefresh: true),
           child: CustomScrollView(
             slivers: [
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
-                  child: Text(
-                    "热门榜单",
-                    style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
               controller.soaring.length > 0 ? buildBigTopItem('19723756', '飙升榜', controller.soaringImageUrl, controller.soaring) : buildLoadingBigTopItem('19723756', controller.soaringImageUrl),
               controller.newSong.length > 0 ? buildBigTopItem('3779629', '新歌榜', controller.newSongImageUrl, controller.newSong) : buildLoadingBigTopItem('3779629', controller.newSongImageUrl),
               controller.hotSong.length > 0 ?  buildBigTopItem('3778678', '热歌榜', controller.hotSongImageUrl, controller.hotSong) : buildLoadingBigTopItem('3778678', controller.hotSongImageUrl),

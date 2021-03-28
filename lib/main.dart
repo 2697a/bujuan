@@ -21,6 +21,7 @@ import 'package:bujuan/utils/bujuan_util.dart';
 import 'package:bujuan/utils/sp_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_music_query/flutter_music_query.dart';
 import 'package:get/get.dart';
 import 'package:get/get_utils/src/platform/platform.dart';
 import 'package:path_provider/path_provider.dart';
@@ -127,6 +128,7 @@ void _handleRequest(HttpRequest request) async {
 
 class FileService extends GetxService {
   final directory =  Directory("").obs;
+  final FlutterAudioQuery audioQuery = FlutterAudioQuery();
   Future<FileService> init() async {
     await _startServer();
     directory.value = await getTemporaryDirectory();

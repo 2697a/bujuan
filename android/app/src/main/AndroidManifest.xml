@@ -14,6 +14,8 @@
 
     <!-- 用于播放本地音乐 -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
 
     <!-- 用于播放网络音乐 -->
     <uses-permission android:name="android.permission.INTERNET" />
