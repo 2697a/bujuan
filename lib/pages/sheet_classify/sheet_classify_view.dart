@@ -17,7 +17,7 @@ import '../../widget/over_scroll.dart';
 class SheetClassifyView extends GetView<SheetClassifyController> {
   @override
   Widget build(BuildContext context) {
-    return _buildSheetClassifyView();
+    return _buildSheetClassifyView(context);
   }
 
   DirectSelectItem<String> getDropDownMenuItem(String value) {
@@ -30,7 +30,7 @@ class SheetClassifyView extends GetView<SheetClassifyController> {
   }
 
 
-  Widget _buildSheetClassifyView(){
+  Widget _buildSheetClassifyView(context){
     return Scaffold(
       body: WeSlide(
         controller: controller.weSlideController,
@@ -46,6 +46,11 @@ class SheetClassifyView extends GetView<SheetClassifyController> {
             child: ScrollConfiguration(
               behavior: OverScrollBehavior(),
               child: SmartRefresher(
+                header:  WaterDropMaterialHeader(
+                  color: Theme.of(context).accentColor,
+                  backgroundColor: Theme.of(context).primaryColor,
+                ),
+                footer: ClassicFooter(),
                 controller: controller.refreshController,
                 enablePullUp: true,
                 onRefresh: () => controller.changeOrRefreshClassify(controller.classifySelect.value),

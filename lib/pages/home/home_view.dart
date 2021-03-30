@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:bujuan/pages/music_bottom_bar/music_bottom_bar_view.dart';
 import 'package:bujuan/widget/over_scroll.dart';
 import 'package:bujuan/pages/play_view/default_view.dart';
@@ -44,7 +42,7 @@ class HomeView extends GetView<HomeController> {
                     ))),
             onPressed: () => controller.goToProfile(),
           ),
-          title: Text("Bujuan"),
+          title: Text('Bujuan'),
           actions: [
             IconButton(
               icon: Icon(Icons.search),
@@ -55,7 +53,8 @@ class HomeView extends GetView<HomeController> {
               onPressed: () => Get.toNamed('/setting'),
             )
           ],
-        ), //The name 'PageMetrics' is defined in the libraries 'package
+        ),
+        //The name
         Expanded(
             child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 5.0),
@@ -65,7 +64,7 @@ class HomeView extends GetView<HomeController> {
                 onPageChanged: (index) => controller.onPageChange(index),
                 controller: controller.pageController,
                 physics: controller.scroller.value
-                    ? BouncingScrollPhysics()
+                    ? ClampingScrollPhysics()
                     : NeverScrollableScrollPhysics(),
                 preloadPagesCount: 2,
                 itemBuilder: (context, index) => controller.pages[index],
@@ -91,7 +90,8 @@ class HomeView extends GetView<HomeController> {
             panel: DefaultView(weSlideController: controller.weSlideController),
             panelHeader: MusicBottomBarView(
                 weSlideController: controller.weSlideController),
-            footer: controller.scroller.value ? null : _buildBottomNavigationBar(),
+            footer:
+                controller.scroller.value ? null : _buildBottomNavigationBar(),
           )),
     );
   }

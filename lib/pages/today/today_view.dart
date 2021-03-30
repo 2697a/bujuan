@@ -105,7 +105,8 @@ class TodayView extends GetView<TodayController>{
   }
 
   Widget _buildTodayListView() {
-    return Obx(()=>SliverList(
+    return Obx(()=>SliverFixedExtentList(
+      itemExtent: 60.0,
       delegate: SliverChildBuilderDelegate(
             (BuildContext context, int index) {
           return controller.list.length>0?InkWell(

@@ -5,7 +5,6 @@ import 'package:bujuan/pages/play_view/music_talk/music_talk_controller.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_placeholder_textlines/placeholder_lines.dart';
 import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -37,6 +36,11 @@ class MusicTalkView extends GetView<MusicTalkController> {
                   child: ScrollConfiguration(
                 behavior: OverScrollBehavior(),
                 child: SmartRefresher(
+                  header:  WaterDropMaterialHeader(
+                    color: Theme.of(context).accentColor,
+                    backgroundColor: Theme.of(context).primaryColor,
+                  ),
+                  footer: ClassicFooter(),
                   enablePullUp: true,
                   controller: controller.refreshController,
                   child: CustomScrollView(

@@ -12,14 +12,18 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 class UserView extends GetView<UserController> {
   @override
   Widget build(BuildContext context) {
-    return _buildLoginView();
+    return _buildLoginView(context);
   }
 
   ///展示我的歌单
-  Widget _buildLoginView() {
+  Widget _buildLoginView(context) {
     return ScrollConfiguration(
       behavior: OverScrollBehavior(),
       child: Obx(() => SmartRefresher(
+        header:  WaterDropMaterialHeader(
+          color: Theme.of(context).accentColor,
+          backgroundColor: Theme.of(context).primaryColor,
+        ),
             controller: controller.refreshController,
             onRefresh: () => controller.getUserSheet(forcedRefresh: true),
             child: CustomScrollView(
@@ -54,11 +58,15 @@ class UserView extends GetView<UserController> {
                         : 1,
                   ),
                 ),
-                SliverToBoxAdapter(
+                const SliverToBoxAdapter(
                   child: Padding(
                     padding:
-                        EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
-                    child: Text('我创建的'),
+                    EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
+                    child: Text(
+                      "我创建的",
+                      style: TextStyle(
+                          fontSize: 16.0, fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ),
                 SliverFixedExtentList(
@@ -75,11 +83,15 @@ class UserView extends GetView<UserController> {
                         : 5,
                   ),
                 ),
-                SliverToBoxAdapter(
+                const SliverToBoxAdapter(
                   child: Padding(
                     padding:
-                        EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
-                    child: Text('我收藏的'),
+                    EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
+                    child: Text(
+                      "我收藏的",
+                      style: TextStyle(
+                          fontSize: 16.0, fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ),
                 SliverFixedExtentList(

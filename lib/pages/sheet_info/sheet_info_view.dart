@@ -39,6 +39,10 @@ class SheetInfoView extends GetView<SheetInfoController> {
             ? Obx(() => ScrollConfiguration(
                 behavior: OverScrollBehavior(),
                 child: SmartRefresher(
+                  header:  WaterDropMaterialHeader(
+                    color: Theme.of(context).accentColor,
+                    backgroundColor: Theme.of(context).primaryColor,
+                  ),
                   onRefresh: ()=>controller.getSheetInfo(forcedRefresh: true),
                   controller: controller.refreshController,
                   child: CustomScrollView(

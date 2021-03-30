@@ -24,7 +24,10 @@ class FindView extends GetView<FindController> {
       return ScrollConfiguration(
           behavior: OverScrollBehavior(),
           child: SmartRefresher(
-            enablePullUp: false,
+            header:  WaterDropMaterialHeader(
+              color: Theme.of(context).accentColor,
+              backgroundColor: Theme.of(context).primaryColor,
+            ),
             controller: controller.refreshController,
             child: CustomScrollView(
               slivers: [
@@ -194,7 +197,7 @@ class FindView extends GetView<FindController> {
                           return Obx(() => ListView.builder(
                               scrollDirection: Axis.horizontal,
                               shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
+                              itemExtent: (MediaQuery.of(Get.context).size.width - 10) / 3,
                               itemCount: controller.sheet.length > 0
                                   ? controller.sheet[index].length
                                   : 3,

@@ -13,6 +13,10 @@ class TopView extends GetView<TopController> {
       behavior: OverScrollBehavior(),
       child:Obx(()=> SmartRefresher(
           controller: controller.refreshController,
+          header:  WaterDropMaterialHeader(
+            color: Theme.of(context).accentColor,
+            backgroundColor: Theme.of(context).primaryColor,
+          ),
           onRefresh: () => controller.getData(forcedRefresh: true),
           child: CustomScrollView(
             slivers: [

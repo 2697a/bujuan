@@ -12,18 +12,18 @@ import 'cloud_controller.dart';
 class CloudView extends GetView<CloudController>{
   @override
   Widget build(BuildContext context) {
-    return _buildCloudView();
+    return _buildCloudView(context);
   }
 
 
-  Widget _buildCloudView(){
+  Widget _buildCloudView(context){
     return Scaffold(
       body: WeSlide(
         controller: controller.weSlideController,
         panelMaxSize: MediaQuery.of(Get.context).size.height,
         panelMinSize: 62.0,
         panelBackground: Colors.transparent,
-        body: _buildContent(),
+        body: _buildContent(context),
         parallax: true,
         panel: DefaultView(weSlideController: controller.weSlideController),
         panelHeader: MusicBottomBarView(
@@ -32,10 +32,15 @@ class CloudView extends GetView<CloudController>{
     );
   }
 
-  Widget _buildContent(){
+  Widget _buildContent(context){
     return Obx(()=>ScrollConfiguration(behavior: OverScrollBehavior(), child: SmartRefresher(
       controller: controller.refreshController,
       enablePullUp: controller.enableLoadMore.value,
+      header:  WaterDropMaterialHeader(
+        color: Theme.of(context).accentColor,
+        backgroundColor: Theme.of(context).primaryColor,
+      ),
+      footer: ClassicFooter(),
       onRefresh: ()=>controller.refreshData(),
       onLoading: ()=>controller.loadMoreData(),
       child: CustomScrollView(

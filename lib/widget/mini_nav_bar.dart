@@ -21,7 +21,7 @@ class MinNiNavBar extends StatelessWidget {
     this.iconSize = 24,
     this.backgroundColor,
     this.itemCornerRadius = 50,
-    this.animationDuration = const Duration(milliseconds: 270),
+    this.animationDuration = const Duration(milliseconds: 200),
     this.mainAxisAlignment = MainAxisAlignment.spaceBetween,
     @required this.items,
     @required this.onItemSelected,
@@ -34,7 +34,7 @@ class MinNiNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 3),
+      width: MediaQuery.of(context).size.width/2.8,
       decoration: BoxDecoration(
         color: Theme.of(context).primaryColor,
         boxShadow: [
@@ -48,7 +48,7 @@ class MinNiNavBar extends StatelessWidget {
       child: Container(
         width: double.infinity,
         height: 26,
-        padding:  EdgeInsets.symmetric(vertical: 9, horizontal: 10),
+        padding:  EdgeInsets.symmetric(vertical: 9, horizontal: 0),
         child: Row(
           mainAxisAlignment: mainAxisAlignment,
           children: items.map((item) {
@@ -69,9 +69,6 @@ class MinNiNavBar extends StatelessWidget {
       ),
     );
   }
-
-  @override
-  Size get preferredSize => Size.fromHeight(26);
 }
 
 class _ItemWidget extends StatelessWidget {
@@ -103,8 +100,8 @@ class _ItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
-      width: isSelected ? 45: 15,
-      height: double.maxFinite,
+      width: isSelected ? 22: 11,
+      height: 26,
       duration: animationDuration,
       decoration: BoxDecoration(
         color: item.activeColor.withOpacity(0.6),
