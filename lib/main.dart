@@ -3,10 +3,14 @@ import 'dart:io';
 
 import 'package:bujuan/pages/login/login_binding.dart';
 import 'package:bujuan/pages/login/login_view.dart';
+import 'package:bujuan/pages/music/all_song/all_song_binding.dart';
+import 'package:bujuan/pages/music/all_song/all_song_view.dart';
 import 'package:bujuan/pages/play_view/music_talk/music_talk_binding.dart';
 import 'package:bujuan/pages/play_view/music_talk/music_talk_view.dart';
 import 'package:bujuan/pages/profile/profile_binding.dart';
 import 'package:bujuan/pages/profile/profile_view.dart';
+import 'package:bujuan/pages/search/search_binding.dart';
+import 'package:bujuan/pages/search/search_view.dart';
 import 'package:bujuan/pages/setting/setting_binding.dart';
 import 'package:bujuan/pages/setting/setting_view.dart';
 import 'package:bujuan/pages/sheet_classify/sheet_classify_binding.dart';
@@ -71,6 +75,8 @@ main(List<String> args) async {
       GetPage(name: '/cloud', page: () => CloudView(), binding: CloudBinding()),
       GetPage(name: '/sheet_classify', page: () => SheetClassifyView(), binding: SheetClassifyBinding()),
       GetPage(name: '/music_talk', page: () => MusicTalkView(), binding: MusicTalkBinding()),
+      GetPage(name: '/all_song', page: () => AllSongView(), binding: AllSongBinding()),
+      GetPage(name: '/search', page: () => SearchView(), binding: SearchBinding()),
     ],
   ));
 }

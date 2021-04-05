@@ -21,7 +21,7 @@ environment:
   sdk: ">=2.10.0 <3.0.0"
 
 dependencies:
-  get:
+  get: ^4.1.3
   path_provider: ^2.0.1
   color_thief_flutter: ^1.0.2
   cached_network_image: ^2.5.1
@@ -31,7 +31,7 @@ dependencies:
   shared_preferences: ^2.0.4
   cookie_jar: ^2.0.0
   encrypt: ^3.0.0
-  we_slide: ^2.0.1
+  we_slide: ^2.1.0
   pull_to_refresh: ^1.6.4
   sleek_circular_slider: ^1.2.0+web
   dots_indicator: ^2.0.0

@@ -20,10 +20,10 @@ class SheetInfoView extends GetView<SheetInfoController> {
   Widget _buildSheetView() {
     return Scaffold(
       body: WeSlide(
+        backgroundColor: Theme.of(Get.context).primaryColor,
         controller: controller.weSlideController,
         panelMaxSize: MediaQuery.of(Get.context).size.height,
         panelMinSize: 62.0,
-        panelBackground: Colors.transparent,
         body: _buildContent(),
         parallax: true,
         panel: DefaultView(weSlideController: controller.weSlideController),

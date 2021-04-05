@@ -225,7 +225,7 @@ class HomeController extends SuperController {
       } else if (index == 2 && !topController.isLoad) {
         topController.getData();
       }else if (index == 3) {
-        Get.find<MusicController>().getAllMusic();
+        Get.find<MusicController>().getAllArtists();
       }
       // });
     }

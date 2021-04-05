@@ -33,10 +33,10 @@ class SheetClassifyView extends GetView<SheetClassifyController> {
   Widget _buildSheetClassifyView(context){
     return Scaffold(
       body: WeSlide(
+        backgroundColor: Theme.of(Get.context).primaryColor,
         controller: controller.weSlideController,
         panelMaxSize: MediaQuery.of(Get.context).size.height,
         panelMinSize: 62.0,
-        panelBackground: Colors.transparent,
         body: Scaffold(
           appBar: AppBar(
             elevation: 0,

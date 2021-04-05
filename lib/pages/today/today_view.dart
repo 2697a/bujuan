@@ -17,89 +17,81 @@ class TodayView extends GetView<TodayController>{
   }
   Widget _buildTodayView() {
     return Scaffold(
-      body: AnnotatedRegion(
-        child: WeSlide(
-          controller: controller.weSlideController,
-          panelMaxSize: MediaQuery.of(Get.context).size.height,
-          panelMinSize: 62.0,
-          body: ScrollConfiguration(behavior: OverScrollBehavior(), child: CustomScrollView(
-            slivers: [
-              SliverAppBar(
-                elevation: 0.0,
-                floating: true,
-                pinned: true,
-                title: Text('Today'),
-                expandedHeight: 170.0,
-                flexibleSpace: FlexibleSpaceBar(
-                  collapseMode: CollapseMode.parallax,
-                  background: Column(
-                    children: [
-                      Expanded(child: Container()),
-                      Hero(
-                          tag: 'today',
-                          child: Card(
-                            child: Row(
-                              children: [
-                                Container(
-                                  padding: EdgeInsets.all(5.0),
-                                  height: 120.0,
-                                  child: Image.asset('assets/images/today.png'),
-                                ),
-                                Expanded(
-                                    child: Stack(
-                                      children: [
-                                        Container(
-                                          height: 120,
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                            '每日推荐',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
-                                          ),
+      body: WeSlide(
+        backgroundColor: Theme.of(Get.context).primaryColor,
+        controller: controller.weSlideController,
+        panelMaxSize: MediaQuery.of(Get.context).size.height,
+        panelMinSize: 62.0,
+        body: ScrollConfiguration(behavior: OverScrollBehavior(), child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              elevation: 0.0,
+              floating: true,
+              pinned: true,
+              title: Text('Today'),
+              expandedHeight: 170.0,
+              flexibleSpace: FlexibleSpaceBar(
+                collapseMode: CollapseMode.parallax,
+                background: Column(
+                  children: [
+                    Expanded(child: Container()),
+                    Hero(
+                        tag: 'today',
+                        child: Card(
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: EdgeInsets.all(5.0),
+                                height: 120.0,
+                                child: Image.asset('assets/images/today.png'),
+                              ),
+                              Expanded(
+                                  child: Stack(
+                                    children: [
+                                      Container(
+                                        height: 120,
+                                        alignment: Alignment.center,
+                                        child: Text(
+                                          '每日推荐',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
                                         ),
-                                        Container(
-                                          padding: EdgeInsets.symmetric(horizontal: 8.0,vertical: 5.0),
-                                          height: 120,
-                                          alignment: Alignment.bottomRight,
-                                          width: double.infinity,
-                                          child: Wrap(
-                                            children: [
-                                              Text(
-                                                BuJuanUtil.dateToString(DateTime.now(),2),
-                                                textAlign: TextAlign.center,
-                                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.0,color: Theme.of(Get.context).accentColor),
-                                              ),
-                                              Text(
-                                                BuJuanUtil.dateToString(DateTime.now(),1),
-                                                textAlign: TextAlign.center,
-                                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0,color: Theme.of(Get.context).accentColor),
-                                              )
-                                            ],
-                                          ),
-                                        )
-                                      ],
-                                    ))
-                              ],
-                            ),
-                          ))
-                    ],
-                  ),
+                                      ),
+                                      Container(
+                                        padding: EdgeInsets.symmetric(horizontal: 8.0,vertical: 5.0),
+                                        height: 120,
+                                        alignment: Alignment.bottomRight,
+                                        width: double.infinity,
+                                        child: Wrap(
+                                          children: [
+                                            Text(
+                                              BuJuanUtil.dateToString(DateTime.now(),2),
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.0,color: Theme.of(Get.context).accentColor),
+                                            ),
+                                            Text(
+                                              BuJuanUtil.dateToString(DateTime.now(),1),
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0,color: Theme.of(Get.context).accentColor),
+                                            )
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ))
+                            ],
+                          ),
+                        ))
+                  ],
                 ),
               ),
-              _buildTodayListView()
-            ],
-          )),
-          parallax: true,
-          panel: DefaultView(weSlideController: controller.weSlideController),
-          panelHeader: MusicBottomBarView(weSlideController: controller.weSlideController),
-        ),
-        value: !Get.isDarkMode
-            ? SystemUiOverlayStyle.light.copyWith(
-          systemNavigationBarColor: lightTheme.primaryColor,
-        )
-            : SystemUiOverlayStyle.dark.copyWith(
-          systemNavigationBarColor: darkTheme.primaryColor,
-        ),
+            ),
+            _buildTodayListView()
+          ],
+        )),
+        parallax: true,
+        panel: DefaultView(weSlideController: controller.weSlideController),
+        panelHeader: MusicBottomBarView(weSlideController: controller.weSlideController),
       ),
     );
   }

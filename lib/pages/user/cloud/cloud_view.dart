@@ -19,10 +19,10 @@ class CloudView extends GetView<CloudController>{
   Widget _buildCloudView(context){
     return Scaffold(
       body: WeSlide(
+        backgroundColor: Theme.of(Get.context).primaryColor,
         controller: controller.weSlideController,
         panelMaxSize: MediaQuery.of(Get.context).size.height,
         panelMinSize: 62.0,
-        panelBackground: Colors.transparent,
         body: _buildContent(context),
         parallax: true,
         panel: DefaultView(weSlideController: controller.weSlideController),

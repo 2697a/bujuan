@@ -97,7 +97,7 @@ class DefaultView extends GetView<GlobalController> {
                   borderRadius: BorderRadius.all(Radius.circular(50.0))),
               width: 50.0,
               height: 50.0,
-              child: IconButton(
+              child: Obx(()=>IconButton(
                   icon: Icon(
                     controller.playState.value == PlayState.PLAYING
                         ? Icons.pause
@@ -105,7 +105,7 @@ class DefaultView extends GetView<GlobalController> {
                     color: Colors.white,
                     size: 34.0,
                   ),
-                  onPressed: () => controller.playOrPause()),
+                  onPressed: () => controller.playOrPause())),
             ),
             IconButton(
                 icon: Icon(
@@ -215,7 +215,7 @@ class DefaultView extends GetView<GlobalController> {
                         borderRadius: BorderRadius.all(Radius.circular(52.0))),
                     width: 46.0,
                     height: 46.0,
-                    child: IconButton(
+                    child: Obx(()=>IconButton(
                         icon: Icon(
                           controller.playState.value == PlayState.PLAYING
                               ? Icons.pause
@@ -223,7 +223,7 @@ class DefaultView extends GetView<GlobalController> {
                           color: Colors.white,
                           size: 26.0,
                         ),
-                        onPressed: () => controller.playOrPause()),
+                        onPressed: () => controller.playOrPause())),
                   ),
                   IconButton(
                       icon: Icon(
