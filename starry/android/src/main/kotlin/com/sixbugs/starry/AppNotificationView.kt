@@ -1,6 +1,7 @@
 package com.sixbugs.starry
 
 import android.app.PendingIntent
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -44,7 +45,7 @@ class AppNotificationView() : PlayerService.MediaNotificationView() {
         val intent: Intent? = packageManager?.getLaunchIntentForPackage("com.sixbugs.bujuan")
         intent?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 //        intent?.putExtra(PlayerActivity.KEY_START_BY_PENDING_INTENT, true);
-        mContentIntent = PendingIntent.getActivity(context,0,intent,PendingIntent.FLAG_UPDATE_CURRENT)
+        mContentIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
 
     }
 
@@ -76,9 +77,11 @@ class AppNotificationView() : PlayerService.MediaNotificationView() {
         addSwitchPlayMode(builder)
         builder?.setContentIntent(mContentIntent)
     }
+
     private fun addToggleFavorite(builder: androidx.core.app.NotificationCompat.Builder?) {
         builder?.addAction(R.drawable.ic_baseline_stop, "stop", mStopPlay)
     }
+
     private fun addSkipToPrevious(builder: androidx.core.app.NotificationCompat.Builder?) {
         builder?.addAction(R.drawable.ic_baseline_skip_previous, "skip to previous", doSkipToPrevious())
     }
