@@ -1,7 +1,5 @@
-import 'dart:io';
 
 import 'package:bujuan/global/global_config.dart';
-import 'package:bujuan/main.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/utils/net_util.dart';
 import 'package:bujuan/utils/sp_util.dart';
@@ -42,29 +40,31 @@ class FindController extends GetxController {
   }
 
 
-  loadTodaySheet({forcedRefresh = false}) async {
-    var personalEntity = await NetUtils().getRecommendResource(forcedRefresh: forcedRefresh);
-    if (personalEntity != null && personalEntity.code == 200) {
-      var sheets = personalEntity.result;
-      sheet..clear();
-      if (sheets.length ==6) {
-        var i = sheets.length ~/ 3;
-        for (int j = 0; j < i; j++) {
-          sheet.add(sheets.sublist(j*3,(j+1)*3));
+  loadTodaySheet({forcedRefresh = false})  {
+    NetUtils().getRecommendResource(forcedRefresh: forcedRefresh).then((personalEntity) {
+      if (personalEntity != null && personalEntity.code == 200) {
+        var sheets = personalEntity.result;
+        sheet..clear();
+        if (sheets.length ==6) {
+          var i = sheets.length ~/ 3;
+          for (int j = 0; j < i; j++) {
+            sheet.add(sheets.sublist(j*3,(j+1)*3));
+          }
         }
       }
-    }
-    await loadNewSong();
+    });
+     loadNewSong();
   }
 
-  loadNewSong({forcedRefresh = false}) async {
-    var newSongEntity = await NetUtils().getNewSongs(forcedRefresh: forcedRefresh);
-    if (newSongEntity != null && newSongEntity.code == 200) {
-      newSong
-        ..clear()
-        ..addAll(newSongEntity.result.sublist(0,6));
-    }
-    refreshController?.refreshCompleted();
+  loadNewSong({forcedRefresh = false})  {
+     NetUtils().getNewSongs(forcedRefresh: forcedRefresh).then((newSongEntity) {
+      if (newSongEntity != null && newSongEntity.code == 200) {
+        newSong
+          ..clear()
+          ..addAll(newSongEntity.result.sublist(0,6));
+      }
+      refreshController?.refreshCompleted();
+    });
   }
 
   ///进入每日推荐

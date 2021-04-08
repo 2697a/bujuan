@@ -1,6 +1,7 @@
 import 'package:bujuan/global/global_loding_view.dart';
 import 'package:bujuan/pages/music_bottom_bar/music_bottom_bar_view.dart';
 import 'package:bujuan/pages/play_view/default_view.dart';
+import 'package:bujuan/pages/play_widget/play_widget_view.dart';
 import 'package:bujuan/pages/sheet_classify/sheet_classify_controller.dart';
 import 'package:bujuan/pages/sheet_info/head.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -31,40 +32,29 @@ class SheetClassifyView extends GetView<SheetClassifyController> {
 
 
   Widget _buildSheetClassifyView(context){
-    return Scaffold(
-      body: WeSlide(
-        backgroundColor: Theme.of(Get.context).primaryColor,
-        controller: controller.weSlideController,
-        panelMaxSize: MediaQuery.of(Get.context).size.height,
-        panelMinSize: 62.0,
-        body: Scaffold(
-          appBar: AppBar(
-            elevation: 0,
-            title: Text('歌单分类'),
-          ),
-          body: DirectSelectContainer(
-            child: ScrollConfiguration(
-              behavior: OverScrollBehavior(),
-              child: SmartRefresher(
-                header:  WaterDropMaterialHeader(
-                  color: Theme.of(context).accentColor,
-                  backgroundColor: Theme.of(context).primaryColor,
-                ),
-                footer: ClassicFooter(),
-                controller: controller.refreshController,
-                enablePullUp: true,
-                onRefresh: () => controller.changeOrRefreshClassify(controller.classifySelect.value),
-                onLoading: () => controller.loadMoreData(),
-                child: _buildContent(),
-              ),
+    return PlayWidgetView(Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        title: Text('歌单分类'),
+      ),
+      body: DirectSelectContainer(
+        child: ScrollConfiguration(
+          behavior: OverScrollBehavior(),
+          child: SmartRefresher(
+            header:  WaterDropMaterialHeader(
+              color: Theme.of(context).accentColor,
+              backgroundColor: Theme.of(context).primaryColor,
             ),
+            footer: ClassicFooter(),
+            controller: controller.refreshController,
+            enablePullUp: true,
+            onRefresh: () => controller.changeOrRefreshClassify(controller.classifySelect.value),
+            onLoading: () => controller.loadMoreData(),
+            child: _buildContent(),
           ),
         ),
-        parallax: true,
-        panel: DefaultView(weSlideController: controller.weSlideController),
-        panelHeader: MusicBottomBarView(weSlideController: controller.weSlideController),
       ),
-    );
+    ));
   }
   Widget _buildContent() {
     return CustomScrollView(

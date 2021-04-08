@@ -21,7 +21,7 @@ environment:
   sdk: ">=2.10.0 <3.0.0"
 
 dependencies:
-  get: ^4.1.3
+  get: ^3.26.0
   path_provider: ^2.0.1
   color_thief_flutter: ^1.0.2
   cached_network_image: ^2.5.1

@@ -1,5 +1,6 @@
 package com.sixbugs.starry
 
+import android.content.Context
 import android.net.Uri
 import io.flutter.plugin.common.MethodChannel
 import io.reactivex.Observable
@@ -11,7 +12,9 @@ import snow.player.PlayerService
 import snow.player.SoundQuality
 import snow.player.annotation.PersistenceId
 import snow.player.audio.MusicItem
+import snow.player.audio.MusicPlayer
 import snow.player.effect.AudioEffectManager
+import snow.player.exo.ExoMusicPlayer
 import snow.player.ui.equalizer.AndroidAudioEffectManager
 import snow.player.util.AsyncResult
 
@@ -22,6 +25,11 @@ class MyPlayerService : PlayerService() {
     override fun onCreate() {
         super.onCreate()
 //        setMaxIDLETime(30)
+    }
+
+
+    override fun onCreateMusicPlayer(context: Context, musicItem: MusicItem, uri: Uri): MusicPlayer {
+        return ExoMusicPlayer(context,uri)
     }
 
     override fun onCreateAudioEffectManager(): AudioEffectManager? {

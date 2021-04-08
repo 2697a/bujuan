@@ -1,7 +1,6 @@
 import 'package:bujuan/global/global_loding_view.dart';
-import 'package:bujuan/pages/music_bottom_bar/music_bottom_bar_view.dart';
+import 'package:bujuan/pages/play_widget/play_widget_view.dart';
 import 'package:bujuan/widget/over_scroll.dart';
-import 'package:bujuan/pages/play_view/default_view.dart';
 import 'package:bujuan/pages/sheet_info/sheet_info_controller.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_placeholder_textlines/placeholder_lines.dart';
 import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:we_slide/we_slide.dart';
 
 class SheetInfoView extends GetView<SheetInfoController> {
   @override
@@ -18,18 +16,7 @@ class SheetInfoView extends GetView<SheetInfoController> {
   }
 
   Widget _buildSheetView() {
-    return Scaffold(
-      body: WeSlide(
-        backgroundColor: Theme.of(Get.context).primaryColor,
-        controller: controller.weSlideController,
-        panelMaxSize: MediaQuery.of(Get.context).size.height,
-        panelMinSize: 62.0,
-        body: _buildContent(),
-        parallax: true,
-        panel: DefaultView(weSlideController: controller.weSlideController),
-        panelHeader: MusicBottomBarView(weSlideController: controller.weSlideController),
-      ),
-    );
+    return PlayWidgetView(_buildContent());
   }
 
   Widget _buildContent() {
@@ -39,11 +26,11 @@ class SheetInfoView extends GetView<SheetInfoController> {
             ? Obx(() => ScrollConfiguration(
                 behavior: OverScrollBehavior(),
                 child: SmartRefresher(
-                  header:  WaterDropMaterialHeader(
+                  header: WaterDropMaterialHeader(
                     color: Theme.of(context).accentColor,
                     backgroundColor: Theme.of(context).primaryColor,
                   ),
-                  onRefresh: ()=>controller.getSheetInfo(forcedRefresh: true),
+                  onRefresh: () => controller.getSheetInfo(forcedRefresh: true),
                   controller: controller.refreshController,
                   child: CustomScrollView(
                     slivers: [
@@ -56,7 +43,8 @@ class SheetInfoView extends GetView<SheetInfoController> {
                         flexibleSpace: FlexibleSpaceBar(
                           collapseMode: CollapseMode.parallax,
                           background: Padding(
-                            padding: EdgeInsets.only(left: 8.0, right: 8.0, bottom: 6.0),
+                            padding: EdgeInsets.only(
+                                left: 8.0, right: 8.0, bottom: 6.0),
                             child: Column(
                               children: [
                                 Expanded(child: Container()),
@@ -69,7 +57,8 @@ class SheetInfoView extends GetView<SheetInfoController> {
                                             width: 150.0,
                                             height: 150.0,
                                             fit: BoxFit.fitWidth,
-                                            imageUrl: '${Get.arguments['imageUrl']}',
+                                            imageUrl:
+                                                '${Get.arguments['imageUrl']}',
                                           ),
                                         )),
                                     Expanded(
@@ -78,17 +67,22 @@ class SheetInfoView extends GetView<SheetInfoController> {
                                                 child: ListTile(
                                                   title: Text(
                                                     '${controller.result.value.creator.nickname}',
-                                                    style: TextStyle(color: Theme.of(Get.context).accentColor),
+                                                    style: TextStyle(
+                                                        color: Theme.of(
+                                                                Get.context)
+                                                            .accentColor),
                                                   ),
                                                   subtitle: Text(
                                                     '${controller.result.value.creator.signature}',
                                                     maxLines: 4,
-                                                    overflow: TextOverflow.ellipsis,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
                                                   ),
                                                 ),
                                               )
                                             : Padding(
-                                                padding: EdgeInsets.symmetric(horizontal: 4.0),
+                                                padding: EdgeInsets.symmetric(
+                                                    horizontal: 4.0),
                                                 child: PlaceholderLines(
                                                   count: 4,
                                                   lineHeight: 10.0,
@@ -137,7 +131,9 @@ class SheetInfoView extends GetView<SheetInfoController> {
                                         child: ListTile(
                                           title: Text(
                                             '${controller.result.value.creator.nickname}',
-                                            style: TextStyle(color: Theme.of(Get.context).accentColor),
+                                            style: TextStyle(
+                                                color: Theme.of(Get.context)
+                                                    .accentColor),
                                           ),
                                           subtitle: Text(
                                             '${controller.result.value.creator.signature}',
@@ -147,7 +143,8 @@ class SheetInfoView extends GetView<SheetInfoController> {
                                         ),
                                       )
                                     : Padding(
-                                        padding: EdgeInsets.symmetric(horizontal: 4.0),
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 4.0),
                                         child: PlaceholderLines(
                                           count: 4,
                                           lineHeight: 10.0,
@@ -183,7 +180,8 @@ class SheetInfoView extends GetView<SheetInfoController> {
               ? LoadingView.buildGeneralLoadingView()
               : InkWell(
                   child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 2.0, vertical: 5.0),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 2.0, vertical: 5.0),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
@@ -191,11 +189,13 @@ class SheetInfoView extends GetView<SheetInfoController> {
                           margin: EdgeInsets.only(right: 5.0),
                           height: 50.0,
                           alignment: Alignment.center,
-                          constraints: BoxConstraints(maxWidth: 40, minHeight: 30.0),
+                          constraints:
+                              BoxConstraints(maxWidth: 40, minHeight: 30.0),
                           child: Text(
                             '${index + 1}',
                             textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 16.0, color: Colors.grey[500]),
+                            style: TextStyle(
+                                fontSize: 16.0, color: Colors.grey[500]),
                           ),
                         ),
                         Expanded(
@@ -204,12 +204,22 @@ class SheetInfoView extends GetView<SheetInfoController> {
                             Container(
                               height: 25,
                               alignment: Alignment.centerLeft,
-                              child: Text(controller.result.value.tracks[index].name, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 16.0)),
+                              child: Text(
+                                  controller.result.value.tracks[index].name,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(fontSize: 16.0)),
                             ),
                             Container(
                               height: 25,
                               alignment: Alignment.centerLeft,
-                              child: Text(controller.result.value.tracks[index].ar[0].name, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14.0, color: Colors.grey[500])),
+                              child: Text(
+                                  controller
+                                      .result.value.tracks[index].ar[0].name,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                      fontSize: 14.0, color: Colors.grey[500])),
                             )
                           ],
                         )),
@@ -226,7 +236,9 @@ class SheetInfoView extends GetView<SheetInfoController> {
                   onTap: () => controller.playSong(index),
                 );
         },
-        childCount: controller.result.value == null ? 20 : controller.result.value.tracks.length,
+        childCount: controller.result.value == null
+            ? 20
+            : controller.result.value.tracks.length,
       ),
     );
   }

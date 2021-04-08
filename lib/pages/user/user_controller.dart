@@ -1,12 +1,10 @@
-import 'package:bujuan/entity/fm_entity.dart';
 import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/global/global_controller.dart';
+import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/utils/net_util.dart';
-import 'package:bujuan/utils/sp_util.dart';
 import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:starry/music_item.dart';
-import 'package:starry/starry.dart';
 import 'package:starry/starry.dart';
 
 class UserController extends GetxController {
@@ -29,29 +27,30 @@ class UserController extends GetxController {
 
   ///获取用户歌单
   getUserSheet({forcedRefresh = false}) async {
-    var userId = SpUtil.getString(USER_ID_SP, defValue: null);
-    var userOrderEntity =
-        await NetUtils().getUserPlayList(userId, forcedRefresh: forcedRefresh);
-    if (userOrderEntity != null && userOrderEntity.code == 200) {
-      var list = userOrderEntity.playlist;
-      if (list.length > 0) {
-        lovePlayList
-          ..clear()
-          ..add(list[0]);
-        list.removeAt(0);
-        var item = list.where((element) => element.userId == num.parse(userId));
-        createPlayList
-          ..clear()
-          ..addAll(item);
-        var where =
-            list.where((element) => element.userId != num.parse(userId));
-        collectPlayList
-          ..clear()
-          ..addAll(where);
+    var userId = HomeController.to.userProfileEntity.value.profile.userId;
+    NetUtils()
+        .getUserPlayList(userId, forcedRefresh: forcedRefresh)
+        .then((userOrderEntity) {
+      if (userOrderEntity != null && userOrderEntity.code == 200) {
+        var list = userOrderEntity.playlist;
+        if (list.length > 0) {
+          lovePlayList
+            ..clear()
+            ..add(list[0]);
+          list.removeAt(0);
+          var item = list.where((element) => element.userId == userId);
+          createPlayList
+            ..clear()
+            ..addAll(item);
+          var where = list.where((element) => element.userId != userId);
+          collectPlayList
+            ..clear()
+            ..addAll(where);
+        }
       }
-    }
-    isLoad = true;
-    refreshController.refreshCompleted();
+      isLoad = true;
+      refreshController.refreshCompleted();
+    });
   }
 
   Future<List<MusicItem>> getFM() async {

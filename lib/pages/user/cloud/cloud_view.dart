@@ -1,5 +1,6 @@
 import 'package:bujuan/global/global_loding_view.dart';
 import 'package:bujuan/pages/music_bottom_bar/music_bottom_bar_view.dart';
+import 'package:bujuan/pages/play_widget/play_widget_view.dart';
 import 'package:bujuan/widget/over_scroll.dart';
 import 'package:bujuan/pages/play_view/default_view.dart';
 import 'package:flutter/material.dart';
@@ -17,19 +18,7 @@ class CloudView extends GetView<CloudController>{
 
 
   Widget _buildCloudView(context){
-    return Scaffold(
-      body: WeSlide(
-        backgroundColor: Theme.of(Get.context).primaryColor,
-        controller: controller.weSlideController,
-        panelMaxSize: MediaQuery.of(Get.context).size.height,
-        panelMinSize: 62.0,
-        body: _buildContent(context),
-        parallax: true,
-        panel: DefaultView(weSlideController: controller.weSlideController),
-        panelHeader: MusicBottomBarView(
-            weSlideController: controller.weSlideController),
-      ),
-    );
+    return PlayWidgetView( _buildContent(context));
   }
 
   Widget _buildContent(context){

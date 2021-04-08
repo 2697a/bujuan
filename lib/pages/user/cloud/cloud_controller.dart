@@ -9,7 +9,6 @@ import 'package:starry/starry.dart';
 import 'package:we_slide/we_slide.dart';
 
 class CloudController extends GetxController {
-  WeSlideController weSlideController;
   RefreshController refreshController;
   var clouds = [].obs;
   var loadPageIndex = 0.obs;
@@ -17,7 +16,6 @@ class CloudController extends GetxController {
 
   @override
   void onInit() {
-    weSlideController = WeSlideController();
     refreshController = RefreshController();
     super.onInit();
   }
@@ -25,13 +23,6 @@ class CloudController extends GetxController {
   @override
   void onReady() {
     _getCloudData();
-    weSlideController.addListener(() {
-      if (weSlideController.isOpened) {
-        Get.find<HomeController>().resumeStream();
-      } else {
-        Get.find<HomeController>().pauseStream();
-      }
-    });
     super.onReady();
   }
 
@@ -72,7 +63,6 @@ class CloudController extends GetxController {
   @override
   void onClose() {
     refreshController?.dispose();
-    weSlideController=null;
     super.onClose();
   }
 

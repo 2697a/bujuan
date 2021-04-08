@@ -26,7 +26,7 @@ class SettingController extends GetxController {
       if (!isSystemTheme.value) {
         isSystemTheme.value = true;
         SpUtil.putBool(IS_SYSTEM_THEME_SP, true);
-        Get.find<HomeController>()
+       HomeController.to
             .isSystemTheme
             .value = true;
         Get.find<HomeController>().didChangePlatformBrightness();

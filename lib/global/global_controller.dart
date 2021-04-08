@@ -1,32 +1,49 @@
-
 import 'package:bujuan/entity/lyric_entity.dart';
 import 'package:bujuan/global/global_config.dart';
+import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/utils/net_util.dart';
+import 'package:bujuan/utils/sp_util.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:starry/music_item.dart';
 import 'package:starry/starry.dart';
+import 'package:we_slide/we_slide.dart';
 
-
-class GlobalController extends GetxController {
-  var playState = PlayState.STOP.obs;
-  var playPos = 0.obs;
-  var playMode = 1.obs;
-  var song = MusicItem(musicId: '-99', duration: 6000, title: '暂无歌曲', artist: '暂无', iconUri: 'https://pic1.zhimg.com/80/v2-7ff2d917aa926cfbf2e8b85b035e2563_1440w.jpg').obs;
-  var lyric = LyricEntity().obs;
-  var playList = [].obs;
-  var playListMode = PlayListMode.SONG.obs;
+class GlobalController extends SuperController {
+  final playState = PlayState.STOP.obs;
+  final playPos = 0.obs;
+  final playMode = 1.obs;
+  final song = MusicItem(
+          musicId: '-99',
+          duration: 6000,
+          title: '暂无歌曲',
+          artist: '暂无',
+          iconUri:
+              'https://pic1.zhimg.com/80/v2-7ff2d917aa926cfbf2e8b85b035e2563_1440w.jpg')
+      .obs;
+  final lyric = LyricEntity().obs;
+  final playList = [].obs;
+  final playListMode = PlayListMode.SONG.obs;
+  final scroller = false.obs;
   ScrollController scrollController;
+
+  static GlobalController get to => Get.find();
 
   @override
   void onInit() {
     lyric.value = null;
     scrollController = ScrollController();
-    // var string = SpUtil.getString(LAST_PLAY_INFO, defValue: null);
-    // if (string != null) {
-    //   song.value = MusicItem.fromJson(jsonDecode(string));
-    // }
     super.onInit();
+  }
+
+  void addSliderListener(weSlideController) {
+    weSlideController.addListener(() {
+      if (weSlideController.isOpened) {
+        Get.find<HomeController>().resumeStream();
+      } else {
+        Get.find<HomeController>().pauseStream();
+      }
+    });
   }
 
   ///获取当前播放歌曲
@@ -37,7 +54,8 @@ class GlobalController extends GetxController {
 
   ///滚动到指定位置
   scrollToIndex() {
-    var indexWhere = playList.indexWhere((element) => element.musicId == song.value.musicId);
+    var indexWhere =
+        playList.indexWhere((element) => element.musicId == song.value.musicId);
     if (indexWhere > -1) scrollController?.jumpTo(indexWhere * 52.0);
   }
 
@@ -103,9 +121,37 @@ class GlobalController extends GetxController {
     await Starry.changeSongSeek(seek);
   }
 
+  changeBottomState() {
+    scroller.value = !scroller.value;
+    HomeController.to.scroller.value = scroller.value;
+    HomeController.to.pageController.jumpToPage(1);
+    HomeController.to.currentIndex.value = 1;
+    SpUtil.putBool(OPEN_SCROLL, scroller.value);
+  }
+
   @override
   void onClose() {
     scrollController?.dispose();
     super.onClose();
+  }
+
+  @override
+  void onDetached() {
+    print('onDetached');
+  }
+
+  @override
+  void onInactive() {
+    print('onInactive');
+  }
+
+  @override
+  void onPaused() {
+    print('onPaused');
+  }
+
+  @override
+  void onResumed() {
+    print('onResumed');
   }
 }

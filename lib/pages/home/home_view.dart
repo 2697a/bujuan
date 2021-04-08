@@ -1,15 +1,10 @@
-import 'dart:ui';
-
-import 'package:bujuan/pages/music_bottom_bar/music_bottom_bar_view.dart';
+import 'package:bujuan/pages/play_widget/play_widget_view.dart';
 import 'package:bujuan/widget/over_scroll.dart';
-import 'package:bujuan/pages/play_view/default_view.dart';
 import 'package:bujuan/widget/bottom_bar/custom_navigation_bar_item.dart';
 import 'package:bujuan/widget/bottom_bar/custome_navigation_bar.dart';
 import 'package:bujuan/widget/preload_page_view.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:we_slide/we_slide.dart';
 
 import 'home_controller.dart';
 
@@ -24,7 +19,7 @@ class HomeView extends GetView<HomeController> {
       padding: EdgeInsets.symmetric(horizontal: 5.0),
       child: ScrollConfiguration(
           behavior: OverScrollBehavior(),
-          child: PreloadPageView.builder(
+          child: Obx(()=>PreloadPageView.builder(
             onPageChanged: (index) => controller.onPageChange(index),
             controller: controller.pageController,
             physics: controller.scroller.value
@@ -33,64 +28,12 @@ class HomeView extends GetView<HomeController> {
             preloadPagesCount: 2,
             itemBuilder: (context, index) => controller.pages[index],
             itemCount: controller.pages.length,
-          )),
+          ))),
     );
   }
 
   Widget _buildHomeView() {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: Obx(() => WeSlide(
-            backgroundColor: Theme.of(Get.context).primaryColor,
-            appBar: AppBar(
-              leading: IconButton(
-                icon: Hero(
-                    tag: 'avatar',
-                    child: Obx(() => Card(
-                          margin: EdgeInsets.all(0.0),
-                          shape: RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadiusDirectional.circular(30.0)),
-                          clipBehavior: Clip.antiAlias,
-                          child: controller.userProfileEntity.value != null
-                              ? CachedNetworkImage(
-                                  fit: BoxFit.cover,
-                                  imageUrl: controller.userProfileEntity.value
-                                      .profile.avatarUrl,
-                                  height: 34.0,
-                                  width: 34.0,
-                                )
-                              : Image.asset('assets/images/logo.png',
-                                  width: 34.0, height: 34.0),
-                        ))),
-                onPressed: () => controller.goToProfile(),
-              ),
-              title: Text('Bujuan'),
-              actions: [
-                IconButton(
-                  icon: Icon(Icons.search),
-                  onPressed: () => Get.toNamed('/search'),
-                ),
-                IconButton(
-                  icon: Icon(Icons.settings),
-                  onPressed: () => Get.toNamed('/setting'),
-                )
-              ],
-            ),
-            appBarHeight: 56.0 + MediaQueryData.fromWindow(window).padding.top,
-            controller: controller.weSlideController,
-            panelMaxSize: MediaQuery.of(Get.context).size.height,
-            panelMinSize: controller.scroller.value ? 62.0 : 118.0,
-            overlayColor: Colors.transparent,
-            body: _buildContent(),
-            parallax: true,
-            panel: DefaultView(weSlideController: controller.weSlideController),
-            panelHeader: MusicBottomBarView(
-                weSlideController: controller.weSlideController),
-            footer:
-                controller.scroller.value ? null : _buildBottomNavigationBar(),
-          )),
-    );
+    return PlayWidgetView(_buildContent(),isHome: true);
   }
 
   //底部导航栏

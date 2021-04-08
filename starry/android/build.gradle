@@ -53,6 +53,7 @@ dependencies {
     //noinspection GradleDependency
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 //    implementation 'com.lzx:StarrySkyX:2.5.8'
+    implementation 'com.github.jrfeng.snow:exo:1.0.4'
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'com.github.jrfeng.snow:player:1.0.9'

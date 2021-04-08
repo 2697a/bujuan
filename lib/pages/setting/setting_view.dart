@@ -1,3 +1,4 @@
+import 'package:bujuan/global/global_controller.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/pages/setting/setting_controller.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -106,8 +107,8 @@ class SettingView extends GetView<SettingController> {
                           child: SwitchListTile(
                         title: Text('开启主屏滑动'),
                         subtitle: Text('隐藏底部导航栏(更多空间)'),
-                        value: Get.find<HomeController>().scroller.value,
-                        onChanged: (value) => Get.find<HomeController>().changeBottomState(),
+                        value: HomeController.to.scroller.value,
+                        onChanged: (value) => GlobalController.to.changeBottomState(),
                       )),
                       SliverToBoxAdapter(
                           child: SwitchListTile(

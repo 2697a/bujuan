@@ -8,7 +8,6 @@ import 'package:bujuan/global/global_theme.dart';
 import 'package:bujuan/pages/find/find_view.dart';
 import 'package:bujuan/pages/music/music_controller.dart';
 import 'package:bujuan/pages/music/music_view.dart';
-import 'package:bujuan/pages/search/search_view.dart';
 import 'package:bujuan/pages/top/top_controller.dart';
 import 'package:bujuan/pages/top/top_view.dart';
 import 'package:bujuan/pages/user/user_controller.dart';
@@ -34,6 +33,8 @@ class HomeController extends SuperController {
   var login = false.obs;
   var scroller = false.obs;
   final pages = [UserView(), FindView(), TopView(), MusicView()];
+
+  static HomeController get to => Get.find();
 
   @override
   void onInit() {
@@ -95,8 +96,12 @@ class HomeController extends SuperController {
       goToLogin();
       return;
     }
-    pageController.jumpToPage(index);
-    onPageChange(index);
+    if(index<=3){
+      pageController.jumpToPage(index);
+      onPageChange(index);
+    }else{
+      Get.toNamed('/search');
+    }
   }
 
   //监听播放音乐状态以及进度！
@@ -104,13 +109,11 @@ class HomeController extends SuperController {
     ///歌曲发生变化
     Starry.onPlayerSongChanged.listen((PlayMusicInfo playMusicInfo) async {
       Get.find<GlobalController>().song.value = playMusicInfo.musicItem;
-      var lyricEntity =
-          await NetUtils().getMusicLyric(playMusicInfo.musicItem.musicId);
-      Get.find<GlobalController>().lyric.value = lyricEntity;
-
-      var playListMode = Get.find<GlobalController>().playListMode.value;
-      var playList = Get.find<GlobalController>().playList;
-
+      NetUtils()
+          .getMusicLyric(playMusicInfo.musicItem.musicId)
+          .then((lyricEntity) => GlobalController.to.lyric.value = lyricEntity);
+      var playListMode = GlobalController.to.playListMode.value;
+      var playList = GlobalController.to.playList;
       ///fm播放到倒数第二首了，删除之前所有的歌曲，添加新的歌曲
       if (playListMode == PlayListMode.FM &&
           playMusicInfo.position == playList.length - 2) {
@@ -125,27 +128,25 @@ class HomeController extends SuperController {
 
     ///播放状态发生变化
     Starry.onPlayerStateChanged.listen((PlayState playState) {
-      Get.find<GlobalController>().playState.value = playState;
-      if (playState == PlayState.ERROR)
-        Get.find<GlobalController>().skipToNext();
+      GlobalController.to.playState.value = playState;
+      if (playState == PlayState.ERROR) GlobalController.to.skipToNext();
     });
 
     ///播放列表发生变化
     Starry.onPlayerSongListChanged.listen((PlayListInfo playListInfo) async {
-      Get.find<GlobalController>().addPlayList(playListInfo.playlist);
+      GlobalController.to.addPlayList(playListInfo.playlist);
       var currSong = playListInfo.playlist[playListInfo.position];
-      Get.find<GlobalController>().song.value = currSong;
+      GlobalController.to.song.value = currSong;
       var lyric = Get.find<GlobalController>().lyric.value;
-      if (lyric == null) {
-        var lyricEntity = await NetUtils().getMusicLyric(currSong.musicId);
-        Get.find<GlobalController>().lyric.value = lyricEntity;
-      }
+      if (lyric == null)
+        NetUtils().getMusicLyric(currSong.musicId).then(
+            (lyricEntity) => GlobalController.to.lyric.value = lyricEntity);
     });
 
     ///b
     Starry.onPlayerModeChanged.listen((value) {
       if (value != null) {
-        Get.find<GlobalController>().playMode.value = value;
+        GlobalController.to.playMode.value = value;
       }
     });
   }
@@ -224,8 +225,8 @@ class HomeController extends SuperController {
         userController.getUserSheet();
       } else if (index == 2 && !topController.isLoad) {
         topController.getData();
-      }else if (index == 3) {
-        Get.find<MusicController>().getAllArtists();
+      } else if (index == 3) {
+        // Get.find<MusicController>().getAllArtists();
       }
       // });
     }
