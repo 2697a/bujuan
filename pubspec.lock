@@ -497,6 +497,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.2.19"
+  titled_navigation_bar:
+    dependency: "direct main"
+    description:
+      name: titled_navigation_bar
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "4.1.0"
   typed_data:
     dependency: transitive
     description:

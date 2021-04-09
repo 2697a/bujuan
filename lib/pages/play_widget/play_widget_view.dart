@@ -4,7 +4,6 @@ import 'package:bujuan/global/global_controller.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/pages/play_view/lyric_view.dart';
 import 'package:bujuan/pages/play_view/play_list_view.dart';
-import 'package:bujuan/widget/bottom_bar/bottom_navy_bar.dart';
 import 'package:bujuan/widget/bottom_bar/custom_navigation_bar_item.dart';
 import 'package:bujuan/widget/bottom_bar/custome_navigation_bar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -25,54 +24,62 @@ class PlayWidgetView extends GetView<GlobalController> {
   Widget build(BuildContext context) {
     controller.addSliderListener(weSlideController);
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: isHome
           ? Obx(() => WeSlide(
-        backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          leading: IconButton(
-            icon: Hero(
-                tag: 'avatar',
-                child: Obx(() => Card(
-                  margin: EdgeInsets.all(0.0),
-                  shape: RoundedRectangleBorder(
-                      borderRadius:
-                      BorderRadiusDirectional.circular(30.0)),
-                  clipBehavior: Clip.antiAlias,
-                  child: HomeController.to.userProfileEntity.value != null
-                      ? CachedNetworkImage(
-                    fit: BoxFit.cover,
-                    imageUrl: HomeController.to.userProfileEntity.value
-                        .profile.avatarUrl,
-                    height: 34.0,
-                    width: 34.0,
-                  )
-                      : Image.asset('assets/images/logo.png',
-                      width: 34.0, height: 34.0),
-                ))),
-            onPressed: () => HomeController.to.goToProfile(),
-          ),
-          title: Text('Bujuan'),
-          actions: [
-            IconButton(
-              icon: Icon(Icons.search),
-              onPressed: () => Get.toNamed('/search'),
-            ),
-            IconButton(
-              icon: Icon(Icons.settings),
-              onPressed: () => Get.toNamed('/setting'),
-            )
-          ],
-        ),
-        appBarHeight: 56.0 + MediaQueryData.fromWindow(window).padding.top,
-        controller: weSlideController,
-        panelMaxSize: MediaQuery.of(Get.context).size.height,
-        panelMinSize: controller.scroller.value ? 62.0 : 118.0,
-        overlayColor: Colors.transparent,
+                backgroundColor: Colors.transparent,
+                appBar: AppBar(
+                  leading: IconButton(
+                    icon: Hero(
+                        tag: 'avatar',
+                        child: Obx(() => Card(
+                              margin: EdgeInsets.all(0.0),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadiusDirectional.circular(30.0)),
+                              clipBehavior: Clip.antiAlias,
+                              child:
+                                  HomeController.to.userProfileEntity.value !=
+                                          null
+                                      ? CachedNetworkImage(
+                                          fit: BoxFit.cover,
+                                          imageUrl: HomeController
+                                              .to
+                                              .userProfileEntity
+                                              .value
+                                              .profile
+                                              .avatarUrl,
+                                          height: 34.0,
+                                          width: 34.0,
+                                        )
+                                      : Image.asset('assets/images/logo.png',
+                                          width: 34.0, height: 34.0),
+                            ))),
+                    onPressed: () => HomeController.to.goToProfile(),
+                  ),
+                  title: Text('Bujuan'),
+                  actions: [
+                    IconButton(
+                      icon: Icon(Icons.search),
+                      onPressed: () => Get.toNamed('/search'),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.settings),
+                      onPressed: () => Get.toNamed('/setting'),
+                    )
+                  ],
+                ),
+                appBarHeight:
+                    56.0 + MediaQueryData.fromWindow(window).padding.top,
+                controller: weSlideController,
+                panelMaxSize: MediaQuery.of(Get.context).size.height,
+                panelMinSize: HomeController.to.scroller.value ? 62.0 : 118.0,
+                overlayColor: Colors.transparent,
                 body: widget,
                 parallax: true,
                 panel: _buildPlayView(),
                 panelHeader: _buildBottomBar(),
-                footer: controller.scroller.value
+                footer: HomeController.to.scroller.value
                     ? null
                     : _buildBottomNavigationBar(),
               ))
@@ -208,11 +215,15 @@ class PlayWidgetView extends GetView<GlobalController> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            IconButton(
+            Obx(()=>IconButton(
                 icon: Icon(
-                  Icons.favorite_border,
+                  Icons.favorite,
+                  color: HomeController.to.likeSongs
+                      .contains(controller.song.value.musicId)
+                      ? Colors.red
+                      : Colors.grey,
                 ),
-                onPressed: () {}),
+                onPressed: () =>controller.likeOrUnLike())),
             IconButton(
                 icon: Icon(
                   Icons.skip_previous,
@@ -443,12 +454,9 @@ class PlayWidgetView extends GetView<GlobalController> {
         ));
   }
 
-
-
   //底部导航栏
 
   Widget _buildBottomNavigationBar() {
-
     // return TitledBottomNavigationBar(
     //   enableShadow: false,
     //     currentIndex: HomeController.to.currentIndex.value, // Use this to update the Bar giving a position

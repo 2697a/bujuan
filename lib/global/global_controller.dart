@@ -1,6 +1,7 @@
 import 'package:bujuan/entity/lyric_entity.dart';
 import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
+import 'package:bujuan/pages/user/user_controller.dart';
 import 'package:bujuan/utils/net_util.dart';
 import 'package:bujuan/utils/sp_util.dart';
 import 'package:flutter/cupertino.dart';
@@ -21,10 +22,9 @@ class GlobalController extends SuperController {
           iconUri:
               'https://pic1.zhimg.com/80/v2-7ff2d917aa926cfbf2e8b85b035e2563_1440w.jpg')
       .obs;
-  final lyric = LyricEntity().obs;
+  final lyric = LyricEntity().obs; //音质
   final playList = [].obs;
   final playListMode = PlayListMode.SONG.obs;
-  final scroller = false.obs;
   ScrollController scrollController;
 
   static GlobalController get to => Get.find();
@@ -106,6 +106,25 @@ class GlobalController extends SuperController {
     Starry.setPlayMode(value);
   }
 
+  likeOrUnLike() {
+    var contains = HomeController.to.likeSongs.contains(song.value.musicId);
+    NetUtils().likeOrUnlike(song.value.musicId, !contains).then((value) {
+      ///操作成功
+      if (value) {
+        if (contains) {
+          ///不喜欢成功
+          HomeController.to.likeSongs.remove(song.value.musicId);
+        } else {
+          ///喜欢成功
+          HomeController.to.likeSongs.add(song.value.musicId);
+        }
+        UserController.to.getUserSheet(forcedRefresh: true);
+        SpUtil.putStringList(
+            LIKE_SONGS, HomeController.to.likeSongs.toList().cast<String>());
+      }
+    });
+  }
+
   ///上一首
   skipToPrevious() async {
     await Starry.skipToPrevious();
@@ -119,14 +138,6 @@ class GlobalController extends SuperController {
   ///播放跳转
   seekTo(int seek) async {
     await Starry.changeSongSeek(seek);
-  }
-
-  changeBottomState() {
-    scroller.value = !scroller.value;
-    HomeController.to.scroller.value = scroller.value;
-    HomeController.to.pageController.jumpToPage(1);
-    HomeController.to.currentIndex.value = 1;
-    SpUtil.putBool(OPEN_SCROLL, scroller.value);
   }
 
   @override

@@ -1,6 +1,7 @@
 import 'package:bujuan/entity/user_order_entity.dart';
 import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/global/global_controller.dart';
+import 'package:bujuan/utils/net_util.dart';
 import 'package:bujuan/widget/over_scroll.dart';
 import 'package:bujuan/pages/user/user_controller.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -31,14 +32,14 @@ class UserView extends GetView<UserController> {
                 SliverToBoxAdapter(
                   child: ListTile(
                     title: Text('云盘'),
-                    subtitle: Text('data'),
+                    subtitle: Text('我的云盘'),
                     onTap: () => Get.toNamed('/cloud'),
                   ),
                 ),
                 SliverToBoxAdapter(
                   child: ListTile(
                     title: Text('私人FM'),
-                    subtitle: Text('data'),
+                    subtitle: Text('点击播放'),
                     onTap: () {
                       if (Get.find<GlobalController>().playListMode.value ==
                           PlayListMode.SONG) controller.getFM();
@@ -50,7 +51,7 @@ class UserView extends GetView<UserController> {
                   delegate: SliverChildBuilderDelegate(
                     (BuildContext context, int index) {
                       return controller.lovePlayList.length > 0
-                          ? _buildUserSheetItem(controller.lovePlayList[index])
+                          ? _buildUserSheetItem(controller.lovePlayList[index],isLike: true)
                           : _loadUserSheetView();
                     },
                     childCount: controller.lovePlayList.length > 0
@@ -115,7 +116,7 @@ class UserView extends GetView<UserController> {
   }
 
   ///歌单itemView
-  Widget _buildUserSheetItem(UserOrderPlaylist userOrderPlaylist) {
+  Widget _buildUserSheetItem(UserOrderPlaylist userOrderPlaylist,{isLike = false}) {
     return InkWell(
       child: Container(
         height: 60.0,
@@ -158,6 +159,19 @@ class UserView extends GetView<UserController> {
                 )
               ],
             )),
+            Visibility(child:Card(
+              child: InkWell(child: Container(
+                padding: EdgeInsets.symmetric(vertical: 6.0,horizontal: 8.0),
+                child:  Wrap(
+                  children: [
+                    Icon(Icons.favorite,color: Colors.red,),
+                    Padding(padding: EdgeInsets.symmetric(horizontal: 5.0)),
+                    Text('心动模式')
+                  ],
+                ),
+              ),onTap: ()=>controller.playHeartSong(userOrderPlaylist.id),),
+            ),visible: isLike),
+            Padding(padding: EdgeInsets.symmetric(horizontal: 4.0))
           ],
         ),
       ),

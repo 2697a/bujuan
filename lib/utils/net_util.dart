@@ -1,9 +1,16 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:bujuan/api/netease_cloud_music.dart';
 import 'package:bujuan/entity/ablum_newest.dart';
 import 'package:bujuan/entity/fm_entity.dart';
+import 'package:bujuan/entity/heart.dart';
+import 'package:bujuan/entity/search_album.dart';
+import 'package:bujuan/entity/search_hot_entity.dart';
+import 'package:bujuan/entity/search_mv_entity.dart';
+import 'package:bujuan/entity/search_sheet_entity.dart';
+import 'package:bujuan/entity/search_singer_entity.dart';
 import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/main.dart';
 import 'package:bujuan/entity/banner_entity.dart';
@@ -22,9 +29,11 @@ import 'package:bujuan/entity/top_entity.dart';
 import 'package:bujuan/entity/user_order_entity.dart';
 import 'package:bujuan/entity/user_profile_entity.dart';
 import 'package:bujuan/utils/bujuan_util.dart';
+import 'package:bujuan/utils/sp_util.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:starry/music_item.dart';
 
 class NetUtils {
   static final NetUtils _netUtils = NetUtils._internal(); //1
@@ -240,7 +249,7 @@ class NetUtils {
   Future<String> getSongUrl(songId) async {
     var songUrl = '';
     var map =
-        await _doHandler('/song/url', param: {'id': songId, 'br': '128000'});
+        await _doHandler('/song/url', param: {'id': songId, 'br': SpUtil.getString(QUALITY, defValue: '128000')});
     if (map != null) songUrl = map['data'][0]['url'];
     return songUrl;
   }
@@ -279,14 +288,28 @@ class NetUtils {
   }
 
   ///搜索// 1: 单曲, 10: 专辑, 100: 歌手, 1000: 歌单, 1002: 用户, 1004: MV, 1006: 歌词, 1009: 电台, 1014: 视频
-  Future<SearchSongEntity> search(content, type) async {
+  Future<dynamic> search(content, type) async {
     var searchData;
     var map =
         await _doHandler('/search', param: {'keywords': content, 'type': type});
-    if (map != null) searchData = SearchSongEntity.fromJson(map);
+    if (map != null) {
+      if(type==1) searchData = SearchSongEntity.fromJson(map);
+      if(type==100) searchData = SearchSingerEntity.fromJson(map);
+      if(type==1000) searchData = SearchSheetEntity.fromJson(map);
+      if(type==1004) searchData = SearchMvEntity.fromJson(map);
+      if(type==10) searchData = SearchAlbumEntity.fromJson(map);
+    }
     return searchData;
   }
 
+  ///获取热搜列表
+  Future<SearchHotEntity> searchList() async {
+    var searchData;
+    var map =
+    await _doHandler('/search/hot/detail');
+    if (map != null) searchData = SearchHotEntity.fromJson(map);
+    return searchData;
+  }
   ///听歌历史
   Future<PlayHistoryEntity> getHistory(uid) async {
     var history;
@@ -352,6 +375,50 @@ class NetUtils {
     return fm;
   }
 
+  ///获取喜欢歌曲列表
+  Future<List<String>> getLikeSongs() async {
+    var likeSongs;
+    var userId = SpUtil.getString(USER_ID_SP, defValue: '');
+    if (!GetUtils.isNullOrBlank(userId)) {
+      var map = await _doHandler('/likelist', param: {'uid': userId});
+      if (map != null) {
+        List<int> data = map['ids'].cast<int>();
+        likeSongs = data.join(',').split(',');
+      }
+    }
+    return likeSongs;
+  }
+  ///喜欢和不喜欢歌曲
+  Future<bool> likeOrUnlike(id,isLike) async {
+    var likeSong = false;
+      var map = await _doHandler('/like', param: {'id': id,'like':'$isLike'});
+      if (map != null&&map['code']==200) {
+       likeSong = true;
+      }
+    return likeSong;
+  }
+
+  ///心动模式
+  Future<List<MusicItem>> getHeart(id,pid) async {
+    List<MusicItem> heartSong = [];
+    var map = await _doHandler('/playmode/intelligence/list', param: {'id': id,'pid':pid});
+    if (map != null) {
+      var heart = Heart.fromJson(map);
+      heart.data.forEach(( track) {
+        MusicItem musicItem = MusicItem(
+          musicId: '${track.songInfo.id}',
+          duration: track.songInfo.dt,
+          iconUri: "${track.songInfo.al.picUrl}",
+          title: track.songInfo.name,
+          uri: '${track.songInfo.id}',
+          artist: track.songInfo.ar[0].name,
+        );
+        heartSong.add(musicItem);
+      });
+    }
+
+    return heartSong;
+  }
 //播放音乐
 // Future setPlayListAndPlayById(List<SongInfo> list, int index, String id) async {
 // var playList = await FlutterStarrySky().getPlayList();

@@ -1,4 +1,5 @@
 import 'package:bujuan/global/global_config.dart';
+import 'package:bujuan/global/global_controller.dart';
 import 'package:bujuan/global/global_theme.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/utils/bujuan_util.dart';
@@ -13,40 +14,53 @@ class SettingController extends GetxController {
   var isDark = Get.isDarkMode.obs;
   var isSystemTheme = true.obs;
   var isIgnoreAudioFocus = false.obs;
+  final quality = '128000'.obs;
 
   @override
+  void onInit() {
+    quality.value = SpUtil.getString(QUALITY, defValue: '128000');
+    super.onInit();
+  }
+  @override
   void onReady() {
-    isIgnoreAudioFocus.value = SpUtil.getBool(IS_IGNORE_AUDIO_FOCUS, defValue: false);
+    isIgnoreAudioFocus.value =
+        SpUtil.getBool(IS_IGNORE_AUDIO_FOCUS, defValue: false);
     isSystemTheme.value = SpUtil.getBool(IS_SYSTEM_THEME_SP, defValue: true);
     super.onReady();
   }
 
-  changeTheme(isSystem, {value}){
+  changeTheme(isSystem, {value}) {
     if (isSystem) {
       if (!isSystemTheme.value) {
         isSystemTheme.value = true;
         SpUtil.putBool(IS_SYSTEM_THEME_SP, true);
-       HomeController.to
-            .isSystemTheme
-            .value = true;
+        HomeController.to.isSystemTheme.value = true;
         Get.find<HomeController>().didChangePlatformBrightness();
       }
     } else {
       isDark.value = value;
       isSystemTheme.value = false;
       SpUtil.putBool(IS_SYSTEM_THEME_SP, false);
-        Get.changeTheme(!value ? lightTheme : darkTheme);
-        Future.delayed(Duration(milliseconds: 300), () {
-          SystemChrome.setSystemUIOverlayStyle(BuJuanUtil.setNavigationBarTextColor(Get.isDarkMode));
-          SpUtil.putBool(IS_DARK_SP, value);
-        });
+      Get.changeTheme(!value ? lightTheme : darkTheme);
+      Future.delayed(Duration(milliseconds: 300), () {
+        SystemChrome.setSystemUIOverlayStyle(
+            BuJuanUtil.setNavigationBarTextColor(Get.isDarkMode));
+        SpUtil.putBool(IS_DARK_SP, value);
+      });
     }
-    Future.delayed(Duration(milliseconds: 300), ()=>Get.back());
+    Future.delayed(Duration(milliseconds: 300), () => Get.back());
   }
 
-  bool isDarkTheme(){
-    return isSystemTheme.value?Get.isPlatformDarkMode:Get.isDarkMode;
+  changeQuality(qualityData) {
+    quality.value = qualityData;
+    SpUtil.putString(QUALITY, qualityData);
+    Get.back();
   }
+
+  bool isDarkTheme() {
+    return isSystemTheme.value ? Get.isPlatformDarkMode : Get.isDarkMode;
+  }
+
   toggleAudioFocus(value) async {
     isIgnoreAudioFocus.value = value;
     var i = await Starry.toggleAudioFocus(value);
@@ -59,16 +73,15 @@ class SettingController extends GetxController {
     Get.defaultDialog(
         radius: 6.0,
         title: '退出登录',
-        content: Padding(padding: EdgeInsets.symmetric(vertical: 20.0), child: Text('退出之后部分功能无法正常使用！')),
+        content: Padding(
+            padding: EdgeInsets.symmetric(vertical: 20.0),
+            child: Text('退出之后部分功能无法正常使用！')),
         textCancel: '迷途知返',
         textConfirm: '一意孤行',
         buttonColor: Colors.transparent,
         onConfirm: () {
           SpUtil.putString(USER_ID_SP, '');
-          Get
-              .find<HomeController>()
-              .login
-              .value = false;
+          Get.find<HomeController>().login.value = false;
           Get.find<HomeController>().changeIndex(1);
           Get.back();
           Get.back();

@@ -14,6 +14,8 @@ class UserController extends GetxController {
   RefreshController refreshController;
   var isLoad = false;
 
+  static UserController get to => Get.find();
+
   @override
   void onInit() {
     refreshController = RefreshController();
@@ -50,6 +52,17 @@ class UserController extends GetxController {
       }
       isLoad = true;
       refreshController.refreshCompleted();
+    });
+  }
+
+  playHeartSong(pid) {
+    NetUtils()
+        .getHeart(HomeController.to.likeSongs[0], pid)
+        .then((List<MusicItem> musics) async {
+      if (musics.length > 0) {
+        //当前歌单未在播放
+        await Starry.playMusic(musics, 0);
+      }
     });
   }
 

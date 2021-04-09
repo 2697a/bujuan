@@ -6,7 +6,6 @@ import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/global/global_controller.dart';
 import 'package:bujuan/global/global_theme.dart';
 import 'package:bujuan/pages/find/find_view.dart';
-import 'package:bujuan/pages/music/music_controller.dart';
 import 'package:bujuan/pages/music/music_view.dart';
 import 'package:bujuan/pages/top/top_controller.dart';
 import 'package:bujuan/pages/top/top_view.dart';
@@ -20,18 +19,17 @@ import 'package:get/get.dart';
 import 'package:bujuan/widget/preload_page_view.dart';
 import 'package:starry/music_item.dart';
 import 'package:starry/starry.dart';
-import 'package:we_slide/we_slide.dart';
 
 class HomeController extends SuperController {
-  var currentIndex = 1.obs;
-  var currentIndex1 = 1.obs;
-  var userProfileEntity = UserProfileEntity().obs;
-  var isSystemTheme = true.obs;
+  final currentIndex = 1.obs;
+  final currentIndex1 = 1.obs;
+  final userProfileEntity = UserProfileEntity().obs;
+  final isSystemTheme = true.obs;
   PreloadPageController pageController;
-  WeSlideController weSlideController;
   StreamSubscription _streamSubscription;
-  var login = false.obs;
-  var scroller = false.obs;
+  final login = false.obs;
+  final scroller = false.obs;
+  final likeSongs = [].obs;
   final pages = [UserView(), FindView(), TopView(), MusicView()];
 
   static HomeController get to => Get.find();
@@ -41,7 +39,6 @@ class HomeController extends SuperController {
     userProfileEntity.value = null;
     pageController = PreloadPageController(initialPage: currentIndex.value);
     isSystemTheme.value = SpUtil.getBool(IS_SYSTEM_THEME_SP, defValue: true);
-    weSlideController = WeSlideController();
     login.value = !GetUtils.isNullOrBlank(SpUtil.getString(USER_ID_SP));
     scroller.value = SpUtil.getBool(OPEN_SCROLL, defValue: false);
     super.onInit();
@@ -50,18 +47,27 @@ class HomeController extends SuperController {
 
   @override
   void onReady() {
+    ///获取歌曲播放地址
     Starry.init(url: SongUrl(getSongUrl: (id) async {
       return await NetUtils().getSongUrl(id);
     }));
     refreshLogin();
     _listenerStarry();
-    weSlideController.addListener(() {
-      if (weSlideController.isOpened) {
-        resumeStream();
-      } else {
-        pauseStream();
-      }
-    });
+    var likeSong = SpUtil.getStringList(LIKE_SONGS, defValue: []);
+    if (likeSong.length > 0) {
+      ///之前获取过了
+      likeSongs
+        ..clear()
+        ..addAll(likeSong);
+    } else {
+      ///未获取过喜欢的歌曲
+      NetUtils().getLikeSongs().then((value) {
+        SpUtil.putStringList(LIKE_SONGS, value);
+        likeSongs
+          ..clear()
+          ..addAll(value);
+      });
+    }
     super.onReady();
   }
 
@@ -87,7 +93,6 @@ class HomeController extends SuperController {
   void onClose() {
     _streamSubscription?.cancel();
     _streamSubscription = null;
-    weSlideController = null;
     super.onClose();
   }
 
@@ -96,10 +101,10 @@ class HomeController extends SuperController {
       goToLogin();
       return;
     }
-    if(index<=3){
+    if (index <= 3) {
       pageController.jumpToPage(index);
       onPageChange(index);
-    }else{
+    } else {
       Get.toNamed('/search');
     }
   }
@@ -111,9 +116,12 @@ class HomeController extends SuperController {
       Get.find<GlobalController>().song.value = playMusicInfo.musicItem;
       NetUtils()
           .getMusicLyric(playMusicInfo.musicItem.musicId)
-          .then((lyricEntity) => GlobalController.to.lyric.value = lyricEntity);
+          .then((lyricEntity) {
+        GlobalController.to.lyric.value = lyricEntity;
+      });
       var playListMode = GlobalController.to.playListMode.value;
       var playList = GlobalController.to.playList;
+
       ///fm播放到倒数第二首了，删除之前所有的歌曲，添加新的歌曲
       if (playListMode == PlayListMode.FM &&
           playMusicInfo.position == playList.length - 2) {
@@ -139,8 +147,9 @@ class HomeController extends SuperController {
       GlobalController.to.song.value = currSong;
       var lyric = Get.find<GlobalController>().lyric.value;
       if (lyric == null)
-        NetUtils().getMusicLyric(currSong.musicId).then(
-            (lyricEntity) => GlobalController.to.lyric.value = lyricEntity);
+        NetUtils().getMusicLyric(currSong.musicId).then((lyricEntity) {
+          GlobalController.to.lyric.value = lyricEntity;
+        });
     });
 
     ///b
@@ -171,7 +180,7 @@ class HomeController extends SuperController {
       await NetUtils().refreshLogin();
       // if (loginEntity != null && loginEntity['code'] == 200) {
       //刷新成功
-      await getUserProfile(SpUtil.getString(USER_ID_SP, defValue: null));
+      getUserProfile(SpUtil.getString(USER_ID_SP, defValue: ''));
       // } else {
       //   ///太久未登录，重新登录吧！！！！！
       // }

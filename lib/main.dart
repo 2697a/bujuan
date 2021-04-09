@@ -10,6 +10,8 @@ import 'package:bujuan/pages/play_view/music_talk/music_talk_view.dart';
 import 'package:bujuan/pages/profile/profile_binding.dart';
 import 'package:bujuan/pages/profile/profile_view.dart';
 import 'package:bujuan/pages/search/search_binding.dart';
+import 'package:bujuan/pages/search/search_detail/search_details_binding.dart';
+import 'package:bujuan/pages/search/search_detail/search_dettails_view.dart';
 import 'package:bujuan/pages/search/search_view.dart';
 import 'package:bujuan/pages/setting/setting_binding.dart';
 import 'package:bujuan/pages/setting/setting_view.dart';
@@ -29,7 +31,6 @@ import 'package:flutter_music_query/flutter_music_query.dart';
 import 'package:get/get.dart';
 import 'package:get/get_utils/src/platform/platform.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'api/answer.dart';
 import 'api/netease_cloud_music.dart';
@@ -77,6 +78,7 @@ main(List<String> args) async {
       GetPage(name: '/music_talk', page: () => MusicTalkView(), binding: MusicTalkBinding()),
       GetPage(name: '/all_song', page: () => AllSongView(), binding: AllSongBinding()),
       GetPage(name: '/search', page: () => SearchView(), binding: SearchBinding()),
+      GetPage(name: '/search_details', page: () => SearchDetailsView(),binding: SearchDetailBinding()),
     ],
   ));
 }

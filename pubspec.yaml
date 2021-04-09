@@ -38,6 +38,7 @@ dependencies:
   progress_state_button: ^1.0.2
   direct_select_flutter: ^1.1.0
   flutter_music_query: ^0.4.0
+  titled_navigation_bar: ^4.1.0
   flutter:
     sdk: flutter
 

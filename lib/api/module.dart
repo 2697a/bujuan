@@ -135,6 +135,7 @@ final handles = <String, Handler>{
   '/related/playlist': related_playlist,
   '/resource/like': resource_like,
   '/search/hot': search_hot,
+  '/search/hot/detail': search_hot_details,
   '/search/multimatch': search_multimatch,
   '/search/suggest': search_suggest,
   '/search': search,
