@@ -6,6 +6,7 @@ import 'package:bujuan/pages/play_view/lyric_view.dart';
 import 'package:bujuan/pages/play_view/play_list_view.dart';
 import 'package:bujuan/widget/bottom_bar/custom_navigation_bar_item.dart';
 import 'package:bujuan/widget/bottom_bar/custome_navigation_bar.dart';
+import 'package:bujuan/widget/bottom_bar/navigation_bar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -500,35 +501,53 @@ class PlayWidgetView extends GetView<GlobalController> {
     //     ),
     //   ],
     // );
-    return CustomNavigationBar(
-      iconSize: 28.0,
-      selectedColor: Theme.of(Get.context).accentColor,
-      strokeColor: Theme.of(Get.context).accentColor.withOpacity(.3),
-      unSelectedColor: Theme.of(Get.context).bottomAppBarColor,
-      elevation: 0.0,
-      backgroundColor: Theme.of(Get.context).canvasColor,
-      items: [
-        CustomNavigationBarItem(
-          icon: Icon(Icons.person_pin),
-          selectedIcon: Icon(Icons.person_pin_rounded),
-        ),
-        CustomNavigationBarItem(
-          icon: Icon(Icons.lightbulb_outline),
-          selectedIcon: Icon(Icons.lightbulb),
-        ),
-        CustomNavigationBarItem(
-          icon: Icon(Icons.whatshot_outlined),
-          selectedIcon: Icon(Icons.whatshot),
-        ),
-        CustomNavigationBarItem(
-          icon: Icon(Icons.music_note_outlined),
-          selectedIcon: Icon(Icons.music_note),
-        ),
-      ],
-      currentIndex: HomeController.to.currentIndex.value,
-      onTap: (index) {
-        HomeController.to.changeIndex(index);
-      },
-    );
+    return TitledBottomNavigationBar(
+      reverse: true,
+      enableShadow: false,
+        currentIndex: HomeController.to.currentIndex.value, // Use this to update the Bar giving a position
+        onTap: (index) {
+          HomeController.to.changeIndex(index);
+        },
+        items: [
+          TitledNavigationBarItem(title: Text('我的'), icon: Icons.nature_people_rounded,backgroundColor: Theme.of(Get.context).primaryColor),
+          TitledNavigationBarItem(
+              title: Text('首页'), icon: Icons.lightbulb,backgroundColor: Theme.of(Get.context).primaryColor),
+          TitledNavigationBarItem(
+              title: Text('排行'), icon: Icons.format_list_numbered_rounded,backgroundColor: Theme.of(Get.context).primaryColor),
+          TitledNavigationBarItem(
+              title: Text('本地'), icon: Icons.album,backgroundColor: Theme.of(Get.context).primaryColor),
+          // TitledNavigationBarItem(
+          //     title: Text('搜索'), icon: Icons.search,backgroundColor: Theme.of(Get.context).primaryColor),
+        ]);
+    // return CustomNavigationBar(
+    //   iconSize: 28.0,
+    //   selectedColor: Theme.of(Get.context).accentColor,
+    //   strokeColor: Theme.of(Get.context).accentColor.withOpacity(.3),
+    //   unSelectedColor: Theme.of(Get.context).bottomAppBarColor,
+    //   elevation: 0.0,
+    //   backgroundColor: Theme.of(Get.context).canvasColor,
+    //   items: [
+    //     CustomNavigationBarItem(
+    //       icon: Icon(Icons.person_pin),
+    //       selectedIcon: Icon(Icons.person_pin_rounded),
+    //     ),
+    //     CustomNavigationBarItem(
+    //       icon: Icon(Icons.lightbulb_outline),
+    //       selectedIcon: Icon(Icons.lightbulb),
+    //     ),
+    //     CustomNavigationBarItem(
+    //       icon: Icon(Icons.whatshot_outlined),
+    //       selectedIcon: Icon(Icons.whatshot),
+    //     ),
+    //     CustomNavigationBarItem(
+    //       icon: Icon(Icons.music_note_outlined),
+    //       selectedIcon: Icon(Icons.music_note),
+    //     ),
+    //   ],
+    //   currentIndex: HomeController.to.currentIndex.value,
+    //   onTap: (index) {
+    //     HomeController.to.changeIndex(index);
+    //   },
+    // );
   }
 }

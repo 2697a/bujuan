@@ -11,36 +11,32 @@ class SearchView extends GetView<SearchController> {
       body: Column(
         children: [
           Card(
-            child: SafeArea(
-              child: Row(
-                children: [
-                  Padding(padding: EdgeInsets.symmetric(horizontal: 3.0)),
-                  IconButton(icon: Icon(Icons.arrow_back), onPressed: ()=>Get.back()),
-                  Padding(padding: EdgeInsets.symmetric(horizontal: 3)),
-                  Expanded(
-                      child: TextField(
-                        autofocus: true,
-                        controller: controller.textEditingController,
-                        textInputAction: TextInputAction.search,
-                        onSubmitted: (value){
-                          Get.toNamed('/search_details',arguments: {'content':'$value'});
-                          controller.textEditingController.text = '';
-                        },
-                        // inputFormatters: [FilteringTextInputFormatter(RegExp('[a-zA-Z]|[0-9.]'), allow: true)],
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: '搜索',
-                        ),
-                      ))
-                ],
-              ),
+            child:Row(
+              children: [
+                Padding(padding: EdgeInsets.symmetric(horizontal: 3.0)),
+                Icon(Icons.search),
+                Padding(padding: EdgeInsets.symmetric(horizontal: 3)),
+                Expanded(
+                    child: TextField(
+                      controller: controller.textEditingController,
+                      textInputAction: TextInputAction.search,
+                      onSubmitted: (value){
+                        Get.toNamed('/search_details',arguments: {'content':'$value'});
+                        controller.textEditingController.text = '';
+                      },
+                      // inputFormatters: [FilteringTextInputFormatter(RegExp('[a-zA-Z]|[0-9.]'), allow: true)],
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: '搜索',
+                      ),
+                    ))
+              ],
             ),
           ),
           Expanded(child: Obx(()=>ListView.builder(itemBuilder: (context,index){
             return InkWell(
               child: Container(
-                margin: EdgeInsets.symmetric(horizontal: 8.0),
-                padding: EdgeInsets.symmetric(horizontal: 12.0,vertical: 15.0),
+                padding: EdgeInsets.symmetric(horizontal: 8.0,vertical: 15.0),
                 child: Row(
                   children: [
                     Text('${index+1}. '),

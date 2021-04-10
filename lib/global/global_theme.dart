@@ -13,6 +13,7 @@ final ThemeData lightTheme = ThemeData(
       shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(12.0)),
       clipBehavior: Clip.antiAlias,
     ),
+    iconTheme: IconThemeData(color: Colors.grey[800]),
     appBarTheme: AppBarTheme(
       shadowColor: Colors.green[300].withOpacity(.1),
       elevation: 0.0,
@@ -29,6 +30,7 @@ final ThemeData darkTheme = ThemeData(
       shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(12.0)),
       clipBehavior: Clip.antiAlias,
     ),
+    iconTheme: IconThemeData(color: Colors.grey[300]),
     appBarTheme: AppBarTheme(
       shadowColor: Colors.blue[300].withOpacity(.1),
       elevation: 0.0,

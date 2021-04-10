@@ -1,8 +1,8 @@
 import 'package:bujuan/pages/search/search_detail/search_detail_controller.dart';
+import 'package:bujuan/widget/bottom_bar/navigation_bar.dart';
 import 'package:bujuan/widget/preload_page_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:titled_navigation_bar/titled_navigation_bar.dart';
 
 class SearchDetailsView extends GetView<SearchDetailController> {
   @override

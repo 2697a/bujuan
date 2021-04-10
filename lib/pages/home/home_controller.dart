@@ -7,6 +7,7 @@ import 'package:bujuan/global/global_controller.dart';
 import 'package:bujuan/global/global_theme.dart';
 import 'package:bujuan/pages/find/find_view.dart';
 import 'package:bujuan/pages/music/music_view.dart';
+import 'package:bujuan/pages/search/search_view.dart';
 import 'package:bujuan/pages/top/top_controller.dart';
 import 'package:bujuan/pages/top/top_view.dart';
 import 'package:bujuan/pages/user/user_controller.dart';
@@ -101,12 +102,12 @@ class HomeController extends SuperController {
       goToLogin();
       return;
     }
-    if (index <= 3) {
+    // if (index <= 3) {
       pageController.jumpToPage(index);
       onPageChange(index);
-    } else {
-      Get.toNamed('/search');
-    }
+    // } else {
+    //   Get.toNamed('/search');
+    // }
   }
 
   //监听播放音乐状态以及进度！
