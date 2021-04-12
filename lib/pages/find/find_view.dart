@@ -189,10 +189,10 @@ class FindView extends GetView<FindController> {
                 SliverToBoxAdapter(
                   child: Container(
                       height: 180.0,
-                      child: PreloadPageView.builder(
+                      child: Obx(()=>PageView.builder(
                         controller: controller.pageController,
                         onPageChanged: (index) =>
-                            controller.currentIndexPage.value = index,
+                        controller.currentIndexPage.value = index,
                         itemBuilder: (context, index) {
                           return Obx(() => ListView.builder(
                               scrollDirection: Axis.horizontal,
@@ -204,15 +204,15 @@ class FindView extends GetView<FindController> {
                               itemBuilder: (context, index1) {
                                 return controller.sheet.length > 0
                                     ? _sheetItem(
-                                        controller.sheet[index][index1])
+                                    controller.sheet[index][index1])
                                     : LoadingView
-                                        .buildGridViewSheetLoadingView();
+                                    .buildGridViewSheetLoadingView();
                               }));
                         },
                         itemCount: controller.sheet.length > 0
                             ? controller.sheet.length
-                            : 1,
-                      )),
+                            : 2,
+                      ))),
                 ),
                const SliverToBoxAdapter(
                   child: Padding(

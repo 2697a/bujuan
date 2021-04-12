@@ -54,6 +54,11 @@ class HomeController extends SuperController {
     }));
     refreshLogin();
     _listenerStarry();
+    getLikeSongList();
+    super.onReady();
+  }
+
+  getLikeSongList(){
     var likeSong = SpUtil.getStringList(LIKE_SONGS, defValue: []);
     if (likeSong.length > 0) {
       ///之前获取过了
@@ -69,9 +74,7 @@ class HomeController extends SuperController {
           ..addAll(value);
       });
     }
-    super.onReady();
   }
-
   void pauseStream() {
     if (_streamSubscription != null && !_streamSubscription.isPaused)
       _streamSubscription.pause();
