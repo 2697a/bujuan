@@ -1,6 +1,7 @@
 import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/global/global_controller.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
+import 'package:bujuan/utils/bujuan_util.dart';
 import 'package:bujuan/utils/net_util.dart';
 import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -61,7 +62,7 @@ class UserController extends GetxController {
         .then((List<MusicItem> musics) async {
       if (musics.length > 0) {
         //当前歌单未在播放
-        await Starry.playMusic(musics, 0);
+        BuJuanUtil.playSongByIndex(musics, 0, PlayListMode.SONG);
       }
     });
   }
@@ -83,8 +84,7 @@ class UserController extends GetxController {
         fmSong.add(musicItem);
       });
       if (playListMode == PlayListMode.SONG) {
-        Get.find<GlobalController>().playListMode.value = PlayListMode.FM;
-        Starry.playMusic(fmSong, 0);
+        BuJuanUtil.playSongByIndex(fmSong, 0, PlayListMode.FM);
       }
     }
     return fmSong;

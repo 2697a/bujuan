@@ -1,11 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:bujuan/global/global_config.dart';
+import 'package:bujuan/global/global_controller.dart';
 import 'package:bujuan/global/global_theme.dart';
+import 'package:bujuan/utils/sp_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:starry/music_item.dart';
+import 'package:starry/starry.dart';
 
 import '../main.dart';
 
@@ -44,7 +48,6 @@ class BuJuanUtil {
     if (type == 1) return '$dayStr';
     return '$monthStr / ';
   }
-
 
   /// 设置沉浸式导航栏文字颜色
   ///
@@ -127,7 +130,6 @@ class BuJuanUtil {
     return 0;
   }
 
-
   ///检查文件是否存在
   static Future<bool> checkFileExists(path) async {
     var directory = Get.find<FileService>().directory.value;
@@ -142,12 +144,32 @@ class BuJuanUtil {
     return jsonDecode(await file.readAsString());
   }
 
-  static playSongByIndex(List<MusicItem> playlist,index){
+  static playSongByIndex(
+      List<MusicItem> playlist, index, PlayListMode playListMode) async {
+    SpUtil.putInt(PLAY_LIST_MODE, playListMode.index);
+    GlobalController.to.playListMode.value = playListMode;
+    if (playlist.length > 0) {
+      await Starry.playMusic(playlist, index);
+    } else {
+      await Starry.playMusicByIndex(index);
+    }
+  }
 
+  static String getPlayListModeStr(PlayListMode playListMode) {
+    switch (playListMode) {
+      case PlayListMode.SONG:
+        return "Song";
+        break;
+      case PlayListMode.FM:
+        return "FM";
+        break;
+      case PlayListMode.RADIO:
+        return "电台";
+        break;
+    }
+    return '';
   }
 }
-
-
 
 class Lyric {
   int time;

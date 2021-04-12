@@ -83,7 +83,7 @@ main(List<String> args) async {
   ));
 }
 
-Future<HttpServer> _startServer({address = 'localhost', int port = 6553}) {
+Future<HttpServer> _startServer({address = 'localhost', int port = 2697}) {
   return HttpServer.bind(address, port, shared: true).then((server) {
     // debugPrint('start listen at: http://$address:$port');
     server.listen((request) {

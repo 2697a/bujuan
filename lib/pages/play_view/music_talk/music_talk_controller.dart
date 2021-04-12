@@ -1,4 +1,3 @@
-import 'package:bujuan/entity/music_talk.dart';
 import 'package:bujuan/utils/net_util.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
@@ -10,7 +9,7 @@ class MusicTalkController extends GetxController {
   var loadPageIndex = 1.obs;
   TextEditingController talkEditingController;
   RefreshController refreshController;
-  MusicItem musicItem = Get.arguments['music'];
+  // MusicItem musicItem = Get.arguments['music'];
 
   @override
   void onInit() {
@@ -21,14 +20,14 @@ class MusicTalkController extends GetxController {
 
   @override
   void onReady() {
-    _getMusicTalk(musicItem.musicId);
+    _getMusicTalk(Get.arguments['music']);
     super.onReady();
   }
 
   ///获取歌曲评论
   _getMusicTalk(id) async {
     var songTalkEntity =
-        await NetUtils().getMusicTalk(id, 0, loadPageIndex.value);
+        await NetUtils().getMusicTalk(id, Get.arguments['type'], loadPageIndex.value);
     if (songTalkEntity != null && songTalkEntity.code == 200) {
       //获取成功
       if (loadPageIndex.value == 1) {

@@ -7,6 +7,7 @@ class SearchView extends GetView<SearchController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: Text('搜索'),),
       resizeToAvoidBottomInset: false,
       body: Column(
         children: [

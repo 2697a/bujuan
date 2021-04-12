@@ -18,14 +18,14 @@ class MusicTalkView extends GetView<MusicTalkController> {
           children: [
             Card(
               child: CachedNetworkImage(
-                imageUrl: '${controller.musicItem.iconUri}',
+                imageUrl: '${Get.arguments['iconUrl']}',
                 height: 30.0,
                 width: 30.0,
               ),
             ),
             Padding(padding: EdgeInsets.symmetric(horizontal: 3.0)),
             Expanded(
-                child: Text('${controller.musicItem.title}',
+                child: Text('${Get.arguments['title']}',
                     overflow: TextOverflow.ellipsis))
           ],
         ),

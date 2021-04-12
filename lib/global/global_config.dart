@@ -45,5 +45,5 @@ const String CACHE_USER_PLAY_LIST = 'CACHE_USER_PLAY_LIST';
 const String CACHE_USER_PROFILE = 'CACHE_USER_PROFILE';
 const String LIKE_SONGS = 'LIKE_SONGS';
 const String QUALITY = 'QUALITY';
+const String PLAY_LIST_MODE = 'PLAY_LIST_MODE';
 
-enum PlayListMode { SONG, FM, HEART }

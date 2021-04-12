@@ -99,6 +99,51 @@ class SheetInfoView extends GetView<SheetInfoController> {
                           ),
                         ),
                       ),
+                      SliverToBoxAdapter(
+                        child: Obx(() => controller.result.value != null
+                            ? Card(
+                                margin: EdgeInsets.symmetric(
+                                    vertical: 0.0, horizontal: 10.0),
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 5.0, horizontal: 10.0),
+                                  child: Row(
+                                    children: [
+                                      Text(controller.result.value != null
+                                          ? '${controller.result.value.trackCount}首'
+                                          : ''),
+                                      Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 6.0)),
+                                      Text(controller.result.value != null
+                                          ? '${controller.result.value.subscribedCount ~/ 1000}k收藏'
+                                          : ''),
+                                      Expanded(child: Container()),
+                                      IconButton(
+                                          icon: Obx(()=>Icon(
+                                            Icons.favorite,
+                                            color: controller.sub.value
+                                                ? Colors.red
+                                                : Colors.grey,
+                                          )),
+                                          onPressed: () =>
+                                              controller.likeOrUnLikeSheet()),
+                                      IconButton(
+                                          icon: Icon(Icons.message_outlined),
+                                          onPressed: () {
+                                            Get.toNamed('/music_talk',
+                                                arguments: {'music': controller.result.value.id,'type':2,'iconUrl':controller.result.value.coverImgUrl,'title':controller.result.value.name});
+                                          }),
+                                      IconButton(
+                                          icon: Icon(Icons.play_arrow),
+                                          onPressed: () =>
+                                              controller.playSong(0))
+                                    ],
+                                  ),
+                                ),
+                              )
+                            : Container()),
+                      ),
                       _buildSheetListView()
                     ],
                   ),

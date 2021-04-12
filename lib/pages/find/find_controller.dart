@@ -1,6 +1,7 @@
 
 import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
+import 'package:bujuan/utils/bujuan_util.dart';
 import 'package:bujuan/utils/net_util.dart';
 import 'package:bujuan/utils/sp_util.dart';
 import 'package:bujuan/widget/preload_page_view.dart';
@@ -78,13 +79,7 @@ class FindController extends GetxController {
 
 
   playSong(index) async {
-    var songs = [];
-    // var playSheetId = SpUtil.getInt(PLAY_SONG_SHEET_ID, defValue: -1);
-    // if (playSheetId == -997) {
-    //   //当前歌单正在播放，直接根据下标播放
-    //   Starry.playMusicByIndex(index);
-    // } else {
-      //当前歌单未在播放
+    List<MusicItem> songs = [];
       newSong.forEach((track) {
         MusicItem musicItem = MusicItem(
           musicId: '${track.song.id}',
@@ -96,8 +91,6 @@ class FindController extends GetxController {
         );
         songs.add(musicItem);
       });
-      await Starry.playMusic(songs, index);
-      SpUtil.putInt(PLAY_SONG_SHEET_ID, -997);
-    // }
+    BuJuanUtil.playSongByIndex(songs, index, PlayListMode.SONG);
   }
 }

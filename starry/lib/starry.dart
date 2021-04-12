@@ -7,7 +7,7 @@ import 'music_item.dart';
 
 typedef Future<String> GetSongUrl(String id);
 enum PlayState { PLAYING, PAUSE, STOP, ERROR }
-
+enum PlayListMode { SONG, FM, RADIO }
 class SongUrl {
   GetSongUrl getSongUrl;
 

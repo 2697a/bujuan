@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_placeholder_textlines/placeholder_lines.dart';
 import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:starry/starry.dart';
 
 class UserView extends GetView<UserController> {
   @override

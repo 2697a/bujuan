@@ -9,9 +9,9 @@ class SearchSongView extends GetView<SearchSongController> {
       itemExtent: 60.0,
         itemBuilder: (context, index) {
           return InkWell(
-            child: Container(
-              padding: EdgeInsets.symmetric(
-                  horizontal: 2.0, vertical: 5.0),
+            child: Padding(
+              padding:
+              EdgeInsets.symmetric(horizontal: 2.0, vertical: 5.0),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -34,7 +34,8 @@ class SearchSongView extends GetView<SearchSongController> {
                           Container(
                             height: 25,
                             alignment: Alignment.centerLeft,
-                            child: Text(controller.search[index].name,
+                            child: Text(
+                                controller.search[index].name,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(fontSize: 16.0)),
@@ -42,12 +43,13 @@ class SearchSongView extends GetView<SearchSongController> {
                           Container(
                             height: 25,
                             alignment: Alignment.centerLeft,
-                            child: Text(controller.search[index].artists[0].name,
+                            child: Text(
+                                controller
+                                    .search[index].ar[0].name,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
-                                    fontSize: 14.0,
-                                    color: Colors.grey[500])),
+                                    fontSize: 14.0, color: Colors.grey[500])),
                           )
                         ],
                       )),
@@ -56,12 +58,12 @@ class SearchSongView extends GetView<SearchSongController> {
                       Icons.more_vert,
                       color: Colors.grey[500],
                     ),
-                    onPressed: () {},
+                    onPressed: () =>controller.playSong(index),
                   )
                 ],
               ),
             ),
-            onTap: () {},
+            onTap: () => controller.playSong(index),
           );
         }, itemCount: controller.search.length));
   }

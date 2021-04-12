@@ -293,7 +293,13 @@ class NetUtils {
     var map =
         await _doHandler('/search', param: {'keywords': content, 'type': type});
     if (map != null) {
-      if(type==1) searchData = SearchSongEntity.fromJson(map);
+      if(type==1) {
+        var data  = SearchSongEntity.fromJson(map);
+        List<int> ids = [];
+        await Future.forEach(data.result.songs, (id) => ids.add(id.id));
+       searchData = await getSongDetails(ids.join(','));
+
+      }
       if(type==100) searchData = SearchSingerEntity.fromJson(map);
       if(type==1000) searchData = SearchSheetEntity.fromJson(map);
       if(type==1004) searchData = SearchMvEntity.fromJson(map);

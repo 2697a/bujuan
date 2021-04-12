@@ -4,6 +4,7 @@ import 'package:bujuan/global/global_controller.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/pages/play_view/lyric_view.dart';
 import 'package:bujuan/pages/play_view/play_list_view.dart';
+import 'package:bujuan/utils/bujuan_util.dart';
 import 'package:bujuan/widget/bottom_bar/custom_navigation_bar_item.dart';
 import 'package:bujuan/widget/bottom_bar/custome_navigation_bar.dart';
 import 'package:bujuan/widget/bottom_bar/navigation_bar.dart';
@@ -179,24 +180,20 @@ class PlayWidgetView extends GetView<GlobalController> {
         Padding(
           padding: EdgeInsets.only(top: Get.statusBarHeight / 2),
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-                child: Column(
-              children: [
-                Obx(() => Text(controller.song.value.title,
-                    style:
-                        TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis)),
-                Obx(() => Text(
-                      controller.song.value.artist,
-                      style: TextStyle(color: Colors.grey[600]),
-                    )),
-              ],
-            )),
-          ],
+        Center(
+          child: Column(
+            children: [
+              Obx(() => Text(controller.song.value.title,
+                  style:
+                  TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis)),
+              Obx(() => Text(
+                controller.song.value.artist,
+                style: TextStyle(color: Colors.grey[600]),
+              )),
+            ],
+          ),
         ),
         Padding(padding: EdgeInsets.symmetric(vertical: 8.0)),
         _buildMusicCover(MediaQuery.of(Get.context).size.width / 1.45),
@@ -226,10 +223,10 @@ class PlayWidgetView extends GetView<GlobalController> {
                 ),
                 onPressed: () =>controller.likeOrUnLike())),
             IconButton(
-                icon: Icon(
-                  Icons.skip_previous,
-                  size: 32.0,
-                ),
+                icon: Obx(()=>Icon(
+                  controller.playListMode.value==PlayListMode.SONG?Icons.skip_previous:Icons.report_off,
+                  size: controller.playListMode.value==PlayListMode.SONG?32.0:26.0,
+                )),
                 onPressed: () => controller.skipToPrevious()),
             Container(
               decoration: BoxDecoration(
@@ -255,11 +252,11 @@ class PlayWidgetView extends GetView<GlobalController> {
                 onPressed: () => controller.skipToNext()),
             Obx(() => IconButton(
                 icon: Icon(
-                  controller.playMode.value == 1
+                  controller.playListMode.value==PlayListMode.SONG?controller.playMode.value == 1
                       ? Icons.repeat
                       : controller.playMode.value == 2
                           ? Icons.repeat_one
-                          : Icons.shuffle,
+                          : Icons.shuffle:Icons.mic_external_off,
                 ),
                 onPressed: () => controller.changePlayMode())),
           ],
@@ -272,8 +269,14 @@ class PlayWidgetView extends GetView<GlobalController> {
             IconButton(
                 icon: Icon(Icons.keyboard_arrow_down_outlined),
                 onPressed: () => weSlideController.hide()),
-            Expanded(child: Container()),
-            IconButton(
+            Expanded(child: Center(
+              child:  Obx(() => Text('当前播放：${BuJuanUtil.getPlayListModeStr(controller.playListMode.value)}',
+                  style:
+                  TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold,color: Theme.of(Get.context).accentColor),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis)),
+            )),
+            Obx(()=>Visibility(child: IconButton(
                 icon: Icon(
                   Icons.format_list_bulleted_outlined,
                 ),
@@ -288,7 +291,7 @@ class PlayWidgetView extends GetView<GlobalController> {
                           topRight: Radius.circular(8.0)),
                     ),
                   );
-                }),
+                }),visible: controller.playListMode.value==PlayListMode.SONG,)),
             Padding(padding: EdgeInsets.symmetric(horizontal: 3.0)),
             IconButton(
                 icon: Icon(
@@ -299,7 +302,7 @@ class PlayWidgetView extends GetView<GlobalController> {
                     Get.find<HomeController>().goToLogin();
                   } else {
                     Get.toNamed('/music_talk',
-                        arguments: {'music': controller.song.value});
+                        arguments: {'music': controller.song.value.musicId,'type':0,'iconUrl':controller.song.value.iconUri,'title':controller.song.value.title});
                   }
                 }),
             Padding(padding: EdgeInsets.symmetric(horizontal: 6.0)),
@@ -371,11 +374,15 @@ class PlayWidgetView extends GetView<GlobalController> {
                         size: 32.0,
                       ),
                       onPressed: () => controller.skipToNext()),
-                  IconButton(
+                  Obx(() => IconButton(
                       icon: Icon(
-                        Icons.shuffle,
+                        controller.playListMode.value==PlayListMode.SONG?controller.playMode.value == 1
+                            ? Icons.repeat
+                            : controller.playMode.value == 2
+                            ? Icons.repeat_one
+                            : Icons.shuffle:Icons.report_off,
                       ),
-                      onPressed: () {}),
+                      onPressed: () => controller.changePlayMode())),
                 ],
               ),
             ],

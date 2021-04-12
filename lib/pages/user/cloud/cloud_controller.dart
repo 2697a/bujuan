@@ -1,5 +1,6 @@
 import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
+import 'package:bujuan/utils/bujuan_util.dart';
 import 'package:bujuan/utils/net_util.dart';
 import 'package:bujuan/utils/sp_util.dart';
 import 'package:get/get.dart';
@@ -67,7 +68,7 @@ class CloudController extends GetxController {
   }
 
   playSong(index) async {
-    var songs = [];
+    List<MusicItem>  songs = [];
     // var playSheetId = SpUtil.getInt(PLAY_SONG_SHEET_ID, defValue: -1);
     // if (playSheetId == -998) {
     //   //当前歌单正在播放，直接根据下标播放
@@ -85,7 +86,7 @@ class CloudController extends GetxController {
         );
         songs.add(musicItem);
       });
-      await Starry.playMusic(songs, index);
+    BuJuanUtil.playSongByIndex(songs, index, PlayListMode.SONG);
       SpUtil.putInt(PLAY_SONG_SHEET_ID, -998);
     // }
   }

@@ -31,6 +31,7 @@ class GlobalController extends SuperController {
 
   @override
   void onInit() {
+    playListMode.value = PlayListMode.values[SpUtil.getInt(PLAY_LIST_MODE,defValue: 0)];
     lyric.value = null;
     scrollController = ScrollController();
     super.onInit();
@@ -90,6 +91,7 @@ class GlobalController extends SuperController {
 
   ///设置播放模式
   changePlayMode() {
+  if(playListMode.value==PlayListMode.SONG){
     //1->2->3
     var value = 1;
     switch (playMode.value) {
@@ -104,6 +106,7 @@ class GlobalController extends SuperController {
         break;
     }
     Starry.setPlayMode(value);
+  }
   }
 
   likeOrUnLike() {
@@ -127,7 +130,10 @@ class GlobalController extends SuperController {
 
   ///上一首
   skipToPrevious() async {
-    await Starry.skipToPrevious();
+    if(playListMode.value==PlayListMode.SONG){
+      await Starry.skipToPrevious();
+    }
+
   }
 
   ///下一首
