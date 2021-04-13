@@ -189,7 +189,7 @@ class FindView extends GetView<FindController> {
                 SliverToBoxAdapter(
                   child: Container(
                       height: 180.0,
-                      child: Obx(()=>PageView.builder(
+                      child: PreloadPageView.builder(
                         controller: controller.pageController,
                         onPageChanged: (index) =>
                         controller.currentIndexPage.value = index,
@@ -212,7 +212,7 @@ class FindView extends GetView<FindController> {
                         itemCount: controller.sheet.length > 0
                             ? controller.sheet.length
                             : 2,
-                      ))),
+                      )),
                 ),
                const SliverToBoxAdapter(
                   child: Padding(

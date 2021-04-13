@@ -16,13 +16,13 @@ class FindController extends GetxController {
   var sheet = [].obs;
   var newSong = [].obs;
   var currentIndexPage = 0.obs;
-  PageController pageController;
+  PreloadPageController pageController;
   RefreshController refreshController;
 
   @override
   void onInit() async {
     refreshController = RefreshController(initialRefresh: false);
-    pageController = PageController();
+    pageController = PreloadPageController();
     super.onInit();
   }
 
