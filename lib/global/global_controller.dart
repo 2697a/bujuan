@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bujuan/entity/lyric_entity.dart';
 import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
@@ -6,21 +8,23 @@ import 'package:bujuan/utils/net_util.dart';
 import 'package:bujuan/utils/sp_util.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 import 'package:starry/music_item.dart';
 import 'package:starry/starry.dart';
-import 'package:we_slide/we_slide.dart';
+
+import '../main.dart';
 
 class GlobalController extends SuperController {
   final playState = PlayState.STOP.obs;
   final playPos = 0.obs;
   final playMode = 1.obs;
   final song = MusicItem(
-          musicId: '-99',
-          duration: 6000,
-          title: '暂无歌曲',
-          artist: '暂无',
-          iconUri:
-              'https://pic1.zhimg.com/80/v2-7ff2d917aa926cfbf2e8b85b035e2563_1440w.jpg')
+      musicId: '-99',
+      duration: 6000,
+      title: '暂无歌曲',
+      artist: '暂无',
+      iconUri:
+      'https://pic1.zhimg.com/80/v2-7ff2d917aa926cfbf2e8b85b035e2563_1440w.jpg')
       .obs;
   final lyric = LyricEntity().obs; //音质
   final playList = [].obs;
@@ -31,8 +35,6 @@ class GlobalController extends SuperController {
 
   @override
   void onInit() {
-    playListMode.value = PlayListMode.values[SpUtil.getInt(PLAY_LIST_MODE,defValue: 0)];
-    lyric.value = null;
     scrollController = ScrollController();
     super.onInit();
   }
@@ -56,7 +58,7 @@ class GlobalController extends SuperController {
   ///滚动到指定位置
   scrollToIndex() {
     var indexWhere =
-        playList.indexWhere((element) => element.musicId == song.value.musicId);
+    playList.indexWhere((element) => element.musicId == song.value.musicId);
     if (indexWhere > -1) scrollController?.jumpTo(indexWhere * 52.0);
   }
 
@@ -91,22 +93,22 @@ class GlobalController extends SuperController {
 
   ///设置播放模式
   changePlayMode() {
-  if(playListMode.value==PlayListMode.SONG){
-    //1->2->3
-    var value = 1;
-    switch (playMode.value) {
-      case 1:
-        value = 2;
-        break;
-      case 2:
-        value = 3;
-        break;
-      case 3:
-        value = 1;
-        break;
+    if (playListMode.value == PlayListMode.SONG) {
+      //1->2->3
+      var value = 1;
+      switch (playMode.value) {
+        case 1:
+          value = 2;
+          break;
+        case 2:
+          value = 3;
+          break;
+        case 3:
+          value = 1;
+          break;
+      }
+      Starry.setPlayMode(value);
     }
-    Starry.setPlayMode(value);
-  }
   }
 
   likeOrUnLike() {
@@ -130,10 +132,9 @@ class GlobalController extends SuperController {
 
   ///上一首
   skipToPrevious() async {
-    if(playListMode.value==PlayListMode.SONG){
+    if (playListMode.value == PlayListMode.SONG) {
       await Starry.skipToPrevious();
     }
-
   }
 
   ///下一首
@@ -144,6 +145,19 @@ class GlobalController extends SuperController {
   ///播放跳转
   seekTo(int seek) async {
     await Starry.changeSongSeek(seek);
+  }
+
+  Widget getLocalImage() {
+    return Get
+        .find<FileService>()
+        .version
+        .value >= 29 ? QueryArtworkWidget(
+      id: int.parse(song.value.musicId),
+      type: ArtworkType.AUDIO,
+    ) : FileImage(
+      File(song.value.iconUri),
+    );
+
   }
 
   @override

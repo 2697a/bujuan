@@ -17,9 +17,9 @@ class SearchDetailController extends GetxController {
   final currIndex = 0.obs;
   final pages = [
     SearchSongView(),
-    SearchAirsittView(),
     SearchSheetView(),
     SearchAlbumView(),
+    SearchAirsittView(),
     SearchMvView(),
   ];
 

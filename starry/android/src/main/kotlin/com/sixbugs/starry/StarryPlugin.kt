@@ -1,5 +1,6 @@
 package com.sixbugs.starry
 
+import android.app.Activity
 import android.util.Log
 import androidx.annotation.NonNull
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -29,6 +30,7 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     private lateinit var liveProgress: LiveProgress
     private lateinit var eventChannel: EventChannel
     private lateinit var timingChannel: EventChannel
+    var activity: Activity? = null;
     var eventSink: EventChannel.EventSink? = null
     var timingSink: EventChannel.EventSink? = null
 
@@ -180,11 +182,12 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 playerClient.cancelSleepTimer()
                 val value = call.argument<Long>("VALUE")!!
                 playerClient.startSleepTimer(value, SleepTimer.TimeoutAction.STOP)
-
+                result.success("success")
             }
             "STOP_TIMING" -> {
                 //取消计时器
                 playerClient.cancelSleepTimer()
+                result.success("success")
 
             }
             "SET_PLAY_MODE" -> {
@@ -196,6 +199,12 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                     3 -> playModeData = PlayMode.SHUFFLE
                 }
                 playerClient.playMode = playModeData
+                result.success("success")
+            }
+            "MOVE_TO_BACK" -> {
+                activity?.moveTaskToBack(false)
+                result.success("success")
+    
             }
             else -> result.notImplemented()
 
@@ -227,6 +236,7 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
+        activity = binding.activity
         // 创建一个 PlayerClient 对象
         playerClient = PlayerClient.newInstance(binding.activity.applicationContext, MyPlayerService::class.java)
         if (!playerClient.isConnected) {

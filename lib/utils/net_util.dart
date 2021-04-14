@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:bujuan/api/netease_cloud_music.dart';
 import 'package:bujuan/entity/ablum_newest.dart';
+import 'package:bujuan/entity/album_details.dart';
 import 'package:bujuan/entity/fm_entity.dart';
 import 'package:bujuan/entity/heart.dart';
 import 'package:bujuan/entity/search_album.dart';
@@ -32,6 +33,7 @@ import 'package:bujuan/utils/bujuan_util.dart';
 import 'package:bujuan/utils/sp_util.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:get/get.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:starry/music_item.dart';
 
@@ -248,8 +250,10 @@ class NetUtils {
   ///获取歌曲播放地址
   Future<String> getSongUrl(songId) async {
     var songUrl = '';
-    var map =
-        await _doHandler('/song/url', param: {'id': songId, 'br': SpUtil.getString(QUALITY, defValue: '128000')});
+    var map = await _doHandler('/song/url', param: {
+      'id': songId,
+      'br': SpUtil.getString(QUALITY, defValue: '128000')
+    });
     if (map != null) songUrl = map['data'][0]['url'];
     return songUrl;
   }
@@ -293,17 +297,16 @@ class NetUtils {
     var map =
         await _doHandler('/search', param: {'keywords': content, 'type': type});
     if (map != null) {
-      if(type==1) {
-        var data  = SearchSongEntity.fromJson(map);
+      if (type == 1) {
+        var data = SearchSongEntity.fromJson(map);
         List<int> ids = [];
         await Future.forEach(data.result.songs, (id) => ids.add(id.id));
-       searchData = await getSongDetails(ids.join(','));
-
+        searchData = await getSongDetails(ids.join(','));
       }
-      if(type==100) searchData = SearchSingerEntity.fromJson(map);
-      if(type==1000) searchData = SearchSheetEntity.fromJson(map);
-      if(type==1004) searchData = SearchMvEntity.fromJson(map);
-      if(type==10) searchData = SearchAlbumEntity.fromJson(map);
+      if (type == 100) searchData = SearchSingerEntity.fromJson(map);
+      if (type == 1000) searchData = SearchSheetEntity.fromJson(map);
+      if (type == 1004) searchData = SearchMvEntity.fromJson(map);
+      if (type == 10) searchData = SearchAlbumEntity.fromJson(map);
     }
     return searchData;
   }
@@ -311,11 +314,11 @@ class NetUtils {
   ///获取热搜列表
   Future<SearchHotEntity> searchList() async {
     var searchData;
-    var map =
-    await _doHandler('/search/hot/detail');
+    var map = await _doHandler('/search/hot/detail');
     if (map != null) searchData = SearchHotEntity.fromJson(map);
     return searchData;
   }
+
   ///听歌历史
   Future<PlayHistoryEntity> getHistory(uid) async {
     var history;
@@ -394,23 +397,25 @@ class NetUtils {
     }
     return likeSongs;
   }
+
   ///喜欢和不喜欢歌曲
-  Future<bool> likeOrUnlike(id,isLike) async {
+  Future<bool> likeOrUnlike(id, isLike) async {
     var likeSong = false;
-      var map = await _doHandler('/like', param: {'id': id,'like':'$isLike'});
-      if (map != null&&map['code']==200) {
-       likeSong = true;
-      }
+    var map = await _doHandler('/like', param: {'id': id, 'like': '$isLike'});
+    if (map != null && map['code'] == 200) {
+      likeSong = true;
+    }
     return likeSong;
   }
 
   ///心动模式
-  Future<List<MusicItem>> getHeart(id,pid) async {
+  Future<List<MusicItem>> getHeart(id, pid) async {
     List<MusicItem> heartSong = [];
-    var map = await _doHandler('/playmode/intelligence/list', param: {'id': id,'pid':pid});
+    var map = await _doHandler('/playmode/intelligence/list',
+        param: {'id': id, 'pid': pid});
     if (map != null) {
       var heart = Heart.fromJson(map);
-      heart.data.forEach(( track) {
+      heart.data.forEach((track) {
         MusicItem musicItem = MusicItem(
           musicId: '${track.songInfo.id}',
           duration: track.songInfo.dt,
@@ -424,6 +429,44 @@ class NetUtils {
     }
 
     return heartSong;
+  }
+
+  Future<File> getLocalImage(id, type,
+      {format, size, requestPermission}) async {
+    var imagePath;
+    var bool = await BuJuanUtil.checkFileExists('$id.png');
+    if (!bool) {
+      var uint8list = await OnAudioQuery().queryArtworks(id, type,
+          format ?? ArtworkFormat.PNG, size ?? 200, requestPermission ?? false);
+      if (uint8list == null) return null;
+      await _saveImageCache('$id.png', uint8list);
+    }
+    var directory = Get.find<FileService>().directory.value;
+    imagePath = File('${directory.path}$id.png');
+    return imagePath;
+  }
+
+  ///简陋的本地文件缓存
+  _saveImageCache(String cacheName, dynamic data) async {
+    debugPrint('简陋的本地图片缓存');
+    var directory = Get.find<FileService>().directory.value;
+    File file = File('${directory.path}$cacheName');
+    if (await file.exists()) await file.delete();
+    await file.create();
+    await file.writeAsBytes(data);
+  }
+
+  ///获取专辑详情
+  Future<List<SheetDetailsPlaylistTrack>> getAlbumDetails(id) async {
+    var songDetails;
+    var map = await _doHandler('/album', param: {'id': id});
+    if(map!=null) {
+      AlbumDetails album = AlbumDetails.fromJson(map);
+      List<int> ids = [];
+      await Future.forEach(album.songs, (id) => ids.add(id.id));
+      songDetails = await getSongDetails(ids.join(','));
+    }
+    return songDetails;
   }
 //播放音乐
 // Future setPlayListAndPlayById(List<SongInfo> list, int index, String id) async {

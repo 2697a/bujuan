@@ -1,38 +1,36 @@
 import 'package:bujuan/global/global_loding_view.dart';
-import 'package:bujuan/pages/music/all_song/all_song_controller.dart';
-import 'package:bujuan/pages/music_bottom_bar/music_bottom_bar_view.dart';
-import 'package:bujuan/pages/play_view/default_view.dart';
+import 'package:bujuan/pages/music/album/local_album_controller.dart';
 import 'package:bujuan/pages/play_widget/play_widget_view.dart';
 import 'package:bujuan/widget/over_scroll.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:we_slide/we_slide.dart';
 
-class AllSongView extends GetView<AllSongController>{
+class LocalAlbumView extends GetView<LocalAlbumController>{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PlayWidgetView(ScrollConfiguration(behavior: OverScrollBehavior(), child: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            elevation: 0.0,
-            floating: true,
-            pinned: true,
-            title: Text('歌曲列表'),
-          ),
-          _buildTodayListView()
-        ],
-      ))),
+      body: PlayWidgetView(
+          ScrollConfiguration(behavior: OverScrollBehavior(), child: CustomScrollView(
+            slivers: [
+              SliverAppBar(
+                elevation: 0.0,
+                floating: true,
+                pinned: true,
+                title: Text('${Get.arguments['albumName']}'),
+              ),
+              _buildTodayListView()
+            ],
+          ))
+      ),
     );
   }
-
 
   Widget _buildTodayListView() {
     return Obx(()=>SliverFixedExtentList(
       itemExtent: 60.0,
       delegate: SliverChildBuilderDelegate(
             (BuildContext context, int index) {
-          return controller.allMusic.length>0?InkWell(
+          return controller.listSong.length>0?InkWell(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 2.0, vertical: 5.0),
               child: Row(
@@ -55,13 +53,13 @@ class AllSongView extends GetView<AllSongController>{
                           Container(
                             height: 25,
                             alignment: Alignment.centerLeft,
-                            child: Text(controller.allMusic[index].title, maxLines: 1, overflow: TextOverflow.ellipsis,
+                            child: Text(controller.listSong[index].title, maxLines: 1, overflow: TextOverflow.ellipsis,
                                 style: TextStyle(fontSize: 16.0)),
                           ),
                           Container(
                             height: 25,
                             alignment: Alignment.centerLeft,
-                            child: Text(controller.allMusic[index].artist, maxLines: 1, overflow: TextOverflow.ellipsis,
+                            child: Text(controller.listSong[index].artist, maxLines: 1, overflow: TextOverflow.ellipsis,
                                 style: TextStyle(fontSize: 14.0,color: Colors.grey[500])),
                           )
                         ],
@@ -73,8 +71,8 @@ class AllSongView extends GetView<AllSongController>{
             onTap: () =>controller.playSong(index),
           ):LoadingView.buildGeneralLoadingView();
         },
-        childCount: controller.allMusic.length > 0
-            ? controller.allMusic.length
+        childCount: controller.listSong.length > 0
+            ? controller.listSong.length
             : 20,
       ),
     ));

@@ -58,7 +58,10 @@ class AppNotificationView() : PlayerService.MediaNotificationView() {
     }
 
     override fun getSmallIconId(): Int {
-        return R.drawable.ic_noti_icon
+        if (Build.VERSION.SDK_INT >= 21) {
+            return R.drawable.ic_noti_icon
+        }
+        return super.getSmallIconId()
     }
 
     override fun onBuildMediaStyle(mediaStyle: NotificationCompat.MediaStyle?) {

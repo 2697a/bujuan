@@ -1,4 +1,3 @@
-import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/global/global_controller.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/utils/bujuan_util.dart';
@@ -12,6 +11,8 @@ class UserController extends GetxController {
   var lovePlayList = [].obs;
   var createPlayList = [].obs;
   var collectPlayList = [].obs;
+  final isNoCreate = false.obs;
+  final isNoCollect = false.obs;
   RefreshController refreshController;
   var isLoad = false;
 
@@ -30,30 +31,45 @@ class UserController extends GetxController {
 
   ///获取用户歌单
   getUserSheet({forcedRefresh = false}) async {
-    var userId = HomeController.to.userProfileEntity.value.profile.userId;
-    NetUtils()
-        .getUserPlayList(userId, forcedRefresh: forcedRefresh)
-        .then((userOrderEntity) {
-      if (userOrderEntity != null && userOrderEntity.code == 200) {
-        var list = userOrderEntity.playlist;
-        if (list.length > 0) {
-          lovePlayList
-            ..clear()
-            ..add(list[0]);
-          list.removeAt(0);
-          var item = list.where((element) => element.userId == userId);
-          createPlayList
-            ..clear()
-            ..addAll(item);
-          var where = list.where((element) => element.userId != userId);
-          collectPlayList
-            ..clear()
-            ..addAll(where);
+    if (HomeController.to.login.value) {
+      var userId = HomeController.to.userProfileEntity.value.profile.userId;
+      NetUtils()
+          .getUserPlayList(userId, forcedRefresh: forcedRefresh)
+          .then((userOrderEntity) {
+        if (userOrderEntity != null && userOrderEntity.code == 200) {
+          var list = userOrderEntity.playlist;
+          if (list.length > 0) {
+            lovePlayList
+              ..clear()
+              ..add(list[0]);
+            list.removeAt(0);
+            var item = list.where((element) => element.userId == userId);
+            if (item.length > 0) {
+              createPlayList
+                ..clear()
+                ..addAll(item);
+              isNoCreate.value = false;
+            } else {
+              isNoCreate.value = true;
+            }
+            var where = list.where((element) => element.userId != userId);
+            if (where.length > 0) {
+              collectPlayList
+                ..clear()
+                ..addAll(where);
+              isNoCollect.value = false;
+            } else {
+              isNoCollect.value = true;
+            }
+          }
+        } else {
+          isNoCreate.value = true;
+          isNoCollect.value = true;
         }
-      }
-      isLoad = true;
-      refreshController.refreshCompleted();
-    });
+        isLoad = true;
+        refreshController.refreshCompleted();
+      });
+    }
   }
 
   playHeartSong(pid) {

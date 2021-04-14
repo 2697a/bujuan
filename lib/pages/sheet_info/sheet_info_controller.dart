@@ -36,18 +36,24 @@ class SheetInfoController extends GetxController {
       if (sheetDetailsEntity != null && sheetDetailsEntity.code == 200) {
         if (sheetDetailsEntity.playlist.tracks != null)
           result.value = sheetDetailsEntity.playlist;
-        sub.value = result.value.subscribed;
+        sub.value = result.value.subscribed!=null?result.value.subscribed:false;
       }
       refreshController?.refreshCompleted();
     });
   }
 
+  ///收藏或取消收藏歌单
   likeOrUnLikeSheet() {
-    NetUtils().subPlaylist(!sub.value, result.value.id).then((success) {
-      if (success) {
-        sub.value = !sub.value;
-      }
-    });
+    if (HomeController.to.login.value) {
+      NetUtils().subPlaylist(!sub.value, result.value.id).then((success) {
+        if (success) {
+          sub.value = !sub.value;
+        }
+      });
+    }else{
+      HomeController.to.goToLogin();
+    }
+
   }
 
   playSong(index) {

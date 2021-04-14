@@ -71,7 +71,21 @@ class UserView extends GetView<UserController> {
                     ),
                   ),
                 ),
-                SliverFixedExtentList(
+                controller.isNoCreate.value?
+                SliverToBoxAdapter(
+                  child: Container(
+                    height: 80.0,
+                    child: Center(
+                      child: Wrap(
+                        children: [
+                          Icon(Icons.sentiment_neutral_outlined),
+                          Padding(padding: EdgeInsets.symmetric(horizontal: 6.0)),
+                          Text('暂无收藏歌单')
+                        ],
+                      ),
+                    ),
+                  ),
+                ): SliverFixedExtentList(
                   itemExtent: 60.0,
                   delegate: SliverChildBuilderDelegate(
                     (BuildContext context, int index) {
@@ -96,6 +110,21 @@ class UserView extends GetView<UserController> {
                     ),
                   ),
                 ),
+                controller.isNoCollect.value?
+                    SliverToBoxAdapter(
+                      child: Container(
+                        height: 80.0,
+                        child: Center(
+                          child: Wrap(
+                            children: [
+                              Icon(Icons.sentiment_neutral_outlined),
+                              Padding(padding: EdgeInsets.symmetric(horizontal: 6.0)),
+                              Text('暂无收藏歌单')
+                            ],
+                          ),
+                        ),
+                      ),
+                    ):
                 SliverFixedExtentList(
                   itemExtent: 60.0,
                   delegate: SliverChildBuilderDelegate(

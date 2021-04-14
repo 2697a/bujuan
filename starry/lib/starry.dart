@@ -7,7 +7,7 @@ import 'music_item.dart';
 
 typedef Future<String> GetSongUrl(String id);
 enum PlayState { PLAYING, PAUSE, STOP, ERROR }
-enum PlayListMode { SONG, FM, RADIO }
+enum PlayListMode { SONG, FM, RADIO,LOCAL }
 class SongUrl {
   GetSongUrl getSongUrl;
 
@@ -175,6 +175,11 @@ class Starry {
       var playlist = list.map((e) => MusicItem.fromJson(e)).toList();
       _playerSongListController.add(PlayListInfo(playlist, position));
     }
+  }
+
+  ///add播放类表并根据下标播放
+  static Future<void> moveToBack() async {
+    await _channel.invokeMethod('MOVE_TO_BACK');
   }
 }
 

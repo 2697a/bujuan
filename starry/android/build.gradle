@@ -43,6 +43,7 @@ android {
     defaultConfig {
         minSdkVersion 16
         vectorDrawables.useSupportLibrary = true
+        multiDexEnabled true
     }
     lintOptions {
         disable 'InvalidPackage'
@@ -50,9 +51,8 @@ android {
 }
 
 dependencies {
-    //noinspection GradleDependency
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-//    implementation 'com.lzx:StarrySkyX:2.5.8'
+    implementation "com.android.support:multidex:1.0.3"
     implementation 'com.github.jrfeng.snow:exo:1.0.4'
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     implementation 'com.google.code.gson:gson:2.8.6'

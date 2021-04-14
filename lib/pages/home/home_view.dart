@@ -1,17 +1,19 @@
 import 'package:bujuan/pages/play_widget/play_widget_view.dart';
 import 'package:bujuan/widget/over_scroll.dart';
-import 'package:bujuan/widget/bottom_bar/custom_navigation_bar_item.dart';
-import 'package:bujuan/widget/bottom_bar/custome_navigation_bar.dart';
 import 'package:bujuan/widget/preload_page_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:starry/starry.dart';
 
 import 'home_controller.dart';
 
 class HomeView extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
-    return _buildHomeView();
+    return WillPopScope(child: _buildHomeView(), onWillPop: ()async{
+      await Starry.moveToBack();
+      return false;
+    });
   }
 
   Widget _buildContent() {
@@ -38,36 +40,36 @@ class HomeView extends GetView<HomeController> {
 
   //底部导航栏
 
-  Widget _buildBottomNavigationBar() {
-    return CustomNavigationBar(
-      iconSize: 28.0,
-      selectedColor: Theme.of(Get.context).accentColor,
-      strokeColor: Theme.of(Get.context).accentColor.withOpacity(.1),
-      unSelectedColor: Theme.of(Get.context).bottomAppBarColor,
-      elevation: 0.0,
-      backgroundColor: Theme.of(Get.context).canvasColor,
-      items: [
-        CustomNavigationBarItem(
-          icon: Icon(Icons.person_pin),
-          selectedIcon: Icon(Icons.person_pin_rounded),
-        ),
-        CustomNavigationBarItem(
-          icon: Icon(Icons.lightbulb_outline),
-          selectedIcon: Icon(Icons.lightbulb),
-        ),
-        CustomNavigationBarItem(
-          icon: Icon(Icons.whatshot_outlined),
-          selectedIcon: Icon(Icons.whatshot),
-        ),
-        CustomNavigationBarItem(
-          icon: Icon(Icons.music_note_outlined),
-          selectedIcon: Icon(Icons.music_note),
-        ),
-      ],
-      currentIndex: controller.currentIndex.value,
-      onTap: (index) {
-        controller.changeIndex(index);
-      },
-    );
-  }
+  // Widget _buildBottomNavigationBar() {
+  //   return CustomNavigationBar(
+  //     iconSize: 28.0,
+  //     selectedColor: Theme.of(Get.context).accentColor,
+  //     strokeColor: Theme.of(Get.context).accentColor.withOpacity(.1),
+  //     unSelectedColor: Theme.of(Get.context).bottomAppBarColor,
+  //     elevation: 0.0,
+  //     backgroundColor: Theme.of(Get.context).canvasColor,
+  //     items: [
+  //       CustomNavigationBarItem(
+  //         icon: Icon(Icons.person_pin),
+  //         selectedIcon: Icon(Icons.person_pin_rounded),
+  //       ),
+  //       CustomNavigationBarItem(
+  //         icon: Icon(Icons.lightbulb_outline),
+  //         selectedIcon: Icon(Icons.lightbulb),
+  //       ),
+  //       CustomNavigationBarItem(
+  //         icon: Icon(Icons.whatshot_outlined),
+  //         selectedIcon: Icon(Icons.whatshot),
+  //       ),
+  //       CustomNavigationBarItem(
+  //         icon: Icon(Icons.music_note_outlined),
+  //         selectedIcon: Icon(Icons.music_note),
+  //       ),
+  //     ],
+  //     currentIndex: controller.currentIndex.value,
+  //     onTap: (index) {
+  //       controller.changeIndex(index);
+  //     },
+  //   );
+  // }
 }

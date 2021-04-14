@@ -30,11 +30,11 @@ class SearchDetailsView extends GetView<SearchDetailController> {
             items: [
               TitledNavigationBarItem(title: Text('单曲'), icon: Icons.music_note,backgroundColor: Theme.of(Get.context).primaryColor),
               TitledNavigationBarItem(
-                  title: Text('歌手'), icon: Icons.people,backgroundColor: Theme.of(Get.context).primaryColor),
-              TitledNavigationBarItem(
                   title: Text('歌单'), icon: Icons.format_list_numbered_rounded,backgroundColor: Theme.of(Get.context).primaryColor),
               TitledNavigationBarItem(
                   title: Text('专辑'), icon: Icons.album,backgroundColor: Theme.of(Get.context).primaryColor),
+              TitledNavigationBarItem(
+                  title: Text('歌手'), icon: Icons.people,backgroundColor: Theme.of(Get.context).primaryColor),
               TitledNavigationBarItem(
                   title: Text('Mv'), icon: Icons.video_collection,backgroundColor: Theme.of(Get.context).primaryColor),
             ])));

@@ -1,8 +1,8 @@
-import 'package:bujuan/global/global_config.dart';
-import 'package:bujuan/global/global_controller.dart';
+import 'dart:io';
+
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/utils/bujuan_util.dart';
-import 'package:bujuan/utils/sp_util.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:starry/music_item.dart';
@@ -37,11 +37,14 @@ class AllSongController extends GetxController {
   getAllMusic() async {
     OnAudioQuery()
         .querySongs(SongSortType.DEFAULT, OrderType.ASC_OR_SMALLER,
-            UriType.EXTERNAL_PRIMARY, true)
+            UriType.EXTERNAL, true)
         .then((value) {
-      allMusic
-        ..clear()
-        ..addAll(value);
+      allMusic.clear();
+      value.forEach((element) {
+        if(element.artist!="<unknown>"){
+          allMusic.add(element);
+        }
+      });
     });
     // var list = await Get.find<FileService>().audioQuery.getSongs();
     // allMusic..clear()..addAll(list);
@@ -49,18 +52,18 @@ class AllSongController extends GetxController {
   }
 
   playSong(index) async {
-    BuJuanUtil.playSongByIndex(getSheetList(), index, PlayListMode.SONG);
+    BuJuanUtil.playSongByIndex(getSheetList(), index, PlayListMode.LOCAL);
   }
 
   getSheetList() {
-    List<MusicItem>  songs = [];
+    List<MusicItem> songs = [];
     allMusic.forEach((track) {
       MusicItem musicItem = MusicItem(
         musicId: '${track.id}',
         duration: !GetUtils.isNullOrBlank(track.duration)
             ? int.parse(track.duration)
             : 30000,
-        iconUri: "",
+        iconUri: track.artwork,
         title: track.title,
         uri: '${track.data}',
         artist: track.artist,

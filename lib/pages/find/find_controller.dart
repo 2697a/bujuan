@@ -14,6 +14,7 @@ import 'package:starry/starry.dart';
 class FindController extends GetxController {
   var banner = [].obs;
   var sheet = [].obs;
+  var allSheet = [].obs;
   var newSong = [].obs;
   var currentIndexPage = 0.obs;
   PreloadPageController pageController;
@@ -46,6 +47,7 @@ class FindController extends GetxController {
     NetUtils().getRecommendResource(forcedRefresh: forcedRefresh).then((personalEntity) {
       if (personalEntity != null && personalEntity.code == 200) {
         var sheets = personalEntity.result;
+        allSheet..clear()..addAll(sheets);
         sheet..clear();
         if (sheets.length ==6) {
           var i = sheets.length ~/ 3;

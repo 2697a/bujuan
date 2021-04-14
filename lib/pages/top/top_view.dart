@@ -78,86 +78,80 @@ class TopView extends GetView<TopController> {
 
   Widget buildBigTopItem(id, name, imageUrl, data) {
     return SliverToBoxAdapter(
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 4.0),
-        child: Card(
-          child: InkWell(
-              child: Container(
-                height: 120.0,
-                child: Row(
-                  children: [
-                    Hero(
-                        tag: id,
-                        child: CachedNetworkImage(
-                          height: 120.0,
-                          width: 120.0,
-                          fit: BoxFit.cover,
-                          imageUrl: imageUrl,
-                        )),
-                    Padding(padding: EdgeInsets.symmetric(horizontal: 6.0)),
-                    Expanded(
-                        child:ListView.builder(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          itemBuilder: (context, index) {
-                            return Container(
-                              height: 40.0,
-                              alignment: Alignment.centerLeft,
-                              child: RichText(
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  text: TextSpan(children: [
-                                    TextSpan(
-                                      text: '${data[index].name}',
-                                      style: TextStyle(color: Theme.of(Get.context).bottomAppBarColor, fontSize: 14, height: 1.5, textBaseline: TextBaseline.alphabetic),
-                                      // recognizer: _tapRecognizer
-                                    ),
-                                    TextSpan(
-                                      text: ' - ${data[index].ar[0].name}',
-                                      style: TextStyle(color: Colors.grey[500], fontSize: 12, height: 1.5, textBaseline: TextBaseline.alphabetic),
-                                    ),
-                                  ])),
-                            );
-                          },
-                          itemCount: data.length,
-                          padding: EdgeInsets.all(0),
-                        ))
-                  ],
-                ),
+      child: Card(
+        child: InkWell(
+            child: Container(
+              height: 120.0,
+              child: Row(
+                children: [
+                  Hero(
+                      tag: id,
+                      child: CachedNetworkImage(
+                        height: 120.0,
+                        width: 120.0,
+                        fit: BoxFit.cover,
+                        imageUrl: imageUrl,
+                      )),
+                  Padding(padding: EdgeInsets.symmetric(horizontal: 6.0)),
+                  Expanded(
+                      child:ListView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          return Container(
+                            height: 40.0,
+                            alignment: Alignment.centerLeft,
+                            child: RichText(
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                text: TextSpan(children: [
+                                  TextSpan(
+                                    text: '${data[index].name}',
+                                    style: TextStyle(color: Theme.of(Get.context).bottomAppBarColor, fontSize: 14, height: 1.5, textBaseline: TextBaseline.alphabetic),
+                                    // recognizer: _tapRecognizer
+                                  ),
+                                  TextSpan(
+                                    text: ' - ${data[index].ar[0].name}',
+                                    style: TextStyle(color: Colors.grey[500], fontSize: 12, height: 1.5, textBaseline: TextBaseline.alphabetic),
+                                  ),
+                                ])),
+                          );
+                        },
+                        itemCount: data.length,
+                        padding: EdgeInsets.all(0),
+                      ))
+                ],
               ),
-              onTap: () => Get.toNamed('/sheet', arguments: {'id': id, 'name': name, 'imageUrl': imageUrl})),
-        ),
+            ),
+            onTap: () => Get.toNamed('/sheet', arguments: {'id': id, 'name': name, 'imageUrl': imageUrl})),
       ),
     );
   }
 
   Widget buildLoadingBigTopItem(id, imageUrl) {
     return SliverToBoxAdapter(
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 4.0),
-        child: Card(
-          child: Container(
-            height: 120.0,
-            child: Row(
-              children: [
-                Hero(
-                    tag: id,
-                    child: CachedNetworkImage(
-                      height: 120.0,
-                      width: 120.0,
-                      fit: BoxFit.cover,
-                      imageUrl: imageUrl,
-                    )),
-                Expanded(
-                    child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8.0),
-                  child: const PlaceholderLines(
-                    lineHeight: 10.0,
-                    count: 3,
-                  ),
-                )),
-              ],
-            ),
+      child: Card(
+        child: Container(
+          height: 120.0,
+          child: Row(
+            children: [
+              Hero(
+                  tag: id,
+                  child: CachedNetworkImage(
+                    height: 120.0,
+                    width: 120.0,
+                    fit: BoxFit.cover,
+                    imageUrl: imageUrl,
+                  )),
+              Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8.0),
+                    child: const PlaceholderLines(
+                      lineHeight: 10.0,
+                      count: 3,
+                    ),
+                  )),
+            ],
           ),
         ),
       ),

@@ -23,244 +23,237 @@ class FindView extends GetView<FindController> {
     return OrientationBuilder(builder: (context, orientation) {
       return ScrollConfiguration(
           behavior: OverScrollBehavior(),
-          child: SmartRefresher(
-            header:  WaterDropMaterialHeader(
-              color: Theme.of(context).accentColor,
-              backgroundColor: Theme.of(context).primaryColor,
-            ),
-            controller: controller.refreshController,
-            child: CustomScrollView(
-              slivers: [
-                // SliverToBoxAdapter(
-                //   child: Padding(padding: EdgeInsets.only(left: 12.0,top: 16.0,bottom: 3.0),child: Text("你好,",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20.0),),),
-                // ),
-                // SliverToBoxAdapter(
-                //   child: Padding(padding: EdgeInsets.symmetric(horizontal: 12,vertical: 3),child: Text("总有些惊喜的奇遇",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20.0),),),
-                // ),
-               SliverToBoxAdapter(
-                 child:  Hero(
-                     tag: 'today',
-                     child: Card(
-                       child: InkWell(
-                         child: Row(
-                           children: [
-                              Container(
-                               padding: EdgeInsets.all(5.0),
-                               height: 120.0,
-                               child: Image.asset('assets/images/today.png'),
-                             ),
-                             Expanded(
-                                 child: Stack(
-                                   children: [
-                                     Container(
-                                       height: 120,
-                                       alignment: Alignment.center,
-                                       child:const Text(
-                                         '每日推荐',
-                                         textAlign: TextAlign.center,
-                                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
-                                       ),
-                                     ),
-                                     Container(
-                                       padding: EdgeInsets.symmetric(horizontal: 8.0,vertical: 5.0),
-                                       height: 120,
-                                       alignment: Alignment.bottomRight,
-                                       width: double.infinity,
-                                       child: Wrap(
-                                         children: [
-                                            Text(
-                                             BuJuanUtil.dateToString(DateTime.now(),2),
-                                             textAlign: TextAlign.center,
-                                             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.0,color: Theme.of(Get.context).accentColor),
-                                           ),
-                                           Text(
-                                             BuJuanUtil.dateToString(DateTime.now(),1),
-                                             textAlign: TextAlign.center,
-                                             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0,color: Theme.of(Get.context).accentColor),
-                                           )
-                                         ],
-                                       ),
-                                     )
-                                   ],
-                                 ))
-                           ],
-                         ),
-                         onTap: ()=>controller.goToTodayMusic(),
-                       ),
-                     )),
-               ),
-                // SliverToBoxAdapter(
-                //   child: Padding(padding: EdgeInsets.symmetric(horizontal: 8.0,vertical: 25.0),child: Row(
-                //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //     children: [
-                //       Container(
-                //         width: 50,
-                //         height: 50,
-                //         decoration: BoxDecoration(
-                //             color: const Color.fromRGBO(66, 153, 244, .6),
-                //             borderRadius: BorderRadius.circular(50.0)
-                //         ),
-                //         child:  IconButton(icon: Icon(Icons.today,color: Colors.white,), onPressed: ()=>controller.goToTodayMusic()),
-                //       ),
-                //       Container(
-                //         width: 50,
-                //         height: 50,
-                //         decoration: BoxDecoration(
-                //             color:const Color.fromRGBO(234, 67, 53, .6),
-                //             borderRadius: BorderRadius.circular(50.0)
-                //         ),
-                //         child:  IconButton(icon: Icon(Icons.account_circle,color: Colors.white,), onPressed: (){}),
-                //       ),
-                //       Container(
-                //         width: 50,
-                //         height: 50,
-                //         decoration: BoxDecoration(
-                //             color: Color.fromRGBO(251, 188, 5, .6),
-                //             borderRadius: BorderRadius.circular(50.0)
-                //         ),
-                //         child: IconButton(icon: Icon(Icons.account_circle,color: Colors.white,), onPressed: (){}),
-                //       ),
-                //       Container(
-                //         width: 50,
-                //         height: 50,
-                //         decoration: BoxDecoration(
-                //             color:const Color.fromRGBO(50, 168, 83, .6),
-                //             borderRadius: BorderRadius.circular(50.0)
-                //         ),
-                //         child: IconButton(icon: Icon(Icons.account_circle,color: Colors.white,), onPressed: (){}),
-                //       ),
-                //     ],
-                //   ),),
-                // ),
-                const SliverToBoxAdapter(
-                  child: Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
-                    child: Text(
-                      "推荐歌单",
-                      style: TextStyle(
-                          fontSize: 16.0, fontWeight: FontWeight.bold),
+          child: OrientationBuilder(builder: (context,orientation){
+            return SmartRefresher(
+              header: WaterDropMaterialHeader(
+                color: Theme.of(context).accentColor,
+                backgroundColor: Theme.of(context).primaryColor,
+              ),
+              controller: controller.refreshController,
+              child: CustomScrollView(
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: _today(),
+                  ),
+                  const SliverToBoxAdapter(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 8.0, vertical: 10.0),
+                      child: Text(
+                        "推荐歌单",
+                        style: TextStyle(
+                            fontSize: 16.0, fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
-                ),
-                SliverToBoxAdapter(
-                  child: Padding(
-                      padding: EdgeInsets.symmetric(vertical: 6.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 5.0),
-                              child: Obx(() => DotsIndicator(
-                                    dotsCount: 2,
-                                    position: controller.currentIndexPage.value
-                                        .toDouble(),
-                                    decorator: DotsDecorator(
-                                        size: const Size.square(6.0),
-                                        activeSize: const Size(12.0, 6.0),
-                                        activeShape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(6.0)),
-                                        color: Colors.grey[500],
-                                        // Inactive color
-                                        activeColor:
-                                            Theme.of(Get.context).accentColor),
-                                  ))),
-                          InkWell(
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 8.0),
-                              child: Wrap(
-                                alignment: WrapAlignment.center,
-                                children: [
-                                  Text('更多',
-                                      style: TextStyle(
-                                          color: Colors.grey[500],
-                                          fontSize: 12.0)),
-                                  Icon(Icons.keyboard_arrow_right,
-                                      size: 18.0, color: Colors.grey[500])
-                                ],
+                  SliverToBoxAdapter(
+                    child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 6.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Padding(
+                                padding:
+                                EdgeInsets.symmetric(horizontal: 5.0),
+                                child: Obx(() => DotsIndicator(
+                                  dotsCount: 2,
+                                  position: controller
+                                      .currentIndexPage.value
+                                      .toDouble(),
+                                  decorator: DotsDecorator(
+                                      size: const Size.square(6.0),
+                                      activeSize: const Size(12.0, 6.0),
+                                      activeShape: RoundedRectangleBorder(
+                                          borderRadius:
+                                          BorderRadius.circular(6.0)),
+                                      color: Colors.grey[500],
+                                      // Inactive color
+                                      activeColor: Theme.of(Get.context)
+                                          .accentColor),
+                                ))),
+                            InkWell(
+                              child: Padding(
+                                padding:
+                                EdgeInsets.symmetric(horizontal: 8.0),
+                                child: Wrap(
+                                  alignment: WrapAlignment.center,
+                                  children: [
+                                    Text('更多',
+                                        style: TextStyle(
+                                            color: Colors.grey[500],
+                                            fontSize: 12.0)),
+                                    Icon(Icons.keyboard_arrow_right,
+                                        size: 18.0, color: Colors.grey[500])
+                                  ],
+                                ),
                               ),
-                            ),
-                            onTap: () => Get.toNamed('/sheet_classify'),
-                          )
-                        ],
-                      )),
-                ),
-                SliverToBoxAdapter(
-                  child: Container(
-                      height: 180.0,
-                      child: PreloadPageView.builder(
-                        controller: controller.pageController,
-                        onPageChanged: (index) =>
-                        controller.currentIndexPage.value = index,
-                        itemBuilder: (context, index) {
-                          return Obx(() => ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              shrinkWrap: true,
-                              itemExtent: (MediaQuery.of(Get.context).size.width - 10) / 3,
-                              itemCount: controller.sheet.length > 0
-                                  ? controller.sheet[index].length
-                                  : 3,
-                              itemBuilder: (context, index1) {
-                                return controller.sheet.length > 0
-                                    ? _sheetItem(
-                                    controller.sheet[index][index1])
-                                    : LoadingView
-                                    .buildGridViewSheetLoadingView();
-                              }));
-                        },
-                        itemCount: controller.sheet.length > 0
-                            ? controller.sheet.length
-                            : 2,
-                      )),
-                ),
-               const SliverToBoxAdapter(
-                  child: Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
-                    child: Text(
-                      "新歌推荐",
-                      style: TextStyle(
-                          fontSize: 16.0, fontWeight: FontWeight.bold),
+                              onTap: () => Get.toNamed('/sheet_classify'),
+                            )
+                          ],
+                        )),
+                  ),
+                  SliverToBoxAdapter(
+                    child: orientation == Orientation.portrait
+                        ? Container(
+                        height: 180.0,
+                        child: PreloadPageView.builder(
+                          controller: controller.pageController,
+                          onPageChanged: (index) =>
+                          controller.currentIndexPage.value = index,
+                          itemBuilder: (context, index) {
+                            return Obx(() => ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                shrinkWrap: true,
+                                itemExtent: (MediaQuery.of(Get.context)
+                                    .size
+                                    .width -
+                                    10) /
+                                    3,
+                                itemCount: controller.sheet.length > 0
+                                    ? controller.sheet[index].length
+                                    : 3,
+                                itemBuilder: (context, index1) {
+                                  return controller.sheet.length > 0
+                                      ? _sheetItem(
+                                      controller.sheet[index][index1],
+                                      orientation)
+                                      : LoadingView
+                                      .buildGridViewSheetLoadingView();
+                                }));
+                          },
+                          itemCount: controller.sheet.length > 0
+                              ? controller.sheet.length
+                              : 2,
+                        ))
+                        : Container(
+                        height: 180.0,
+                        child: GridView.builder(
+                          shrinkWrap: true,
+                          padding: EdgeInsets.all(0.0),
+                          physics: NeverScrollableScrollPhysics(),
+                          gridDelegate:
+                          SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 6, //每行2个
+                            mainAxisSpacing: 10.0, //主轴方向间距
+                            crossAxisSpacing: 5.0, //水平方向间距
+                            childAspectRatio: .6, //纵轴缩放比例
+                          ),
+                          itemBuilder: (context, index) {
+                            return controller.sheet.length > 0
+                                ? _sheetItem(controller.allSheet[index],
+                                orientation)
+                                : LoadingView
+                                .buildGridViewSheetLoadingView();
+                          },
+                          itemCount: controller.sheet.length > 0
+                              ? controller.allSheet.length
+                              : 6,
+                        )),
+                  ),
+                  const SliverToBoxAdapter(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 8.0, vertical: 10.0),
+                      child: Text(
+                        "新歌推荐",
+                        style: TextStyle(
+                            fontSize: 16.0, fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
-                ),
-                SliverToBoxAdapter(
-                  child: Obx(() => ListView.builder(
-                    padding: EdgeInsets.all(0.0),
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          return controller.newSong.length == 0
-                              ? LoadingView.buildNewSongLoadingView()
-                              : _newSongItem(controller.newSong[index], index);
-                        },
-                        itemExtent: 110.0,
-                        itemCount: controller.newSong.length == 0
-                            ? 10
-                            : controller.newSong.length,
-                      )),
-                ),
-                // SliverFixedExtentList(
-                //   itemExtent: 110.0,
-                //     delegate: SliverChildBuilderDelegate(
-                //       (BuildContext context, int index) {
-                //     return controller.newSong.length==0 ?LoadingView.buildNewSongLoadingView():_newSongItem(controller.newSong[index],index);
-                //   },
-                //   childCount: controller.newSong.length==0 ? 10 : controller.newSong.length,
-                // ))
-              ],
-            ),
-            onRefresh: () async =>
-                controller.loadTodaySheet(forcedRefresh: true),
-          ));
+                  SliverToBoxAdapter(
+                    child: Obx(() => ListView.builder(
+                      padding: EdgeInsets.all(0.0),
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        return controller.newSong.length == 0
+                            ? LoadingView.buildNewSongLoadingView()
+                            : _newSongItem(
+                            controller.newSong[index], index);
+                      },
+                      itemExtent: 110.0,
+                      itemCount: controller.newSong.length == 0
+                          ? 10
+                          : controller.newSong.length,
+                    )),
+                  ),
+                ],
+              ),
+              onRefresh: () async =>
+                  controller.loadTodaySheet(forcedRefresh: true),
+            );
+          },));
     });
   }
 
+  Widget _today() {
+    return Hero(
+        tag: 'today',
+        child: Card(
+          child: InkWell(
+            child: Row(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(5.0),
+                  height: 120.0,
+                  child: Image.asset('assets/images/today.png'),
+                ),
+                Expanded(
+                    child: Stack(
+                  children: [
+                    Container(
+                      height: 120,
+                      alignment: Alignment.center,
+                      child: const Text(
+                        '每日推荐',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 20.0),
+                      ),
+                    ),
+                    Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 8.0, vertical: 5.0),
+                      height: 120,
+                      alignment: Alignment.bottomRight,
+                      width: double.infinity,
+                      child: Wrap(
+                        children: [
+                          Text(
+                            BuJuanUtil.dateToString(DateTime.now(), 2),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14.0,
+                                color: Theme.of(Get.context).accentColor),
+                          ),
+                          Text(
+                            BuJuanUtil.dateToString(DateTime.now(), 1),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18.0,
+                                color: Theme.of(Get.context).accentColor),
+                          )
+                        ],
+                      ),
+                    )
+                  ],
+                ))
+              ],
+            ),
+            onTap: () => controller.goToTodayMusic(),
+          ),
+        ));
+  }
+
   ///歌单itemView15556333717
-  Widget _sheetItem(PersonalResult personalResult) {
+  Widget _sheetItem(PersonalResult personalResult, Orientation orientation) {
     return Container(
-      width: (MediaQuery.of(Get.context).size.width - 10) / 3,
+      width: orientation == Orientation.portrait
+          ? (MediaQuery.of(Get.context).size.width - 10) / 3
+          : (MediaQuery.of(Get.context).size.width - 10) / 6,
       alignment: Alignment.center,
       child: Card(
         child: InkWell(

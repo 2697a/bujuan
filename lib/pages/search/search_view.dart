@@ -7,33 +7,30 @@ class SearchView extends GetView<SearchController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('搜索'),),
+      appBar: AppBar(title: Card(child: Row(
+        children: [
+          Padding(padding: EdgeInsets.symmetric(horizontal: 3.0)),
+          Icon(Icons.search),
+          Padding(padding: EdgeInsets.symmetric(horizontal: 3)),
+          Expanded(
+              child: TextField(
+                controller: controller.textEditingController,
+                textInputAction: TextInputAction.search,
+                onSubmitted: (value){
+                  Get.toNamed('/search_details',arguments: {'content':'$value'});
+                  controller.textEditingController.text = '';
+                },
+                // inputFormatters: [FilteringTextInputFormatter(RegExp('[a-zA-Z]|[0-9.]'), allow: true)],
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: '搜索',
+                ),
+              ))
+        ],
+      ),margin: EdgeInsets.all(0),),),
       resizeToAvoidBottomInset: false,
       body: Column(
         children: [
-          Card(
-            child:Row(
-              children: [
-                Padding(padding: EdgeInsets.symmetric(horizontal: 3.0)),
-                Icon(Icons.search),
-                Padding(padding: EdgeInsets.symmetric(horizontal: 3)),
-                Expanded(
-                    child: TextField(
-                      controller: controller.textEditingController,
-                      textInputAction: TextInputAction.search,
-                      onSubmitted: (value){
-                        Get.toNamed('/search_details',arguments: {'content':'$value'});
-                        controller.textEditingController.text = '';
-                      },
-                      // inputFormatters: [FilteringTextInputFormatter(RegExp('[a-zA-Z]|[0-9.]'), allow: true)],
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: '搜索',
-                      ),
-                    ))
-              ],
-            ),
-          ),
           Expanded(child: Obx(()=>ListView.builder(itemBuilder: (context,index){
             return InkWell(
               child: Container(

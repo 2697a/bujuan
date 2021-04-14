@@ -167,13 +167,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.1.2"
-  flutter_music_query:
-    dependency: "direct main"
-    description:
-      name: flutter_music_query
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "0.4.0"
   flutter_placeholder_textlines:
     dependency: "direct main"
     description:
@@ -181,13 +174,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.0.4"
-  flutter_plugin_android_lifecycle:
-    dependency: transitive
-    description:
-      name: flutter_plugin_android_lifecycle
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "1.0.11"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -433,7 +419,7 @@ packages:
       name: sleek_circular_slider
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.2.0+web"
+    version: "2.0.0"
   source_span:
     dependency: transitive
     description:
@@ -555,4 +541,4 @@ packages:
     version: "4.5.1"
 sdks:
   dart: ">=2.12.0 <3.0.0"
-  flutter: ">=1.24.0-10"
+  flutter: ">=2.0.0"

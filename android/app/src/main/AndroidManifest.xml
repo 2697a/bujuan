@@ -23,7 +23,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
-        android:name="io.flutter.app.FlutterApplication"
+        android:name="App"
         android:icon="@mipmap/ic_launcher"
         android:label="不倦"
         tools:replace="android:label"
