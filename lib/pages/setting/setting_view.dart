@@ -54,7 +54,7 @@ class SettingView extends GetView<SettingController> {
                           Padding(padding: EdgeInsets.symmetric(vertical: 5.0)),
                           Container(
                             child: Text(
-                              '版本号：1.0.6',
+                              '版本号：1.0.7',
                               style: TextStyle(fontSize: 14.0),
                             ),
                           )
