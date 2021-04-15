@@ -168,6 +168,7 @@ final handles = <String, Handler>{
   '/user/playlist': user_playlist,
   '/user/record': user_record,
   '/user/subcount': user_subcount,
+  '/user/scrobble':user_scrobble,
   '/user/update': user_update,
   '/video/detail': video_detail,
   '/video/group': video_group,

@@ -9,12 +9,12 @@ import 'package:get/get.dart';
 class GlobalBinding extends Bindings{
   @override
   void dependencies() {
-    Get.put<GlobalController>( GlobalController(),permanent: false);
-    Get.lazyPut<FindController>(() => FindController());
-    Get.lazyPut<UserController>(() => UserController());
-    Get.lazyPut<TopController>(() => TopController());
-    Get.lazyPut<MusicController>(() => MusicController());
-    Get.lazyPut<SearchController>(() => SearchController());
+    Get.put<GlobalController>( GlobalController(),permanent: true);
+    Get.put<FindController>(FindController());
+    Get.put<UserController>(UserController());
+    Get.put<TopController>(TopController());
+    Get.put<MusicController>(MusicController());
+    Get.put<SearchController>(SearchController());
   }
 
 }

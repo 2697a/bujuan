@@ -15,6 +15,7 @@ import snow.player.PlayMode
 import snow.player.Player
 import snow.player.PlayerClient
 import snow.player.SleepTimer
+import snow.player.SleepTimer.OnStateChangeListener
 import snow.player.audio.MusicItem
 import snow.player.playlist.Playlist
 import snow.player.playlist.PlaylistManager
@@ -27,10 +28,10 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     private lateinit var playlistChangeListener: (PlaylistManager, Int) -> Unit
     private lateinit var playModeListener: (PlayMode) -> Unit
     private lateinit var starryPlaybackStateChangeListener: StarryPlaybackStateChangeListener
+    private lateinit var starrySleepTimerStateChangeListener: OnStateChangeListener
     private lateinit var liveProgress: LiveProgress
     private lateinit var eventChannel: EventChannel
-    private lateinit var timingChannel: EventChannel
-    var activity: Activity? = null;
+    var activity: Activity? = null
     var eventSink: EventChannel.EventSink? = null
     var timingSink: EventChannel.EventSink? = null
 
@@ -42,7 +43,6 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "starry")
         eventChannel = EventChannel(flutterPluginBinding.binaryMessenger, "starry/event")
-        timingChannel = EventChannel(flutterPluginBinding.binaryMessenger, "starry/timing")
         channel.setMethodCallHandler(this)
     }
 
@@ -66,7 +66,6 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                     }
                 }
                 playerClient.addOnPlaylistChangeListener(playlistChangeListener)
-
                 //播放模式监听
                 playModeListener = { playMode ->
                     val value: Int = when (playMode) {
@@ -77,6 +76,17 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                     channel.invokeMethod("PLAY_MODE_CHANGE", value)
                 }
                 playerClient.addOnPlayModeChangeListener(playModeListener)
+                //睡眠监听
+                starrySleepTimerStateChangeListener = StarrySleepTimerStateChangeListener()
+                playerClient.addOnSleepTimerStateChangeListener(starrySleepTimerStateChangeListener)
+                if (playerClient.isPlaying) {
+                    if(playerClient.isSleepTimerStarted){
+                        channel.invokeMethod("SLEEP_CHANGE", hashMapOf("TIME" to playerClient.sleepTimerTime-playerClient.sleepTimerElapsedTime,"IS_PLAY" to true))
+                    }else{
+                        channel.invokeMethod("PLAYING_SONG_INFO", null)
+                    }
+                }
+                if (playerClient.isSleepTimerStarted&&!playerClient.isPlaying) playerClient.cancelSleepTimer()
                 result.success("success")
             }
             "PLAY_MUSIC" -> {
@@ -181,7 +191,7 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 //开启计时器
                 playerClient.cancelSleepTimer()
                 val value = call.argument<Long>("VALUE")!!
-                playerClient.startSleepTimer(value, SleepTimer.TimeoutAction.STOP)
+                playerClient.startSleepTimer(value, SleepTimer.TimeoutAction.PAUSE)
                 result.success("success")
             }
             "STOP_TIMING" -> {
@@ -204,7 +214,7 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             "MOVE_TO_BACK" -> {
                 activity?.moveTaskToBack(false)
                 result.success("success")
-    
+
             }
             else -> result.notImplemented()
 
@@ -217,10 +227,10 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         playerClient.removeOnPlayingMusicItemChangeListener(changeListener)
         playerClient.removeOnPlaybackStateChangeListener(starryPlaybackStateChangeListener)
         playerClient.removeOnPlaylistChangeListener(playlistChangeListener)
-//        playerClient.removeOnSleepTimerStateChangeListener(starrySleepTimerStateChangeListener)
+        playerClient.removeOnSleepTimerStateChangeListener(starrySleepTimerStateChangeListener)
         playerClient.removeOnPlayModeChangeListener(playModeListener)
         liveProgress.unsubscribe()
-        playerClient.shutdown()
+//        playerClient.shutdown()
     }
 
     override fun onDetachedFromActivity() {
@@ -254,16 +264,6 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                     }
                 })
 
-        //睡眠计时器
-        timingChannel.setStreamHandler(object : EventChannel.StreamHandler {
-            override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
-                timingSink = events
-            }
-
-            override fun onCancel(arguments: Any?) {
-            }
-
-        })
 
     }
 
@@ -287,14 +287,14 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     }
 
 
-    class StarrySleepTimerStateChangeListener(var timingSink: EventChannel.EventSink?) : SleepTimer.OnStateChangeListener {
+    class StarrySleepTimerStateChangeListener : OnStateChangeListener {
         override fun onTimerStart(time: Long, startTime: Long, action: SleepTimer.TimeoutAction?) {
             Log.d("App", "onTimerStart: $startTime")
-            timingSink?.success(startTime)
+            channel.invokeMethod("SLEEP_CHANGE", hashMapOf("TIME" to time,"IS_PLAY" to false))
         }
 
         override fun onTimerEnd() {
-
+            channel.invokeMethod("SLEEP_CHANGE", null)
         }
 
 

@@ -18,7 +18,7 @@ class SearchSheetController extends GetxController {
   }
 
   getSearch() {
-    NetUtils().search(SearchDetailController.to.searchContext, 1000).then((data) {
+    NetUtils().search(SearchDetailController.to.searchContext.value, 1000).then((data) {
       if (data is SearchSheetEntity) {
         search
           ..clear()

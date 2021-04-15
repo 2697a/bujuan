@@ -285,9 +285,7 @@ class FindView extends GetView<FindController> {
             ),
             onTap: () {
               Get.toNamed('/sheet', arguments: {
-                'id': personalResult.id,
-                'name': personalResult.name,
-                'imageUrl': '${personalResult.picUrl}?param=300y300'
+                'sheet': personalResult,
               });
             }),
       ),

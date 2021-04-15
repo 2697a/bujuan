@@ -15,14 +15,18 @@ import '../main.dart';
 
 class BuJuanUtil {
   static String unix2Time(unix) {
-    var minStr, secStr;
-    var min = unix ~/ 60;
-    var sec = unix - min * 60;
+    // unix = unix ~/ 1000;
+    var hourStr, minStr, secStr;
+    var hour = unix ~/ (60 * 60);
+    var min = (unix - hour * (60 * 60)) ~/ 60;
+    var sec = unix - hour * (60 * 60) - min * 60;
+    hourStr = '$hour';
     minStr = '$min';
     secStr = '$sec';
+    if (hour < 10) hourStr = '0$hour';
     if (min < 10) minStr = '0$min';
     if (sec < 10) secStr = '0$sec';
-    return '$minStr:$secStr';
+    return '${hourStr == '00' ? '' : '$hourStr:'}$minStr:$secStr';
   }
 
   static String unix2TimeTo(unix) {

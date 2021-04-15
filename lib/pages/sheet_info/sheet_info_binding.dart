@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 class SheetInfoBinding extends Bindings{
   @override
   void dependencies() {
-    Get.lazyPut<SheetInfoController>(() => SheetInfoController());
+    Get.put<SheetInfoController>(SheetInfoController());
   }
 
 }

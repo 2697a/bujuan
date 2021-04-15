@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 class TopBinding extends Bindings{
   @override
   void dependencies() {
-    Get.lazyPut<TopController>(() => TopController());
+    Get.put<TopController>(TopController());
   }
 
 }

@@ -6,13 +6,13 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 class TopController extends GetxController {
   var soaring = [].obs; //飙升榜
   final soaringImageUrl =
-      'http://p2.music.126.net/DrRIg6CrgDfVLEph9SNh7w==/18696095720518497.jpg?param=300y300';
+      'http://p2.music.126.net/DrRIg6CrgDfVLEph9SNh7w==/18696095720518497.jpg';
   var newSong = [].obs;
   var newSongImageUrl =
-      'https://p1.music.126.net/N2HO5xfYEqyQ8q6oxCw8IQ==/18713687906568048.jpg?param=300y300';
+      'https://p1.music.126.net/N2HO5xfYEqyQ8q6oxCw8IQ==/18713687906568048.jpg';
   var hotSong = [].obs;
   var hotSongImageUrl =
-      'http://p2.music.126.net/GhhuF6Ep5Tq9IEvLsyCN7w==/18708190348409091.jpg?param=300y300';
+      'http://p2.music.126.net/GhhuF6Ep5Tq9IEvLsyCN7w==/18708190348409091.jpg';
   RefreshController refreshController;
   var isLoad = false;
   var otherTops = [];

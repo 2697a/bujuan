@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 class MusicTalkBinding extends Bindings{
   @override
   void dependencies() {
-    Get.lazyPut<MusicTalkController>(() => MusicTalkController());
+    Get.put<MusicTalkController>(MusicTalkController());
   }
 
 }

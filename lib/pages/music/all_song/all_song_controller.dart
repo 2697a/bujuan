@@ -1,15 +1,14 @@
-import 'dart:io';
 
+import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/utils/bujuan_util.dart';
-import 'package:flutter/material.dart';
+import 'package:bujuan/utils/sp_util.dart';
 import 'package:get/get.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:starry/music_item.dart';
 import 'package:starry/starry.dart';
 import 'package:we_slide/we_slide.dart';
 
-import '../../../main.dart';
 
 class AllSongController extends GetxController {
   WeSlideController weSlideController;
@@ -41,7 +40,7 @@ class AllSongController extends GetxController {
         .then((value) {
       allMusic.clear();
       value.forEach((element) {
-        if(element.artist!="<unknown>"){
+        if(element.artist!="<unknown>"&&!GetUtils.isNullOrBlank(element.artist)&&!GetUtils.isNullOrBlank(element.title)){
           allMusic.add(element);
         }
       });
@@ -52,6 +51,8 @@ class AllSongController extends GetxController {
   }
 
   playSong(index) async {
+
+    SpUtil.putInt(PLAY_SONG_SHEET_ID, LOCAL_ID);
     BuJuanUtil.playSongByIndex(getSheetList(), index, PlayListMode.LOCAL);
   }
 

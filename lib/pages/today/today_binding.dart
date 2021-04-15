@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 class TodayBinding extends Bindings{
   @override
   void dependencies() {
-    Get.lazyPut<TodayController>(() => TodayController());
+    Get.put<TodayController>(TodayController());
   }
 
 }

@@ -14,13 +14,13 @@ class LyricView extends StatefulWidget {
   State<StatefulWidget> createState() => LyricViewState();
 }
 
-class LyricViewState extends State<LyricView> {
+class LyricViewState extends State<LyricView> with TickerProviderStateMixin{
   LyricController lyricController;
   final GlobalKey globalKey = GlobalKey();
 
   @override
   void initState() {
-    lyricController = LyricController();
+    lyricController = LyricController(vsync: this);
     super.initState();
   }
 
@@ -36,25 +36,21 @@ class LyricViewState extends State<LyricView> {
       lyricController.progress = Duration(seconds: widget.pos);
     }
     return Expanded(
-        child: lyric != null
-            ? OrientationBuilder(
-                key: globalKey,
-                builder: (context, orientation) {
-                  return LyricWidget(
-                      lyricMaxWidth: orientation == Orientation.landscape
+        child: OrientationBuilder(
+            key: globalKey,
+            builder: (context, orientation) {
+              return LyricWidget(
+                  lyricMaxWidth: orientation == Orientation.landscape
+                      ? MediaQuery.of(context).size.width / 1.4
+                      : MediaQuery.of(context).size.width / 1.4,
+                  enableDrag: false,
+                  controller: lyricController,
+                  lyrics: LyricUtil.formatLyric(widget.lyric),
+                  size: Size(
+                      orientation == Orientation.landscape
                           ? MediaQuery.of(context).size.width / 1.4
                           : MediaQuery.of(context).size.width / 1.4,
-                      enableDrag: false,
-                      controller: lyricController,
-                      lyrics: LyricUtil.formatLyric(widget.lyric),
-                      size: Size(
-                          orientation == Orientation.landscape
-                              ? MediaQuery.of(context).size.width / 1.4
-                              : MediaQuery.of(context).size.width / 1.4,
-                          100));
-                })
-            : Center(
-                child: Text('暂无歌词'),
-              ));
+                      100));
+            }));
   }
 }

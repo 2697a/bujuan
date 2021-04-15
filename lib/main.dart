@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:bujuan/pages/album/album_binding.dart';
 import 'package:bujuan/pages/album/album_view.dart';
@@ -11,6 +12,8 @@ import 'package:bujuan/pages/music/all_song/all_song_binding.dart';
 import 'package:bujuan/pages/music/all_song/all_song_view.dart';
 import 'package:bujuan/pages/play_view/music_talk/music_talk_binding.dart';
 import 'package:bujuan/pages/play_view/music_talk/music_talk_view.dart';
+import 'package:bujuan/pages/profile/history/history_binding.dart';
+import 'package:bujuan/pages/profile/history/history_view.dart';
 import 'package:bujuan/pages/profile/profile_binding.dart';
 import 'package:bujuan/pages/profile/profile_view.dart';
 import 'package:bujuan/pages/search/search_binding.dart';
@@ -116,15 +119,13 @@ main(List<String> args) async {
           page: () => LocalAlbumView(),
           binding: LocalAlbumBinding()),
       GetPage(
-          name: '/donate',
-          page: () => DonateView(),
-          binding: DonateBinding()),
+          name: '/donate', page: () => DonateView(), binding: DonateBinding()),
+      GetPage(name: '/about', page: () => AboutView()),
+      GetPage(name: '/album', page: () => AlbumView(), binding: AlbumBinding()),
       GetPage(
-          name: '/about',
-          page: () => AboutView()),
-      GetPage(
-          name: '/album',
-          page: () => AlbumView(),binding: AlbumBinding()),
+          name: '/history',
+          page: () => HistoryView(),
+          binding: HistoryBinding()),
     ],
   ));
 }
@@ -136,6 +137,11 @@ Future<HttpServer> _startServer({address = 'localhost', int port = 2697}) {
       _handleRequest(request);
     });
     return server;
+  }).catchError((e,s)async{
+    var rng = new Random();
+    var nextInt = rng.nextInt(49151-1024)+1024;
+    print("bbbbbbbbbbb$nextInt");
+    await _startServer(port: nextInt);
   });
 }
 
@@ -143,7 +149,7 @@ void _handleRequest(HttpRequest request) async {
   final answer = await cloudMusicApi(request.uri.path,
           parameter: request.uri.queryParameters, cookie: request.cookies)
       .catchError((e, s) async {
-    // print(e.toString());
+    print(e.toString());
     return Answer();
   });
 
@@ -170,7 +176,7 @@ class FileService extends GetxService {
   final version = 0.obs;
 
   Future<FileService> init() async {
-    await _startServer();
+    await _startServer(port: 0);
     directory.value = await getTemporaryDirectory();
     version.value = await OnAudioQuery().getDeviceSDK();
     return this;

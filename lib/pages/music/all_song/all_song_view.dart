@@ -1,12 +1,9 @@
 import 'package:bujuan/global/global_loding_view.dart';
 import 'package:bujuan/pages/music/all_song/all_song_controller.dart';
-import 'package:bujuan/pages/music_bottom_bar/music_bottom_bar_view.dart';
-import 'package:bujuan/pages/play_view/default_view.dart';
 import 'package:bujuan/pages/play_widget/play_widget_view.dart';
 import 'package:bujuan/widget/over_scroll.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:we_slide/we_slide.dart';
 
 class AllSongView extends GetView<AllSongController>{
   @override

@@ -353,7 +353,7 @@ class PageScrollPhysics extends ScrollPhysics {
     final double target = _getTargetPixels(position, tolerance, velocity);
     if (target != position.pixels)
       return ScrollSpringSimulation(SpringDescription(
-        mass: 4,
+        mass: 2.5,
         stiffness: 120,
         damping: 25,
       ), position.pixels, target, velocity,

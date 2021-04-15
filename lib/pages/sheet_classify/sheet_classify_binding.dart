@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 class SheetClassifyBinding extends Bindings{
   @override
   void dependencies() {
-    Get.lazyPut<SheetClassifyController>(() => SheetClassifyController());
+    Get.put<SheetClassifyController>(SheetClassifyController());
   }
 
 }

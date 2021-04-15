@@ -7,7 +7,8 @@ import 'music_item.dart';
 
 typedef Future<String> GetSongUrl(String id);
 enum PlayState { PLAYING, PAUSE, STOP, ERROR }
-enum PlayListMode { SONG, FM, RADIO,LOCAL }
+enum PlayListMode { SONG, FM, RADIO, LOCAL }
+
 class SongUrl {
   GetSongUrl getSongUrl;
 
@@ -21,24 +22,38 @@ class Starry {
   static const EventChannel timingChannel = const EventChannel('starry/timing');
 
   ///歌曲播放状态
-  static final StreamController<PlayState> _playerStateController = StreamController<PlayState>.broadcast();
+  static final StreamController<PlayState> _playerStateController =
+      StreamController<PlayState>.broadcast();
 
-  static Stream<PlayState> get onPlayerStateChanged => _playerStateController.stream;
+  static Stream<PlayState> get onPlayerStateChanged =>
+      _playerStateController.stream;
 
   ///当前播放歌曲
-  static final StreamController<PlayMusicInfo> _playerSongController = StreamController<PlayMusicInfo>.broadcast();
+  static final StreamController<PlayMusicInfo> _playerSongController =
+      StreamController<PlayMusicInfo>.broadcast();
 
-  static Stream<PlayMusicInfo> get onPlayerSongChanged => _playerSongController.stream;
+  static Stream<PlayMusicInfo> get onPlayerSongChanged =>
+      _playerSongController.stream;
 
   ///当前播放模式
-  static final StreamController<int> _playerModeController = StreamController<int>.broadcast();
+  static final StreamController<int> _playerModeController =
+      StreamController<int>.broadcast();
 
   static Stream<int> get onPlayerModeChanged => _playerModeController.stream;
 
   ///播放列表发生变化
-  static final StreamController<PlayListInfo> _playerSongListController = StreamController<PlayListInfo>.broadcast();
+  static final StreamController<PlayListInfo> _playerSongListController =
+      StreamController<PlayListInfo>.broadcast();
 
-  static Stream<PlayListInfo> get onPlayerSongListChanged => _playerSongListController.stream;
+  static Stream<PlayListInfo> get onPlayerSongListChanged =>
+      _playerSongListController.stream;
+
+  ///播放睡眠状态发生变化
+  static final StreamController<num> _sleepStateChangedController =
+      StreamController<num>.broadcast();
+
+  static Stream<num> get onSleepStateChanged =>
+      _sleepStateChangedController.stream;
 
   ///初始化
   static Future<void> init({SongUrl url}) async {
@@ -50,8 +65,10 @@ class Starry {
   ///add播放类表并根据下标播放
   static Future<void> playMusic(List song, int index) async {
     var jsonEncode2 = jsonEncode(song);
-    await _channel.invokeMethod('PLAY_MUSIC', {'PLAY_LIST': jsonEncode2, 'INDEX': index});
+    await _channel
+        .invokeMethod('PLAY_MUSIC', {'PLAY_LIST': jsonEncode2, 'INDEX': index});
   }
+
   ///add播放类表并根据下标播放
   static Future<void> setPlayList(List song) async {
     var jsonEncode2 = jsonEncode(song);
@@ -63,7 +80,6 @@ class Starry {
     var jsonEncode2 = jsonEncode(song);
     await _channel.invokeMethod('ADD_SONG', {'ADD_PLAY_LIST': jsonEncode2});
   }
-
 
   ///add播放类表并根据下标播放
   static Future<void> removeSong(int size) async {
@@ -105,12 +121,12 @@ class Starry {
   }
 
   ///开启计时器
-  static Future<void> startTiming(int value) async{
-    await _channel.invokeMethod('START_TIMING',{"VALUE":value});
+  static Future<void> startTiming(int value) async {
+    await _channel.invokeMethod('START_TIMING', {"VALUE": value});
   }
 
   ///关闭计时器
-  static Future<void> stopTiming() async{
+  static Future<void> stopTiming() async {
     await _channel.invokeMethod('STOP_TIMING');
   }
 
@@ -136,14 +152,14 @@ class Starry {
 
   ///是否开启抢占焦点
   static Future<int> toggleAudioFocus(bool value) async {
-   return await _channel.invokeMethod('TOGGLE_IGNORE_AUDIO_FOCUS', {'IS_IGNORE': value});
+    return await _channel
+        .invokeMethod('TOGGLE_IGNORE_AUDIO_FOCUS', {'IS_IGNORE': value});
   }
 
   ///设置循环方式
   static Future<int> setPlayMode(int value) async {
     return await _channel.invokeMethod('SET_PLAY_MODE', {'VALUE': value});
   }
-
 
   static Future<dynamic> _platformCallHandler(MethodCall call) async {
     var method = call.method;
@@ -158,7 +174,8 @@ class Starry {
       //切歌
       var songMap = jsonDecode(arguments['MUSIC']);
       var musicItem = MusicItem.fromJson(songMap);
-      _playerSongController.add(PlayMusicInfo(musicItem,arguments['POSITION']));
+      _playerSongController
+          .add(PlayMusicInfo(musicItem, arguments['POSITION']));
     } else if (method == 'PAUSE_OR_IDEA_SONG_INFO') {
       //暂停或初始化
       _playerStateController.add(PlayState.PAUSE);
@@ -174,6 +191,14 @@ class Starry {
       int position = arguments['POSITION'];
       var playlist = list.map((e) => MusicItem.fromJson(e)).toList();
       _playerSongListController.add(PlayListInfo(playlist, position));
+    } else if (method == 'SLEEP_CHANGE') {
+      //睡眠时间
+      var time = 0;
+      if (arguments != null) {
+        time = arguments['TIME'];
+        if (arguments['IS_PLAY']) _playerStateController.add(PlayState.PLAYING);
+      }
+      _sleepStateChangedController.add(time);
     }
   }
 
@@ -183,15 +208,14 @@ class Starry {
   }
 }
 
-class PlayListInfo{
+class PlayListInfo {
   final List<MusicItem> playlist;
   final int position;
 
   PlayListInfo(this.playlist, this.position);
 }
 
-
-class PlayMusicInfo{
+class PlayMusicInfo {
   final MusicItem musicItem;
   final int position;
 

@@ -5,7 +5,7 @@ import 'cloud_controller.dart';
 class CloudBinding extends Bindings{
   @override
   void dependencies() {
-    Get.lazyPut<CloudController>(() => CloudController());
+    Get.put<CloudController>(CloudController());
   }
 
 }

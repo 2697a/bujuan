@@ -23,7 +23,7 @@ class SearchSongController extends GetxController {
   }
 
   getSearch() {
-    NetUtils().search(SearchDetailController.to.searchContext, 1).then((data) {
+    NetUtils().search(SearchDetailController.to.searchContext.value, 1).then((data) {
       if (data is List<SheetDetailsPlaylistTrack>) {
         search
           ..clear()
@@ -35,6 +35,7 @@ class SearchSongController extends GetxController {
 
   playSong(index)  {
     BuJuanUtil.playSongByIndex(getSheetList(), index, PlayListMode.SONG);
+    SpUtil.putInt(PLAY_SONG_SHEET_ID, SEARCH_ID);
   }
 
   getSheetList() {

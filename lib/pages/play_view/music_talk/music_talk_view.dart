@@ -64,18 +64,18 @@ class MusicTalkView extends GetView<MusicTalkController> {
                   onLoading: () => controller.loadMoreTalk(),
                 ),
               )),
-              Container(
-                padding: EdgeInsets.symmetric(vertical: 3.0, horizontal: 12.0),
-                child: TextField(
-                  controller: controller.talkEditingController,
-                  decoration: InputDecoration(
-                    contentPadding: EdgeInsets.symmetric(vertical: 0.0,horizontal: 8.0),
-
-                    border: InputBorder.none,
-                    hintText: '插一嘴？',
-                  ),
-                ),
-              )
+              // Container(
+              //   padding: EdgeInsets.symmetric(vertical: 3.0, horizontal: 12.0),
+              //   child: TextField(
+              //     controller: controller.talkEditingController,
+              //     decoration: InputDecoration(
+              //       contentPadding: EdgeInsets.symmetric(vertical: 0.0,horizontal: 8.0),
+              //
+              //       border: InputBorder.none,
+              //       hintText: '插一嘴？',
+              //     ),
+              //   ),
+              // )
             ],
           )),
     );

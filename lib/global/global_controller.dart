@@ -1,12 +1,13 @@
 import 'dart:io';
 
-import 'package:bujuan/entity/lyric_entity.dart';
 import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/pages/user/user_controller.dart';
 import 'package:bujuan/utils/net_util.dart';
 import 'package:bujuan/utils/sp_util.dart';
+import 'package:bujuan/widget/art_widget.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:starry/music_item.dart';
@@ -16,20 +17,34 @@ import '../main.dart';
 
 class GlobalController extends SuperController {
   final playState = PlayState.STOP.obs;
-  final playPos = 0.obs;
+  var playPos = 0;
   final playMode = 1.obs;
+  var sleepTime = 0;
+  var selectIndex = 99;
   final song = MusicItem(
-      musicId: '-99',
-      duration: 6000,
-      title: '暂无歌曲',
-      artist: '暂无',
-      iconUri:
-      'https://pic1.zhimg.com/80/v2-7ff2d917aa926cfbf2e8b85b035e2563_1440w.jpg')
+          musicId: '-99',
+          duration: 6000,
+          title: '暂无歌曲',
+          artist: '暂无',
+          iconUri:
+              'https://pic1.zhimg.com/80/v2-7ff2d917aa926cfbf2e8b85b035e2563_1440w.jpg')
       .obs;
-  final lyric = LyricEntity().obs; //音质
+  var lyric; //音质
   final playList = [].obs;
   final playListMode = PlayListMode.SONG.obs;
   ScrollController scrollController;
+  final data = [
+    TimingData("分钟", 10 * 60, "10"),
+    TimingData("分钟", 20 * 60, "20"),
+    TimingData("分钟", 30 * 60, "30"),
+    TimingData("分钟", 45 * 60, "45"),
+    TimingData("小时", 60 * 60, "1"),
+    TimingData("小时", 1.5 * 60 * 60, "1.5"),
+    TimingData("小时", 2 * 60 * 60, "2"),
+    TimingData("小时", 2.5 * 60 * 60, "2.5"),
+    TimingData("小时", 3 * 60 * 60, "3"),
+    TimingData("小时", 4 * 60 * 60, "4")
+  ];
 
   static GlobalController get to => Get.find();
 
@@ -37,6 +52,12 @@ class GlobalController extends SuperController {
   void onInit() {
     scrollController = ScrollController();
     super.onInit();
+  }
+
+  @override
+  void onReady() {
+    changeSleepIndex(SpUtil.getInt(SLEEP_INDEX, defValue: 99));
+    super.onReady();
   }
 
   void addSliderListener(weSlideController) {
@@ -49,16 +70,10 @@ class GlobalController extends SuperController {
     });
   }
 
-  ///获取当前播放歌曲
-  void getNowPlaying() async {
-    var musicItem = await Starry.getNowPlaying();
-    song.value = musicItem;
-  }
-
   ///滚动到指定位置
   scrollToIndex() {
     var indexWhere =
-    playList.indexWhere((element) => element.musicId == song.value.musicId);
+        playList.indexWhere((element) => element.musicId == song.value.musicId);
     if (indexWhere > -1) scrollController?.jumpTo(indexWhere * 52.0);
   }
 
@@ -72,11 +87,6 @@ class GlobalController extends SuperController {
     playList
       ..clear()
       ..addAll(list);
-  }
-
-  ///更新当前歌曲(弃用)
-  changeSong(MusicItem song) async {
-    this.song.value = song;
   }
 
   ///播放或暂停
@@ -112,6 +122,7 @@ class GlobalController extends SuperController {
   }
 
   likeOrUnLike() {
+    if (song.value.musicId == '-99') return;
     var contains = HomeController.to.likeSongs.contains(song.value.musicId);
     NetUtils().likeOrUnlike(song.value.musicId, !contains).then((value) {
       ///操作成功
@@ -147,17 +158,94 @@ class GlobalController extends SuperController {
     await Starry.changeSongSeek(seek);
   }
 
+  ///获取本地音乐图片
   Widget getLocalImage() {
-    return Get
-        .find<FileService>()
-        .version
-        .value >= 29 ? QueryArtworkWidget(
-      id: int.parse(song.value.musicId),
-      type: ArtworkType.AUDIO,
-    ) : FileImage(
-      File(song.value.iconUri),
-    );
+    return Get.find<FileService>().version.value >= 29
+        ? ArtworkWidget(
+            id: int.parse(song.value.musicId),
+            artworkHeight: 50.0,
+            artworkWidth: 50.0,
+            type: ArtworkType.AUDIO,
+          )
+        : song.value.iconUri != null && song.value.iconUri.split('?').length > 0
+            ? Image.file(File(song.value.iconUri.split('?')[0]))
+            : Icon(
+                Icons.image_not_supported,
+                size: 50.0,
+              );
+  }
 
+  changeSleepIndex(index, [isStart = false]) {
+    if (index == 99) return;
+    selectIndex = index;
+    update(['sleep_index']);
+    if (isStart) {
+      SpUtil.putInt(SLEEP_INDEX, selectIndex);
+      Starry.startTiming((data[index].value * 1000)~/1);
+    }
+  }
+
+  closeSleep() {
+    if (sleepTime > 0) {
+      selectIndex = 99;
+      SpUtil.putInt(SLEEP_INDEX, selectIndex);
+      update(['sleep_index']);
+      Starry.stopTiming();
+    }
+  }
+
+  scrobble() {
+    if (SpUtil.getInt(PLAY_SONG_SHEET_ID, defValue: -999) > 0) {
+      NetUtils()
+          .scrobble(song.value.musicId, SpUtil.getInt(PLAY_SONG_SHEET_ID),
+              DateTime.now().second)
+          .then((value) {
+        var text = '听歌打卡失败';
+        if (value) text = '听歌打卡成功';
+        Get.defaultDialog(
+            title: '听歌打卡',
+            content: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
+                child: Center(
+                  child: Wrap(
+                    direction: Axis.vertical,
+                    children: [
+                      Text(
+                        text,
+                        style: TextStyle(color: Colors.blue, fontSize: 16.0),
+                      ),
+                      Padding(padding: EdgeInsets.symmetric(vertical: 3.0)),
+                      Text(
+                        '(请不要频繁请求！)',
+                        style: TextStyle(fontSize: 14.0),
+                      )
+                    ],
+                  ),
+                )),
+            textConfirm: '确定',
+            buttonColor: Theme.of(Get.context).cardColor,
+            onConfirm: () => Get.back());
+      });
+    } else {
+      Get.defaultDialog(
+          title: '听歌打卡',
+          content: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
+              child: Center(
+                child: Wrap(
+                  direction: Axis.vertical,
+                  children: [
+                    Text(
+                      '该歌曲不支持听歌打卡',
+                      style: TextStyle(color: Colors.blue, fontSize: 16.0),
+                    ),
+                  ],
+                ),
+              )),
+          textConfirm: '确定',
+          buttonColor: Theme.of(Get.context).cardColor,
+          onConfirm: () => Get.back());
+    }
   }
 
   @override
@@ -185,4 +273,11 @@ class GlobalController extends SuperController {
   void onResumed() {
     print('onResumed');
   }
+}
+class TimingData {
+  var format;
+  var value;
+  var name;
+
+  TimingData(this.format, this.value, this.name);
 }

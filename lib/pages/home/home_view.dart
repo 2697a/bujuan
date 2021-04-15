@@ -3,17 +3,13 @@ import 'package:bujuan/widget/over_scroll.dart';
 import 'package:bujuan/widget/preload_page_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:starry/starry.dart';
 
 import 'home_controller.dart';
 
 class HomeView extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(child: _buildHomeView(), onWillPop: ()async{
-      await Starry.moveToBack();
-      return false;
-    });
+    return _buildHomeView();
   }
 
   Widget _buildContent() {

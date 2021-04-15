@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:bujuan/main.dart';
+import 'package:bujuan/widget/art_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:on_audio_query/on_audio_query.dart';
@@ -36,8 +37,10 @@ class MusicController extends GetxController {
           artists.add(element);
         }
       });
-      if(artists.length==0) isNoArtists.value = true;
-      else isNoArtists.value = false;
+      if (artists.length == 0)
+        isNoArtists.value = true;
+      else
+        isNoArtists.value = false;
     });
     getAllAlbum();
   }
@@ -54,23 +57,33 @@ class MusicController extends GetxController {
           albums.add(element);
         }
       });
-      if(albums.length==0) isNoAlbum.value = true;
-      else isNoAlbum.value = false;
+      if (albums.length == 0)
+        isNoAlbum.value = true;
+      else
+        isNoAlbum.value = false;
       refreshController?.refreshCompleted();
     });
   }
 
-  Widget getLocalImage(AlbumModel albumModel,double size) {
+  Widget getLocalImage(AlbumModel albumModel, double size) {
     return Get.find<FileService>().version.value >= 29
-        ? QueryArtworkWidget(
+        ? ArtworkWidget(
             artworkBorder: BorderRadius.circular(0),
             artworkHeight: size,
             artworkWidth: size,
             id: albumModel.id,
             type: ArtworkType.ALBUM,
           )
-        : FileImage(
-            File(albumModel.artwork),
-          );
+        : albumModel.artwork != null && albumModel.artwork.split('?').length > 0
+            ? Image.file(
+                File(
+                  albumModel.artwork.split('?')[0],
+                ),
+                width: size,
+                height: size)
+            : Icon(
+                Icons.image_not_supported,
+                size: size,
+              );
   }
 }

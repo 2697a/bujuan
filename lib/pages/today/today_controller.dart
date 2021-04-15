@@ -1,15 +1,10 @@
-import 'package:bujuan/entity/sheet_details_entity.dart';
 import 'package:bujuan/global/global_config.dart';
-import 'package:bujuan/global/global_controller.dart';
-import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/utils/bujuan_util.dart';
 import 'package:bujuan/utils/net_util.dart';
 import 'package:bujuan/utils/sp_util.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:starry/music_item.dart';
 import 'package:starry/starry.dart';
-import 'package:we_slide/we_slide.dart';
 
 class TodayController extends GetxController {
   final list = [].obs;
@@ -53,7 +48,7 @@ class TodayController extends GetxController {
     });
 
     BuJuanUtil.playSongByIndex(songs, index, PlayListMode.SONG);
-    SpUtil.putInt(PLAY_SONG_SHEET_ID, -999);
+    SpUtil.putInt(PLAY_SONG_SHEET_ID, TODAY_ID);
     // }
   }
 

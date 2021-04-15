@@ -1,11 +1,14 @@
+import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/utils/bujuan_util.dart';
 import 'package:bujuan/utils/net_util.dart';
+import 'package:bujuan/utils/sp_util.dart';
 import 'package:get/get.dart';
 import 'package:starry/music_item.dart';
 import 'package:starry/starry.dart';
 
 class AlbumController extends GetxController {
   final albumDetails = [].obs;
+  final albumId = 1.obs;
 
   @override
   void onReady() {
@@ -15,10 +18,12 @@ class AlbumController extends GetxController {
 
   getAlbum() {
     NetUtils().getAlbumDetails(Get.arguments['id']).then((value) {
-      if (value != null)
+      if (value != null) {
         albumDetails
           ..clear()
-          ..addAll(value);
+          ..addAll(value.data);
+        albumId.value = value.album.id;
+      }
     });
   }
 
@@ -35,7 +40,7 @@ class AlbumController extends GetxController {
       );
       songs.add(musicItem);
     });
-
+    SpUtil.putInt(PLAY_SONG_SHEET_ID, albumId.value);
     BuJuanUtil.playSongByIndex(songs, index, PlayListMode.SONG);
   }
 }

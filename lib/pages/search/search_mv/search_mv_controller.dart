@@ -18,7 +18,7 @@ class SearchMvController extends GetxController{
   }
 
   getSearch() {
-    NetUtils().search(SearchDetailController.to.searchContext, 1004).then((data) {
+    NetUtils().search(SearchDetailController.to.searchContext.value, 1004).then((data) {
       if (data is SearchMvEntity) {
         search
           ..clear()

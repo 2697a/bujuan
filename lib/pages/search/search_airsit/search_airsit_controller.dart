@@ -18,7 +18,7 @@ class SearchAirsitController extends GetxController{
   }
 
   getSearch() {
-    NetUtils().search(SearchDetailController.to.searchContext, 100).then((data) {
+    NetUtils().search(SearchDetailController.to.searchContext.value, 100).then((data) {
       if (data is SearchSingerEntity) {
         search
           ..clear()

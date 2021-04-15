@@ -40,7 +40,7 @@ class LyricWidget extends StatefulWidget {
       this.lyricStyle,
       this.remarkStyle,
       this.currLyricStyle,
-      this.lyricGap: 12,
+      this.lyricGap: 15,
       this.remarkLyricGap: 10,
       this.draggingLyricStyle,
       this.draggingRemarkLyricStyle,

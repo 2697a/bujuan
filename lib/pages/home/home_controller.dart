@@ -15,6 +15,7 @@ import 'package:bujuan/pages/user/user_view.dart';
 import 'package:bujuan/utils/bujuan_util.dart';
 import 'package:bujuan/utils/net_util.dart';
 import 'package:bujuan/utils/sp_util.dart';
+import 'package:bujuan/widget/timer/timer_controller.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:bujuan/widget/preload_page_view.dart';
@@ -32,12 +33,13 @@ class HomeController extends SuperController {
   final scroller = false.obs;
   final likeSongs = [].obs;
   final pages = [UserView(), FindView(), TopView(), MusicView()];
+   CountdownController countdownController;
 
   static HomeController get to => Get.find();
 
   @override
   void onInit() {
-    GlobalController.to.lyric.value = null;
+    countdownController = CountdownController();
     GlobalController.to.playListMode.value =
         PlayListMode.values[SpUtil.getInt(PLAY_LIST_MODE, defValue: 0)];
     userProfileEntity.value = null;
@@ -45,13 +47,22 @@ class HomeController extends SuperController {
     isSystemTheme.value = SpUtil.getBool(IS_SYSTEM_THEME_SP, defValue: true);
     login.value = !GetUtils.isNullOrBlank(SpUtil.getString(USER_ID_SP));
     scroller.value = SpUtil.getBool(OPEN_SCROLL, defValue: false);
+    _streamSubscription =
+        Starry.eventChannel.receiveBroadcastStream().listen((pos) {
+      if (pos != null) {
+        GlobalController.to.playPos = pos;
+        update(['play_pos']);
+      }
+    }, cancelOnError: true);
     super.onInit();
     // SpUtil.putBool(IS_FIRST_OPEN, false);
   }
 
   @override
   void onReady() {
-    OnAudioQuery().queryPlaylists(PlaylistSortType.DATA_ADDED,OrderType.ASC_OR_SMALLER,UriType.EXTERNAL,true);
+    OnAudioQuery().queryPlaylists(PlaylistSortType.DATA_ADDED,
+        OrderType.ASC_OR_SMALLER, UriType.EXTERNAL, true);
+
     ///获取歌曲播放地址
     Starry.init(url: SongUrl(getSongUrl: (id) async {
       return await NetUtils().getSongUrl(id);
@@ -87,16 +98,8 @@ class HomeController extends SuperController {
   }
 
   void resumeStream() {
-    if (_streamSubscription != null && _streamSubscription.isPaused) {
+    if (_streamSubscription != null && _streamSubscription.isPaused)
       _streamSubscription.resume();
-    } else {
-      _streamSubscription =
-          Starry.eventChannel.receiveBroadcastStream().listen((pos) {
-        if (pos != null) {
-          Get.find<GlobalController>().playPos.value = pos;
-        }
-      }, cancelOnError: true);
-    }
   }
 
   @override
@@ -123,12 +126,13 @@ class HomeController extends SuperController {
   _listenerStarry() {
     ///歌曲发生变化
     Starry.onPlayerSongChanged.listen((PlayMusicInfo playMusicInfo) async {
-      Get.find<GlobalController>().song.value = playMusicInfo.musicItem;
+      GlobalController.to.song.value = playMusicInfo.musicItem;
       GlobalController.to.getLocalImage();
       NetUtils()
           .getMusicLyric(playMusicInfo.musicItem.musicId)
           .then((lyricEntity) {
-        GlobalController.to.lyric.value = lyricEntity;
+        GlobalController.to.lyric = lyricEntity;
+        update(['play_pos']);
       });
       var playListMode = GlobalController.to.playListMode.value;
       var playList = GlobalController.to.playList;
@@ -158,19 +162,26 @@ class HomeController extends SuperController {
         var currSong = playListInfo.playlist[playListInfo.position];
         GlobalController.to.song.value = currSong;
         GlobalController.to.getLocalImage();
-        var lyric = Get.find<GlobalController>().lyric.value;
+        var lyric = Get.find<GlobalController>().lyric;
         if (lyric == null)
           NetUtils().getMusicLyric(currSong.musicId).then((lyricEntity) {
-            GlobalController.to.lyric.value = lyricEntity;
+            GlobalController.to.lyric = lyricEntity;
+            update(['play_pos']);
           });
       }
     });
 
-    ///b
+    ///播放模式发生变化
     Starry.onPlayerModeChanged.listen((value) {
       if (value != null) {
         GlobalController.to.playMode.value = value;
       }
+    });
+
+    ///睡眠状态发生变化
+    Starry.onSleepStateChanged.listen((event) {
+      GlobalController.to.sleepTime = event;
+      update(['sleep', 'sleep_index']);
     });
   }
 
@@ -194,7 +205,7 @@ class HomeController extends SuperController {
       await NetUtils().refreshLogin();
       // if (loginEntity != null && loginEntity['code'] == 200) {
       //刷新成功
-      getUserProfile(SpUtil.getString(USER_ID_SP, defValue: ''));
+      await getUserProfile(SpUtil.getString(USER_ID_SP, defValue: ''));
       // } else {
       //   ///太久未登录，重新登录吧！！！！！
       // }
@@ -209,6 +220,7 @@ class HomeController extends SuperController {
     SpUtil.putBool(OPEN_SCROLL, scroller.value);
   }
 
+  ///获取用户资料
   getUserProfile(userId) async {
     var profile = await NetUtils().getUserProfile(userId);
     if (profile != null && profile.code == 200) {
@@ -243,17 +255,17 @@ class HomeController extends SuperController {
     if (index != currentIndex) {
       currentIndex = index;
       update();
-      // Future.delayed(Duration(microseconds: 500), () {
-      var userController = Get.find<UserController>();
-      var topController = Get.find<TopController>();
-      if (index == 0 && !userController.isLoad) {
-        userController.getUserSheet();
-      } else if (index == 2 && !topController.isLoad) {
-        topController.getData();
-      } else if (index == 3&& !Get.find<MusicController>().isLoad) {
-        Get.find<MusicController>().getAllArtists();
-      }
-      // });
+      Future.delayed(Duration(microseconds: 500), () {
+        var userController = Get.find<UserController>();
+        var topController = Get.find<TopController>();
+        if (index == 0 && !userController.isLoad) {
+          userController.getUserSheet();
+        } else if (index == 2 && !topController.isLoad) {
+          topController.getData();
+        } else if (index == 3 && !Get.find<MusicController>().isLoad) {
+          Get.find<MusicController>().getAllArtists();
+        }
+      });
     }
   }
 

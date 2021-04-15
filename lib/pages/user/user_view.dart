@@ -1,3 +1,4 @@
+import 'package:bujuan/entity/personal_entity.dart';
 import 'package:bujuan/entity/user_order_entity.dart';
 import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/global/global_controller.dart';
@@ -22,10 +23,10 @@ class UserView extends GetView<UserController> {
     return ScrollConfiguration(
       behavior: OverScrollBehavior(),
       child: Obx(() => SmartRefresher(
-        header:  WaterDropMaterialHeader(
-          color: Theme.of(context).accentColor,
-          backgroundColor: Theme.of(context).primaryColor,
-        ),
+            header: WaterDropMaterialHeader(
+              color: Theme.of(context).accentColor,
+              backgroundColor: Theme.of(context).primaryColor,
+            ),
             controller: controller.refreshController,
             onRefresh: () => controller.getUserSheet(forcedRefresh: true),
             child: CustomScrollView(
@@ -42,8 +43,10 @@ class UserView extends GetView<UserController> {
                     title: Text('私人FM'),
                     subtitle: Text('点击播放'),
                     onTap: () {
-                      if (Get.find<GlobalController>().playListMode.value ==
-                          PlayListMode.SONG) controller.getFM();
+                      if (GlobalController.to.playListMode.value !=
+                          PlayListMode.FM) {
+                        controller.getFM();
+                      }
                     },
                   ),
                 ),
@@ -52,7 +55,8 @@ class UserView extends GetView<UserController> {
                   delegate: SliverChildBuilderDelegate(
                     (BuildContext context, int index) {
                       return controller.lovePlayList.length > 0
-                          ? _buildUserSheetItem(controller.lovePlayList[index],isLike: true)
+                          ? _buildUserSheetItem(controller.lovePlayList[index],
+                              isLike: true)
                           : _loadUserSheetView();
                     },
                     childCount: controller.lovePlayList.length > 0
@@ -63,7 +67,7 @@ class UserView extends GetView<UserController> {
                 const SliverToBoxAdapter(
                   child: Padding(
                     padding:
-                    EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
+                        EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
                     child: Text(
                       "我创建的",
                       style: TextStyle(
@@ -71,38 +75,41 @@ class UserView extends GetView<UserController> {
                     ),
                   ),
                 ),
-                controller.isNoCreate.value?
-                SliverToBoxAdapter(
-                  child: Container(
-                    height: 80.0,
-                    child: Center(
-                      child: Wrap(
-                        children: [
-                          Icon(Icons.sentiment_neutral_outlined),
-                          Padding(padding: EdgeInsets.symmetric(horizontal: 6.0)),
-                          Text('暂无收藏歌单')
-                        ],
+                controller.isNoCreate.value
+                    ? SliverToBoxAdapter(
+                        child: Container(
+                          height: 80.0,
+                          child: Center(
+                            child: Wrap(
+                              children: [
+                                Icon(Icons.sentiment_neutral_outlined),
+                                Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 6.0)),
+                                Text('暂无收藏歌单')
+                              ],
+                            ),
+                          ),
+                        ),
+                      )
+                    : SliverFixedExtentList(
+                        itemExtent: 60.0,
+                        delegate: SliverChildBuilderDelegate(
+                          (BuildContext context, int index) {
+                            return controller.createPlayList.length > 0
+                                ? _buildUserSheetItem(
+                                    controller.createPlayList[index])
+                                : _loadUserSheetView();
+                          },
+                          childCount: controller.createPlayList.length > 0
+                              ? controller.createPlayList.length
+                              : 5,
+                        ),
                       ),
-                    ),
-                  ),
-                ): SliverFixedExtentList(
-                  itemExtent: 60.0,
-                  delegate: SliverChildBuilderDelegate(
-                    (BuildContext context, int index) {
-                      return controller.createPlayList.length > 0
-                          ? _buildUserSheetItem(
-                              controller.createPlayList[index])
-                          : _loadUserSheetView();
-                    },
-                    childCount: controller.createPlayList.length > 0
-                        ? controller.createPlayList.length
-                        : 5,
-                  ),
-                ),
                 const SliverToBoxAdapter(
                   child: Padding(
                     padding:
-                    EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
+                        EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
                     child: Text(
                       "我收藏的",
                       style: TextStyle(
@@ -110,35 +117,37 @@ class UserView extends GetView<UserController> {
                     ),
                   ),
                 ),
-                controller.isNoCollect.value?
-                    SliverToBoxAdapter(
-                      child: Container(
-                        height: 80.0,
-                        child: Center(
-                          child: Wrap(
-                            children: [
-                              Icon(Icons.sentiment_neutral_outlined),
-                              Padding(padding: EdgeInsets.symmetric(horizontal: 6.0)),
-                              Text('暂无收藏歌单')
-                            ],
+                controller.isNoCollect.value
+                    ? SliverToBoxAdapter(
+                        child: Container(
+                          height: 80.0,
+                          child: Center(
+                            child: Wrap(
+                              children: [
+                                Icon(Icons.sentiment_neutral_outlined),
+                                Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 6.0)),
+                                Text('暂无收藏歌单')
+                              ],
+                            ),
                           ),
                         ),
+                      )
+                    : SliverFixedExtentList(
+                        itemExtent: 60.0,
+                        delegate: SliverChildBuilderDelegate(
+                          (BuildContext context, int index) {
+                            return controller.collectPlayList.length > 0
+                                ? _buildUserSheetItem(
+                                    controller.collectPlayList[index])
+                                : _loadUserSheetView();
+                          },
+                          childCount: controller.collectPlayList.length > 0
+                              ? controller.collectPlayList.length
+                              : 5,
+                        ),
                       ),
-                    ):
-                SliverFixedExtentList(
-                  itemExtent: 60.0,
-                  delegate: SliverChildBuilderDelegate(
-                    (BuildContext context, int index) {
-                      return controller.collectPlayList.length > 0
-                          ? _buildUserSheetItem(
-                              controller.collectPlayList[index])
-                          : _loadUserSheetView();
-                    },
-                    childCount: controller.collectPlayList.length > 0
-                        ? controller.collectPlayList.length
-                        : 5,
-                  ),
-                ),
               ],
             ),
           )),
@@ -146,10 +155,12 @@ class UserView extends GetView<UserController> {
   }
 
   ///歌单itemView
-  Widget _buildUserSheetItem(UserOrderPlaylist userOrderPlaylist,{isLike = false}) {
+  Widget _buildUserSheetItem(UserOrderPlaylist userOrderPlaylist,
+      {isLike = false}) {
     return InkWell(
       child: Container(
         height: 60.0,
+        padding: EdgeInsets.symmetric(horizontal: 2.0, vertical: 5.0),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -160,9 +171,9 @@ class UserView extends GetView<UserController> {
                 tag: '${userOrderPlaylist.id}',
                 child: Card(
                   child: CachedNetworkImage(
-                    width: 48,
-                    height: 48,
-                    imageUrl: '${userOrderPlaylist.coverImgUrl}?param=200y200',
+                    width: 42,
+                    height: 42,
+                    imageUrl: '${userOrderPlaylist.coverImgUrl}?param=1100y100',
                   ),
                 ),
               ),
@@ -171,7 +182,7 @@ class UserView extends GetView<UserController> {
                 child: Column(
               children: [
                 Container(
-                  height: 30,
+                  height: 25,
                   alignment: Alignment.centerLeft,
                   child: Text(userOrderPlaylist.name,
                       maxLines: 1,
@@ -179,7 +190,7 @@ class UserView extends GetView<UserController> {
                       style: TextStyle(fontSize: 16.0)),
                 ),
                 Container(
-                  height: 30,
+                  height: 25,
                   alignment: Alignment.centerLeft,
                   child: Text('${userOrderPlaylist.trackCount}首',
                       maxLines: 1,
@@ -189,27 +200,38 @@ class UserView extends GetView<UserController> {
                 )
               ],
             )),
-            Visibility(child:Card(
-              child: InkWell(child: Container(
-                padding: EdgeInsets.symmetric(vertical: 6.0,horizontal: 8.0),
-                child:  Wrap(
-                  children: [
-                    Icon(Icons.favorite,color: Colors.red,),
-                    Padding(padding: EdgeInsets.symmetric(horizontal: 5.0)),
-                    Text('心动模式')
-                  ],
+            Visibility(
+                child: Card(
+                  child: InkWell(
+                    child: Container(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 6.0, horizontal: 8.0),
+                      child: Wrap(
+                        children: [
+                          Icon(
+                            Icons.favorite,
+                            color: Colors.red,
+                          ),
+                          Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 5.0)),
+                          Text('心动模式')
+                        ],
+                      ),
+                    ),
+                    onTap: () => controller.playHeartSong(userOrderPlaylist.id),
+                  ),
                 ),
-              ),onTap: ()=>controller.playHeartSong(userOrderPlaylist.id),),
-            ),visible: isLike),
+                visible: isLike),
             Padding(padding: EdgeInsets.symmetric(horizontal: 4.0))
           ],
         ),
       ),
       onTap: () {
         Get.toNamed('/sheet', arguments: {
-          'id': userOrderPlaylist.id,
-          'name': userOrderPlaylist.name,
-          'imageUrl': '${userOrderPlaylist.coverImgUrl}?param=300y300'
+          'sheet': PersonalResult(
+              id: userOrderPlaylist.id,
+              name: userOrderPlaylist.name,
+              picUrl: '${userOrderPlaylist.coverImgUrl}'),
         });
       },
     );

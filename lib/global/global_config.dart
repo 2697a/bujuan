@@ -46,4 +46,13 @@ const String CACHE_USER_PROFILE = 'CACHE_USER_PROFILE';
 const String LIKE_SONGS = 'LIKE_SONGS';
 const String QUALITY = 'QUALITY';
 const String PLAY_LIST_MODE = 'PLAY_LIST_MODE';
+const String SLEEP_INDEX = 'SLEEP_INDEX';
+const int CLOUD_ID = -1;
+const int TODAY_ID = -2;
+const int NEW_SONG_ID = -3;
+const int HISTORY_ID = -4;
+const int SEARCH_ID = -5;
+const int FM_ID = -6;
+const int HEART_ID = -7;
+const int LOCAL_ID = -8;
 

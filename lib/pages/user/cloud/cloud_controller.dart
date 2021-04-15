@@ -87,7 +87,7 @@ class CloudController extends GetxController {
         songs.add(musicItem);
       });
     BuJuanUtil.playSongByIndex(songs, index, PlayListMode.SONG);
-      SpUtil.putInt(PLAY_SONG_SHEET_ID, -998);
+      SpUtil.putInt(PLAY_SONG_SHEET_ID, CLOUD_ID);
     // }
   }
 }

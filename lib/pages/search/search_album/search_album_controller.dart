@@ -18,7 +18,7 @@ class SearchAlbumController extends GetxController{
   }
 
   getSearch() {
-    NetUtils().search(SearchDetailController.to.searchContext, 10).then((data) {
+    NetUtils().search(SearchDetailController.to.searchContext.value, 10).then((data) {
       if (data is SearchAlbumEntity) {
         search
           ..clear()

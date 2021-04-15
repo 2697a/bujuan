@@ -1,4 +1,6 @@
+import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/utils/bujuan_util.dart';
+import 'package:bujuan/utils/sp_util.dart';
 import 'package:get/get.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:starry/music_item.dart';
@@ -20,6 +22,7 @@ class LocalAlbumController extends GetxController{
   }
 
   playSong(index) async {
+    SpUtil.putInt(PLAY_SONG_SHEET_ID, LOCAL_ID);
     BuJuanUtil.playSongByIndex(getSheetList(), index, PlayListMode.LOCAL);
   }
 

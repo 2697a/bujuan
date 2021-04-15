@@ -12,6 +12,7 @@ import 'package:bujuan/entity/search_hot_entity.dart';
 import 'package:bujuan/entity/search_mv_entity.dart';
 import 'package:bujuan/entity/search_sheet_entity.dart';
 import 'package:bujuan/entity/search_singer_entity.dart';
+import 'package:bujuan/entity/week_data.dart';
 import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/main.dart';
 import 'package:bujuan/entity/banner_entity.dart';
@@ -319,11 +320,17 @@ class NetUtils {
     return searchData;
   }
 
-  ///听歌历史
-  Future<PlayHistoryEntity> getHistory(uid) async {
+  ///听歌历史 1: 最近一周, 0: 所有时间
+  Future<dynamic> getHistory(uid,type) async {
     var history;
-    var map = await _doHandler('/user/record', param: {'uid': uid});
-    if (map != null) history = PlayHistoryEntity.fromJson(map);
+    var map = await _doHandler('/user/record', param: {'uid': uid,'type':type});
+    if (map != null) {
+      if(type == 0){
+        history = PlayHistoryEntity.fromJson(map);
+      }else{
+        history = WeekHistory.fromJson(map);
+      }
+    }
     return history;
   }
 
@@ -457,14 +464,26 @@ class NetUtils {
   }
 
   ///获取专辑详情
-  Future<List<SheetDetailsPlaylistTrack>> getAlbumDetails(id) async {
+  Future<AlbumData> getAlbumDetails(id) async {
     var songDetails;
     var map = await _doHandler('/album', param: {'id': id});
     if(map!=null) {
       AlbumDetails album = AlbumDetails.fromJson(map);
       List<int> ids = [];
       await Future.forEach(album.songs, (id) => ids.add(id.id));
-      songDetails = await getSongDetails(ids.join(','));
+      var list = await getSongDetails(ids.join(','));
+      songDetails = AlbumData(list, album.album);
+    }
+    return songDetails;
+  }
+
+
+  ///听歌打卡
+  Future<bool> scrobble(id,sid,time) async {
+    var songDetails = false;
+    var map = await _doHandler('/user/scrobble', param: {'id': id,'sid':sid,'time':time});
+    if(map!=null&&map['code']==200) {
+      songDetails = true;
     }
     return songDetails;
   }
@@ -475,4 +494,11 @@ class NetUtils {
 // await FlutterStarrySky().setPlayListAndPlayById(list, index, '$id');
 // }
 
+}
+
+class AlbumData{
+  final List<SheetDetailsPlaylistTrack> data;
+  final Album album;
+
+  AlbumData(this.data, this.album);
 }

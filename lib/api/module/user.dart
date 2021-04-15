@@ -137,15 +137,22 @@ Handler user_record = (query, cookie) {
 
 // 听歌打卡
 Handler user_scrobble = (query, cookie) {
-  return request(
-      'POST',
-      'https://music.163.com/weapi/feedback/weblog',
-      {
-        'uid': query['uid'],
-        'type': query['type'] ?? 0 // 1: 最近一周, 0: 所有时间
-      },
-      crypto: Crypto.weapi,
-      cookies: cookie);
+  var d = {
+    'action': 'play',
+    'json': {
+      'download': 0,
+      'end': 'playend',
+      'id': query['id'],
+      'sourceId': query['sid'],
+      'time': query['time'],
+      'type': 'song',
+      'wifi': 0
+    }
+  };
+  var jsonEncode2 = jsonEncode(d);
+  var data = {'logs': jsonEncode2};
+  return request('POST', 'https://music.163.com/weapi/feedback/weblog', data,
+      crypto: Crypto.weapi, cookies: cookie);
 };
 // 收藏计数
 Handler user_subcount = (query, cookie) {

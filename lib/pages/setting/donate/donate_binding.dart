@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 class DonateBinding extends Bindings{
   @override
   void dependencies() {
-    Get.lazyPut<DonateController>(() => DonateController());
+    Get.put<DonateController>(DonateController());
   }
 
 }

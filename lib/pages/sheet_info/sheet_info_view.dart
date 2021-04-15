@@ -38,7 +38,7 @@ class SheetInfoView extends GetView<SheetInfoController> {
                         elevation: 0.0,
                         floating: true,
                         pinned: true,
-                        title: Text('${Get.arguments['name']}'),
+                        title: Text(controller.personalResult.name),
                         expandedHeight: 220.0,
                         flexibleSpace: FlexibleSpaceBar(
                           collapseMode: CollapseMode.parallax,
@@ -51,14 +51,14 @@ class SheetInfoView extends GetView<SheetInfoController> {
                                 Row(
                                   children: [
                                     Hero(
-                                        tag: '${Get.arguments['id']}',
+                                        tag: '${controller.personalResult.id}',
                                         child: Card(
                                           child: CachedNetworkImage(
                                             width: 150.0,
                                             height: 150.0,
                                             fit: BoxFit.fitWidth,
                                             imageUrl:
-                                                '${Get.arguments['imageUrl']}',
+                                                '${controller.personalResult.picUrl}?param=300y300',
                                           ),
                                         )),
                                     Expanded(
@@ -151,7 +151,7 @@ class SheetInfoView extends GetView<SheetInfoController> {
             : Obx(() => Scaffold(
                   appBar: AppBar(
                     elevation: 0.0,
-                    title: Text('${Get.arguments['name']}'),
+                    title: Text('${controller.personalResult.name}'),
                   ),
                   body: Row(
                     children: [
@@ -161,13 +161,13 @@ class SheetInfoView extends GetView<SheetInfoController> {
                         child: Row(
                           children: [
                             Hero(
-                                tag: '${Get.arguments['id']}',
+                                tag: '${controller.personalResult.id}',
                                 child: Card(
                                   child: CachedNetworkImage(
                                     width: 150.0,
                                     height: 150.0,
                                     fit: BoxFit.fitWidth,
-                                    imageUrl: '${Get.arguments['imageUrl']}',
+                                    imageUrl: '${controller.personalResult.picUrl}?param=300y300',
                                   ),
                                 )),
                             Expanded(

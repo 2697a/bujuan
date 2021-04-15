@@ -1,4 +1,5 @@
 import 'package:bujuan/global/global_controller.dart';
+import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -47,7 +48,7 @@ class PlayListView extends GetView<GlobalController> {
         child: Row(
           children: [
             IconButton(icon: Text('${index + 1}'), onPressed: () {}),
-            Container(
+            GetBuilder(builder: (_)=>Container(
               constraints: BoxConstraints(
                 maxWidth: Get.width / 2.8,
               ),
@@ -56,14 +57,14 @@ class PlayListView extends GetView<GlobalController> {
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: controller.song.value.musicId ==
-                          controller.playList[index].musicId
+                      controller.playList[index].musicId
                       ? Theme.of(Get.context).accentColor
                       : Theme.of(Get.context).bottomAppBarColor,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
-            ),
+            ),id: 'song',init: HomeController.to),
             Expanded(
                 child: Text(
               ' -  ${controller.playList[index].artist}',

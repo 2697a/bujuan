@@ -397,6 +397,7 @@ class MusicView extends GetView<MusicController> {
                     ],
                   ),
                   onTap: () {
+                    Get.back();
                     Get.toNamed('/local_album', arguments: {
                       'albumName':
                       controller.artists[index].artistName,

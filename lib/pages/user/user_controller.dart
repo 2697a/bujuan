@@ -1,7 +1,11 @@
+import 'dart:math';
+
+import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/global/global_controller.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/utils/bujuan_util.dart';
 import 'package:bujuan/utils/net_util.dart';
+import 'package:bujuan/utils/sp_util.dart';
 import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:starry/music_item.dart';
@@ -72,12 +76,16 @@ class UserController extends GetxController {
     }
   }
 
+  ///心动模式
   playHeartSong(pid) {
+    var rng = new Random();
+    var nextInt = rng.nextInt(HomeController.to.likeSongs.length);
     NetUtils()
-        .getHeart(HomeController.to.likeSongs[0], pid)
+        .getHeart(HomeController.to.likeSongs[nextInt], pid)
         .then((List<MusicItem> musics) async {
       if (musics.length > 0) {
         //当前歌单未在播放
+        SpUtil.putInt(PLAY_SONG_SHEET_ID, HEART_ID);
         BuJuanUtil.playSongByIndex(musics, 0, PlayListMode.SONG);
       }
     });
@@ -99,9 +107,8 @@ class UserController extends GetxController {
         );
         fmSong.add(musicItem);
       });
-      if (playListMode == PlayListMode.SONG) {
+        SpUtil.putInt(PLAY_SONG_SHEET_ID, FM_ID);
         BuJuanUtil.playSongByIndex(fmSong, 0, PlayListMode.FM);
-      }
     }
     return fmSong;
   }

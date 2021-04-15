@@ -1,3 +1,4 @@
+import 'package:bujuan/entity/personal_entity.dart';
 import 'package:bujuan/pages/search/search_sheet/search_sheet_controller.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -55,9 +56,7 @@ class SearchSheetView extends GetView<SearchSheetController>{
             ),
             onTap: () {
               Get.toNamed('/sheet', arguments: {
-                'id': controller.search[index].id,
-                'name': controller.search[index].name,
-                'imageUrl': '${controller.search[index].coverImgUrl}?param=300y300'
+                'sheet': PersonalResult(id: controller.search[index].id,name:controller.search[index].name,picUrl: '${controller.search[index].coverImgUrl}'),
               });
             },
           );

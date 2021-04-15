@@ -119,6 +119,7 @@ class ProfileView extends GetView<ProfileController> {
                       Icons.keyboard_arrow_right,
                       size: 22.0,
                     ),
+                      onTap: ()=>Get.toNamed('/history'),
                     ),
                   ),
                   SliverToBoxAdapter(

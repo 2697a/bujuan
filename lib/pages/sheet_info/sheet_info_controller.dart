@@ -1,3 +1,4 @@
+import 'package:bujuan/entity/personal_entity.dart';
 import 'package:bujuan/entity/sheet_details_entity.dart';
 import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/global/global_controller.dart';
@@ -11,14 +12,17 @@ import 'package:starry/music_item.dart';
 import 'package:starry/starry.dart';
 
 class SheetInfoController extends GetxController {
-  var result = SheetDetailsPlaylist().obs;
+  final result = SheetDetailsPlaylist().obs;
   final sub = false.obs;
   RefreshController refreshController;
+  PersonalResult personalResult;
+
 
   @override
   void onInit() {
     result.value = null;
     refreshController = RefreshController();
+    personalResult = Get.arguments['sheet'];
     super.onInit();
   }
 
@@ -31,7 +35,7 @@ class SheetInfoController extends GetxController {
   ///获取歌单详情
   getSheetInfo({forcedRefresh = true}) {
     NetUtils()
-        .getPlayListDetails(Get.arguments['id'], forcedRefresh: forcedRefresh)
+        .getPlayListDetails(personalResult.id, forcedRefresh: forcedRefresh)
         .then((sheetDetailsEntity) {
       if (sheetDetailsEntity != null && sheetDetailsEntity.code == 200) {
         if (sheetDetailsEntity.playlist.tracks != null)
