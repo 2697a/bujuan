@@ -1,4 +1,5 @@
 import 'package:bujuan/global/global_loding_view.dart';
+import 'package:bujuan/pages/play_view/music_talk/music_talk_controller.dart';
 import 'package:bujuan/pages/play_widget/play_widget_view.dart';
 import 'package:bujuan/widget/over_scroll.dart';
 import 'package:bujuan/pages/sheet_info/sheet_info_controller.dart';
@@ -9,6 +10,8 @@ import 'package:flutter_placeholder_textlines/placeholder_lines.dart';
 import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import 'head.dart';
+
 class SheetInfoView extends GetView<SheetInfoController> {
   @override
   Widget build(BuildContext context) {
@@ -16,7 +19,12 @@ class SheetInfoView extends GetView<SheetInfoController> {
   }
 
   Widget _buildSheetView() {
-    return PlayWidgetView(_buildContent());
+    return PlayWidgetView(
+      _buildContent(),
+      appBar: AppBar(
+        title: Text('${controller.personalResult.name}'),
+      ),
+    );
   }
 
   Widget _buildContent() {
@@ -34,125 +42,134 @@ class SheetInfoView extends GetView<SheetInfoController> {
                   controller: controller.refreshController,
                   child: CustomScrollView(
                     slivers: [
-                      SliverAppBar(
-                        elevation: 0.0,
+                      SliverPersistentHeader(
+                          delegate: SliverAppBarDelegate(
+                              minHeight: 170,
+                              maxHeight: 170,
+                              child: Padding(
+                                padding: EdgeInsets.only(
+                                    left: 8.0, right: 8.0, bottom: 6.0),
+                                child: Column(
+                                  children: [
+                                    Expanded(child: Container()),
+                                    Row(
+                                      children: [
+                                        Hero(
+                                            tag:
+                                                '${controller.personalResult.id}',
+                                            child: Card(
+                                              child: CachedNetworkImage(
+                                                width: 150.0,
+                                                height: 150.0,
+                                                fit: BoxFit.fitWidth,
+                                                imageUrl:
+                                                    '${controller.personalResult.picUrl}?param=300y300',
+                                              ),
+                                            )),
+                                        Expanded(
+                                            child: controller.result.value !=
+                                                    null
+                                                ? Container(
+                                                    child: ListTile(
+                                                      title: Text(
+                                                        '${controller.result.value.creator.nickname}',
+                                                        style: TextStyle(
+                                                            color: Theme.of(
+                                                                    Get.context)
+                                                                .accentColor),
+                                                      ),
+                                                      subtitle: Text(
+                                                        '${controller.result.value.creator.signature}',
+                                                        maxLines: 4,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                    ),
+                                                  )
+                                                : Padding(
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                            horizontal: 4.0),
+                                                    child: PlaceholderLines(
+                                                      count: 4,
+                                                      lineHeight: 10.0,
+                                                      maxWidth: 0.9,
+                                                      minWidth: 0.6,
+                                                      align: TextAlign.left,
+                                                      color: Colors.grey[400],
+                                                    ),
+                                                  ))
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              ))),
+                      SliverPersistentHeader(
+                        delegate: SliverAppBarDelegate(
+                            maxHeight: 60,
+                            minHeight: 60.0,
+                            child: Obx(() => controller.result.value != null
+                                ? Card(
+                                    margin: EdgeInsets.symmetric(
+                                        vertical: 0.0, horizontal: 10.0),
+                                    child: Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: 5.0, horizontal: 10.0),
+                                      child: Row(
+                                        children: [
+                                          Text(controller.result.value != null
+                                              ? '${controller.result.value.trackCount}首'
+                                              : ''),
+                                          Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 6.0)),
+                                          Text(controller.result.value != null
+                                              ? '${controller.result.value.subscribedCount ~/ 1000}k收藏'
+                                              : ''),
+                                          Expanded(child: Container()),
+                                          IconButton(
+                                              icon: Obx(() => Icon(
+                                                    Icons.favorite,
+                                                    color: controller.sub.value
+                                                        ? Colors.red
+                                                        : Colors.grey,
+                                                  )),
+                                              onPressed: () => controller
+                                                  .likeOrUnLikeSheet()),
+                                          IconButton(
+                                              icon:
+                                                  Icon(Icons.message_outlined),
+                                              onPressed: () {
+                                                Get.toNamed('/music_talk',
+                                                    arguments: {
+                                                      'talk_info': TalkInfo(
+                                                          2,
+                                                          '${controller.result.value.id}',
+                                                          controller
+                                                              .result
+                                                              .value
+                                                              .coverImgUrl,
+                                                          controller.result
+                                                              .value.name)
+                                                    });
+                                              }),
+                                          IconButton(
+                                              icon: Icon(Icons.play_arrow),
+                                              onPressed: () =>
+                                                  controller.playSong(0))
+                                        ],
+                                      ),
+                                    ),
+                                  )
+                                : Container())),
                         floating: true,
                         pinned: true,
-                        title: Text(controller.personalResult.name),
-                        expandedHeight: 220.0,
-                        flexibleSpace: FlexibleSpaceBar(
-                          collapseMode: CollapseMode.parallax,
-                          background: Padding(
-                            padding: EdgeInsets.only(
-                                left: 8.0, right: 8.0, bottom: 6.0),
-                            child: Column(
-                              children: [
-                                Expanded(child: Container()),
-                                Row(
-                                  children: [
-                                    Hero(
-                                        tag: '${controller.personalResult.id}',
-                                        child: Card(
-                                          child: CachedNetworkImage(
-                                            width: 150.0,
-                                            height: 150.0,
-                                            fit: BoxFit.fitWidth,
-                                            imageUrl:
-                                                '${controller.personalResult.picUrl}?param=300y300',
-                                          ),
-                                        )),
-                                    Expanded(
-                                        child: controller.result.value != null
-                                            ? Container(
-                                                child: ListTile(
-                                                  title: Text(
-                                                    '${controller.result.value.creator.nickname}',
-                                                    style: TextStyle(
-                                                        color: Theme.of(
-                                                                Get.context)
-                                                            .accentColor),
-                                                  ),
-                                                  subtitle: Text(
-                                                    '${controller.result.value.creator.signature}',
-                                                    maxLines: 4,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                  ),
-                                                ),
-                                              )
-                                            : Padding(
-                                                padding: EdgeInsets.symmetric(
-                                                    horizontal: 4.0),
-                                                child: PlaceholderLines(
-                                                  count: 4,
-                                                  lineHeight: 10.0,
-                                                  maxWidth: 0.9,
-                                                  minWidth: 0.6,
-                                                  align: TextAlign.left,
-                                                  color: Colors.grey[400],
-                                                ),
-                                              ))
-                                  ],
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      SliverToBoxAdapter(
-                        child: Obx(() => controller.result.value != null
-                            ? Card(
-                                margin: EdgeInsets.symmetric(
-                                    vertical: 0.0, horizontal: 10.0),
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      vertical: 5.0, horizontal: 10.0),
-                                  child: Row(
-                                    children: [
-                                      Text(controller.result.value != null
-                                          ? '${controller.result.value.trackCount}首'
-                                          : ''),
-                                      Padding(
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 6.0)),
-                                      Text(controller.result.value != null
-                                          ? '${controller.result.value.subscribedCount ~/ 1000}k收藏'
-                                          : ''),
-                                      Expanded(child: Container()),
-                                      IconButton(
-                                          icon: Obx(()=>Icon(
-                                            Icons.favorite,
-                                            color: controller.sub.value
-                                                ? Colors.red
-                                                : Colors.grey,
-                                          )),
-                                          onPressed: () =>
-                                              controller.likeOrUnLikeSheet()),
-                                      IconButton(
-                                          icon: Icon(Icons.message_outlined),
-                                          onPressed: () {
-                                            Get.toNamed('/music_talk',
-                                                arguments: {'music': controller.result.value.id,'type':2,'iconUrl':controller.result.value.coverImgUrl,'title':controller.result.value.name});
-                                          }),
-                                      IconButton(
-                                          icon: Icon(Icons.play_arrow),
-                                          onPressed: () =>
-                                              controller.playSong(0))
-                                    ],
-                                  ),
-                                ),
-                              )
-                            : Container()),
                       ),
                       _buildSheetListView()
                     ],
                   ),
                 )))
             : Obx(() => Scaffold(
-                  appBar: AppBar(
-                    elevation: 0.0,
-                    title: Text('${controller.personalResult.name}'),
-                  ),
                   body: Row(
                     children: [
                       Expanded(
@@ -167,7 +184,8 @@ class SheetInfoView extends GetView<SheetInfoController> {
                                     width: 150.0,
                                     height: 150.0,
                                     fit: BoxFit.fitWidth,
-                                    imageUrl: '${controller.personalResult.picUrl}?param=300y300',
+                                    imageUrl:
+                                        '${controller.personalResult.picUrl}?param=300y300',
                                   ),
                                 )),
                             Expanded(

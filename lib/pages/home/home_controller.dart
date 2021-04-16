@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:bujuan/api/netease_cloud_music.dart';
 import 'package:bujuan/entity/user_profile_entity.dart';
 import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/global/global_controller.dart';
@@ -16,6 +15,7 @@ import 'package:bujuan/utils/bujuan_util.dart';
 import 'package:bujuan/utils/net_util.dart';
 import 'package:bujuan/utils/sp_util.dart';
 import 'package:bujuan/widget/timer/timer_controller.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:bujuan/widget/preload_page_view.dart';
@@ -33,7 +33,21 @@ class HomeController extends SuperController {
   final scroller = false.obs;
   final likeSongs = [].obs;
   final pages = [UserView(), FindView(), TopView(), MusicView()];
-   CountdownController countdownController;
+  CountdownController countdownController;
+  var sleepTime = 0;
+  var selectIndex = 99;
+  final data = [
+    TimingData("分钟", 10 * 60, "10"),
+    TimingData("分钟", 20 * 60, "20"),
+    TimingData("分钟", 30 * 60, "30"),
+    TimingData("分钟", 45 * 60, "45"),
+    TimingData("小时", 60 * 60, "1"),
+    TimingData("小时", 1.5 * 60 * 60, "1.5"),
+    TimingData("小时", 2 * 60 * 60, "2"),
+    TimingData("小时", 2.5 * 60 * 60, "2.5"),
+    TimingData("小时", 3 * 60 * 60, "3"),
+    TimingData("小时", 4 * 60 * 60, "4")
+  ];
 
   static HomeController get to => Get.find();
 
@@ -62,6 +76,7 @@ class HomeController extends SuperController {
   void onReady() {
     OnAudioQuery().queryPlaylists(PlaylistSortType.DATA_ADDED,
         OrderType.ASC_OR_SMALLER, UriType.EXTERNAL, true);
+    changeSleepIndex(SpUtil.getInt(SLEEP_INDEX, defValue: 99));
 
     ///获取歌曲播放地址
     Starry.init(url: SongUrl(getSongUrl: (id) async {
@@ -128,12 +143,15 @@ class HomeController extends SuperController {
     Starry.onPlayerSongChanged.listen((PlayMusicInfo playMusicInfo) async {
       GlobalController.to.song.value = playMusicInfo.musicItem;
       GlobalController.to.getLocalImage();
-      NetUtils()
-          .getMusicLyric(playMusicInfo.musicItem.musicId)
-          .then((lyricEntity) {
-        GlobalController.to.lyric = lyricEntity;
-        update(['play_pos']);
-      });
+
+      if (GlobalController.to.playListMode.value != PlayListMode.RADIO &&
+          GlobalController.to.playListMode.value != PlayListMode.LOCAL)
+        NetUtils()
+            .getMusicLyric(playMusicInfo.musicItem.musicId)
+            .then((lyricEntity) {
+          GlobalController.to.lyric = lyricEntity;
+          update(['play_pos']);
+        });
       var playListMode = GlobalController.to.playListMode.value;
       var playList = GlobalController.to.playList;
 
@@ -163,7 +181,9 @@ class HomeController extends SuperController {
         GlobalController.to.song.value = currSong;
         GlobalController.to.getLocalImage();
         var lyric = Get.find<GlobalController>().lyric;
-        if (lyric == null)
+        if (lyric == null &&
+            GlobalController.to.playListMode.value != PlayListMode.RADIO &&
+            GlobalController.to.playListMode.value != PlayListMode.LOCAL)
           NetUtils().getMusicLyric(currSong.musicId).then((lyricEntity) {
             GlobalController.to.lyric = lyricEntity;
             update(['play_pos']);
@@ -180,7 +200,7 @@ class HomeController extends SuperController {
 
     ///睡眠状态发生变化
     Starry.onSleepStateChanged.listen((event) {
-      GlobalController.to.sleepTime = event;
+      sleepTime = event;
       update(['sleep', 'sleep_index']);
     });
   }
@@ -216,7 +236,7 @@ class HomeController extends SuperController {
     scroller.value = !scroller.value;
     pageController.jumpToPage(1);
     currentIndex = 1;
-    update();
+    update(['bottom_bar']);
     SpUtil.putBool(OPEN_SCROLL, scroller.value);
   }
 
@@ -228,7 +248,6 @@ class HomeController extends SuperController {
       login.value = true;
     } else {
       if (await BuJuanUtil.checkFileExists(CACHE_USER_PROFILE)) {
-        debugPrint("用户资料已缓存，获取失败用缓存");
         var data = await BuJuanUtil.readStringFile(CACHE_USER_PROFILE);
         if (data != null) {
           userProfileEntity.value =
@@ -251,10 +270,11 @@ class HomeController extends SuperController {
     super.didChangePlatformBrightness();
   }
 
+  ///页面发生变化
   onPageChange(index) {
     if (index != currentIndex) {
       currentIndex = index;
-      update();
+      update(['bottom_bar']);
       Future.delayed(Duration(microseconds: 500), () {
         var userController = Get.find<UserController>();
         var topController = Get.find<TopController>();
@@ -269,6 +289,7 @@ class HomeController extends SuperController {
     }
   }
 
+  ///获取fm
   Future<List<MusicItem>> getFM() async {
     List<MusicItem> fmSong = [];
     var fmEntity = await NetUtils().getFm();
@@ -288,15 +309,123 @@ class HomeController extends SuperController {
     return fmSong;
   }
 
-  @override
-  void onDetached() {}
+  ///显示睡眠弹窗
+  showSleepBottomSheet() {
+    Get.bottomSheet(
+        SizedBox(
+          height: MediaQuery.of(Get.context).size.width / 5 * 2.15 + 60,
+          child: GetBuilder(
+            builder: (_) {
+              return Column(
+                children: [
+                  SwitchListTile(
+                    value: sleepTime > 0,
+                    onChanged: (value) => closeSleep(),
+                    title: Row(
+                      children: [Text("定时停止播放")],
+                    ),
+                  ),
+                  Padding(padding: EdgeInsets.symmetric(vertical: 2.0)),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 8.0),
+                    height: MediaQuery.of(Get.context).size.width / 5 * 2.15,
+                    child: GridView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisSpacing: 10,
+                          crossAxisCount: 5, //每行三列
+                          mainAxisSpacing: 10.0,
+                          childAspectRatio: 1),
+                      itemBuilder: (context, index) {
+                        return InkWell(
+                          child: Card(
+                            child: Container(
+                              color: selectIndex == index && sleepTime > 0
+                                  ? Theme.of(context).accentColor
+                                  : CardTheme.of(context).color,
+                              padding: EdgeInsets.only(bottom: 6.0),
+                              child: Column(
+                                children: [
+                                  Expanded(
+                                      child: Center(
+                                    child: Text("${data[index].name}",
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold)),
+                                  )),
+                                  Text(
+                                    "${data[index].format}",
+                                    style: TextStyle(fontSize: 12),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                          onTap: () {
+                            countdownController
+                                .setTimer(data[index].value.toInt());
+                            changeSleepIndex(index, true);
+                            Get.back();
+                          },
+                        );
+                      },
+                      itemCount: data.length,
+                    ),
+                  )
+                ],
+              );
+            },
+            init: HomeController.to,
+            id: 'sleep_index',
+          ),
+        ),
+        backgroundColor: Theme.of(Get.context).primaryColor,
+        elevation: 6.0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(8.0), topRight: Radius.circular(8.0)),
+        ));
+  }
+
+  ///设置睡眠
+  changeSleepIndex(index, [isStart = false]) {
+    if (index == 99) return;
+    selectIndex = index;
+    update(['sleep_index']);
+    if (isStart) {
+      SpUtil.putInt(SLEEP_INDEX, selectIndex);
+      Starry.startTiming((data[index].value * 1000) ~/ 1);
+    }
+  }
+
+  ///关闭睡眠
+  closeSleep() {
+    if (sleepTime > 0) {
+      selectIndex = 99;
+      SpUtil.putInt(SLEEP_INDEX, selectIndex);
+      update(['sleep_index']);
+      Starry.stopTiming();
+    }
+  }
 
   @override
-  void onInactive() {}
+  void onDetached() {
+    // TODO: implement onDetached
+  }
 
   @override
-  void onPaused() {}
+  void onInactive() {
+    // TODO: implement onInactive
+  }
 
   @override
-  void onResumed() {}
+  void onPaused() {
+    // TODO: implement onPaused
+  }
+
+  @override
+  void onResumed() {
+    // TODO: implement onResumed
+  }
 }

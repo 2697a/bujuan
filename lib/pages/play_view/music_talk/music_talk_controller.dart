@@ -1,14 +1,17 @@
+import 'dart:async';
+
 import 'package:bujuan/utils/net_util.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:starry/music_item.dart';
 
 class MusicTalkController extends GetxController {
   var musicTalks = [].obs;
   var loadPageIndex = 1.obs;
   TextEditingController talkEditingController;
   RefreshController refreshController;
+  TalkInfo talkInfo = Get.arguments['talk_info'];
+
   // MusicItem musicItem = Get.arguments['music'];
 
   @override
@@ -20,24 +23,26 @@ class MusicTalkController extends GetxController {
 
   @override
   void onReady() {
-    _getMusicTalk(Get.arguments['music']);
+    Future.delayed(Duration(milliseconds: 500),()=>_getMusicTalk());
     super.onReady();
   }
 
   ///获取歌曲评论
-  _getMusicTalk(id) async {
+  _getMusicTalk() async {
     var songTalkEntity =
-        await NetUtils().getMusicTalk(id, Get.arguments['type'], loadPageIndex.value);
+        await NetUtils().getMusicTalk(talkInfo.id, talkInfo.type, loadPageIndex.value);
     if (songTalkEntity != null && songTalkEntity.code == 200) {
       //获取成功
       if (loadPageIndex.value == 1) {
-        musicTalks..clear()..addAll(songTalkEntity.data.comments);
+        musicTalks
+          ..clear()
+          ..addAll(songTalkEntity.data.comments);
         refreshController.refreshCompleted();
       } else {
-        if(songTalkEntity.data.comments.length>0){
+        if (songTalkEntity.data.comments.length > 0) {
           musicTalks.addAll(songTalkEntity.data.comments);
           refreshController?.loadComplete();
-        }else{
+        } else {
           refreshController.loadNoData();
         }
       }
@@ -53,4 +58,13 @@ class MusicTalkController extends GetxController {
     loadPageIndex.value++;
     onReady();
   }
+}
+
+class TalkInfo {
+  final int type;
+  final String id;
+  final String picUrl;
+  final String title;
+
+  TalkInfo(this.type, this.id, this.picUrl, this.title);
 }

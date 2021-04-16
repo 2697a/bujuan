@@ -3,6 +3,7 @@ import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/utils/bujuan_util.dart';
 import 'package:bujuan/utils/net_util.dart';
 import 'package:bujuan/utils/sp_util.dart';
+import 'package:bujuan/widget/state_view.dart';
 import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:starry/music_item.dart';
@@ -13,6 +14,7 @@ class CloudController extends GetxController {
   RefreshController refreshController;
   var clouds = [].obs;
   var loadPageIndex = 0.obs;
+  final loadState = LoadState.IDEA.obs;
   var enableLoadMore = true.obs;
 
   @override
@@ -31,6 +33,10 @@ class CloudController extends GetxController {
   _getCloudData() async {
     var cloudEntity = await NetUtils().getCloudData(loadPageIndex * 30);
     if (cloudEntity != null) {
+      if (cloudEntity.length == 0) {
+        loadState.value = LoadState.EMPTY;
+        return;
+      }
       //获取成功
       if (loadPageIndex.value == 0) {
         clouds
@@ -46,7 +52,8 @@ class CloudController extends GetxController {
           refreshController.loadNoData();
         }
       }
-    }else{
+    } else {
+      loadState.value = LoadState.FAIL;
       refreshController.loadNoData();
     }
   }
@@ -68,26 +75,19 @@ class CloudController extends GetxController {
   }
 
   playSong(index) async {
-    List<MusicItem>  songs = [];
-    // var playSheetId = SpUtil.getInt(PLAY_SONG_SHEET_ID, defValue: -1);
-    // if (playSheetId == -998) {
-    //   //当前歌单正在播放，直接根据下标播放
-    //   Starry.playMusicByIndex(index);
-    // } else {
-      //当前歌单未在播放
-      clouds.forEach((track) {
-        MusicItem musicItem = MusicItem(
-          musicId: '${track.id}',
-          duration: track.dt,
-          iconUri: "${track.al.picUrl}",
-          title: track.name,
-          uri: '${track.id}',
-          artist: track.ar[0].name == null ? '未知' : track.ar[0].name,
-        );
-        songs.add(musicItem);
-      });
+    List<MusicItem> songs = [];
+    clouds.forEach((track) {
+      MusicItem musicItem = MusicItem(
+        musicId: '${track.id}',
+        duration: track.dt,
+        iconUri: "${track.al.picUrl}",
+        title: track.name,
+        uri: '${track.id}',
+        artist: track.ar[0].name == null ? '未知' : track.ar[0].name,
+      );
+      songs.add(musicItem);
+    });
     BuJuanUtil.playSongByIndex(songs, index, PlayListMode.SONG);
-      SpUtil.putInt(PLAY_SONG_SHEET_ID, CLOUD_ID);
-    // }
+    SpUtil.putInt(PLAY_SONG_SHEET_ID, CLOUD_ID);
   }
 }

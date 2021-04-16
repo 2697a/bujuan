@@ -16,6 +16,9 @@ import 'package:bujuan/pages/profile/history/history_binding.dart';
 import 'package:bujuan/pages/profile/history/history_view.dart';
 import 'package:bujuan/pages/profile/profile_binding.dart';
 import 'package:bujuan/pages/profile/profile_view.dart';
+import 'package:bujuan/pages/radio/radio_binding.dart';
+import 'package:bujuan/pages/radio/radio_detail/radio_detail_binding.dart';
+import 'package:bujuan/pages/radio/radio_view.dart';
 import 'package:bujuan/pages/search/search_binding.dart';
 import 'package:bujuan/pages/search/search_detail/search_details_binding.dart';
 import 'package:bujuan/pages/search/search_detail/search_dettails_view.dart';
@@ -48,6 +51,7 @@ import 'global/global_config.dart';
 import 'global/global_theme.dart';
 import 'pages/home/home_binding.dart';
 import 'pages/home/home_view.dart';
+import 'pages/radio/radio_detail/radio_detail_view.dart';
 import 'pages/setting/donate/donate_binding.dart';
 
 main(List<String> args) async {
@@ -126,13 +130,22 @@ main(List<String> args) async {
           name: '/history',
           page: () => HistoryView(),
           binding: HistoryBinding()),
+      GetPage(
+          name: '/radio',
+          page: () => RadioView(),
+          binding: RadioBinding()),
+      GetPage(
+          name: '/radio_detail',
+          page: () => RadioDetailView(),
+          binding: RadioDetailBinding()),
     ],
   ));
 }
 
-Future<HttpServer> _startServer({address = 'localhost', int port = 2697}) {
+Future<HttpServer> _startServer({address = 'localhost', int port = 0}) {
   return HttpServer.bind(address, port, shared: true).then((server) {
     // debugPrint('start listen at: http://$address:$port');
+    server.timeout(Duration(seconds: 8));
     server.listen((request) {
       _handleRequest(request);
     });
@@ -140,7 +153,6 @@ Future<HttpServer> _startServer({address = 'localhost', int port = 2697}) {
   }).catchError((e,s)async{
     var rng = new Random();
     var nextInt = rng.nextInt(49151-1024)+1024;
-    print("bbbbbbbbbbb$nextInt");
     await _startServer(port: nextInt);
   });
 }
@@ -176,7 +188,7 @@ class FileService extends GetxService {
   final version = 0.obs;
 
   Future<FileService> init() async {
-    await _startServer(port: 0);
+    await _startServer();
     directory.value = await getTemporaryDirectory();
     version.value = await OnAudioQuery().getDeviceSDK();
     return this;

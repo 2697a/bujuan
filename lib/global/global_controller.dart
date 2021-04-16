@@ -19,8 +19,6 @@ class GlobalController extends SuperController {
   final playState = PlayState.STOP.obs;
   var playPos = 0;
   final playMode = 1.obs;
-  var sleepTime = 0;
-  var selectIndex = 99;
   final song = MusicItem(
           musicId: '-99',
           duration: 6000,
@@ -33,18 +31,6 @@ class GlobalController extends SuperController {
   final playList = [].obs;
   final playListMode = PlayListMode.SONG.obs;
   ScrollController scrollController;
-  final data = [
-    TimingData("分钟", 10 * 60, "10"),
-    TimingData("分钟", 20 * 60, "20"),
-    TimingData("分钟", 30 * 60, "30"),
-    TimingData("分钟", 45 * 60, "45"),
-    TimingData("小时", 60 * 60, "1"),
-    TimingData("小时", 1.5 * 60 * 60, "1.5"),
-    TimingData("小时", 2 * 60 * 60, "2"),
-    TimingData("小时", 2.5 * 60 * 60, "2.5"),
-    TimingData("小时", 3 * 60 * 60, "3"),
-    TimingData("小时", 4 * 60 * 60, "4")
-  ];
 
   static GlobalController get to => Get.find();
 
@@ -56,7 +42,6 @@ class GlobalController extends SuperController {
 
   @override
   void onReady() {
-    changeSleepIndex(SpUtil.getInt(SLEEP_INDEX, defValue: 99));
     super.onReady();
   }
 
@@ -175,25 +160,8 @@ class GlobalController extends SuperController {
               );
   }
 
-  changeSleepIndex(index, [isStart = false]) {
-    if (index == 99) return;
-    selectIndex = index;
-    update(['sleep_index']);
-    if (isStart) {
-      SpUtil.putInt(SLEEP_INDEX, selectIndex);
-      Starry.startTiming((data[index].value * 1000)~/1);
-    }
-  }
 
-  closeSleep() {
-    if (sleepTime > 0) {
-      selectIndex = 99;
-      SpUtil.putInt(SLEEP_INDEX, selectIndex);
-      update(['sleep_index']);
-      Starry.stopTiming();
-    }
-  }
-
+  ///听歌打卡
   scrobble() {
     if (SpUtil.getInt(PLAY_SONG_SHEET_ID, defValue: -999) > 0) {
       NetUtils()

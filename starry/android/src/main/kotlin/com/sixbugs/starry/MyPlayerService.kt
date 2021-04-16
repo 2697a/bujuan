@@ -29,12 +29,13 @@ class MyPlayerService : PlayerService() {
 
 
     override fun onCreateMusicPlayer(context: Context, musicItem: MusicItem, uri: Uri): MusicPlayer {
-        return ExoMusicPlayer(context,uri)
+        return ExoMusicPlayer(context, uri)
     }
 
     override fun onCreateAudioEffectManager(): AudioEffectManager? {
         return AndroidAudioEffectManager()
     }
+
     override fun onCreateNotificationView(): NotificationView? {
         return AppNotificationView()
     }
@@ -43,7 +44,7 @@ class MyPlayerService : PlayerService() {
     override fun onRetrieveMusicItemUri(musicItem: MusicItem, soundQuality: SoundQuality, result: AsyncResult<Uri>) {
         try {
             if (musicItem.uri == musicItem.musicId) {
-                 subscribe = Observable.create(ObservableOnSubscribe<String> {
+                subscribe = Observable.create(ObservableOnSubscribe<String> {
                     StarryPlugin.channel.invokeMethod("GET_SONG_URL", musicItem.musicId, object : MethodChannel.Result {
                         override fun notImplemented() {
                             result.onSuccess(Uri.parse("http://music.163.com/song/media/outer/url?id" + musicItem.musicId))
@@ -55,7 +56,7 @@ class MyPlayerService : PlayerService() {
                         }
 
                         override fun success(result1: Any?) {
-                            if (result1 == null) {
+                            if (result1 == null && result1 != "null") {
                                 result.onSuccess(Uri.parse("http://music.163.com/song/media/outer/url?id" + musicItem.musicId))
                             } else {
                                 result.onSuccess(Uri.parse(result1 as String?))
@@ -77,5 +78,5 @@ class MyPlayerService : PlayerService() {
         subscribe.dispose()
         super.onDestroy()
     }
-    
+
 }

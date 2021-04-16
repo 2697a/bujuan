@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:bujuan/api/netease_cloud_music.dart';
@@ -7,13 +6,17 @@ import 'package:bujuan/entity/ablum_newest.dart';
 import 'package:bujuan/entity/album_details.dart';
 import 'package:bujuan/entity/fm_entity.dart';
 import 'package:bujuan/entity/heart.dart';
+import 'package:bujuan/entity/program_detail.dart';
 import 'package:bujuan/entity/search_album.dart';
 import 'package:bujuan/entity/search_hot_entity.dart';
 import 'package:bujuan/entity/search_mv_entity.dart';
 import 'package:bujuan/entity/search_sheet_entity.dart';
 import 'package:bujuan/entity/search_singer_entity.dart';
+import 'package:bujuan/entity/user_di_program.dart';
+import 'package:bujuan/entity/user_dj.dart';
 import 'package:bujuan/entity/week_data.dart';
 import 'package:bujuan/global/global_config.dart';
+import 'package:bujuan/global/global_controller.dart';
 import 'package:bujuan/main.dart';
 import 'package:bujuan/entity/banner_entity.dart';
 import 'package:bujuan/entity/cloud_entity.dart';
@@ -37,6 +40,7 @@ import 'package:get/get.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:starry/music_item.dart';
+import 'package:starry/starry.dart';
 
 class NetUtils {
   static final NetUtils _netUtils = NetUtils._internal(); //1
@@ -251,11 +255,18 @@ class NetUtils {
   ///获取歌曲播放地址
   Future<String> getSongUrl(songId) async {
     var songUrl = '';
+    if (GlobalController.to.playListMode.value == PlayListMode.RADIO) {
+      var userDjProgram = await programDetail(songId);
+      if (userDjProgram != null && userDjProgram.code == 200) {
+        songId = userDjProgram.program.mainTrackId;
+        GlobalController.to.song.value.radioId = '$songId';
+      }
+    }
     var map = await _doHandler('/song/url', param: {
       'id': songId,
       'br': SpUtil.getString(QUALITY, defValue: '128000')
     });
-    if (map != null) songUrl = map['data'][0]['url'];
+    if (map != null && map['code'] == 200) songUrl = map['data'][0]['url'];
     return songUrl;
   }
 
@@ -321,13 +332,14 @@ class NetUtils {
   }
 
   ///听歌历史 1: 最近一周, 0: 所有时间
-  Future<dynamic> getHistory(uid,type) async {
+  Future<dynamic> getHistory(uid, type) async {
     var history;
-    var map = await _doHandler('/user/record', param: {'uid': uid,'type':type});
+    var map =
+        await _doHandler('/user/record', param: {'uid': uid, 'type': type});
     if (map != null) {
-      if(type == 0){
+      if (type == 0) {
         history = PlayHistoryEntity.fromJson(map);
-      }else{
+      } else {
         history = WeekHistory.fromJson(map);
       }
     }
@@ -467,7 +479,7 @@ class NetUtils {
   Future<AlbumData> getAlbumDetails(id) async {
     var songDetails;
     var map = await _doHandler('/album', param: {'id': id});
-    if(map!=null) {
+    if (map != null) {
       AlbumDetails album = AlbumDetails.fromJson(map);
       List<int> ids = [];
       await Future.forEach(album.songs, (id) => ids.add(id.id));
@@ -477,26 +489,50 @@ class NetUtils {
     return songDetails;
   }
 
-
   ///听歌打卡
-  Future<bool> scrobble(id,sid,time) async {
+  Future<bool> scrobble(id, sid, time) async {
     var songDetails = false;
-    var map = await _doHandler('/user/scrobble', param: {'id': id,'sid':sid,'time':time});
-    if(map!=null&&map['code']==200) {
+    var map = await _doHandler('/user/scrobble',
+        param: {'id': id, 'sid': sid, 'time': time});
+    if (map != null && map['code'] == 200) {
       songDetails = true;
     }
     return songDetails;
   }
-//播放音乐
-// Future setPlayListAndPlayById(List<SongInfo> list, int index, String id) async {
-// var playList = await FlutterStarrySky().getPlayList();
-// if (playList == null) await GlobalStore.store.dispatch(GlobalActionCreator.changeCurrSong(list[index]));
-// await FlutterStarrySky().setPlayListAndPlayById(list, index, '$id');
-// }
 
+  ///用户订阅的电台
+  Future<UserDj> userDjSublist(offset) async {
+    var songDetails;
+    var map = await _doHandler('/user/dj/sublist', param: {'offset': offset});
+    if (map != null) {
+      songDetails = UserDj.fromJson(map);
+    }
+    return songDetails;
+  }
+
+  ///电台详情列表
+  Future<UserDjProgram> userProgram(rid, offset) async {
+    var userDjProgram;
+    var map =
+        await _doHandler('/dj/program', param: {'rid': rid, 'offset': offset});
+    if (map != null) {
+      userDjProgram = UserDjProgram.fromJson(map);
+    }
+    return userDjProgram;
+  }
+
+  ///获取节目详情
+  Future<ProgramDetail> programDetail(id) async {
+    var userDjProgram;
+    var map = await _doHandler('/dj/program/detail', param: {'id': id});
+    if (map != null) {
+      userDjProgram = ProgramDetail.fromJson(map);
+    }
+    return userDjProgram;
+  }
 }
 
-class AlbumData{
+class AlbumData {
   final List<SheetDetailsPlaylistTrack> data;
   final Album album;
 

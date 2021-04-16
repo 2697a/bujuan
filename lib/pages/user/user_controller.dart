@@ -92,7 +92,6 @@ class UserController extends GetxController {
   }
 
   Future<List<MusicItem>> getFM() async {
-    var playListMode = Get.find<GlobalController>().playListMode.value;
     List<MusicItem> fmSong = [];
     var fmEntity = await NetUtils().getFm();
     if (fmEntity != null && fmEntity.code == 200) {

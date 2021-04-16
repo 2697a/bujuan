@@ -2,6 +2,7 @@ import 'package:bujuan/entity/personal_entity.dart';
 import 'package:bujuan/entity/user_order_entity.dart';
 import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/global/global_controller.dart';
+import 'package:bujuan/pages/sheet_info/head.dart';
 import 'package:bujuan/utils/net_util.dart';
 import 'package:bujuan/widget/over_scroll.dart';
 import 'package:bujuan/pages/user/user_controller.dart';
@@ -31,25 +32,95 @@ class UserView extends GetView<UserController> {
             onRefresh: () => controller.getUserSheet(forcedRefresh: true),
             child: CustomScrollView(
               slivers: [
-                SliverToBoxAdapter(
-                  child: ListTile(
-                    title: Text('云盘'),
-                    subtitle: Text('我的云盘'),
-                    onTap: () => Get.toNamed('/cloud'),
-                  ),
+                SliverPersistentHeader(
+                  delegate: SliverAppBarDelegate(
+                      minHeight: 90.0,
+                      maxHeight: 90.0,
+                      child: Card(
+                        child: Padding(padding: EdgeInsets.symmetric(horizontal: 10.0),child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              children: [
+                                IconButton(
+                                    icon: Icon(
+                                      IconData(0xec9f, fontFamily: 'iconfont'),
+                                      color: Colors.red,
+                                    ),
+                                    onPressed: () => Get.toNamed('/radio')),
+                                Padding(
+                                  padding: EdgeInsets.only(bottom: 12.0),
+                                  child: Text(
+                                    '电台',
+                                    style: TextStyle(fontSize: 12.0),
+                                  ),
+                                )
+                              ],
+                            ),
+                            Column(
+                              children: [
+                                IconButton(
+                                    icon: Icon(
+                                      IconData(0xe62a, fontFamily: 'iconfont'),
+                                      color: Colors.red,
+                                    ),
+                                    onPressed: () => Get.toNamed('/cloud')),
+                                Padding(
+                                  padding: EdgeInsets.only(bottom: 12.0),
+                                  child: Text(
+                                    '云盘',
+                                    style: TextStyle(fontSize: 12.0),
+                                  ),
+                                )
+                              ],
+                            ),
+                            Column(
+                              children: [
+                                IconButton(
+                                    icon: Icon(
+                                      IconData(0xe607, fontFamily: 'iconfont'),
+                                      color: Colors.red,
+                                      size: 26.0,
+                                    ),
+                                    onPressed: () {
+                                      if (GlobalController
+                                          .to.playListMode.value !=
+                                          PlayListMode.FM) {
+                                        controller.getFM();
+                                      }
+                                    }),
+                                Padding(
+                                  padding: EdgeInsets.only(bottom: 12.0),
+                                  child: Text(
+                                    '私人Fm',
+                                    style: TextStyle(fontSize: 12.0),
+                                  ),
+                                )
+                              ],
+                            ),
+                            Column(
+                              children: [
+                                IconButton(
+                                    icon: Icon(
+                                      IconData(0xe619, fontFamily: 'iconfont'),
+                                      color: Colors.red,
+                                    ),
+                                    onPressed: () => Get.toNamed('/history')),
+                                Padding(
+                                  padding: EdgeInsets.only(bottom: 12.0),
+                                  child: Text(
+                                    '记录',
+                                    style: TextStyle(fontSize: 12.0),
+                                  ),
+                                )
+                              ],
+                            )
+                          ],
+                        ),),
+                      )),
+                  floating: true,
                 ),
-                SliverToBoxAdapter(
-                  child: ListTile(
-                    title: Text('私人FM'),
-                    subtitle: Text('点击播放'),
-                    onTap: () {
-                      if (GlobalController.to.playListMode.value !=
-                          PlayListMode.FM) {
-                        controller.getFM();
-                      }
-                    },
-                  ),
-                ),
+                SliverPadding(padding: EdgeInsets.symmetric(vertical: 8.0)),
                 SliverFixedExtentList(
                   itemExtent: 60.0,
                   delegate: SliverChildBuilderDelegate(
@@ -173,7 +244,7 @@ class UserView extends GetView<UserController> {
                   child: CachedNetworkImage(
                     width: 42,
                     height: 42,
-                    imageUrl: '${userOrderPlaylist.coverImgUrl}?param=1100y100',
+                    imageUrl: '${userOrderPlaylist.coverImgUrl}?param=100y100',
                   ),
                 ),
               ),

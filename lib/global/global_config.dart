@@ -55,4 +55,5 @@ const int SEARCH_ID = -5;
 const int FM_ID = -6;
 const int HEART_ID = -7;
 const int LOCAL_ID = -8;
+const int RADIO_ID = -9;
 

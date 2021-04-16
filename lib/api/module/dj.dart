@@ -72,7 +72,7 @@ Handler dj_program_detail = (query, cookie) {
 Handler dj_program = (query, cookie) {
   final data = {
     'radioId': query['rid'],
-    'limit': query['limit'] ?? 30,
+    'limit': query['limit'] ?? 300,
     'offset': query['offset'] ?? 0,
     'asc': toBoolean(query['asc'])
   };

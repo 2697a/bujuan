@@ -9,7 +9,7 @@ import 'package:get/get.dart';
 class GlobalBinding extends Bindings{
   @override
   void dependencies() {
-    Get.put<GlobalController>( GlobalController(),permanent: true);
+    Get.put<GlobalController>(GlobalController(),permanent: true);
     Get.put<FindController>(FindController());
     Get.put<UserController>(UserController());
     Get.put<TopController>(TopController());

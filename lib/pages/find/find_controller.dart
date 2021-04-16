@@ -5,6 +5,7 @@ import 'package:bujuan/utils/bujuan_util.dart';
 import 'package:bujuan/utils/net_util.dart';
 import 'package:bujuan/utils/sp_util.dart';
 import 'package:bujuan/widget/preload_page_view.dart';
+import 'package:bujuan/widget/state_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -12,11 +13,11 @@ import 'package:starry/music_item.dart';
 import 'package:starry/starry.dart';
 
 class FindController extends GetxController {
-  var banner = [].obs;
-  var sheet = [].obs;
-  var allSheet = [].obs;
-  var newSong = [].obs;
-  var currentIndexPage = 0.obs;
+  final sheet = [].obs;
+  final allSheet = [].obs;
+  final newSong = [].obs;
+  final currentIndexPage = 0.obs;
+  final  loadState = LoadState.IDEA.obs;
   PreloadPageController pageController;
   RefreshController refreshController;
 
@@ -34,13 +35,6 @@ class FindController extends GetxController {
   }
 
 
-  loadBanner() async{
-    var bannerEntity = await NetUtils().getBanner();
-    if(bannerEntity!=null&&bannerEntity.code==200){
-      banner..clear()..addAll(bannerEntity.banners);
-    }
-    await loadTodaySheet();
-  }
 
 
   loadTodaySheet({forcedRefresh = false})  {
@@ -55,6 +49,8 @@ class FindController extends GetxController {
             sheet.add(sheets.sublist(j*3,(j+1)*3));
           }
         }
+      }else{
+        loadState.value = LoadState.FAIL;
       }
     });
      loadNewSong();
@@ -66,6 +62,9 @@ class FindController extends GetxController {
         newSong
           ..clear()
           ..addAll(newSongEntity.result.sublist(0,6));
+        loadState.value  = LoadState.SUCCESS;
+      }else{
+        loadState.value = LoadState.FAIL;
       }
       refreshController?.refreshCompleted();
     });
