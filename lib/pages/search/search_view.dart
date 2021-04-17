@@ -1,5 +1,4 @@
 import 'package:bujuan/pages/search/search_controller.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -7,54 +6,52 @@ class SearchView extends GetView<SearchController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Card(child: Row(
-        children: [
-          Padding(padding: EdgeInsets.symmetric(horizontal: 3.0)),
-          Icon(Icons.search),
-          Padding(padding: EdgeInsets.symmetric(horizontal: 3)),
-          Expanded(
-              child: TextField(
-                controller: controller.textEditingController,
-                textInputAction: TextInputAction.search,
-                onSubmitted: (value){
-                  Get.toNamed('/search_details',arguments: {'content':'$value'});
-                  controller.textEditingController.text = '';
-                },
-                // inputFormatters: [FilteringTextInputFormatter(RegExp('[a-zA-Z]|[0-9.]'), allow: true)],
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  hintText: '搜索',
-                ),
-              ))
-        ],
-      ),margin: EdgeInsets.all(0),),),
       resizeToAvoidBottomInset: false,
       body: Column(
         children: [
-          Expanded(child: Obx(()=>ListView.builder(itemBuilder: (context,index){
-            return InkWell(
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 8.0,vertical: 15.0),
-                child: Row(
-                  children: [
-                    Text('${index+1}. '),
-                    Padding(padding: EdgeInsets.symmetric(horizontal: 3.0)),
-                    Visibility(child:  CachedNetworkImage(
-                      width: 16.0,
-                      height: 16.0,
-                      fit: BoxFit.fitWidth,
-                      imageUrl: '${controller.searchList[index].iconUrl}',
-                    ),visible: !GetUtils.isNullOrBlank(controller.searchList[index].iconUrl),),
-                    Padding(padding: EdgeInsets.symmetric(horizontal: 3.0)),
-                    Text('${controller.searchList[index].content}')
-                  ],
-                ),
-              ),
-              onTap: (){
-                Get.toNamed('/search_details',arguments: {'content':'${controller.searchList[index].searchWord}'});
-              },
-            );
-          },itemCount: controller.searchList.length,padding: EdgeInsets.all(0),)))
+          Card(
+            child: InkWell(
+              child: Padding(padding: EdgeInsets.symmetric(vertical: 10.0),child: Row(
+                children: [
+                  Padding(padding: EdgeInsets.symmetric(horizontal: 3.0)),
+                  Icon( const IconData(0xe61b, fontFamily: 'iconfont')),
+                  Padding(padding: EdgeInsets.symmetric(horizontal: 8)),
+                  Text('点击搜索')
+                ],
+              ),),
+              onTap: ()=>Get.toNamed('/search_details',arguments: {'content':''}),),
+            ),
+          Expanded(
+              child: Obx(() => CustomScrollView(
+                    slivers: [
+                      const SliverToBoxAdapter(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 8.0, vertical: 10.0),
+                          child: Text(
+                            "搜索推荐",
+                            style: TextStyle(
+                                fontSize: 16.0, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                      SliverToBoxAdapter(
+                        child: Wrap(
+                          direction: Axis.horizontal,
+                          children: controller.searchList.length>0?controller.searchList
+                              .map((e) => Card(
+                            margin: EdgeInsets.symmetric(vertical: 10.0,horizontal: 5.0),
+                                    child: InkWell(child: Container(
+                                      child: Text(e.searchWord),
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: 8.0, horizontal: 15.0),
+                                    ),onTap: ()=>Get.toNamed('/search_details',arguments: {'content':'${e.searchWord}'}),),
+                                  ))
+                              .toList():controller.searchListTest.map((e) => e).toList(),
+                        ),
+                      ),
+                    ],
+                  )))
         ],
       ),
     );

@@ -12,7 +12,6 @@ class MusicController extends GetxController {
   var albums = [].obs;
   final isNoAlbum = false.obs;
   final isNoArtists = false.obs;
-  var isLoad = false;
   RefreshController refreshController;
 
   @override
@@ -23,6 +22,7 @@ class MusicController extends GetxController {
 
   @override
   void onReady() {
+    getAllArtists();
     super.onReady();
   }
 
@@ -51,7 +51,6 @@ class MusicController extends GetxController {
             UriType.EXTERNAL, true)
         .then((value) {
       albums.clear();
-      isLoad = true;
       value.forEach((element) {
         if (element.artist != "<unknown>") {
           albums.add(element);

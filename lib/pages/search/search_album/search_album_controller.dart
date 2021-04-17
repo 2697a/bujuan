@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 class SearchAlbumController extends GetxController{
   final search = [].obs;
 
+  static SearchAlbumController get to =>Get.find();
   @override
   void onInit() {
     super.onInit();
@@ -13,7 +14,6 @@ class SearchAlbumController extends GetxController{
 
   @override
   void onReady() {
-    getSearch();
     super.onReady();
   }
 

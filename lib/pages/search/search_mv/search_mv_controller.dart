@@ -6,6 +6,8 @@ import 'package:get/get.dart';
 class SearchMvController extends GetxController{
   final search = [].obs;
 
+  static SearchMvController get to =>Get.find();
+
   @override
   void onInit() {
     super.onInit();
@@ -13,13 +15,12 @@ class SearchMvController extends GetxController{
 
   @override
   void onReady() {
-    getSearch();
     super.onReady();
   }
 
   getSearch() {
     NetUtils().search(SearchDetailController.to.searchContext.value, 1004).then((data) {
-      if (data is SearchMvEntity) {
+      if (data!=null&&data is SearchMvEntity) {
         search
           ..clear()
           ..addAll(data.result.mvs);

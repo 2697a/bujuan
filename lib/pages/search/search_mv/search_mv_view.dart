@@ -7,6 +7,7 @@ class SearchMvView extends GetView<SearchMvController>{
   @override
   Widget build(BuildContext context) {
     return Obx(() => ListView.builder(
+      padding: EdgeInsets.all(0),
         itemBuilder: (context, index) {
           return  InkWell(
             child: Container(

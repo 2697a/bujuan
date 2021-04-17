@@ -38,7 +38,7 @@ class LoginController extends GetxController {
       state.value = ButtonState.success;
      await SpUtil.putString(USER_ID_SP, '${loginEntity.profile.userId}');
      await HomeController.to.getUserProfile('${loginEntity.profile.userId}');
-     await UserController.to.getUserSheet();
+     await UserController.to.getUserSheet(forcedRefresh:true);
      await HomeController.to.getLikeSongList();
      Future.delayed(Duration(milliseconds: 600),()=>Get.back());
     } else {

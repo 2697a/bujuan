@@ -11,6 +11,8 @@ import 'package:starry/starry.dart';
 class SearchSongController extends GetxController {
   final search = [].obs;
 
+  static SearchSongController get to =>Get.find();
+
   @override
   void onInit() {
     super.onInit();
@@ -18,7 +20,6 @@ class SearchSongController extends GetxController {
 
   @override
   void onReady() {
-    getSearch();
     super.onReady();
   }
 

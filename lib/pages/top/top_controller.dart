@@ -14,7 +14,6 @@ class TopController extends GetxController {
   var hotSongImageUrl =
       'http://p2.music.126.net/GhhuF6Ep5Tq9IEvLsyCN7w==/18708190348409091.jpg';
   RefreshController refreshController;
-  var isLoad = false;
   var otherTops = [];
 
   static TopController get to => Get.find();
@@ -34,6 +33,7 @@ class TopController extends GetxController {
 
   @override
   void onReady() {
+    getData();
     super.onReady();
   }
 
@@ -55,7 +55,6 @@ class TopController extends GetxController {
             ..clear()
             ..addAll(sheetDetailsEntity.playlist.tracks.sublist(0, 3));
       }
-      if (isLoad == false) isLoad = true;
       if (refreshController.isRefresh) refreshController.refreshCompleted();
     });
   }

@@ -1,5 +1,4 @@
 import 'package:bujuan/global/global_config.dart';
-import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/utils/bujuan_util.dart';
 import 'package:bujuan/utils/net_util.dart';
 import 'package:bujuan/utils/sp_util.dart';
@@ -8,7 +7,6 @@ import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:starry/music_item.dart';
 import 'package:starry/starry.dart';
-import 'package:we_slide/we_slide.dart';
 
 class CloudController extends GetxController {
   RefreshController refreshController;
@@ -79,7 +77,7 @@ class CloudController extends GetxController {
     clouds.forEach((track) {
       MusicItem musicItem = MusicItem(
         musicId: '${track.id}',
-        duration: track.dt,
+        duration: track.dt==0?320000:track.dt,
         iconUri: "${track.al.picUrl}",
         title: track.name,
         uri: '${track.id}',

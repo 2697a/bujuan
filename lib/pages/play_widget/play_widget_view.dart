@@ -18,8 +18,7 @@ class PlayWidgetView extends GetView<GlobalController> {
   final isHome;
   final Widget widget;
   final WeSlideController weSlideController = WeSlideController();
-  final LyricController lyricController =
-      LyricController(vsync: NavigatorState());
+  final LyricController lyricController = LyricController();
   final Widget appBar;
   final Widget bottomBar;
 
@@ -32,39 +31,22 @@ class PlayWidgetView extends GetView<GlobalController> {
     return WillPopScope(
         child: Scaffold(
           resizeToAvoidBottomInset: false,
-          body: isHome
-              ? Obx(() => WeSlide(
-                    backgroundColor: Colors.transparent,
-                    appBar: appBar,
-                    appBarHeight: GetUtils.isNullOrBlank(appBar)
-                        ? 0
-                        : 56.0 + MediaQueryData.fromWindow(window).padding.top,
-                    controller: weSlideController,
-                    panelMaxSize: MediaQuery.of(Get.context).size.height,
-                    panelMinSize:
-                        HomeController.to.scroller.value ? 62.0 : 118.0,
-                    overlayColor: Colors.transparent,
-                    body: widget,
-                    parallax: true,
-                    panel: _buildPlayView(),
-                    panelHeader: _buildPlayBottomBar(),
-                    footer: HomeController.to.scroller.value ? null : bottomBar,
-                  ))
-              : WeSlide(
-                  appBar: appBar,
-                  appBarHeight: !GetUtils.isNullOrBlank(appBar)
-                      ? 56.0 + MediaQueryData.fromWindow(window).padding.top
-                      : 0,
-                  backgroundColor: Colors.transparent,
-                  controller: weSlideController,
-                  panelMaxSize: MediaQuery.of(Get.context).size.height,
-                  panelMinSize: 62.0,
-                  overlayColor: Colors.transparent,
-                  body: widget,
-                  parallax: true,
-                  panel: _buildPlayView(),
-                  panelHeader: _buildPlayBottomBar(),
-                ),
+          body: WeSlide(
+            appBar: appBar,
+            appBarHeight: !GetUtils.isNullOrBlank(appBar)
+                ? 56.0 + MediaQueryData.fromWindow(window).padding.top
+                : 0,
+            backgroundColor: Colors.transparent,
+            controller: weSlideController,
+            panelMaxSize: MediaQuery.of(Get.context).size.height,
+            panelMinSize: GetUtils.isNullOrBlank(bottomBar) ? 62.0 : 118.0,
+            overlayColor: Colors.transparent,
+            body: widget,
+            parallax: true,
+            panel: _buildPlayView(),
+            panelHeader: _buildPlayBottomBar(),
+            footer: bottomBar,
+          ),
         ),
         onWillPop: () async {
           if (weSlideController.isOpened) {
@@ -178,7 +160,7 @@ class PlayWidgetView extends GetView<GlobalController> {
             )),
             IconButton(
                 icon: Icon(
-                  Icons.assignment_sharp,
+                  const IconData(0xf28e, fontFamily: 'iconfont'),
                   size: 22.0,
                 ),
                 onPressed: () => controller.scrobble()),
@@ -191,7 +173,10 @@ class PlayWidgetView extends GetView<GlobalController> {
                 builder: (_) {
                   return GetUtils.isNullOrBlank(controller.lyric) ||
                           GetUtils.isNullOrBlank(controller.lyric.lrc) ||
-                          GetUtils.isNullOrBlank(controller.lyric.lrc.lyric)
+                          GetUtils.isNullOrBlank(controller.lyric.lrc.lyric) ||
+                          GetUtils.isNullOrBlank(LyricUtil.formatLyric(
+                              controller.lyric.lrc.lyric)) ||
+                          controller.playListMode.value == PlayListMode.RADIO
                       ? Center(
                           child: Text('暂无歌词'),
                         )
@@ -225,10 +210,10 @@ class PlayWidgetView extends GetView<GlobalController> {
                   onPressed: () => controller.likeOrUnLike())),
               IconButton(
                   icon: Obx(() => Icon(
-                        controller.playListMode.value !=PlayListMode.FM
+                        controller.playListMode.value != PlayListMode.FM
                             ? Icons.skip_previous
                             : Icons.report_off,
-                        size: controller.playListMode.value !=PlayListMode.FM
+                        size: controller.playListMode.value != PlayListMode.FM
                             ? 32.0
                             : 26.0,
                       )),
@@ -276,8 +261,8 @@ class PlayWidgetView extends GetView<GlobalController> {
           children: [
             Padding(padding: EdgeInsets.symmetric(horizontal: 12.0)),
             IconButton(
-                icon: Icon(Icons.snooze),
-                onPressed: () =>HomeController.to.showSleepBottomSheet()),
+                icon: Icon( const IconData(0xe8ae, fontFamily: 'iconfont')),
+                onPressed: () => HomeController.to.showSleepBottomSheet()),
             Expanded(child: Center()),
             Obx(() => Visibility(
                   child: IconButton(
@@ -303,11 +288,17 @@ class PlayWidgetView extends GetView<GlobalController> {
             Visibility(
                 child: IconButton(
                     icon: Icon(
-                      Icons.sms_outlined,
+                      const IconData(0xe619, fontFamily: 'iconfont'),
                     ),
                     onPressed: () {
                       Get.toNamed('/music_talk', arguments: {
-                        'talk_info':TalkInfo(controller.playListMode.value==PlayListMode.RADIO?4:0, controller.song.value.musicId, controller.song.value.iconUri, controller.song.value.title)
+                        'talk_info': TalkInfo(
+                            controller.playListMode.value == PlayListMode.RADIO
+                                ? 4
+                                : 0,
+                            controller.song.value.musicId,
+                            controller.song.value.iconUri,
+                            controller.song.value.title)
                       });
                     }),
                 visible: controller.playListMode.value != PlayListMode.LOCAL),
@@ -429,7 +420,10 @@ class PlayWidgetView extends GetView<GlobalController> {
                         child: GetUtils.isNullOrBlank(controller.lyric) ||
                                 GetUtils.isNullOrBlank(controller.lyric.lrc) ||
                                 GetUtils.isNullOrBlank(
-                                    controller.lyric.lrc.lyric)
+                                    controller.lyric.lrc.lyric) ||
+                                GetUtils.isNullOrBlank(LyricUtil.formatLyric(
+                                    controller.lyric.lrc.lyric))||
+                            controller.playListMode.value == PlayListMode.RADIO
                             ? Center(
                                 child: Text('暂无歌词'),
                               )
@@ -470,6 +464,7 @@ class PlayWidgetView extends GetView<GlobalController> {
             child: Obx(() => controller.playListMode.value == PlayListMode.LOCAL
                 ? controller.getLocalImage()
                 : CachedNetworkImage(
+                    fit: BoxFit.cover,
                     imageUrl: controller.song.value.musicId != '-99'
                         ? '${controller.song.value.iconUri}?param=500y500'
                         : '${controller.song.value.iconUri}',
@@ -511,10 +506,6 @@ class PlayWidgetView extends GetView<GlobalController> {
     );
   }
 
-
   ///歌词组件
-  Widget _buildLyric(){
-
-  }
-
+  Widget _buildLyric() {}
 }

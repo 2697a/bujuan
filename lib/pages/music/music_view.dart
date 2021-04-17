@@ -1,4 +1,5 @@
 import 'package:bujuan/pages/music/music_controller.dart';
+import 'package:bujuan/pages/play_widget/play_widget_view.dart';
 import 'package:bujuan/widget/over_scroll.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -9,9 +10,9 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 class MusicView extends GetView<MusicController> {
   @override
   Widget build(BuildContext context) {
-    return ScrollConfiguration(
+    return PlayWidgetView(ScrollConfiguration(
         behavior: OverScrollBehavior(),
-        child: SmartRefresher(
+        child: Padding(padding: EdgeInsets.symmetric(horizontal: 8.0),child: SmartRefresher(
           controller: controller.refreshController,
           header: WaterDropMaterialHeader(
             color: Theme.of(context).accentColor,
@@ -54,7 +55,7 @@ class MusicView extends GetView<MusicController> {
               SliverToBoxAdapter(
                 child: Padding(
                   padding:
-                      EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
+                  EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -80,7 +81,7 @@ class MusicView extends GetView<MusicController> {
                             Get.bottomSheet(
                               _showMoreAlbum(),
                               backgroundColor:
-                                  Theme.of(Get.context).primaryColor,
+                              Theme.of(Get.context).primaryColor,
                               elevation: 6.0,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.only(
@@ -100,64 +101,65 @@ class MusicView extends GetView<MusicController> {
                     height: 180.0,
                     child: controller.isNoAlbum.value
                         ? Container(
-                            height: 80.0,
-                            child: Center(
-                              child: Wrap(
-                                children: [
-                                  Icon(Icons.sentiment_neutral_outlined),
-                                  Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 6.0)),
-                                  Text('暂无本地专辑')
-                                ],
-                              ),
-                            ),
-                          )
+                      height: 80.0,
+                      child: Center(
+                        child: Wrap(
+                          children: [
+                            Icon(Icons.sentiment_neutral_outlined),
+                            Padding(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 6.0)),
+                            Text('暂无本地专辑')
+                          ],
+                        ),
+                      ),
+                    )
                         : ListView.builder(
-                            itemBuilder: (context, index) {
-                              return InkWell(
-                                child: Container(
-                                  padding: EdgeInsets.only(right: 6.0),
-                                  child: Column(
-                                    children: [
-                                      Card(
-                                        child: controller.getLocalImage(
-                                            controller.albums[index], 110.0),
-                                      ),
-                                      Padding(
-                                        padding:
-                                            EdgeInsets.symmetric(vertical: 3.0),
-                                        child: Text(
-                                            '${controller.albums[index].albumName}'),
-                                      ),
-                                      Text(
-                                        '${controller.albums[index].artist}',
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(color: Colors.grey),
-                                      )
-                                    ],
-                                  ),
+                      itemBuilder: (context, index) {
+                        return InkWell(
+                          child: Container(
+                            constraints: BoxConstraints(maxWidth: 120.0),
+                            padding: EdgeInsets.only(right: 6.0),
+                            child: Column(
+                              children: [
+                                Card(
+                                  child: controller.getLocalImage(
+                                      controller.albums[index], 110.0),
                                 ),
-                                onTap: () {
-                                  Get.toNamed('/local_album', arguments: {
-                                    'albumName':
-                                        controller.albums[index].albumName,
-                                    'type': AudiosArgs.ALBUM
-                                  });
-                                },
-                              );
-                            },
-                            itemCount: controller.albums.length > 8
-                                ? 8
-                                : controller.albums.length,
-                            scrollDirection: Axis.horizontal,
-                          ))),
+                                Padding(
+                                  padding:
+                                  EdgeInsets.symmetric(vertical: 3.0,horizontal: 3.0),
+                                  child: Text(
+                                      '${controller.albums[index].albumName}',maxLines: 1,overflow: TextOverflow.ellipsis,),
+                                ),
+                                Text(
+                                  '${controller.albums[index].artist}',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(color: Colors.grey),
+                                )
+                              ],
+                            ),
+                          ),
+                          onTap: () {
+                            Get.toNamed('/local_album', arguments: {
+                              'albumName':
+                              controller.albums[index].albumName,
+                              'type': AudiosArgs.ALBUM
+                            });
+                          },
+                        );
+                      },
+                      itemCount: controller.albums.length > 8
+                          ? 8
+                          : controller.albums.length,
+                      scrollDirection: Axis.horizontal,
+                    ))),
               ),
               SliverToBoxAdapter(
                 child: Padding(
                   padding:
-                      EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
+                  EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -198,73 +200,73 @@ class MusicView extends GetView<MusicController> {
               SliverToBoxAdapter(
                 child: Obx(() => controller.isNoArtists.value
                     ? Container(
-                        height: 80.0,
-                        child: Center(
-                          child: Wrap(
-                            children: [
-                              Icon(Icons.sentiment_neutral_outlined),
-                              Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 6.0)),
-                              Text('暂无本地歌手')
-                            ],
-                          ),
-                        ),
-                      )
+                  height: 80.0,
+                  child: Center(
+                    child: Wrap(
+                      children: [
+                        Icon(Icons.sentiment_neutral_outlined),
+                        Padding(
+                            padding:
+                            EdgeInsets.symmetric(horizontal: 6.0)),
+                        Text('暂无本地歌手')
+                      ],
+                    ),
+                  ),
+                )
                     : ListView.builder(
-                        physics: NeverScrollableScrollPhysics(),
-                        padding: EdgeInsets.all(0),
-                        itemBuilder: (context, index) {
-                          return Container(
-                            padding: EdgeInsets.symmetric(vertical: 8.0),
-                            child: InkWell(
-                                child: Row(
-                                  children: [
-                                    Card(
-                                      color: Colors.blue[300].withOpacity(.3),
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadiusDirectional.circular(
-                                                  45.0)),
-                                      clipBehavior: Clip.antiAlias,
-                                      child: Container(
-                                        alignment: Alignment.center,
-                                        width: 45.0,
-                                        height: 45.0,
-                                        child: Text(
-                                            '${controller.artists[index].artistName}'
-                                                .substring(0, 1)),
-                                      ),
-                                    ),
-                                    Container(
-                                      margin:
-                                          EdgeInsets.symmetric(horizontal: 8.0),
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                          controller.artists[index].artistName,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(fontSize: 14.0)),
-                                    )
-                                  ],
+                    physics: NeverScrollableScrollPhysics(),
+                    padding: EdgeInsets.all(0),
+                    itemBuilder: (context, index) {
+                      return Container(
+                        padding: EdgeInsets.symmetric(vertical: 8.0),
+                        child: InkWell(
+                            child: Row(
+                              children: [
+                                Card(
+                                  color: Colors.blue[300].withOpacity(.3),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius:
+                                      BorderRadiusDirectional.circular(
+                                          45.0)),
+                                  clipBehavior: Clip.antiAlias,
+                                  child: Container(
+                                    alignment: Alignment.center,
+                                    width: 45.0,
+                                    height: 45.0,
+                                    child: Text(
+                                        '${controller.artists[index].artistName}'
+                                            .substring(0, 1)),
+                                  ),
                                 ),
-                                onTap: () {
-                                  Get.toNamed('/local_album', arguments: {
-                                    'albumName':
-                                        controller.artists[index].artistName,
-                                    'type': AudiosArgs.ARTIST
-                                  });
-                                }),
-                          );
-                        },
-                        itemCount: controller.artists.length > 6
-                            ? 6
-                            : controller.artists.length,
-                        shrinkWrap: true)),
+                                Container(
+                                  margin:
+                                  EdgeInsets.symmetric(horizontal: 8.0),
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                      controller.artists[index].artistName,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(fontSize: 14.0)),
+                                )
+                              ],
+                            ),
+                            onTap: () {
+                              Get.toNamed('/local_album', arguments: {
+                                'albumName':
+                                controller.artists[index].artistName,
+                                'type': AudiosArgs.ARTIST
+                              });
+                            }),
+                      );
+                    },
+                    itemCount: controller.artists.length > 6
+                        ? 6
+                        : controller.artists.length,
+                    shrinkWrap: true)),
               ),
             ],
           ),
-        ));
+        ),)),appBar: AppBar(title: Text('本地音乐'),),);
   }
 
   Widget _showMoreAlbum() {

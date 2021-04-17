@@ -2,8 +2,7 @@ import 'package:bujuan/entity/personal_entity.dart';
 import 'package:bujuan/entity/user_order_entity.dart';
 import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/global/global_controller.dart';
-import 'package:bujuan/pages/sheet_info/head.dart';
-import 'package:bujuan/utils/net_util.dart';
+import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/widget/over_scroll.dart';
 import 'package:bujuan/pages/user/user_controller.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -11,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_placeholder_textlines/placeholder_lines.dart';
 import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:starry/starry.dart';
 
 class UserView extends GetView<UserController> {
   @override
@@ -32,93 +30,155 @@ class UserView extends GetView<UserController> {
             onRefresh: () => controller.getUserSheet(forcedRefresh: true),
             child: CustomScrollView(
               slivers: [
-                SliverPersistentHeader(
-                  delegate: SliverAppBarDelegate(
-                      minHeight: 90.0,
-                      maxHeight: 90.0,
-                      child: Card(
-                        child: Padding(padding: EdgeInsets.symmetric(horizontal: 10.0),child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              children: [
-                                IconButton(
-                                    icon: Icon(
-                                      IconData(0xec9f, fontFamily: 'iconfont'),
-                                      color: Colors.red,
-                                    ),
-                                    onPressed: () => Get.toNamed('/radio')),
-                                Padding(
-                                  padding: EdgeInsets.only(bottom: 12.0),
-                                  child: Text(
-                                    '电台',
-                                    style: TextStyle(fontSize: 12.0),
-                                  ),
-                                )
-                              ],
+                SliverToBoxAdapter(
+                  child: Card(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10.0),
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.symmetric(vertical: 12.0),
+                            child: InkWell(
+                              child: Row(
+                                children: [
+                                  Hero(
+                                      tag: 'avatar',
+                                      child: Obx(() => Card(
+                                            margin: EdgeInsets.all(0.0),
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadiusDirectional
+                                                        .circular(80.0)),
+                                            clipBehavior: Clip.antiAlias,
+                                            child: !GetUtils.isNullOrBlank(
+                                                        HomeController
+                                                            .to
+                                                            .userProfileEntity
+                                                            .value) &&
+                                                    HomeController
+                                                        .to.login.value
+                                                ? CachedNetworkImage(
+                                                    fit: BoxFit.cover,
+                                                    imageUrl: HomeController
+                                                        .to
+                                                        .userProfileEntity
+                                                        .value
+                                                        .profile
+                                                        .avatarUrl,
+                                                    height: 65.0,
+                                                    width: 65.0,
+                                                  )
+                                                : Image.asset(
+                                                    'assets/images/logo.png',
+                                                    width: 65.0,
+                                                    height: 65.0),
+                                          ))),
+                                  Expanded(
+                                      child: ListTile(
+                                    title: Obx(() => Text(
+                                          GetUtils.isNullOrBlank(HomeController
+                                                      .to
+                                                      .userProfileEntity
+                                                      .value) ||
+                                                  !HomeController.to.login.value
+                                              ? '请先登录'
+                                              : '${HomeController.to.userProfileEntity.value.profile.nickname}',
+                                          style: TextStyle(
+                                              fontSize: 18.0,
+                                              fontWeight: FontWeight.bold),
+                                        )),
+                                    subtitle: Text(GetUtils.isNullOrBlank(
+                                                HomeController.to
+                                                    .userProfileEntity.value) ||
+                                            !HomeController.to.login.value
+                                        ? '未登录'
+                                        : '等级：${HomeController.to.userProfileEntity.value.level}'),
+                                  ))
+                                ],
+                              ),
+                              onTap: () => HomeController.to.goToProfile(),
                             ),
-                            Column(
-                              children: [
-                                IconButton(
-                                    icon: Icon(
-                                      IconData(0xe62a, fontFamily: 'iconfont'),
-                                      color: Colors.red,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                children: [
+                                  IconButton(
+                                      icon: Icon(
+                                        const IconData(0xec9f,
+                                            fontFamily: 'iconfont'),
+                                        size: 26.0,
+                                        color: Colors.red.withOpacity(.8),
+                                      ),
+                                      onPressed: () => Get.toNamed('/radio')),
+                                  Padding(
+                                    padding: EdgeInsets.only(bottom: 12.0),
+                                    child: Text(
+                                      '电台',
+                                      style: TextStyle(fontSize: 12.0),
                                     ),
-                                    onPressed: () => Get.toNamed('/cloud')),
-                                Padding(
-                                  padding: EdgeInsets.only(bottom: 12.0),
-                                  child: Text(
-                                    '云盘',
-                                    style: TextStyle(fontSize: 12.0),
-                                  ),
-                                )
-                              ],
-                            ),
-                            Column(
-                              children: [
-                                IconButton(
-                                    icon: Icon(
-                                      IconData(0xe607, fontFamily: 'iconfont'),
-                                      color: Colors.red,
-                                      size: 26.0,
+                                  )
+                                ],
+                              ),
+                              Column(
+                                children: [
+                                  IconButton(
+                                      icon: Icon(
+                                          const IconData(0xe62a,
+                                              fontFamily: 'iconfont'),
+                                          size: 26.0,
+                                          color: Colors.red.withOpacity(.8)),
+                                      onPressed: () => Get.toNamed('/cloud')),
+                                  Padding(
+                                    padding: EdgeInsets.only(bottom: 12.0),
+                                    child: Text(
+                                      '云盘',
+                                      style: TextStyle(fontSize: 12.0),
                                     ),
-                                    onPressed: () {
-                                      if (GlobalController
-                                          .to.playListMode.value !=
-                                          PlayListMode.FM) {
-                                        controller.getFM();
-                                      }
-                                    }),
-                                Padding(
-                                  padding: EdgeInsets.only(bottom: 12.0),
-                                  child: Text(
-                                    '私人Fm',
-                                    style: TextStyle(fontSize: 12.0),
-                                  ),
-                                )
-                              ],
-                            ),
-                            Column(
-                              children: [
-                                IconButton(
-                                    icon: Icon(
-                                      IconData(0xe619, fontFamily: 'iconfont'),
-                                      color: Colors.red,
+                                  )
+                                ],
+                              ),
+                              Column(
+                                children: [
+                                  IconButton(
+                                      icon: Icon(
+                                          const IconData(0xe72f,
+                                              fontFamily: 'iconfont'),
+                                          size: 28.0,
+                                          color: Colors.red.withOpacity(.8)),
+                                      onPressed: () => Get.toNamed('/local')),
+                                  Padding(
+                                    padding: EdgeInsets.only(bottom: 12.0),
+                                    child: Text('本地',
+                                        style: TextStyle(fontSize: 12.0)),
+                                  )
+                                ],
+                              ),
+                              Column(
+                                children: [
+                                  IconButton(
+                                      icon: Icon(
+                                          const IconData(0xe61a,
+                                              fontFamily: 'iconfont'),
+                                          size: 28.0,
+                                          color: Colors.red.withOpacity(.8)),
+                                      onPressed: () => Get.toNamed('/history')),
+                                  Padding(
+                                    padding: EdgeInsets.only(bottom: 12.0),
+                                    child: Text(
+                                      '记录',
+                                      style: TextStyle(fontSize: 12.0),
                                     ),
-                                    onPressed: () => Get.toNamed('/history')),
-                                Padding(
-                                  padding: EdgeInsets.only(bottom: 12.0),
-                                  child: Text(
-                                    '记录',
-                                    style: TextStyle(fontSize: 12.0),
-                                  ),
-                                )
-                              ],
-                            )
-                          ],
-                        ),),
-                      )),
-                  floating: true,
+                                  )
+                                ],
+                              )
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
                 SliverPadding(padding: EdgeInsets.symmetric(vertical: 8.0)),
                 SliverFixedExtentList(

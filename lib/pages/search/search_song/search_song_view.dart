@@ -6,6 +6,7 @@ class SearchSongView extends GetView<SearchSongController> {
   @override
   Widget build(BuildContext context) {
     return Obx(() => ListView.builder(
+        padding: EdgeInsets.all(0),
       itemExtent: 60.0,
         itemBuilder: (context, index) {
           return InkWell(

@@ -1,7 +1,8 @@
+import 'package:bujuan/entity/user_dj.dart';
 import 'package:bujuan/global/global_loding_view.dart';
 import 'package:bujuan/pages/play_widget/play_widget_view.dart';
 import 'package:bujuan/pages/radio/radio_controller.dart';
-import 'package:bujuan/utils/net_util.dart';
+import 'package:bujuan/pages/sheet_info/head.dart';
 import 'package:bujuan/widget/over_scroll.dart';
 import 'package:bujuan/widget/state_view.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -28,14 +29,54 @@ class RadioView extends GetView<RadioController> {
           SmartRefresher(
             controller: controller.refreshController,
             enablePullUp: controller.openLoad.value,
-            header:  WaterDropMaterialHeader(
+            header: WaterDropMaterialHeader(
               color: Theme.of(Get.context).accentColor,
               backgroundColor: Theme.of(Get.context).primaryColor,
             ),
             footer: ClassicFooter(),
-            onRefresh: ()=>controller.getUserDjSubList(),
-            onLoading: ()=>controller.getUserDjSubList(false),
+            onRefresh: () => controller.getUserDjSubList(),
+            onLoading: () => controller.getUserDjSubList(false),
             child: CustomScrollView(slivers: [
+               const SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: 8.0, vertical: 10.0),
+                  child: Text(
+                    "电台推荐",
+                    style: TextStyle(
+                        fontSize: 16.0, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+              SliverPersistentHeader(
+                  delegate: SliverAppBarDelegate(
+                      minHeight: 180.0,
+                      maxHeight: 180.0,
+                      child: Obx(() => ListView.builder(
+                        padding: EdgeInsets.symmetric(horizontal: 8.0),
+                          scrollDirection: Axis.horizontal,
+                          shrinkWrap: true,
+                          itemExtent:
+                              (MediaQuery.of(Get.context).size.width - 10) / 3,
+                          itemCount: controller.recommend.length > 0
+                              ? controller.recommend.length
+                              : 6,
+                          itemBuilder: (context, index) {
+                            return controller.recommend.length > 0
+                                ? _sheetItem(controller.recommend[index])
+                                : LoadingView.buildGridViewSheetLoadingView();
+                          })))),
+              const SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: 8.0, vertical: 10.0),
+                  child: Text(
+                    "我订阅的电台",
+                    style: TextStyle(
+                        fontSize: 16.0, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
               SliverFixedExtentList(
                 itemExtent: 60.0,
                 delegate: SliverChildBuilderDelegate(
@@ -51,15 +92,12 @@ class RadioView extends GetView<RadioController> {
                                   Container(
                                     alignment: Alignment.center,
                                     margin: EdgeInsets.only(right: 12.0),
-                                    child: Hero(
-                                      tag: '${controller.list[index].id}',
-                                      child: Card(
-                                        child: CachedNetworkImage(
-                                          width: 42,
-                                          height: 42,
-                                          imageUrl:
-                                              '${controller.list[index].picUrl}?param=100y100',
-                                        ),
+                                    child:Card(
+                                      child: CachedNetworkImage(
+                                        width: 42,
+                                        height: 42,
+                                        imageUrl:
+                                        '${controller.list[index].picUrl}?param=100y100',
                                       ),
                                     ),
                                   ),
@@ -101,6 +139,44 @@ class RadioView extends GetView<RadioController> {
               )
             ]),
           ))),
+    );
+  }
+
+  ///歌单itemView15556333717
+  Widget _sheetItem(DjRadios djRadios) {
+    return Container(
+      width:(MediaQuery.of(Get.context).size.width - 10) / 3,
+      alignment: Alignment.center,
+      child: Card(
+        child: InkWell(
+            child: Container(
+              width: 120,
+              height: 170.0,
+              child: Column(
+                children: [
+                  CachedNetworkImage(
+                    height: 120.0,
+                    width: 120.0,
+                    fit: BoxFit.cover,
+                    imageUrl: '${djRadios.picUrl}?param=300y300',
+                  ),
+                  Container(
+                    height: 45.0,
+                    alignment: Alignment.center,
+                    constraints: BoxConstraints(maxWidth: 110.0),
+                    child: Text(djRadios.rcmdtext,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontSize: 14.0)),
+                  )
+                ],
+              ),
+            ),
+            onTap: () {
+              Get.toNamed('/radio_detail',
+                  arguments: {'radio': djRadios});
+            }),
+      ),
     );
   }
 }

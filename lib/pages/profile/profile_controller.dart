@@ -1,5 +1,6 @@
 import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
+import 'package:bujuan/pages/user/user_controller.dart';
 import 'package:bujuan/utils/sp_util.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +34,9 @@ class ProfileController extends GetxController {
         onConfirm: () {
           SpUtil.putString(USER_ID_SP, '');
           HomeController.to.login.value = false;
-          HomeController.to.changeIndex(1);
+          UserController.to.createPlayList.clear();
+          UserController.to.collectPlayList.clear();
+          UserController.to.lovePlayList.clear();
           Get.back();
           Get.back();
         });

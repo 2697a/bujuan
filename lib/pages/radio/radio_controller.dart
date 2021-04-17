@@ -7,6 +7,7 @@ class RadioController extends GetxController {
   RefreshController refreshController;
 
   final list = [].obs;
+  final recommend = [].obs;
   int loadPage = 0;
   final loadState = LoadState.IDEA.obs;
   final openLoad = true.obs;
@@ -19,7 +20,7 @@ class RadioController extends GetxController {
 
   @override
   void onReady() {
-    getUserDjSubList();
+    getDjRecommend();
     super.onReady();
   }
 
@@ -46,11 +47,20 @@ class RadioController extends GetxController {
       }
 
       if (!value.hasMore) {
-        if(list.length<30){
+        if (list.length < 30) {
           openLoad.value = false;
-        }else{
+        } else {
           refreshController.loadNoData();
         }
+      }
+    });
+  }
+
+  getDjRecommend() {
+    NetUtils().djRecommend().then((value) {
+      if (value != null && value.code == 200) {
+        recommend..clear()..addAll(value.data);
+        getUserDjSubList();
       }
     });
   }

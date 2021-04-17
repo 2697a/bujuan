@@ -7,6 +7,7 @@ class SearchAirsittView extends GetView<SearchAirsitController>{
   @override
   Widget build(BuildContext context) {
     return Obx(() => ListView.builder(
+        padding: EdgeInsets.all(0),
         itemBuilder: (context, index) {
           return InkWell(
             child: Container(

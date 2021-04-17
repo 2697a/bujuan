@@ -1,4 +1,5 @@
 import 'package:bujuan/entity/personal_entity.dart';
+import 'package:bujuan/pages/play_widget/play_widget_view.dart';
 import 'package:bujuan/widget/over_scroll.dart';
 import 'package:bujuan/pages/top/top_controller.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -10,7 +11,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 class TopView extends GetView<TopController> {
   @override
   Widget build(BuildContext context) {
-    return ScrollConfiguration(
+    return PlayWidgetView(ScrollConfiguration(
       behavior: OverScrollBehavior(),
       child: Obx(() => SmartRefresher(
           controller: controller.refreshController,
@@ -23,33 +24,33 @@ class TopView extends GetView<TopController> {
             slivers: [
               controller.soaring.length > 0
                   ? buildBigTopItem('19723756', '飙升榜',
-                      controller.soaringImageUrl, controller.soaring)
+                  controller.soaringImageUrl, controller.soaring)
                   : buildLoadingBigTopItem(
-                      '19723756', controller.soaringImageUrl),
+                  '19723756', controller.soaringImageUrl),
               controller.newSong.length > 0
                   ? buildBigTopItem('3779629', '新歌榜',
-                      controller.newSongImageUrl, controller.newSong)
+                  controller.newSongImageUrl, controller.newSong)
                   : buildLoadingBigTopItem(
-                      '3779629', controller.newSongImageUrl),
+                  '3779629', controller.newSongImageUrl),
               controller.hotSong.length > 0
                   ? buildBigTopItem('3778678', '热歌榜',
-                      controller.hotSongImageUrl, controller.hotSong)
+                  controller.hotSongImageUrl, controller.hotSong)
                   : buildLoadingBigTopItem(
-                      '3778678', controller.hotSongImageUrl),
+                  '3778678', controller.hotSongImageUrl),
               const SliverToBoxAdapter(
                 child: Padding(
                   padding:
-                      EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
+                  EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
                   child: Text(
                     "其他榜单",
                     style:
-                        TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                    TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
               SliverGrid(
                   delegate: SliverChildBuilderDelegate(
-                    (BuildContext context, int index) {
+                        (BuildContext context, int index) {
                       return InkWell(
                           child: Wrap(
                             children: [
@@ -63,7 +64,7 @@ class TopView extends GetView<TopController> {
                                       width: 110.0,
                                       fit: BoxFit.fill,
                                       imageUrl:
-                                          '${controller.otherTops[index].picUrl}',
+                                      '${controller.otherTops[index].picUrl}',
                                     ),
                                   ),
                                 ),
@@ -87,7 +88,7 @@ class TopView extends GetView<TopController> {
                                   id: int.parse(controller.otherTops[index].id),
                                   name: controller.otherTops[index].name,
                                   picUrl:
-                                      '${controller.otherTops[index].picUrl}'),
+                                  '${controller.otherTops[index].picUrl}'),
                             });
                           });
                     },
@@ -101,7 +102,7 @@ class TopView extends GetView<TopController> {
                   ))
             ],
           ))),
-    );
+    ),appBar: AppBar(title: Text('排行榜'),),);
   }
 
   Widget buildBigTopItem(id, name, imageUrl, data) {

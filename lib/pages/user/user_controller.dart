@@ -73,11 +73,14 @@ class UserController extends GetxController {
         isLoad = true;
         refreshController.refreshCompleted();
       });
+    } else {
+      refreshController.refreshCompleted();
     }
   }
 
   ///心动模式
   playHeartSong(pid) {
+    if (HomeController.to.likeSongs.length == 0) return;
     var rng = new Random();
     var nextInt = rng.nextInt(HomeController.to.likeSongs.length);
     NetUtils()
@@ -91,24 +94,4 @@ class UserController extends GetxController {
     });
   }
 
-  Future<List<MusicItem>> getFM() async {
-    List<MusicItem> fmSong = [];
-    var fmEntity = await NetUtils().getFm();
-    if (fmEntity != null && fmEntity.code == 200) {
-      fmEntity.data.forEach((track) {
-        MusicItem musicItem = MusicItem(
-          musicId: '${track.id}',
-          duration: track.duration,
-          iconUri: "${track.album.picUrl}",
-          title: track.name,
-          uri: '${track.id}',
-          artist: track.artists[0].name,
-        );
-        fmSong.add(musicItem);
-      });
-        SpUtil.putInt(PLAY_SONG_SHEET_ID, FM_ID);
-        BuJuanUtil.playSongByIndex(fmSong, 0, PlayListMode.FM);
-    }
-    return fmSong;
-  }
 }

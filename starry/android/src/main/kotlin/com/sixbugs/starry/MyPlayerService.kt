@@ -2,6 +2,7 @@ package com.sixbugs.starry
 
 import android.content.Context
 import android.net.Uri
+import android.text.TextUtils
 import io.flutter.plugin.common.MethodChannel
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
@@ -56,7 +57,7 @@ class MyPlayerService : PlayerService() {
                         }
 
                         override fun success(result1: Any?) {
-                            if (result1 == null && result1 != "null") {
+                            if (result1 == null || TextUtils.isEmpty(result1 as String)) {
                                 result.onSuccess(Uri.parse("http://music.163.com/song/media/outer/url?id" + musicItem.musicId))
                             } else {
                                 result.onSuccess(Uri.parse(result1 as String?))

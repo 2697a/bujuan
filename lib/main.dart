@@ -10,6 +10,7 @@ import 'package:bujuan/pages/music/album/local_album_bingding.dart';
 import 'package:bujuan/pages/music/album/local_album_view.dart';
 import 'package:bujuan/pages/music/all_song/all_song_binding.dart';
 import 'package:bujuan/pages/music/all_song/all_song_view.dart';
+import 'package:bujuan/pages/music/music_view.dart';
 import 'package:bujuan/pages/play_view/music_talk/music_talk_binding.dart';
 import 'package:bujuan/pages/play_view/music_talk/music_talk_view.dart';
 import 'package:bujuan/pages/profile/history/history_binding.dart';
@@ -33,6 +34,8 @@ import 'package:bujuan/pages/sheet_info/sheet_info_binding.dart';
 import 'package:bujuan/pages/sheet_info/sheet_info_view.dart';
 import 'package:bujuan/pages/today/today_binding.dart';
 import 'package:bujuan/pages/today/today_view.dart';
+import 'package:bujuan/pages/top/top_binding.dart';
+import 'package:bujuan/pages/top/top_view.dart';
 import 'package:bujuan/pages/user/cloud/cloud_binding.dart';
 import 'package:bujuan/pages/user/cloud/cloud_view.dart';
 import 'package:bujuan/utils/bujuan_util.dart';
@@ -51,6 +54,7 @@ import 'global/global_config.dart';
 import 'global/global_theme.dart';
 import 'pages/home/home_binding.dart';
 import 'pages/home/home_view.dart';
+import 'pages/music/music_binding.dart';
 import 'pages/radio/radio_detail/radio_detail_view.dart';
 import 'pages/setting/donate/donate_binding.dart';
 
@@ -113,11 +117,17 @@ main(List<String> args) async {
           page: () => AllSongView(),
           binding: AllSongBinding()),
       GetPage(
-          name: '/search', page: () => SearchView(), binding: SearchBinding()),
-      GetPage(
           name: '/search_details',
           page: () => SearchDetailsView(),
           binding: SearchDetailBinding()),
+      GetPage(
+          name: '/local',
+          page: () => MusicView(),
+          binding: MusicBinding()),
+      GetPage(
+          name: '/top',
+          page: () => TopView(),
+          binding: TopBinding()),
       GetPage(
           name: '/local_album',
           page: () => LocalAlbumView(),
@@ -130,10 +140,7 @@ main(List<String> args) async {
           name: '/history',
           page: () => HistoryView(),
           binding: HistoryBinding()),
-      GetPage(
-          name: '/radio',
-          page: () => RadioView(),
-          binding: RadioBinding()),
+      GetPage(name: '/radio', page: () => RadioView(), binding: RadioBinding()),
       GetPage(
           name: '/radio_detail',
           page: () => RadioDetailView(),
@@ -150,9 +157,9 @@ Future<HttpServer> _startServer({address = 'localhost', int port = 0}) {
       _handleRequest(request);
     });
     return server;
-  }).catchError((e,s)async{
+  }).catchError((e, s) async {
     var rng = new Random();
-    var nextInt = rng.nextInt(49151-1024)+1024;
+    var nextInt = rng.nextInt(49151 - 1024) + 1024;
     await _startServer(port: nextInt);
   });
 }

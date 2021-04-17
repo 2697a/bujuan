@@ -8,6 +8,7 @@ class SearchSheetView extends GetView<SearchSheetController>{
   @override
   Widget build(BuildContext context) {
     return Obx(() => ListView.builder(
+        padding: EdgeInsets.all(0),
         itemBuilder: (context, index) {
           return InkWell(
             child: Container(

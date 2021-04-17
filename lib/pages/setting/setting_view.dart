@@ -99,13 +99,13 @@ class SettingView extends GetView<SettingController> {
                   },
                 ),
               ),
-              SliverToBoxAdapter(
-                  child: SwitchListTile(
-                title: Text('开启主屏滑动'),
-                subtitle: Text('隐藏底部导航栏(更多空间)'),
-                value: HomeController.to.scroller.value,
-                onChanged: (value) => HomeController.to.changeBottomState(),
-              )),
+              // SliverToBoxAdapter(
+              //     child: SwitchListTile(
+              //   title: Text('开启主屏滑动'),
+              //   subtitle: Text('隐藏底部导航栏(更多空间)'),
+              //   value: HomeController.to.scroller.value,
+              //   onChanged: (value) => HomeController.to.changeBottomState(),
+              // )),
               SliverToBoxAdapter(
                   child: SwitchListTile(
                 title: Text('忽略音频焦点'),

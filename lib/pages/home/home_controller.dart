@@ -5,10 +5,8 @@ import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/global/global_controller.dart';
 import 'package:bujuan/global/global_theme.dart';
 import 'package:bujuan/pages/find/find_view.dart';
-import 'package:bujuan/pages/music/music_controller.dart';
-import 'package:bujuan/pages/music/music_view.dart';
-import 'package:bujuan/pages/top/top_controller.dart';
-import 'package:bujuan/pages/top/top_view.dart';
+import 'package:bujuan/pages/search/search_controller.dart';
+import 'package:bujuan/pages/search/search_view.dart';
 import 'package:bujuan/pages/user/user_controller.dart';
 import 'package:bujuan/pages/user/user_view.dart';
 import 'package:bujuan/utils/bujuan_util.dart';
@@ -30,9 +28,8 @@ class HomeController extends SuperController {
   PreloadPageController pageController;
   StreamSubscription _streamSubscription;
   final login = false.obs;
-  final scroller = false.obs;
   final likeSongs = [].obs;
-  final pages = [UserView(), FindView(), TopView(), MusicView()];
+  final pages = [UserView(), FindView(), SearchView()];
   CountdownController countdownController;
   var sleepTime = 0;
   var selectIndex = 99;
@@ -48,6 +45,11 @@ class HomeController extends SuperController {
     TimingData("小时", 3 * 60 * 60, "3"),
     TimingData("小时", 4 * 60 * 60, "4")
   ];
+  final itmes = [
+    '我的',
+    '首页',
+    '搜索'
+  ];
 
   static HomeController get to => Get.find();
 
@@ -60,7 +62,6 @@ class HomeController extends SuperController {
     pageController = PreloadPageController(initialPage: currentIndex);
     isSystemTheme.value = SpUtil.getBool(IS_SYSTEM_THEME_SP, defValue: true);
     login.value = !GetUtils.isNullOrBlank(SpUtil.getString(USER_ID_SP));
-    scroller.value = SpUtil.getBool(OPEN_SCROLL, defValue: false);
     _streamSubscription =
         Starry.eventChannel.receiveBroadcastStream().listen((pos) {
       if (pos != null) {
@@ -150,7 +151,7 @@ class HomeController extends SuperController {
             .getMusicLyric(playMusicInfo.musicItem.musicId)
             .then((lyricEntity) {
           GlobalController.to.lyric = lyricEntity;
-          update(['play_pos']);
+          update(['lyric']);
         });
       var playListMode = GlobalController.to.playListMode.value;
       var playList = GlobalController.to.playList;
@@ -186,7 +187,7 @@ class HomeController extends SuperController {
             GlobalController.to.playListMode.value != PlayListMode.LOCAL)
           NetUtils().getMusicLyric(currSong.musicId).then((lyricEntity) {
             GlobalController.to.lyric = lyricEntity;
-            update(['play_pos']);
+            update(['lyric']);
           });
       }
     });
@@ -232,13 +233,6 @@ class HomeController extends SuperController {
     }
   }
 
-  changeBottomState() {
-    scroller.value = !scroller.value;
-    pageController.jumpToPage(1);
-    currentIndex = 1;
-    update(['bottom_bar']);
-    SpUtil.putBool(OPEN_SCROLL, scroller.value);
-  }
 
   ///获取用户资料
   getUserProfile(userId) async {
@@ -276,15 +270,14 @@ class HomeController extends SuperController {
       currentIndex = index;
       update(['bottom_bar']);
       Future.delayed(Duration(microseconds: 500), () {
-        var userController = Get.find<UserController>();
-        var topController = Get.find<TopController>();
-        if (index == 0 && !userController.isLoad) {
-          userController.getUserSheet();
-        } else if (index == 2 && !topController.isLoad) {
-          topController.getData();
-        } else if (index == 3 && !Get.find<MusicController>().isLoad) {
-          Get.find<MusicController>().getAllArtists();
+        if (index == 0 && !UserController.to.isLoad) {
+          UserController.to.getUserSheet();
+        } else if (index == 2 && !SearchController.to.isLoad) {
+          SearchController.to.getSearchList();
         }
+        // else if (index == 3 && !Get.find<MusicController>().isLoad) {
+        //   Get.find<MusicController>().getAllArtists();
+        // }
       });
     }
   }

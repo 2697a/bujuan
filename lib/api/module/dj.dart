@@ -112,7 +112,8 @@ Handler dj_recommend_type = (query, cookie) {
 
 // 精选电台
 Handler dj_recommend = (query, cookie) {
-  return request('POST', 'https://music.163.com/weapi/djradio/recommend/v1', {},
+  return request('POST', 'https://music.163.com/api/djradio/personalize/rcmd',
+      {'limit': query['limit'] ?? 6},
       crypto: Crypto.weapi, cookies: cookie);
 };
 
@@ -142,5 +143,3 @@ Handler dj_today_perfered = (query, cookie) {
       'POST', 'http://music.163.com/weapi/djradio/home/today/perfered', data,
       crypto: Crypto.weapi, cookies: cookie);
 };
-
-

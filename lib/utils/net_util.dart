@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:bujuan/api/netease_cloud_music.dart';
 import 'package:bujuan/entity/ablum_newest.dart';
 import 'package:bujuan/entity/album_details.dart';
+import 'package:bujuan/entity/dj_recommend.dart';
 import 'package:bujuan/entity/fm_entity.dart';
 import 'package:bujuan/entity/heart.dart';
 import 'package:bujuan/entity/program_detail.dart';
@@ -62,7 +64,7 @@ class NetUtils {
       map = answer.body;
       if (!GetUtils.isNullOrBlank(cacheName) && map['code'] == 200)
         _saveCache(cacheName, map);
-      // log('$url======${jsonEncode(map)}');
+      log('$url======${jsonEncode(map)}');
     }
     return map;
   }
@@ -529,6 +531,16 @@ class NetUtils {
       userDjProgram = ProgramDetail.fromJson(map);
     }
     return userDjProgram;
+  }
+
+  ///推荐电台（需登录）
+  Future<DjRecommend> djRecommend() async {
+    var djRecommend;
+    var map = await _doHandler('/dj/recommend');
+    if (map != null) {
+      djRecommend = DjRecommend.fromJson(map);
+    }
+    return djRecommend;
   }
 }
 

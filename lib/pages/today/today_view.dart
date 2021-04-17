@@ -22,7 +22,7 @@ class TodayView extends GetView<TodayController> {
               floating: true,
               pinned: true,
               title: Text('Today'),
-              expandedHeight: 170.0,
+              expandedHeight: 180.0,
               flexibleSpace: FlexibleSpaceBar(
                 collapseMode: CollapseMode.parallax,
                 background: Column(

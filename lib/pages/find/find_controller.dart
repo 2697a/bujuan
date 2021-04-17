@@ -1,5 +1,5 @@
-
 import 'package:bujuan/global/global_config.dart';
+import 'package:bujuan/global/global_controller.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/utils/bujuan_util.dart';
 import 'package:bujuan/utils/net_util.dart';
@@ -17,7 +17,7 @@ class FindController extends GetxController {
   final allSheet = [].obs;
   final newSong = [].obs;
   final currentIndexPage = 0.obs;
-  final  loadState = LoadState.IDEA.obs;
+  final loadState = LoadState.IDEA.obs;
   PreloadPageController pageController;
   RefreshController refreshController;
 
@@ -34,36 +34,37 @@ class FindController extends GetxController {
     super.onReady();
   }
 
-
-
-
-  loadTodaySheet({forcedRefresh = false})  {
-    NetUtils().getRecommendResource(forcedRefresh: forcedRefresh).then((personalEntity) {
+  loadTodaySheet({forcedRefresh = false}) {
+    NetUtils()
+        .getRecommendResource(forcedRefresh: forcedRefresh)
+        .then((personalEntity) {
       if (personalEntity != null && personalEntity.code == 200) {
         var sheets = personalEntity.result;
-        allSheet..clear()..addAll(sheets);
+        allSheet
+          ..clear()
+          ..addAll(sheets);
         sheet..clear();
-        if (sheets.length ==6) {
+        if (sheets.length == 6) {
           var i = sheets.length ~/ 3;
           for (int j = 0; j < i; j++) {
-            sheet.add(sheets.sublist(j*3,(j+1)*3));
+            sheet.add(sheets.sublist(j * 3, (j + 1) * 3));
           }
         }
-      }else{
+      } else {
         loadState.value = LoadState.FAIL;
       }
     });
-     loadNewSong();
+    loadNewSong();
   }
 
-  loadNewSong({forcedRefresh = false})  {
-     NetUtils().getNewSongs(forcedRefresh: forcedRefresh).then((newSongEntity) {
+  loadNewSong({forcedRefresh = false}) {
+    NetUtils().getNewSongs(forcedRefresh: forcedRefresh).then((newSongEntity) {
       if (newSongEntity != null && newSongEntity.code == 200) {
         newSong
           ..clear()
-          ..addAll(newSongEntity.result.sublist(0,6));
-        loadState.value  = LoadState.SUCCESS;
-      }else{
+          ..addAll(newSongEntity.result.sublist(0, 6));
+        loadState.value = LoadState.SUCCESS;
+      } else {
         loadState.value = LoadState.FAIL;
       }
       refreshController?.refreshCompleted();
@@ -72,27 +73,59 @@ class FindController extends GetxController {
 
   ///进入每日推荐
   goToTodayMusic() {
-    if (Get.find<HomeController>().login.value) {
+    if (HomeController.to.login.value) {
       Get.toNamed('/today');
     } else {
-      Get.find<HomeController>().goToLogin();
+      HomeController.to.goToLogin();
+    }
+  }
+
+  goToFm() {
+    if (HomeController.to.login.value) {
+      if (GlobalController.to.playListMode.value != PlayListMode.FM) {
+        getFM();
+      }
+    } else {
+      HomeController.to.goToLogin();
     }
   }
 
 
+
+  Future<List<MusicItem>> getFM() async {
+    List<MusicItem> fmSong = [];
+    var fmEntity = await NetUtils().getFm();
+    if (fmEntity != null && fmEntity.code == 200) {
+      fmEntity.data.forEach((track) {
+        MusicItem musicItem = MusicItem(
+          musicId: '${track.id}',
+          duration: track.duration,
+          iconUri: "${track.album.picUrl}",
+          title: track.name,
+          uri: '${track.id}',
+          artist: track.artists[0].name,
+        );
+        fmSong.add(musicItem);
+      });
+      SpUtil.putInt(PLAY_SONG_SHEET_ID, FM_ID);
+      BuJuanUtil.playSongByIndex(fmSong, 0, PlayListMode.FM);
+    }
+    return fmSong;
+  }
+
   playSong(index) async {
     List<MusicItem> songs = [];
-      newSong.forEach((track) {
-        MusicItem musicItem = MusicItem(
-          musicId: '${track.song.id}',
-          duration: track.song.duration,
-          iconUri: "${track.picUrl}",
-          title: track.name,
-          uri: '${track.song.id}',
-          artist: track.song.artists[0].name,
-        );
-        songs.add(musicItem);
-      });
+    newSong.forEach((track) {
+      MusicItem musicItem = MusicItem(
+        musicId: '${track.song.id}',
+        duration: track.song.duration,
+        iconUri: "${track.picUrl}",
+        title: track.name,
+        uri: '${track.song.id}',
+        artist: track.song.artists[0].name,
+      );
+      songs.add(musicItem);
+    });
     BuJuanUtil.playSongByIndex(songs, index, PlayListMode.SONG);
   }
 }

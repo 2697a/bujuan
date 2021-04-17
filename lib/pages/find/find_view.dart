@@ -36,6 +36,89 @@ class FindView extends GetView<FindController> {
                     SliverToBoxAdapter(
                       child: _today(),
                     ),
+                    SliverPadding(padding: EdgeInsets.only(top: 12.0,left: 4.0,right: 4.0),sliver: SliverToBoxAdapter(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              children: [
+                                IconButton(
+                                    icon: Icon(
+                                      const IconData(0xe607,
+                                          fontFamily: 'iconfont'),
+                                      size: 32.0,
+                                      color: Colors.red.withOpacity(.8),
+                                    ),
+                                    onPressed: () =>controller.goToFm()),
+                                Padding(
+                                  padding: EdgeInsets.only(bottom: 12.0),
+                                  child: Text(
+                                    'FM',
+                                    style: TextStyle(fontSize: 12.0),
+                                  ),
+                                )
+                              ],
+                            ),
+                            Column(
+                              children: [
+                                IconButton(
+                                    icon: Icon(
+                                      const IconData(0xe680,
+                                          fontFamily: 'iconfont'),
+                                      size: 28.0,
+                                      color: Colors.red.withOpacity(.8),
+                                    ),
+                                    onPressed: () => Get.toNamed('/sheet_classify')),
+                                Padding(
+                                  padding: EdgeInsets.only(bottom: 12.0),
+                                  child: Text(
+                                    '歌单',
+                                    style: TextStyle(fontSize: 12.0),
+                                  ),
+                                )
+                              ],
+                            ),
+                            Column(
+                              children: [
+                                IconButton(
+                                    icon: Icon(
+                                      const  IconData(0xe684,
+                                          fontFamily: 'iconfont'),
+                                      size: 26.0,
+                                      color: Colors.red.withOpacity(.8),
+                                    ),
+                                    onPressed: () =>Get.toNamed('/top')),
+                                Padding(
+                                  padding: EdgeInsets.only(bottom: 12.0),
+                                  child: Text(
+                                    '排行',
+                                    style: TextStyle(fontSize: 12.0),
+                                  ),
+                                )
+                              ],
+                            ),
+                            Column(
+                              children: [
+                                IconButton(
+                                    icon: Icon(
+                                      const  IconData(0xe61f,
+                                          fontFamily: 'iconfont'),
+                                      size: 28.0,
+                                      color: Colors.red.withOpacity(.8),
+                                    ),
+                                    onPressed: () => Get.toNamed('/history')),
+                                Padding(
+                                  padding: EdgeInsets.only(bottom: 12.0),
+                                  child: Text(
+                                    '歌手',
+                                    style: TextStyle(fontSize: 12.0),
+                                  ),
+                                )
+                              ],
+                            )
+                          ],
+                        ),
+                    )),
                     const SliverToBoxAdapter(
                       child: Padding(
                         padding: EdgeInsets.symmetric(
@@ -280,7 +363,7 @@ class FindView extends GetView<FindController> {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                            fontSize: 14.0, fontWeight: FontWeight.w100)),
+                            fontSize: 14.0)),
                   )
                 ],
               ),

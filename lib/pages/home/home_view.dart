@@ -3,9 +3,7 @@ import 'package:bujuan/utils/bujuan_util.dart';
 import 'package:bujuan/widget/bottom_bar/navigation_bar.dart';
 import 'package:bujuan/widget/over_scroll.dart';
 import 'package:bujuan/widget/preload_page_view.dart';
-import 'package:bujuan/widget/stacked_page_view.dart';
 import 'package:bujuan/widget/timer/timer_count_down.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -39,47 +37,96 @@ class HomeView extends GetView<HomeController> {
     return PlayWidgetView(
       _buildContent(),
       isHome: true,
-      bottomBar: _buildBottomNavigationBar(),
       appBar: _buildAppBar(),
     );
   }
 
   ///appBar
   Widget _buildAppBar() {
-    return AppBar(
-      leading: IconButton(
-        icon: Hero(
-            tag: 'avatar',
-            child: Obx(() => Card(
-                  margin: EdgeInsets.all(0.0),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadiusDirectional.circular(30.0)),
-                  clipBehavior: Clip.antiAlias,
-                  child: HomeController.to.userProfileEntity.value != null
-                      ? CachedNetworkImage(
-                          fit: BoxFit.cover,
-                          imageUrl: HomeController
-                              .to.userProfileEntity.value.profile.avatarUrl,
-                          height: 34.0,
-                          width: 34.0,
-                        )
-                      : Image.asset('assets/images/logo.png',
-                          width: 34.0, height: 34.0),
-                ))),
-        onPressed: () => HomeController.to.goToProfile(),
+    return SafeArea(child: Container(
+      height: 56.0,
+      padding: EdgeInsets.symmetric(horizontal: 5.0),
+      child: Row(
+        children: [
+          Expanded(child: GetBuilder(
+            builder: (_) => ListView.builder(
+              itemBuilder: (context, index) {
+                return InkWell(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal:12.0),
+                    child: Center(
+                      child: Text(
+                        controller.itmes[index],
+                        style: TextStyle(
+                            color: controller.currentIndex == index
+                                ? Theme.of(context).bottomAppBarColor
+                                : Colors.grey,
+                            fontSize: 16,
+                            fontWeight: controller.currentIndex == index
+                                ? FontWeight.bold
+                                : FontWeight.w500),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                  onTap: () => controller.changeIndex(index),
+                );
+              },
+              itemCount: controller.itmes.length,
+              scrollDirection: Axis.horizontal,
+            ),
+            init: controller,
+            id: 'bottom_bar',
+          )),
+          Padding(
+              padding: EdgeInsets.symmetric(horizontal: 6.0),
+              child: _buildSleepClock()),
+          IconButton(
+            icon: Icon(Icons.settings),
+            onPressed: () {
+              Get.toNamed('/setting');
+            },
+          )
+        ],
       ),
-      title: _buildSleepClock(),
-      actions: [
-        IconButton(
-          icon: Icon(Icons.search),
-          onPressed: () => Get.toNamed('/search'),
+    ));
+    return AppBar(
+      leadingWidth: 0,
+      title: SizedBox(
+        height: 56.0,
+        child: GetBuilder(
+          builder: (_) => ListView.builder(
+            itemBuilder: (context, index) {
+              return InkWell(
+                child: Padding(
+                  padding: EdgeInsets.only(right:22.0),
+                  child: Center(
+                    child: Text(
+                      controller.itmes[index],
+                      style: TextStyle(
+                          color: controller.currentIndex == index
+                              ? Colors.black
+                              : Colors.grey,
+                          fontSize: 16,
+                          fontWeight: controller.currentIndex == index
+                              ? FontWeight.bold
+                              : FontWeight.w500),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+                onTap: () => controller.changeIndex(index),
+              );
+            },
+            itemCount: controller.itmes.length,
+            scrollDirection: Axis.horizontal,
+          ),
+          init: controller,
+          id: 'bottom_bar',
         ),
-        IconButton(
-          icon: Icon(Icons.settings),
-          onPressed: () {
-            Get.toNamed('/setting');
-          },
-        )
+      ),
+      actions: [
+
       ],
     );
   }
@@ -88,36 +135,38 @@ class HomeView extends GetView<HomeController> {
   Widget _buildSleepClock() {
     return GetBuilder(
       builder: (_) {
-        return controller.sleepTime > 0
-            ? InkWell(
-                child: Row(
-                  children: [
-                    Padding(
-                        padding: EdgeInsets.only(right: 8.0),
-                        child: Icon(
-                          Icons.snooze,
-                          size: 24.0,
-                        )),
-                    Countdown(
-                      controller: HomeController.to.countdownController,
-                      seconds: controller.sleepTime ~/ 1000,
-                      build: (BuildContext context, double time) {
-                        return Text(
-                          '${BuJuanUtil.unix2Time(time.toInt())}',
-                          style: TextStyle(
-                              fontSize: 16.0, fontWeight: FontWeight.bold),
-                        );
-                      },
-                      interval: Duration(milliseconds: 1000),
-                      onFinished: () {
-                        print('两分钟后停止');
-                      },
-                    )
-                  ],
+        return InkWell(
+          child: Row(
+            children: [
+              Padding(
+                  padding: EdgeInsets.only(
+                      right: controller.sleepTime > 0 ? 8.0 : 0),
+                  child: Icon(
+                    const  IconData(0xe8ae, fontFamily: 'iconfont'),
+                    size: 22.0,
+                  )),
+              Visibility(
+                child: Countdown(
+                  controller: HomeController.to.countdownController,
+                  seconds: controller.sleepTime ~/ 1000,
+                  build: (BuildContext context, double time) {
+                    return Text(
+                      '${BuJuanUtil.unix2Time(time.toInt())}',
+                      style: TextStyle(
+                          fontSize: 16.0, fontWeight: FontWeight.bold),
+                    );
+                  },
+                  interval: Duration(milliseconds: 1000),
+                  onFinished: () {
+                    print('两分钟后停止');
+                  },
                 ),
-                onTap: () => controller.showSleepBottomSheet(),
+                visible: controller.sleepTime > 0,
               )
-            : Text('Bujuan');
+            ],
+          ),
+          onTap: () => controller.showSleepBottomSheet(),
+        );
       },
       init: HomeController.to,
       id: 'sleep',

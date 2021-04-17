@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 
 class SearchSheetController extends GetxController {
   final search = [].obs;
-
+  static SearchSheetController get to =>Get.find();
   @override
   void onInit() {
     super.onInit();
@@ -13,7 +13,6 @@ class SearchSheetController extends GetxController {
 
   @override
   void onReady() {
-    getSearch();
     super.onReady();
   }
 

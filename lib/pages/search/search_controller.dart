@@ -1,20 +1,34 @@
 import 'package:bujuan/pages/search/search_list_controller.dart';
 import 'package:bujuan/utils/net_util.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_placeholder_textlines/placeholder_lines.dart';
 import 'package:get/get.dart';
 
 class SearchController extends GetxController {
   final searchList = [].obs;
-  TextEditingController textEditingController;
+  final searchListTest = List.generate(
+      20,
+      (index) => Card(
+        child: PlaceholderLines(
+          lineHeight: 10.0,
+          maxWidth: .5,
+          minWidth: .3,
+          color: Colors.grey[400],
+          count: 1,
+        ),
+      ));
+  bool isLoad = false;
+
+  static SearchController get to => Get.find();
+
   @override
   void onInit() {
-    textEditingController = TextEditingController();
     super.onInit();
   }
 
   @override
   void onReady() {
-    getSearchList();
     super.onReady();
   }
 
@@ -23,6 +37,7 @@ class SearchController extends GetxController {
       searchList
         ..clear()
         ..addAll(value.data);
+      isLoad = true;
     });
   }
 
