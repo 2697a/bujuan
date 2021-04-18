@@ -12,13 +12,16 @@ class SettingController extends GetxController {
   var isDark = Get.isDarkMode.obs;
   var isSystemTheme = true.obs;
   var isIgnoreAudioFocus = false.obs;
+  var firstIndex = 1.obs;
   final quality = '128000'.obs;
 
   @override
   void onInit() {
     quality.value = SpUtil.getString(QUALITY, defValue: '128000');
+    firstIndex.value = SpUtil.getInt(HOME_INDEX, defValue: 1);
     super.onInit();
   }
+
   @override
   void onReady() {
     isIgnoreAudioFocus.value =
@@ -40,7 +43,7 @@ class SettingController extends GetxController {
       isDark.value = value;
       isSystemTheme.value = false;
       SpUtil.putBool(IS_SYSTEM_THEME_SP, false);
-      Get.changeThemeMode(isDark.value?ThemeMode.dark:ThemeMode.light);
+      Get.changeThemeMode(isDark.value ? ThemeMode.dark : ThemeMode.light);
       SpUtil.putBool(IS_DARK_SP, isDark.value);
       Get.changeTheme(!value ? lightTheme : darkTheme);
       Future.delayed(Duration(milliseconds: 300), () {
@@ -58,7 +61,6 @@ class SettingController extends GetxController {
     Get.back();
   }
 
-
   toggleAudioFocus(value) async {
     isIgnoreAudioFocus.value = value;
     var i = await Starry.toggleAudioFocus(value);
@@ -67,5 +69,8 @@ class SettingController extends GetxController {
     }
   }
 
-
+  changeFirstIndex(bool value) {
+    SpUtil.putInt(HOME_INDEX, value ? 0 : 1);
+    firstIndex.value = value ? 0 : 1;
+  }
 }

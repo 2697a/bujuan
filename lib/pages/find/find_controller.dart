@@ -20,6 +20,9 @@ class FindController extends GetxController {
   final loadState = LoadState.IDEA.obs;
   PreloadPageController pageController;
   RefreshController refreshController;
+  var isLoad = false;
+
+  static FindController get to => Get.find();
 
   @override
   void onInit() async {
@@ -30,7 +33,7 @@ class FindController extends GetxController {
 
   @override
   void onReady() {
-    loadTodaySheet();
+    if(HomeController.to.currentIndex==1) loadTodaySheet();
     super.onReady();
   }
 
@@ -64,6 +67,7 @@ class FindController extends GetxController {
           ..clear()
           ..addAll(newSongEntity.result.sublist(0, 6));
         loadState.value = LoadState.SUCCESS;
+        isLoad = true;
       } else {
         loadState.value = LoadState.FAIL;
       }
@@ -89,8 +93,6 @@ class FindController extends GetxController {
       HomeController.to.goToLogin();
     }
   }
-
-
 
   Future<List<MusicItem>> getFM() async {
     List<MusicItem> fmSong = [];

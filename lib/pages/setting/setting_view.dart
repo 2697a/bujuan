@@ -1,5 +1,7 @@
+import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/pages/setting/setting_controller.dart';
+import 'package:bujuan/utils/sp_util.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -40,7 +42,11 @@ class SettingView extends GetView<SettingController> {
                                   borderRadius:
                                       BorderRadiusDirectional.circular(80.0)),
                               clipBehavior: Clip.antiAlias,
-                              child: Image.asset('assets/images/logo.png',width: 80.0,height: 80.0,),
+                              child: Image.asset(
+                                'assets/images/logo.png',
+                                width: 80.0,
+                                height: 80.0,
+                              ),
                             ),
                           ),
                           Padding(padding: EdgeInsets.symmetric(vertical: 5.0)),
@@ -88,24 +94,27 @@ class SettingView extends GetView<SettingController> {
                   onTap: () {
                     Get.bottomSheet(
                       _buildThemeBottomSheet(),
+                        isScrollControlled: true,
                       backgroundColor: Theme.of(Get.context).primaryColor,
                       elevation: 6.0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(8.0),
                             topRight: Radius.circular(8.0)),
-                      ),
+                      )
                     );
                   },
                 ),
               ),
-              // SliverToBoxAdapter(
-              //     child: SwitchListTile(
-              //   title: Text('开启主屏滑动'),
-              //   subtitle: Text('隐藏底部导航栏(更多空间)'),
-              //   value: HomeController.to.scroller.value,
-              //   onChanged: (value) => HomeController.to.changeBottomState(),
-              // )),
+              SliverToBoxAdapter(
+                  child: SwitchListTile(
+                title: Text('默认显示我的页面'),
+                subtitle: Text('更改首屏页面'),
+                value: controller.firstIndex.value == 0,
+                onChanged: (value) {
+                  controller.changeFirstIndex(value);
+                },
+              )),
               SliverToBoxAdapter(
                   child: SwitchListTile(
                 title: Text('忽略音频焦点'),
@@ -154,7 +163,7 @@ class SettingView extends GetView<SettingController> {
                     Icons.keyboard_arrow_right,
                     size: 22.0,
                   ),
-                  onTap: ()=>Get.toNamed('/about'),
+                  onTap: () => Get.toNamed('/about'),
                 ),
               ),
               SliverToBoxAdapter(
@@ -165,7 +174,7 @@ class SettingView extends GetView<SettingController> {
                     Icons.keyboard_arrow_right,
                     size: 22.0,
                   ),
-                  onTap: ()=>Get.toNamed('/donate'),
+                  onTap: () => Get.toNamed('/donate'),
                 ),
               )
             ],

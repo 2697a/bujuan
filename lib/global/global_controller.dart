@@ -160,7 +160,6 @@ class GlobalController extends SuperController {
               );
   }
 
-
   ///听歌打卡
   scrobble() {
     if (SpUtil.getInt(PLAY_SONG_SHEET_ID, defValue: -999) > 0) {
@@ -216,6 +215,41 @@ class GlobalController extends SuperController {
     }
   }
 
+  addSongToPlayList(playListId) {
+  }
+
+  showAddSongToPlayListSheet() {
+    Get.bottomSheet(
+      Column(
+        children: [
+          ListTile(
+            title: Text('添加到指定歌单'),
+            trailing: IconButton(
+              icon: Icon(Icons.keyboard_arrow_down_rounded),
+              onPressed: () => Get.back(),
+            ),
+          ),
+          Expanded(
+              child: ListView.builder(
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(
+                          '${UserController.to.createPlayList[index].name}'),
+                      onTap: () {},
+                    );
+                  },
+                  itemCount: UserController.to.createPlayList.length))
+        ],
+      ),
+      backgroundColor: Theme.of(Get.context).primaryColor,
+      elevation: 6.0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(8.0), topRight: Radius.circular(8.0)),
+      ),
+    );
+  }
+
   @override
   void onClose() {
     scrollController?.dispose();
@@ -242,6 +276,7 @@ class GlobalController extends SuperController {
     print('onResumed');
   }
 }
+
 class TimingData {
   var format;
   var value;

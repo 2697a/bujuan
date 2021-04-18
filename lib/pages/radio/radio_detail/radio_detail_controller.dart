@@ -15,7 +15,7 @@ class RadioDetailController extends GetxController {
   DjRadios djRadios;
   int loadPage = 0;
   final loadState = LoadState.IDEA.obs;
-
+  final asc = true.obs;
   static RadioDetailController get to => Get.find();
 
   @override
@@ -33,7 +33,7 @@ class RadioDetailController extends GetxController {
 
   getDjProgram([isRefresh = true]) {
     if (isRefresh) loadPage = 0;
-    NetUtils().userProgram(djRadios.id, loadPage * 300).then((value) {
+    NetUtils().userProgram(djRadios.id, loadPage * 300, asc.value).then((value) {
       if (value != null && value.code == 200) {
         if ((value.programs == null || value.programs.length == 0) &&
             isRefresh) {
@@ -67,7 +67,7 @@ class RadioDetailController extends GetxController {
         iconUri: "${programs.coverUrl}",
         title: programs.name,
         uri: '${programs.id}',
-        artist: GetUtils.isNullOrBlank(djRadios.name)? '未知' : djRadios.name,
+        artist: GetUtils.isNullOrBlank(djRadios.name) ? '未知' : djRadios.name,
       );
       songs.add(musicItem);
     });

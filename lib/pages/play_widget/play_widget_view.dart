@@ -176,7 +176,8 @@ class PlayWidgetView extends GetView<GlobalController> {
                           GetUtils.isNullOrBlank(controller.lyric.lrc.lyric) ||
                           GetUtils.isNullOrBlank(LyricUtil.formatLyric(
                               controller.lyric.lrc.lyric)) ||
-                          controller.playListMode.value == PlayListMode.RADIO
+                          controller.playListMode.value == PlayListMode.RADIO||
+                      controller.playListMode.value == PlayListMode.LOCAL
                       ? Center(
                           child: Text('暂无歌词'),
                         )
@@ -199,15 +200,16 @@ class PlayWidgetView extends GetView<GlobalController> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Obx(() => IconButton(
-                  icon: Icon(
+              Obx(() => InkWell(
+                  child: Icon(
                     Icons.favorite,
                     color: HomeController.to.likeSongs
                             .contains(controller.song.value.musicId)
                         ? Colors.red
                         : Colors.grey,
                   ),
-                  onPressed: () => controller.likeOrUnLike())),
+                  onLongPress: ()=>controller.showAddSongToPlayListSheet(),
+                  onTap: () => controller.likeOrUnLike()),),
               IconButton(
                   icon: Obx(() => Icon(
                         controller.playListMode.value != PlayListMode.FM
@@ -423,7 +425,8 @@ class PlayWidgetView extends GetView<GlobalController> {
                                     controller.lyric.lrc.lyric) ||
                                 GetUtils.isNullOrBlank(LyricUtil.formatLyric(
                                     controller.lyric.lrc.lyric))||
-                            controller.playListMode.value == PlayListMode.RADIO
+                            controller.playListMode.value == PlayListMode.RADIO||
+                            controller.playListMode.value == PlayListMode.LOCAL
                             ? Center(
                                 child: Text('暂无歌词'),
                               )

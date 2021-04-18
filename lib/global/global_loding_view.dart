@@ -137,4 +137,38 @@ class LoadingView {
       ),
     );
   }
+
+
+  ///歌单加载中View
+  static Widget loadUserSheetView() {
+    return Container(
+      height: 60,
+      padding: EdgeInsets.symmetric(horizontal: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            margin: EdgeInsets.only(right: 12.0),
+            width: 45,
+            height: 45,
+            decoration: BoxDecoration(
+                color: Colors.grey.withOpacity(.6),
+                borderRadius: BorderRadius.circular(6.0)),
+            child: Center(
+              child: Icon(
+                Icons.photo_size_select_actual,
+                color: Colors.white,
+                size: 30,
+              ),
+            ),
+          ),
+          Expanded(
+              child: PlaceholderLines(
+                lineHeight: 10.0,
+                count: 2,
+              )),
+        ],
+      ),
+    );
+  }
 }

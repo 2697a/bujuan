@@ -36,88 +36,86 @@ class FindView extends GetView<FindController> {
                     SliverToBoxAdapter(
                       child: _today(),
                     ),
-                    SliverPadding(padding: EdgeInsets.only(top: 12.0,left: 4.0,right: 4.0),sliver: SliverToBoxAdapter(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    SliverToBoxAdapter(child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
                           children: [
-                            Column(
-                              children: [
-                                IconButton(
-                                    icon: Icon(
-                                      const IconData(0xe607,
-                                          fontFamily: 'iconfont'),
-                                      size: 32.0,
-                                      color: Colors.red.withOpacity(.8),
-                                    ),
-                                    onPressed: () =>controller.goToFm()),
-                                Padding(
-                                  padding: EdgeInsets.only(bottom: 12.0),
-                                  child: Text(
-                                    'FM',
-                                    style: TextStyle(fontSize: 12.0),
-                                  ),
-                                )
-                              ],
-                            ),
-                            Column(
-                              children: [
-                                IconButton(
-                                    icon: Icon(
-                                      const IconData(0xe680,
-                                          fontFamily: 'iconfont'),
-                                      size: 28.0,
-                                      color: Colors.red.withOpacity(.8),
-                                    ),
-                                    onPressed: () => Get.toNamed('/sheet_classify')),
-                                Padding(
-                                  padding: EdgeInsets.only(bottom: 12.0),
-                                  child: Text(
-                                    '歌单',
-                                    style: TextStyle(fontSize: 12.0),
-                                  ),
-                                )
-                              ],
-                            ),
-                            Column(
-                              children: [
-                                IconButton(
-                                    icon: Icon(
-                                      const  IconData(0xe684,
-                                          fontFamily: 'iconfont'),
-                                      size: 26.0,
-                                      color: Colors.red.withOpacity(.8),
-                                    ),
-                                    onPressed: () =>Get.toNamed('/top')),
-                                Padding(
-                                  padding: EdgeInsets.only(bottom: 12.0),
-                                  child: Text(
-                                    '排行',
-                                    style: TextStyle(fontSize: 12.0),
-                                  ),
-                                )
-                              ],
-                            ),
-                            Column(
-                              children: [
-                                IconButton(
-                                    icon: Icon(
-                                      const  IconData(0xe61f,
-                                          fontFamily: 'iconfont'),
-                                      size: 28.0,
-                                      color: Colors.red.withOpacity(.8),
-                                    ),
-                                    onPressed: () => Get.toNamed('/history')),
-                                Padding(
-                                  padding: EdgeInsets.only(bottom: 12.0),
-                                  child: Text(
-                                    '歌手',
-                                    style: TextStyle(fontSize: 12.0),
-                                  ),
-                                )
-                              ],
+                            IconButton(
+                                icon: Icon(
+                                  const IconData(0xe607,
+                                      fontFamily: 'iconfont'),
+                                  size: 30.0,
+                                  color: Colors.red.withOpacity(.8),
+                                ),
+                                onPressed: () =>controller.goToFm()),
+                            Padding(
+                              padding: EdgeInsets.only(bottom: 12.0),
+                              child: Text(
+                                'FM',
+                                style: TextStyle(fontSize: 12.0),
+                              ),
                             )
                           ],
                         ),
+                        Column(
+                          children: [
+                            IconButton(
+                                icon: Icon(
+                                  const IconData(0xe680,
+                                      fontFamily: 'iconfont'),
+                                  size: 26.0,
+                                  color: Colors.red.withOpacity(.8),
+                                ),
+                                onPressed: () => Get.toNamed('/sheet_classify')),
+                            Padding(
+                              padding: EdgeInsets.only(bottom: 12.0),
+                              child: Text(
+                                '歌单',
+                                style: TextStyle(fontSize: 12.0),
+                              ),
+                            )
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            IconButton(
+                                icon: Icon(
+                                  const  IconData(0xe684,
+                                      fontFamily: 'iconfont'),
+                                  size: 24.0,
+                                  color: Colors.red.withOpacity(.8),
+                                ),
+                                onPressed: () =>Get.toNamed('/top')),
+                            Padding(
+                              padding: EdgeInsets.only(bottom: 12.0),
+                              child: Text(
+                                '排行',
+                                style: TextStyle(fontSize: 12.0),
+                              ),
+                            )
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            IconButton(
+                                icon: Icon(
+                                  const  IconData(0xe61f,
+                                      fontFamily: 'iconfont'),
+                                  size: 26.0,
+                                  color: Colors.red.withOpacity(.8),
+                                ),
+                                onPressed: () => Get.toNamed('/history')),
+                            Padding(
+                              padding: EdgeInsets.only(bottom: 12.0),
+                              child: Text(
+                                '歌手',
+                                style: TextStyle(fontSize: 12.0),
+                              ),
+                            )
+                          ],
+                        )
+                      ],
                     )),
                     const SliverToBoxAdapter(
                       child: Padding(
@@ -276,59 +274,63 @@ class FindView extends GetView<FindController> {
     return Hero(
         tag: 'today',
         child: Card(
-          child: InkWell(
-            child: Row(
-              children: [
-                Container(
-                  padding: EdgeInsets.all(5.0),
-                  height: 120.0,
-                  child: Image.asset('assets/images/today.png'),
-                ),
-                Expanded(
-                    child: Stack(
+          child: Column(
+            children: [
+              InkWell(
+                child: Row(
                   children: [
                     Container(
-                      height: 120,
-                      alignment: Alignment.center,
-                      child: const Text(
-                        '每日推荐',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 20.0),
-                      ),
+                      padding: EdgeInsets.all(5.0),
+                      height: 120.0,
+                      child: Image.asset('assets/images/today.png'),
                     ),
-                    Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 8.0, vertical: 5.0),
-                      height: 120,
-                      alignment: Alignment.bottomRight,
-                      width: double.infinity,
-                      child: Wrap(
-                        children: [
-                          Text(
-                            BuJuanUtil.dateToString(DateTime.now(), 2),
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14.0,
-                                color: Theme.of(Get.context).accentColor),
-                          ),
-                          Text(
-                            BuJuanUtil.dateToString(DateTime.now(), 1),
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18.0,
-                                color: Theme.of(Get.context).accentColor),
-                          )
-                        ],
-                      ),
-                    )
+                    Expanded(
+                        child: Stack(
+                          children: [
+                            Container(
+                              height: 120,
+                              alignment: Alignment.center,
+                              child: const Text(
+                                '每日推荐',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 20.0),
+                              ),
+                            ),
+                            Container(
+                              padding:
+                              EdgeInsets.symmetric(horizontal: 8.0, vertical: 5.0),
+                              height: 120,
+                              alignment: Alignment.bottomRight,
+                              width: double.infinity,
+                              child: Wrap(
+                                children: [
+                                  Text(
+                                    BuJuanUtil.dateToString(DateTime.now(), 2),
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14.0,
+                                        color: Theme.of(Get.context).accentColor),
+                                  ),
+                                  Text(
+                                    BuJuanUtil.dateToString(DateTime.now(), 1),
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18.0,
+                                        color: Theme.of(Get.context).accentColor),
+                                  )
+                                ],
+                              ),
+                            )
+                          ],
+                        ))
                   ],
-                ))
-              ],
-            ),
-            onTap: () => controller.goToTodayMusic(),
+                ),
+                onTap: () => controller.goToTodayMusic(),
+              ),
+            ],
           ),
         ));
   }

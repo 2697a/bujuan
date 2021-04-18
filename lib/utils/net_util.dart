@@ -284,7 +284,7 @@ class NetUtils {
   Future<bool> delPlayList(id) async {
     var del = false;
     var map = await _doHandler('/playlist/del', param: {'id': id});
-    del = map != null;
+    if (map != null && map['code'] == 200) del = true;
     return del;
   }
 
@@ -298,9 +298,10 @@ class NetUtils {
   }
 
   ///創建歌單
-  Future<bool> createPlayList(name) async {
+  Future<bool> createPlayList(name, privacy) async {
     bool create = false;
-    var map = await _doHandler('/playlist/create', param: {'name': name});
+    var map = await _doHandler('/playlist/create',
+        param: {'name': name, 'privacy': privacy ? 10 : 0});
     create = map != null;
     return create;
   }
@@ -326,10 +327,19 @@ class NetUtils {
   }
 
   ///获取热搜列表
-  Future<SearchHotEntity> searchList() async {
+  Future<SearchHotEntity> searchList({forcedRefresh = false}) async {
     var searchData;
-    var map = await _doHandler('/search/hot/detail');
-    if (map != null) searchData = SearchHotEntity.fromJson(map);
+    if (await BuJuanUtil.checkFileExists(CACHE_SEARCH_SUGGEST) &&
+        !forcedRefresh) {
+      debugPrint("热搜列表已缓存，直接拿哈");
+      var data = await BuJuanUtil.readStringFile(CACHE_SEARCH_SUGGEST);
+      if (data != null) searchData = SearchHotEntity.fromJson(data);
+    } else {
+      debugPrint("热搜列表未缓存");
+      var map = await _doHandler('/search/hot/detail',
+          cacheName: CACHE_SEARCH_SUGGEST);
+      if (map != null) searchData = SearchHotEntity.fromJson(map);
+    }
     return searchData;
   }
 
@@ -513,10 +523,10 @@ class NetUtils {
   }
 
   ///电台详情列表
-  Future<UserDjProgram> userProgram(rid, offset) async {
+  Future<UserDjProgram> userProgram(rid, offset, asc) async {
     var userDjProgram;
-    var map =
-        await _doHandler('/dj/program', param: {'rid': rid, 'offset': offset});
+    var map = await _doHandler('/dj/program',
+        param: {'rid': rid, 'offset': offset, 'asc': asc});
     if (map != null) {
       userDjProgram = UserDjProgram.fromJson(map);
     }
@@ -542,6 +552,17 @@ class NetUtils {
     }
     return djRecommend;
   }
+
+  ///添加或删除歌单中的歌曲
+  Future<bool> addOrDelSongToPlayList(op,playlistId,songId) async {
+    var djRecommend;
+    var map = await _doHandler('/playlist/tracks',param: {'op':op});
+    if (map != null) {
+      djRecommend = DjRecommend.fromJson(map);
+    }
+    return djRecommend;
+  }
+
 }
 
 class AlbumData {

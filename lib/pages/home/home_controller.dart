@@ -4,6 +4,7 @@ import 'package:bujuan/entity/user_profile_entity.dart';
 import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/global/global_controller.dart';
 import 'package:bujuan/global/global_theme.dart';
+import 'package:bujuan/pages/find/find_controller.dart';
 import 'package:bujuan/pages/find/find_view.dart';
 import 'package:bujuan/pages/search/search_controller.dart';
 import 'package:bujuan/pages/search/search_view.dart';
@@ -23,6 +24,7 @@ import 'package:starry/starry.dart';
 
 class HomeController extends SuperController {
   var currentIndex = 1;
+  var userId = '';
   final userProfileEntity = UserProfileEntity().obs;
   final isSystemTheme = true.obs;
   PreloadPageController pageController;
@@ -45,23 +47,21 @@ class HomeController extends SuperController {
     TimingData("小时", 3 * 60 * 60, "3"),
     TimingData("小时", 4 * 60 * 60, "4")
   ];
-  final itmes = [
-    '我的',
-    '首页',
-    '搜索'
-  ];
+  final itmes = ['我的', '首页', '搜索'];
 
   static HomeController get to => Get.find();
 
   @override
   void onInit() {
+    userId = SpUtil.getString(USER_ID_SP);
+    login.value = !GetUtils.isNullOrBlank(userId);
     countdownController = CountdownController();
     GlobalController.to.playListMode.value =
         PlayListMode.values[SpUtil.getInt(PLAY_LIST_MODE, defValue: 0)];
     userProfileEntity.value = null;
+    currentIndex = SpUtil.getInt(HOME_INDEX, defValue: 1);
     pageController = PreloadPageController(initialPage: currentIndex);
     isSystemTheme.value = SpUtil.getBool(IS_SYSTEM_THEME_SP, defValue: true);
-    login.value = !GetUtils.isNullOrBlank(SpUtil.getString(USER_ID_SP));
     _streamSubscription =
         Starry.eventChannel.receiveBroadcastStream().listen((pos) {
       if (pos != null) {
@@ -126,16 +126,8 @@ class HomeController extends SuperController {
   }
 
   void changeIndex(int index) {
-    if (!login.value && index == 0) {
-      goToLogin();
-      return;
-    }
-    // if (index <= 3) {
     pageController.jumpToPage(index);
     onPageChange(index);
-    // } else {
-    //   Get.toNamed('/search');
-    // }
   }
 
   //监听播放音乐状态以及进度！
@@ -176,7 +168,8 @@ class HomeController extends SuperController {
 
     ///播放列表发生变化
     Starry.onPlayerSongListChanged.listen((PlayListInfo playListInfo) async {
-      if (playListInfo.playlist.length > 0) {
+      if (!GetUtils.isNullOrBlank(playListInfo.playlist.length) &&
+          playListInfo.playlist.length > 0) {
         GlobalController.to.addPlayList(playListInfo.playlist);
         var currSong = playListInfo.playlist[playListInfo.position];
         GlobalController.to.song.value = currSong;
@@ -233,7 +226,6 @@ class HomeController extends SuperController {
     }
   }
 
-
   ///获取用户资料
   getUserProfile(userId) async {
     var profile = await NetUtils().getUserProfile(userId);
@@ -266,20 +258,17 @@ class HomeController extends SuperController {
 
   ///页面发生变化
   onPageChange(index) {
-    if (index != currentIndex) {
-      currentIndex = index;
-      update(['bottom_bar']);
-      Future.delayed(Duration(microseconds: 500), () {
-        if (index == 0 && !UserController.to.isLoad) {
-          UserController.to.getUserSheet();
-        } else if (index == 2 && !SearchController.to.isLoad) {
-          SearchController.to.getSearchList();
-        }
-        // else if (index == 3 && !Get.find<MusicController>().isLoad) {
-        //   Get.find<MusicController>().getAllArtists();
-        // }
-      });
-    }
+    currentIndex = index;
+    update(['bottom_bar']);
+    Future.delayed(Duration(microseconds: 500), () {
+      if (index == 0 && !UserController.to.isLoad) {
+        UserController.to.getUserSheet();
+      } else if (index == 1 && !FindController.to.isLoad) {
+        FindController.to.loadTodaySheet();
+      } else if (index == 2 && !SearchController.to.isLoad) {
+        SearchController.to.getSearchList();
+      }
+    });
   }
 
   ///获取fm
