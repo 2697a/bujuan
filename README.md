@@ -30,10 +30,10 @@ run flutter run --release
 
 
 ### 截图
-<img src="https://github.com/2697a/bujuan/tree/master/image/me.jpg" width="30%"><img src="https://github.com/2697a/bujuan/tree/master/image/home.png" width="30%"><img src="https://github.com/2697a/bujuan/tree/master/image/play_view.png" width="30%">
-<img src="https://github.com/2697a/bujuan/tree/master/image/mini_play_view.png" width="30%"><img src="https://github.com/2697a/bujuan/tree/master/image/lyric.png" width="30%"><img src="https://github.com/2697a/bujuan/tree/master/image/playlist.png" width="30%">
-<img src="https://github.com/2697a/bujuan/tree/master/image/playlist1.png" width="30%"><img src="https://github.com/2697a/bujuan/tree/master/image/timer.png" width="30%"><img src="https://github.com/2697a/bujuan/tree/master/image/search.png" width="30%">
-<img src="https://github.com/2697a/bujuan/tree/master/image/radio.png" width="30%"><img src="https://github.com/2697a/bujuan/tree/master/image/music.png" width="30%">
+<img src="https://github.com/2697a/bujuan/tree/master/image/me.jpg" width="30%"><img src="https://github.com/2697a/bujuan/tree/master/image/home.jpg" width="30%"><img src="https://github.com/2697a/bujuan/tree/master/image/play_view.jpg" width="30%">
+<img src="https://github.com/2697a/bujuan/tree/master/image/mini_play_view.jpg" width="30%"><img src="https://github.com/2697a/bujuan/tree/master/image/lyric.jpg" width="30%"><img src="https://github.com/2697a/bujuan/tree/master/image/playlist.jpg" width="30%">
+<img src="https://github.com/2697a/bujuan/tree/master/image/playlist1.jpg" width="30%"><img src="https://github.com/2697a/bujuan/tree/master/image/timer.jpg" width="30%"><img src="https://github.com/2697a/bujuan/tree/master/image/search.jpg" width="30%">
+<img src="https://github.com/2697a/bujuan/tree/master/image/radio.jpg" width="30%"><img src="https://github.com/2697a/bujuan/tree/master/image/music.jpg" width="30%">
 ### 免责声明
 不将本程序以及与之相关的网络服务用作非法用途以及非正当用途。
 本程序内容仅代表作者本人的观点，不代表本程序的观点和看法，与本程序立场无关，相关责任作者自负。
