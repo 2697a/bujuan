@@ -6,7 +6,6 @@ import 'package:bujuan/utils/net_util.dart';
 import 'package:bujuan/utils/sp_util.dart';
 import 'package:bujuan/widget/preload_page_view.dart';
 import 'package:bujuan/widget/state_view.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:starry/music_item.dart';

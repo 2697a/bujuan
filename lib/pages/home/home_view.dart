@@ -1,6 +1,5 @@
 import 'package:bujuan/pages/play_widget/play_widget_view.dart';
 import 'package:bujuan/utils/bujuan_util.dart';
-import 'package:bujuan/widget/bottom_bar/navigation_bar.dart';
 import 'package:bujuan/widget/over_scroll.dart';
 import 'package:bujuan/widget/preload_page_view.dart';
 import 'package:bujuan/widget/timer/timer_count_down.dart';
@@ -16,21 +15,33 @@ class HomeView extends GetView<HomeController> {
   }
 
   Widget _buildContent() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 5.0),
-      child: ScrollConfiguration(
-          behavior: OverScrollBehavior(),
-          child: PreloadPageView.builder(
-            onPageChanged: (index) => controller.onPageChange(index),
-            controller: controller.pageController,
-            preloadPagesCount: 2,
-            // physics: controller.scroller.value
-            //     ? ClampingScrollPhysics()
-            //     : NeverScrollableScrollPhysics(),
-            itemBuilder: (context, index) => controller.pages[index],
-            itemCount: controller.pages.length,
-          )),
-    );
+    return OrientationBuilder(builder: (context,oritation){
+      return oritation == Orientation.landscape?Row(
+        children: [
+          Expanded(child: Center(child: Text('data'),),flex: 1,),
+          Expanded(child: ScrollConfiguration(
+              behavior: OverScrollBehavior(),
+              child: PreloadPageView.builder(
+                onPageChanged: (index) => controller.onPageChange(index),
+                controller: controller.pageController,
+                preloadPagesCount: 2,
+                itemBuilder: (context, index) => controller.pages[index],
+                itemCount: controller.pages.length,
+              )),flex: 3,)
+        ],
+      ):Padding(
+        padding: EdgeInsets.symmetric(horizontal: 5.0),
+        child: ScrollConfiguration(
+            behavior: OverScrollBehavior(),
+            child: PreloadPageView.builder(
+              onPageChanged: (index) => controller.onPageChange(index),
+              controller: controller.pageController,
+              preloadPagesCount: 2,
+              itemBuilder: (context, index) => controller.pages[index],
+              itemCount: controller.pages.length,
+            )),
+      );
+    });
   }
 
   Widget _buildHomeView() {
@@ -57,36 +68,17 @@ class HomeView extends GetView<HomeController> {
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 11.0),
                     child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-
-                          Text(
-                            controller.itmes[index],
-                            style: TextStyle(
-                                color: controller.currentIndex == index
-                                    ? Theme.of(context).bottomAppBarColor
-                                    : Colors.grey,
-                                fontSize: 16,
-                                fontWeight: controller.currentIndex == index
-                                    ? FontWeight.bold
-                                    : FontWeight.w500),
-                            textAlign: TextAlign.center,
-                          ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(vertical: controller.currentIndex == index?2.0:0),
-                            child: Container(
-                              width: 4,
-                              height: 4,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(4.0),
-                                color: controller.currentIndex == index
-                                    ? Theme.of(context).bottomAppBarColor
-                                    : Colors.transparent,
-                              ),
-                            ),
-                          ),
-                        ],
+                      child: Text(
+                        controller.itmes[index],
+                        style: TextStyle(
+                            color: controller.currentIndex == index
+                                ? Theme.of(context).bottomAppBarColor
+                                : Colors.grey,
+                            fontSize: 16,
+                            fontWeight: controller.currentIndex == index
+                                ? FontWeight.bold
+                                : FontWeight.w500),
+                        textAlign: TextAlign.center,
                       ),
                     ),
                   ),
@@ -100,8 +92,11 @@ class HomeView extends GetView<HomeController> {
             id: 'bottom_bar',
           )),
           Padding(
-              padding: EdgeInsets.symmetric(horizontal: 6.0),
+              padding: EdgeInsets.symmetric(horizontal: 8.0),
               child: _buildSleepClock()),
+          IconButton(icon: Icon(const IconData(0xe61b, fontFamily: 'iconfont')), onPressed: () {
+            Get.toNamed('/search_details',arguments: {'content':''});
+          }),
           IconButton(
             icon: Icon(Icons.settings),
             onPressed: () {

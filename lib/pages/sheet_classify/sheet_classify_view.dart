@@ -1,3 +1,4 @@
+import 'package:bujuan/entity/personal_entity.dart';
 import 'package:bujuan/global/global_loding_view.dart';
 import 'package:bujuan/pages/music_bottom_bar/music_bottom_bar_view.dart';
 import 'package:bujuan/pages/play_view/default_view.dart';
@@ -106,7 +107,9 @@ class SheetClassifyView extends GetView<SheetClassifyController> {
                           ],
                         ),
                         onTap: () {
-                          Get.toNamed('/sheet', arguments: {'id': controller.classifyData[index].id, 'name': controller.classifyData[index].name, 'imageUrl': '${controller.classifyData[index].coverImgUrl}?param=300y300'});
+                          Get.toNamed('/sheet', arguments: {
+                            'sheet': PersonalResult(id: controller.classifyData[index].id, name: controller.classifyData[index].name, picUrl: '${controller.classifyData[index].coverImgUrl}?param=300y300'),
+                          });
                         })
                     : LoadingView.buildGridViewSheetLoadingView();
               },

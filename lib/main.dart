@@ -6,6 +6,7 @@ import 'package:bujuan/utils/bujuan_util.dart';
 import 'package:bujuan/utils/sp_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get/get_utils/src/platform/platform.dart';
 import 'package:on_audio_query/on_audio_query.dart';
@@ -39,7 +40,7 @@ main(List<String> args) async {
         BuJuanUtil.setNavigationBarTextColor(isDark));
   }
 
-  runApp(GetMaterialApp(
+  runApp(ScreenUtilInit(builder: ()=>GetMaterialApp(
     // showPerformanceOverlay: true,
     // darkTheme: darkTheme,
     debugShowCheckedModeBanner: false,
@@ -47,7 +48,7 @@ main(List<String> args) async {
     enableLog: true,
     initialRoute: AppPages.INITIAL,
     getPages: AppPages.routes,
-  ));
+  ),designSize: Size(375.0, 812.0),));
 }
 
 Future<HttpServer> _startServer({address = 'localhost', int port = 0}) {

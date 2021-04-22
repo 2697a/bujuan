@@ -30,6 +30,7 @@ class SearchDetailsView extends GetView<SearchDetailController> {
             Padding(padding: EdgeInsets.symmetric(horizontal: 3)),
             Expanded(
                 child: TextField(
+                  autofocus: true,
                   controller: controller.textEditingController,
                   textInputAction: TextInputAction.search,
                   onSubmitted: (value) {

@@ -1,6 +1,5 @@
 import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
-import 'package:bujuan/pages/user/user_controller.dart';
 import 'package:bujuan/utils/net_util.dart';
 import 'package:bujuan/utils/sp_util.dart';
 import 'package:flutter/cupertino.dart';
@@ -37,9 +36,8 @@ class LoginController extends GetxController {
     if (loginEntity != null && loginEntity.code == 200) {
       state.value = ButtonState.success;
      await SpUtil.putString(USER_ID_SP, '${loginEntity.profile.userId}');
-     await HomeController.to.getUserProfile('${loginEntity.profile.userId}');
-     await UserController.to.getUserSheet(forcedRefresh:true);
-     await HomeController.to.getLikeSongList();
+     HomeController.to.userId = '${loginEntity.profile.userId}';
+     await HomeController.to.getUserProfile('${loginEntity.profile.userId}',isLogin: true);
      Future.delayed(Duration(milliseconds: 600),()=>Get.back());
     } else {
       state.value = ButtonState.fail;

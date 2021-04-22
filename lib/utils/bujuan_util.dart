@@ -29,6 +29,16 @@ class BuJuanUtil {
     return '${hourStr == '00' ? '' : '$hourStr:'}$minStr:$secStr';
   }
 
+  static String getTimeStamp(int milliseconds) {
+    int seconds = (milliseconds / 1000).truncate();
+    int minutes = (seconds / 60).truncate();
+
+    String minutesStr = (minutes % 60).toString().padLeft(2, '0');
+    String secondsStr = (seconds % 60).toString().padLeft(2, '0');
+
+    return "$minutesStr:$secondsStr";
+  }
+
   static String unix2TimeTo(unix) {
     unix = unix ~/ 1000;
     var minStr, secStr;
@@ -68,7 +78,7 @@ class BuJuanUtil {
             systemNavigationBarColor: darkTheme.canvasColor,
             systemNavigationBarDividerColor: darkTheme.canvasColor,
             systemNavigationBarIconBrightness: Brightness.light,
-            statusBarIconBrightness: Brightness.dark,
+            statusBarIconBrightness: Brightness.light,
           );
   }
 

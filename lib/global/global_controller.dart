@@ -1,11 +1,15 @@
 import 'dart:io';
 
+import 'package:bujuan/api/lyric/lyric_controller.dart';
+import 'package:bujuan/api/lyric/lyric_view.dart';
 import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/pages/user/user_controller.dart';
 import 'package:bujuan/utils/net_util.dart';
 import 'package:bujuan/utils/sp_util.dart';
 import 'package:bujuan/widget/art_widget.dart';
+import 'package:bujuan/widget/preload_page_view.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -17,7 +21,7 @@ import '../main.dart';
 
 class GlobalController extends SuperController {
   final playState = PlayState.STOP.obs;
-  var playPos = 0;
+  var playPos = 0.obs;
   final playMode = 1.obs;
   final song = MusicItem(
           musicId: '-99',
@@ -27,7 +31,8 @@ class GlobalController extends SuperController {
           iconUri:
               'https://pic1.zhimg.com/80/v2-7ff2d917aa926cfbf2e8b85b035e2563_1440w.jpg')
       .obs;
-  var lyric; //音质
+  var lyric = LyricContent.from('').obs; //音质
+  var lyrics = [].obs;
   final playList = [].obs;
   final playListMode = PlayListMode.SONG.obs;
   ScrollController scrollController;
@@ -45,14 +50,20 @@ class GlobalController extends SuperController {
     super.onReady();
   }
 
-  void addSliderListener(weSlideController) {
+  void addSliderListener(weSlideController,PreloadPageController pageController) {
     weSlideController.addListener(() {
       if (weSlideController.isOpened) {
-        Get.find<HomeController>().resumeStream();
+        HomeController.to.resumeStream();
       } else {
-        Get.find<HomeController>().pauseStream();
+        pageController.jumpToPage(0);
+        HomeController.to.pauseStream();
       }
     });
+  }
+
+
+  changePosition(position) {
+    playPos.value = position;
   }
 
   ///滚动到指定位置
@@ -144,19 +155,20 @@ class GlobalController extends SuperController {
   }
 
   ///获取本地音乐图片
-  Widget getLocalImage() {
+  Widget getLocalImage(size, radius) {
     return Get.find<FileService>().version.value >= 29
         ? ArtworkWidget(
+            artworkBorder: BorderRadius.circular(radius),
             id: int.parse(song.value.musicId),
-            artworkHeight: 50.0,
-            artworkWidth: 50.0,
+            artworkHeight: size,
+            artworkWidth: size,
             type: ArtworkType.AUDIO,
           )
         : song.value.iconUri != null && song.value.iconUri.split('?').length > 0
             ? Image.file(File(song.value.iconUri.split('?')[0]))
             : Icon(
                 Icons.image_not_supported,
-                size: 50.0,
+                size: size,
               );
   }
 
@@ -215,8 +227,7 @@ class GlobalController extends SuperController {
     }
   }
 
-  addSongToPlayList(playListId) {
-  }
+  addSongToPlayList(playListId) {}
 
   showAddSongToPlayListSheet() {
     Get.bottomSheet(
@@ -233,9 +244,68 @@ class GlobalController extends SuperController {
               child: ListView.builder(
                   itemBuilder: (context, index) {
                     return ListTile(
-                      title: Text(
-                          '${UserController.to.createPlayList[index].name}'),
-                      onTap: () {},
+                      title: Container(
+                        height: 60.0,
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 2.0, vertical: 5.0),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                              alignment: Alignment.center,
+                              margin: EdgeInsets.only(right: 12.0),
+                              child: Card(
+                                child: CachedNetworkImage(
+                                  width: 42,
+                                  height: 42,
+                                  imageUrl:
+                                      '${UserController.to.createPlayList[index].coverImgUrl}?param=100y100',
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                                child: Column(
+                              children: [
+                                Container(
+                                  height: 25,
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                      UserController
+                                          .to.createPlayList[index].name,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(fontSize: 16.0)),
+                                ),
+                                Container(
+                                  height: 25,
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                      '${UserController.to.createPlayList[index].trackCount}首',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                          fontSize: 14.0,
+                                          color: Colors.grey[500])),
+                                )
+                              ],
+                            )),
+                            Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 4.0))
+                          ],
+                        ),
+                      ),
+                      onTap: () {
+                        NetUtils()
+                            .addOrDelSongToPlayList(
+                                'add',
+                                UserController.to.createPlayList[index].id,
+                                song.value.musicId)
+                            .then((value) {
+                          Get.back();
+                          if (value)
+                            UserController.to.getUserSheet(forcedRefresh: true);
+                        });
+                      },
                     );
                   },
                   itemCount: UserController.to.createPlayList.length))
@@ -248,6 +318,21 @@ class GlobalController extends SuperController {
             topLeft: Radius.circular(8.0), topRight: Radius.circular(8.0)),
       ),
     );
+  }
+
+  onSliderChangeStart(value) {
+    HomeController.to.pauseStream();
+  }
+
+  onSliderChanged(value) {
+    playPos.value = (value * song.value.duration ~/ 1000).toInt();
+    // HomeController.to.update(['play_pos']);
+  }
+
+  onSliderChangeEnd(value) {
+    seekTo((value * song.value.duration).toInt());
+    Future.delayed(
+        Duration(milliseconds: 300), () => HomeController.to.resumeStream());
   }
 
   @override

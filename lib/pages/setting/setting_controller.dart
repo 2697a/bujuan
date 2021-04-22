@@ -3,6 +3,7 @@ import 'package:bujuan/global/global_theme.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/utils/bujuan_util.dart';
 import 'package:bujuan/utils/sp_util.dart';
+import 'package:bujuan/widget/preload_page_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -14,9 +15,16 @@ class SettingController extends GetxController {
   var isIgnoreAudioFocus = false.obs;
   var firstIndex = 1.obs;
   final quality = '128000'.obs;
+  PreloadPageController pageController;
+  var playViewIndex = 0;
 
   @override
   void onInit() {
+    var initialPage2 = SpUtil.getBool(SECOND_PLAY_VIEW, defValue: false) ? 1 : 0;
+    playViewIndex = initialPage2;
+    pageController = PreloadPageController(
+        viewportFraction: .8,
+        initialPage: initialPage2);
     quality.value = SpUtil.getString(QUALITY, defValue: '128000');
     firstIndex.value = SpUtil.getInt(HOME_INDEX, defValue: 1);
     super.onInit();

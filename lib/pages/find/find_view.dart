@@ -105,7 +105,7 @@ class FindView extends GetView<FindController> {
                                   size: 26.0,
                                   color: Colors.red.withOpacity(.8),
                                 ),
-                                onPressed: () => Get.toNamed('/history')),
+                                onPressed: () {}),
                             Padding(
                               padding: EdgeInsets.only(bottom: 12.0),
                               child: Text(
@@ -209,17 +209,10 @@ class FindView extends GetView<FindController> {
                               ))
                           : Container(
                               height: 180.0,
-                              child: GridView.builder(
+                              child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
                                 shrinkWrap: true,
                                 padding: EdgeInsets.all(0.0),
-                                physics: NeverScrollableScrollPhysics(),
-                                gridDelegate:
-                                    SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 6, //每行2个
-                                  mainAxisSpacing: 10.0, //主轴方向间距
-                                  crossAxisSpacing: 5.0, //水平方向间距
-                                  childAspectRatio: .6, //纵轴缩放比例
-                                ),
                                 itemBuilder: (context, index) {
                                   return controller.sheet.length > 0
                                       ? _sheetItem(controller.allSheet[index],
@@ -347,7 +340,8 @@ class FindView extends GetView<FindController> {
             child: Container(
               width: 120,
               height: 170.0,
-              child: Column(
+              child: Wrap(
+                direction: Axis.vertical,
                 children: [
                   Hero(
                       tag: '${personalResult.id}',

@@ -40,7 +40,6 @@ class PlayListView extends GetView<GlobalController> {
   }
 
   Widget _buildPlayListItem(index) {
-
     return InkWell(
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 2.0),
@@ -48,7 +47,7 @@ class PlayListView extends GetView<GlobalController> {
         child: Row(
           children: [
             IconButton(icon: Text('${index + 1}'), onPressed: () {}),
-            GetBuilder(builder: (_)=>Container(
+            GetBuilder<HomeController>(builder: (_)=>Container(
               constraints: BoxConstraints(
                 maxWidth: Get.width / 2.8,
               ),
@@ -64,7 +63,7 @@ class PlayListView extends GetView<GlobalController> {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
-            ),id: 'song',init: HomeController.to),
+            ),id: 'song',init: HomeController()),
             Expanded(
                 child: Text(
               ' -  ${controller.playList[index].artist}',

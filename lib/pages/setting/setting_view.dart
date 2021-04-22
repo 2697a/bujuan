@@ -2,6 +2,7 @@ import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/pages/setting/setting_controller.dart';
 import 'package:bujuan/utils/sp_util.dart';
+import 'package:bujuan/widget/preload_page_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -60,7 +61,7 @@ class SettingView extends GetView<SettingController> {
                           Padding(padding: EdgeInsets.symmetric(vertical: 5.0)),
                           Container(
                             child: Text(
-                              '版本号：1.0.7',
+                              '版本号：1.0.9',
                               style: TextStyle(fontSize: 14.0),
                             ),
                           )
@@ -92,20 +93,52 @@ class SettingView extends GetView<SettingController> {
                     ],
                   ),
                   onTap: () {
-                    Get.bottomSheet(
-                      _buildThemeBottomSheet(),
+                    Get.bottomSheet(_buildThemeBottomSheet(),
                         isScrollControlled: true,
-                      backgroundColor: Theme.of(Get.context).primaryColor,
-                      elevation: 6.0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(8.0),
-                            topRight: Radius.circular(8.0)),
-                      )
-                    );
+                        backgroundColor: Theme.of(Get.context).primaryColor,
+                        elevation: 6.0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(8.0),
+                              topRight: Radius.circular(8.0)),
+                        ));
                   },
                 ),
               ),
+              SliverToBoxAdapter(
+                  child: GetBuilder<HomeController>(
+                    builder: (_) => ListTile(
+                      title: Text('播放页样式'),
+                      subtitle: Text('切换风格'),
+                      trailing: Wrap(
+                        children: [
+                          Text(
+                            _.secondPlayView?'方形':'圆形',
+                            style: TextStyle(color: Colors.grey[500]),
+                          ),
+                          Padding(padding: EdgeInsets.symmetric(horizontal: 2.0)),
+                          Icon(
+                            Icons.keyboard_arrow_right,
+                            size: 22.0,
+                          )
+                        ],
+                      ),
+                      onTap: () {
+                        Get.bottomSheet(
+                          _buildPlayViewBottomSheet(),
+                          backgroundColor: Theme.of(Get.context).primaryColor,
+                          elevation: 6.0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(8.0),
+                                topRight: Radius.circular(8.0)),
+                          ),
+                        );
+                      },
+                    ),
+                    id: 'second_view',
+                    init: HomeController(),
+                  )),
               SliverToBoxAdapter(
                   child: SwitchListTile(
                 title: Text('默认显示我的页面'),
@@ -114,6 +147,20 @@ class SettingView extends GetView<SettingController> {
                 onChanged: (value) {
                   controller.changeFirstIndex(value);
                 },
+              )),
+              SliverToBoxAdapter(
+                  child: GetBuilder<HomeController>(
+                builder: (_) => SwitchListTile(
+                  title: Text('mini播放页'),
+                  subtitle: Text('mini'),
+                  value: _.miniPlayView,
+                  onChanged: (value) {
+                    _.changeMiniPlayView(value);
+                    SpUtil.putBool(MINI_PLAY_VIEW, value);
+                  },
+                ),
+                id: 'view_type',
+                init: HomeController(),
               )),
               SliverToBoxAdapter(
                   child: SwitchListTile(
@@ -264,5 +311,106 @@ class SettingView extends GetView<SettingController> {
             ],
           ),
         ));
+  }
+
+  Widget _buildPlayViewBottomSheet() {
+    return Column(
+      children: [
+        ListTile(
+          title: Text('播放页样式'),
+          trailing: Text('确定'),
+          onTap: () {
+            HomeController.to.changeSecondPlayView(controller.playViewIndex==1);
+            SpUtil.putBool(SECOND_PLAY_VIEW, controller.playViewIndex==1);
+            Get.back();
+          },
+        ),
+        Expanded(
+            child: PreloadPageView(
+          controller: PreloadPageController(initialPage: controller.playViewIndex,viewportFraction: .9),
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 0.0),
+              child: Card(
+                color: Theme.of(Get.context).accentColor.withOpacity(.5),
+                child: Column(
+                  children: [
+                    ListTile(
+                      title: Center(
+                        child: Text('圆形播放页'),
+                      ),
+                    ),
+                    Card(
+                      shadowColor: Colors.blue[300].withOpacity(.1),
+                      shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadiusDirectional.circular(200.0)),
+                      color: Colors.grey[300],
+                      child: SizedBox(
+                        width: 200.0,
+                        height: 200.0,
+                      ),
+                    ),
+                    Expanded(
+                        child: Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Icon(Icons.skip_previous),
+                          Icon(
+                            Icons.play_arrow,
+                            size: 38.0,
+                          ),
+                          Icon(Icons.skip_next),
+                        ],
+                      ),
+                    ))
+                  ],
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 0.0),
+              child: Card(
+                color: Theme.of(Get.context).accentColor.withOpacity(.5),
+                child: Column(
+                  children: [
+                    ListTile(
+                      title: Center(
+                        child: Text('方形播放页'),
+                      ),
+                    ),
+                    Card(
+                      color: Colors.grey[300],
+                      child: SizedBox(
+                        width: 200.0,
+                        height: 200.0,
+                      ),
+                    ),
+                    Expanded(
+                        child: Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Icon(Icons.skip_previous),
+                          Icon(
+                            Icons.play_arrow,
+                            size: 38.0,
+                          ),
+                          Icon(Icons.skip_next),
+                        ],
+                      ),
+                    ))
+                  ],
+                ),
+              ),
+            ),
+          ],
+          onPageChanged: (index) {
+            controller.playViewIndex = index;
+          },
+        ))
+      ],
+    );
   }
 }

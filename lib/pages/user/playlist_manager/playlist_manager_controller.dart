@@ -21,24 +21,19 @@ class PlayListManagerController extends GetxController {
           content: Padding(
               padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
               child: Text('确定要删除选中歌单吗?')),
-          confirm: Expanded(
-              child: InkWell(
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 5.0),
-              child: Text('删除'),
-            ),
-            onTap: () {
-              NetUtils().delPlayList(delList.join(',')).then((value) {
-                if (value) {
-                  UserController.to.getUserSheet(forcedRefresh: true);
-                  delList.forEach((element) {
-                    playList.remove(element);
-                  });
-                }
-              });
-              Get.back();
-            },
-          )));
+          textConfirm: '删除',
+          confirmTextColor: Colors.white,
+          onConfirm: (){
+            NetUtils().delPlayList(delList.join(',')).then((value) {
+              if (value) {
+                UserController.to.getUserSheet(forcedRefresh: true);
+                delList.forEach((element) {
+                  playList.remove(element);
+                });
+              }
+            });
+            Get.back();
+          });
     }
   }
 }

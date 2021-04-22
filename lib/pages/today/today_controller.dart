@@ -7,7 +7,7 @@ import 'package:starry/music_item.dart';
 import 'package:starry/starry.dart';
 
 class TodayController extends GetxController {
-  final list = [].obs;
+  var list = [].obs;
 
   @override
   void onReady() {
@@ -18,11 +18,12 @@ class TodayController extends GetxController {
 
 
   getToday() {
-    NetUtils().getTodaySongs().then((list) {
-      if (list != null) {
-        this.list
+    NetUtils().getTodaySongs().then((lista) {
+      print("aaaareactive");
+      if (lista != null) {
+        list
           ..clear()
-          ..addAll(list);
+          ..addAll(lista);
       }
     });
   }

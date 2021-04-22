@@ -33,7 +33,6 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     private lateinit var eventChannel: EventChannel
     var activity: Activity? = null
     var eventSink: EventChannel.EventSink? = null
-    var timingSink: EventChannel.EventSink? = null
 
     companion object {
         lateinit var channel: MethodChannel

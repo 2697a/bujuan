@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:bujuan/api/lyric/lyric_util.dart';
+import 'package:bujuan/api/lyric/lyric_view.dart';
 import 'package:bujuan/entity/user_profile_entity.dart';
 import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/global/global_controller.dart';
@@ -7,7 +9,6 @@ import 'package:bujuan/global/global_theme.dart';
 import 'package:bujuan/pages/find/find_controller.dart';
 import 'package:bujuan/pages/find/find_view.dart';
 import 'package:bujuan/pages/search/search_controller.dart';
-import 'package:bujuan/pages/search/search_view.dart';
 import 'package:bujuan/pages/user/user_controller.dart';
 import 'package:bujuan/pages/user/user_view.dart';
 import 'package:bujuan/utils/bujuan_util.dart';
@@ -31,7 +32,9 @@ class HomeController extends SuperController {
   StreamSubscription _streamSubscription;
   final login = false.obs;
   final likeSongs = [].obs;
-  final pages = [UserView(), FindView(), SearchView()];
+  var miniPlayView = false;
+  var secondPlayView = false;
+  final pages = [UserView(), FindView()];
   CountdownController countdownController;
   var sleepTime = 0;
   var selectIndex = 99;
@@ -47,13 +50,15 @@ class HomeController extends SuperController {
     TimingData("小时", 3 * 60 * 60, "3"),
     TimingData("小时", 4 * 60 * 60, "4")
   ];
-  final itmes = ['我的', '首页', '搜索'];
+  final itmes = ['我的', '首页'];
 
   static HomeController get to => Get.find();
 
   @override
   void onInit() {
     userId = SpUtil.getString(USER_ID_SP);
+    miniPlayView = SpUtil.getBool(MINI_PLAY_VIEW, defValue: false);
+    secondPlayView = SpUtil.getBool(SECOND_PLAY_VIEW, defValue: false);
     login.value = !GetUtils.isNullOrBlank(userId);
     countdownController = CountdownController();
     GlobalController.to.playListMode.value =
@@ -65,10 +70,16 @@ class HomeController extends SuperController {
     _streamSubscription =
         Starry.eventChannel.receiveBroadcastStream().listen((pos) {
       if (pos != null) {
-        GlobalController.to.playPos = pos;
-        update(['play_pos']);
+        GlobalController.to.changePosition(pos);
+        // update(['play_pos']);
       }
     }, cancelOnError: true);
+
+    ///获取歌曲播放地址
+    Starry.init(url: SongUrl(getSongUrl: (id) async {
+      return await NetUtils().getSongUrl(id);
+    }));
+    _listenerStarry();
     super.onInit();
     // SpUtil.putBool(IS_FIRST_OPEN, false);
   }
@@ -79,12 +90,7 @@ class HomeController extends SuperController {
         OrderType.ASC_OR_SMALLER, UriType.EXTERNAL, true);
     changeSleepIndex(SpUtil.getInt(SLEEP_INDEX, defValue: 99));
 
-    ///获取歌曲播放地址
-    Starry.init(url: SongUrl(getSongUrl: (id) async {
-      return await NetUtils().getSongUrl(id);
-    }));
     refreshLogin();
-    _listenerStarry();
     getLikeSongList();
     super.onReady();
   }
@@ -135,15 +141,18 @@ class HomeController extends SuperController {
     ///歌曲发生变化
     Starry.onPlayerSongChanged.listen((PlayMusicInfo playMusicInfo) async {
       GlobalController.to.song.value = playMusicInfo.musicItem;
-      GlobalController.to.getLocalImage();
+      // GlobalController.to.getLocalImage();
 
       if (GlobalController.to.playListMode.value != PlayListMode.RADIO &&
           GlobalController.to.playListMode.value != PlayListMode.LOCAL)
         NetUtils()
             .getMusicLyric(playMusicInfo.musicItem.musicId)
             .then((lyricEntity) {
-          GlobalController.to.lyric = lyricEntity;
-          update(['lyric']);
+          var formatLyric = LyricUtil.formatLyric(lyricEntity.lrc.lyric);
+          GlobalController.to.lyrics
+            ..clear()
+            ..addAll(formatLyric);
+          GlobalController.to.lyric.value = LyricContent.from(lyricEntity.lrc.lyric);
         });
       var playListMode = GlobalController.to.playListMode.value;
       var playList = GlobalController.to.playList;
@@ -173,14 +182,17 @@ class HomeController extends SuperController {
         GlobalController.to.addPlayList(playListInfo.playlist);
         var currSong = playListInfo.playlist[playListInfo.position];
         GlobalController.to.song.value = currSong;
-        GlobalController.to.getLocalImage();
-        var lyric = Get.find<GlobalController>().lyric;
-        if (lyric == null &&
+        // GlobalController.to.getLocalImage();
+        var lyric = Get.find<GlobalController>().lyric.value;
+        if (lyric.size==0 &&
             GlobalController.to.playListMode.value != PlayListMode.RADIO &&
             GlobalController.to.playListMode.value != PlayListMode.LOCAL)
           NetUtils().getMusicLyric(currSong.musicId).then((lyricEntity) {
-            GlobalController.to.lyric = lyricEntity;
-            update(['lyric']);
+            var formatLyric = LyricUtil.formatLyric(lyricEntity.lrc.lyric);
+            GlobalController.to.lyrics
+              ..clear()
+              ..addAll(formatLyric);
+            GlobalController.to.lyric.value = LyricContent.from(lyricEntity.lrc.lyric);
           });
       }
     });
@@ -227,7 +239,7 @@ class HomeController extends SuperController {
   }
 
   ///获取用户资料
-  getUserProfile(userId) async {
+  getUserProfile(userId,{isLogin = false}) async {
     var profile = await NetUtils().getUserProfile(userId);
     if (profile != null && profile.code == 200) {
       userProfileEntity.value = profile;
@@ -241,6 +253,11 @@ class HomeController extends SuperController {
           login.value = true;
         }
       }
+    }
+
+    if(isLogin){
+      UserController.to.getUserSheet(forcedRefresh:true);
+      HomeController.to.getLikeSongList();
     }
   }
 
@@ -296,8 +313,8 @@ class HomeController extends SuperController {
     Get.bottomSheet(
         SizedBox(
           height: MediaQuery.of(Get.context).size.width / 5 * 2.15 + 60,
-          child: GetBuilder(
-            builder: (_) {
+          child: GetBuilder<HomeController>(
+            builder: (HomeController homeController) {
               return Column(
                 children: [
                   SwitchListTile(
@@ -358,7 +375,7 @@ class HomeController extends SuperController {
                 ],
               );
             },
-            init: HomeController.to,
+            init: HomeController(),
             id: 'sleep_index',
           ),
         ),
@@ -391,6 +408,16 @@ class HomeController extends SuperController {
     }
   }
 
+  ///改变迷你播放页
+  changeMiniPlayView(bool mini) {
+    miniPlayView = mini;
+    update(['view_type']);
+  }
+  ///改变迷你播放页
+  changeSecondPlayView(bool mini) {
+    secondPlayView = mini;
+    update(['second_view']);
+  }
   @override
   void onDetached() {
     // TODO: implement onDetached

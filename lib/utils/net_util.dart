@@ -64,7 +64,7 @@ class NetUtils {
       map = answer.body;
       if (!GetUtils.isNullOrBlank(cacheName) && map['code'] == 200)
         _saveCache(cacheName, map);
-      log('$url======${jsonEncode(map)}');
+      // log('$url======${jsonEncode(map)}');
     }
     return map;
   }
@@ -554,15 +554,15 @@ class NetUtils {
   }
 
   ///添加或删除歌单中的歌曲
-  Future<bool> addOrDelSongToPlayList(op,playlistId,songId) async {
+  Future<bool> addOrDelSongToPlayList(op, playlistId, songId) async {
     var djRecommend;
-    var map = await _doHandler('/playlist/tracks',param: {'op':op});
-    if (map != null) {
-      djRecommend = DjRecommend.fromJson(map);
+    var map = await _doHandler('/playlist/tracks',
+        param: {'op': op, 'pid': playlistId, 'tracks': songId});
+    if (map != null && map['code'] == 200) {
+      djRecommend = true;
     }
     return djRecommend;
   }
-
 }
 
 class AlbumData {
