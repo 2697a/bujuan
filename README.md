@@ -30,7 +30,7 @@ run flutter run --release
 
 
 ### 截图
-<img src="https://github.com/2697a/bujuan/tree/master/image/me.jpg" width="30%">
+<img src="https://github.com/2697a/bujuan/tree/master/image/me.jpg">
 <img src="https://github.com/2697a/bujuan/tree/master/image/home.jpg" width="30%">
 <img src="https://github.com/2697a/bujuan/tree/master/image/play_view.jpg" width="30%">
 <img src="https://github.com/2697a/bujuan/tree/master/image/mini_play_view.jpg" width="30%">
