@@ -22,15 +22,15 @@ run flutter run --release
 - [x] 日夜间模式
 - [x] 忽略音频焦点
 - [x] 系统通知栏
-- [x] 音效均衡器
-- [ ] 私人fm
-- [ ] 电台
+- [ ] 音效均衡器
+- [x] 私人fm
+- [x] 电台
 - [ ] 等等
 
 
 
 ### 截图
-<img src="https://github.com/2697a/bujuan/tree/master/image/me.png" width="30%"><img src="https://github.com/2697a/bujuan/tree/master/image/home.png" width="30%"><img src="https://github.com/2697a/bujuan/tree/master/image/play_view.png" width="30%">
+<img src="https://github.com/2697a/bujuan/tree/master/image/me.jpg" width="30%"><img src="https://github.com/2697a/bujuan/tree/master/image/home.png" width="30%"><img src="https://github.com/2697a/bujuan/tree/master/image/play_view.png" width="30%">
 <img src="https://github.com/2697a/bujuan/tree/master/image/mini_play_view.png" width="30%"><img src="https://github.com/2697a/bujuan/tree/master/image/lyric.png" width="30%"><img src="https://github.com/2697a/bujuan/tree/master/image/playlist.png" width="30%">
 <img src="https://github.com/2697a/bujuan/tree/master/image/playlist1.png" width="30%"><img src="https://github.com/2697a/bujuan/tree/master/image/timer.png" width="30%"><img src="https://github.com/2697a/bujuan/tree/master/image/search.png" width="30%">
 <img src="https://github.com/2697a/bujuan/tree/master/image/radio.png" width="30%"><img src="https://github.com/2697a/bujuan/tree/master/image/music.png" width="30%">
