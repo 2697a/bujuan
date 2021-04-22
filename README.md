@@ -29,7 +29,7 @@ run flutter run --release
 
 
 
-### 截图
+### 截图(部分)
 <img src="https://github.com/2697a/bujuan/tree/master/image/me.png" width="30%"><img src="https://github.com/2697a/bujuan/tree/master/image/home.png" width="30%"><img src="https://github.com/2697a/bujuan/tree/master/image/play_view.png" width="30%">
 <img src="https://github.com/2697a/bujuan/tree/master/image/mini_play_view.png" width="30%"><img src="https://github.com/2697a/bujuan/tree/master/image/lyric.png" width="30%"><img src="https://github.com/2697a/bujuan/tree/master/image/playlist.png" width="30%">
 <img src="https://github.com/2697a/bujuan/tree/master/image/playlist1.png" width="30%"><img src="https://github.com/2697a/bujuan/tree/master/image/timer.png" width="30%"><img src="https://github.com/2697a/bujuan/tree/master/image/search.png" width="30%">
