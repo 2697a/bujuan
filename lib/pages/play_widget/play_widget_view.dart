@@ -3,6 +3,8 @@ import 'dart:ui';
 import 'package:bujuan/api/lyric/lyric_view.dart';
 import 'package:bujuan/global/global_controller.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
+import 'package:bujuan/pages/play_view/music_talk/music_talk_controller.dart';
+import 'package:bujuan/pages/play_view/play_list_view.dart';
 import 'package:bujuan/pages/play_widget/protrait/circular_play_view.dart';
 import 'package:bujuan/pages/play_widget/protrait/square_play_view.dart';
 import 'package:bujuan/widget/preload_page_view.dart';
@@ -10,6 +12,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 import 'package:starry/starry.dart';
 import 'package:we_slide/we_slide.dart';
 
@@ -95,18 +98,18 @@ class PlayWidgetView extends GetView<GlobalController> {
             child: Obx(() => controller.playListMode.value == PlayListMode.LOCAL
                 ? controller.getLocalImage(50, 50)
                 : CachedNetworkImage(
-                    width: 44,
-                    height: 44,
-                    imageUrl: controller.song.value.musicId != '-99'
-                        ? '${controller.song.value.iconUri}?param=80y80'
-                        : '${controller.song.value.iconUri}',
-                  )),
+              width: 44,
+              height: 44,
+              imageUrl: controller.song.value.musicId != '-99'
+                  ? '${controller.song.value.iconUri}?param=80y80'
+                  : '${controller.song.value.iconUri}',
+            )),
           ),
           title: Obx(() => Text(
-                '${controller.song.value.title}',
-                style: TextStyle(fontSize: 16),
-                overflow: TextOverflow.ellipsis,
-              )),
+            '${controller.song.value.title}',
+            style: TextStyle(fontSize: 16),
+            overflow: TextOverflow.ellipsis,
+          )),
           subtitle: Obx(() => Text('${controller.song.value.artist}',
               style: TextStyle(fontSize: 14, color: Colors.grey[500]))),
           trailing: Wrap(
@@ -142,88 +145,115 @@ class PlayWidgetView extends GetView<GlobalController> {
             child: _buildLandscape(),
           );
   }
-
+  ///歌曲封面
+  Widget _buildMusicCover(size) {
+    return Stack(
+      children: [
+        Container(
+          width: size,
+          height: size,
+          child: RotationTransition(
+            turns: controller.animationController,
+            child: Card(
+              margin: EdgeInsets.all(6.h),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(300.r)),
+              clipBehavior: Clip.antiAlias,
+              child: controller.playListMode.value == PlayListMode.LOCAL
+                  ? controller.getLocalImage(size, 300.h)
+                  : CachedNetworkImage(
+                fit: BoxFit.cover,
+                imageUrl: controller.song.value.musicId != '-99' ? '${controller.song.value.iconUri}' : '${controller.song.value.iconUri}',
+              ),
+            ),
+          ),
+        ),
+        Container(
+          width: size,
+          height: size,
+          child: Card(
+            color: Colors.grey.withOpacity(.6),
+            margin: EdgeInsets.all(6.h),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(300.r)),
+            clipBehavior: Clip.antiAlias,
+          ),
+        ),
+        SleekCircularSlider(
+          appearance: CircularSliderAppearance(
+              size: size,
+              animationEnabled: false,
+              startAngle: 45,
+              angleRange: 320,
+              customColors: CustomSliderColors(
+                trackColor: Colors.grey[500].withOpacity(.6),
+                progressBarColors: [
+                  Theme.of(Get.context).accentColor,
+                  Theme.of(Get.context).accentColor,
+                ],
+              ),
+              customWidths: CustomSliderWidths(trackWidth: 1, progressBarWidth: 4.5, handlerSize: 1.5)),
+          min: 0,
+          max: 1,
+          innerWidget: (v) => Text(''),
+          initialValue: controller.playPos.value / (controller.song.value.duration ~/ 1000),
+          onChange: (value) {
+            controller.onSliderChanged(value);
+          },
+          onChangeStart: (value) => controller.onSliderChangeStart(value),
+          onChangeEnd: (value) => controller.onSliderChangeEnd(value),
+        ),
+        Container(
+          width: size,
+          height: size,
+          child:  Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                IconButton(
+                    icon: Icon(
+                      Icons.skip_previous,
+                      size: 32.0,
+                      color: Theme.of(Get.context).accentColor.withOpacity(.85),
+                    ),
+                    onPressed: () => controller.skipToPrevious()),
+                Container(
+                  decoration: BoxDecoration(
+                      color:
+                      Theme.of(Get.context).accentColor.withOpacity(.85),
+                      borderRadius: BorderRadius.all(Radius.circular(52.0))),
+                  width: 56.0,
+                  height: 56.0,
+                  child: Obx(() => IconButton(
+                      icon: Icon(
+                        controller.playState.value == PlayState.PLAYING
+                            ? Icons.pause
+                            : Icons.play_arrow,
+                        color: Colors.white,
+                        size: 26.0,
+                      ),
+                      onPressed: () => controller.playOrPause())),
+                ),
+                IconButton(
+                    icon: Icon(
+                      Icons.skip_next,
+                      size: 32.0,
+                      color: Theme.of(Get.context).accentColor.withOpacity(.85),
+                    ),
+                    onPressed: () => controller.skipToNext()),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
   ///横屏播放页
   Widget _buildLandscape() {
     return Row(
       children: [
         Expanded(
-          child: Column(
-            children: [
-              Padding(padding: EdgeInsets.symmetric(vertical: 5.0)),
-              // Row(
-              //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              //   children: [
-              //     Obx(() => Visibility(
-              //           child: IconButton(
-              //               icon: Icon(
-              //                 Icons.format_list_bulleted_outlined,
-              //               ),
-              //               onPressed: () {
-              //                 Get.bottomSheet(
-              //                   PlayListView(),
-              //                   backgroundColor:
-              //                       Theme.of(Get.context).primaryColor,
-              //                   elevation: 6.0,
-              //                   shape: RoundedRectangleBorder(
-              //                     borderRadius: BorderRadius.only(
-              //                         topLeft: Radius.circular(8.0),
-              //                         topRight: Radius.circular(8.0)),
-              //                   ),
-              //                 );
-              //               }),
-              //           visible: controller.playListMode.value ==
-              //                   PlayListMode.SONG ||
-              //               controller.playListMode.value == PlayListMode.LOCAL,
-              //         )),
-              //     IconButton(
-              //         icon: Icon(
-              //           Icons.skip_previous,
-              //           size: 32.0,
-              //         ),
-              //         onPressed: () => controller.skipToPrevious()),
-              //     Container(
-              //       decoration: BoxDecoration(
-              //           color:
-              //               Theme.of(Get.context).accentColor.withOpacity(.85),
-              //           borderRadius: BorderRadius.all(Radius.circular(52.0))),
-              //       width: 46.0,
-              //       height: 46.0,
-              //       child: Obx(() => IconButton(
-              //           icon: Icon(
-              //             controller.playState.value == PlayState.PLAYING
-              //                 ? Icons.pause
-              //                 : Icons.play_arrow,
-              //             color: Colors.white,
-              //             size: 26.0,
-              //           ),
-              //           onPressed: () => controller.playOrPause())),
-              //     ),
-              //     IconButton(
-              //         icon: Icon(
-              //           Icons.skip_next,
-              //           size: 32.0,
-              //         ),
-              //         onPressed: () => controller.skipToNext()),
-              //     Obx(() => IconButton(
-              //         icon: Icon(
-              //           controller.playListMode.value == PlayListMode.SONG ||
-              //                   controller.playListMode.value ==
-              //                       PlayListMode.LOCAL
-              //               ? controller.playMode.value == 1
-              //                   ? Icons.repeat
-              //                   : controller.playMode.value == 2
-              //                       ? Icons.repeat_one
-              //                       : Icons.shuffle
-              //               : Icons.sync_disabled_rounded,
-              //         ),
-              //         onPressed: () => controller.changePlayMode())),
-              //   ],
-              // ),
-              Padding(padding: EdgeInsets.symmetric(vertical: 10.0)),
-            ],
+          child: Center(
+            child: Obx(()=>_buildMusicCover(300.0)),
           ),
-          flex: 1,
         ),
         Expanded(
           child: Column(
@@ -231,18 +261,6 @@ class PlayWidgetView extends GetView<GlobalController> {
               Padding(
                 padding: EdgeInsets.only(top: Get.statusBarHeight / 2),
               ),
-              Obx(() => Text(controller.song.value.title,
-                  style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis)),
-              Padding(
-                padding: EdgeInsets.only(top: 5.0),
-              ),
-              Obx(() => Text(
-                    controller.song.value.artist,
-                    style: TextStyle(color: Colors.grey[600]),
-                  )),
-              Padding(padding: EdgeInsets.symmetric(vertical: 10.0)),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.0),
                 child: Obx(() {
@@ -253,7 +271,7 @@ class PlayWidgetView extends GetView<GlobalController> {
                           textAlign: TextAlign.center,
                           lyric: controller.lyric.value,
                           size: Size(MediaQuery.of(Get.context).size.width / 2,
-                              MediaQuery.of(Get.context).size.height / 1.6),
+                              135.w),
                           playing:
                               controller.playState.value == PlayState.PLAYING,
                           highlight: Theme.of(Get.context).accentColor,
@@ -267,11 +285,63 @@ class PlayWidgetView extends GetView<GlobalController> {
                         );
                 }),
               ),
-              Padding(padding: EdgeInsets.symmetric(vertical: 15.0)),
+
             ],
           ),
-          flex: 1,
-        )
+        ),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Obx(() => Visibility(
+              child: IconButton(
+                  icon: Icon(
+                    Icons.format_list_bulleted_outlined,
+                  ),
+                  onPressed: () {
+                    Get.bottomSheet(
+                      PlayListView(),
+                      backgroundColor:
+                      Theme.of(Get.context).primaryColor,
+                      elevation: 6.0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(8.0),
+                            topRight: Radius.circular(8.0)),
+                      ),
+                    );
+                  }),
+              visible: controller.playListMode.value ==
+                  PlayListMode.SONG ||
+                  controller.playListMode.value == PlayListMode.LOCAL,
+            )),
+            Obx(() => IconButton(
+                icon: Icon(
+                  controller.playListMode.value == PlayListMode.SONG ||
+                      controller.playListMode.value ==
+                          PlayListMode.LOCAL
+                      ? controller.playMode.value == 1
+                      ? Icons.repeat
+                      : controller.playMode.value == 2
+                      ? Icons.repeat_one
+                      : Icons.shuffle
+                      : Icons.sync_disabled_rounded,
+                ),
+                onPressed: () => controller.changePlayMode())),
+            Visibility(
+                child: IconButton(
+                    icon: Icon(
+                      const IconData(0xe619, fontFamily: 'iconfont'),
+                    ),
+                    onPressed: () {
+                      Get.toNamed('/music_talk', arguments: {
+                        'talk_info': TalkInfo(controller.playListMode.value == PlayListMode.RADIO ? 4 : 0, controller.song.value.musicId,
+                            controller.song.value.iconUri, controller.song.value.title)
+                      });
+                    }),
+                visible: controller.playListMode.value != PlayListMode.LOCAL),
+          ],
+        ),
+        Padding(padding: EdgeInsets.symmetric(horizontal: 6.0)),
       ],
     );
   }

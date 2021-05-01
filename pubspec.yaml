@@ -39,6 +39,9 @@ dependencies:
   direct_select_flutter: ^1.1.0
   on_audio_query: ^1.0.6
   flutter_screenutil: ^5.0.0
+  dio: ^4.0.0
+  url_launcher: ^6.0.3
+  package_info: ^2.0.0
   flutter:
     sdk: flutter
 

@@ -129,34 +129,34 @@ class FindView extends GetView<FindController> {
                       ),
                     ),
                     SliverToBoxAdapter(
-                      child: Padding(
+                      child: Visibility(child: Padding(
                           padding: EdgeInsets.symmetric(vertical: 6.0),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Padding(
                                   padding:
-                                      EdgeInsets.symmetric(horizontal: 5.0),
+                                  EdgeInsets.symmetric(horizontal: 5.0),
                                   child: Obx(() => DotsIndicator(
-                                        dotsCount: 2,
-                                        position: controller
-                                            .currentIndexPage.value
-                                            .toDouble(),
-                                        decorator: DotsDecorator(
-                                            size: const Size.square(6.0),
-                                            activeSize: const Size(12.0, 6.0),
-                                            activeShape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(6.0)),
-                                            color: Colors.grey[500],
-                                            // Inactive color
-                                            activeColor: Theme.of(Get.context)
-                                                .accentColor),
-                                      ))),
+                                    dotsCount: 2,
+                                    position: controller
+                                        .currentIndexPage.value
+                                        .toDouble(),
+                                    decorator: DotsDecorator(
+                                        size: const Size.square(6.0),
+                                        activeSize: const Size(12.0, 6.0),
+                                        activeShape: RoundedRectangleBorder(
+                                            borderRadius:
+                                            BorderRadius.circular(6.0)),
+                                        color: Colors.grey[500],
+                                        // Inactive color
+                                        activeColor: Theme.of(Get.context)
+                                            .accentColor),
+                                  ))),
                               InkWell(
                                 child: Padding(
                                   padding:
-                                      EdgeInsets.symmetric(horizontal: 8.0),
+                                  EdgeInsets.symmetric(horizontal: 8.0),
                                   child: Wrap(
                                     alignment: WrapAlignment.center,
                                     children: [
@@ -172,7 +172,7 @@ class FindView extends GetView<FindController> {
                                 onTap: () => Get.toNamed('/sheet_classify'),
                               )
                             ],
-                          )),
+                          )),visible: orientation == Orientation.portrait,),
                     ),
                     SliverToBoxAdapter(
                       child: orientation == Orientation.portrait
@@ -188,8 +188,7 @@ class FindView extends GetView<FindController> {
                                       shrinkWrap: true,
                                       itemExtent: (MediaQuery.of(Get.context)
                                                   .size
-                                                  .width -
-                                              10) /
+                                                  .width) /
                                           3,
                                       itemCount: controller.sheet.length > 0
                                           ? controller.sheet[index].length

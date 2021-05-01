@@ -16,10 +16,11 @@ import 'package:get/get.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:starry/music_item.dart';
 import 'package:starry/starry.dart';
+import 'package:we_slide/we_slide.dart';
 
 import '../main.dart';
 
-class GlobalController extends SuperController {
+class GlobalController extends SuperController with SingleGetTickerProviderMixin{
   final playState = PlayState.STOP.obs;
   var playPos = 0.obs;
   final playMode = 1.obs;
@@ -36,12 +37,16 @@ class GlobalController extends SuperController {
   final playList = [].obs;
   final playListMode = PlayListMode.SONG.obs;
   ScrollController scrollController;
+  WeSlideController weSlideController;
+  PreloadPageController pageController;
+  AnimationController animationController;
 
   static GlobalController get to => Get.find();
 
   @override
   void onInit() {
     scrollController = ScrollController();
+    animationController = AnimationController(vsync: this,duration: Duration(seconds: 10));
     super.onInit();
   }
 
@@ -51,11 +56,13 @@ class GlobalController extends SuperController {
   }
 
   void addSliderListener(weSlideController,PreloadPageController pageController) {
+    this.weSlideController = weSlideController;
+    this.pageController = pageController;
     weSlideController.addListener(() {
       if (weSlideController.isOpened) {
         HomeController.to.resumeStream();
       } else {
-        pageController.jumpToPage(0);
+        pageController?.jumpToPage(0);
         HomeController.to.pauseStream();
       }
     });
@@ -338,6 +345,9 @@ class GlobalController extends SuperController {
   @override
   void onClose() {
     scrollController?.dispose();
+    pageController?.dispose();
+    weSlideController?.dispose();
+    animationController?.dispose();
     super.onClose();
   }
 

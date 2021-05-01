@@ -215,6 +215,9 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 result.success("success")
 
             }
+            "SCAN" -> {
+               
+            }
             else -> result.notImplemented()
 
         }
@@ -233,9 +236,6 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     }
 
     override fun onDetachedFromActivity() {
-//        playerClient.removeOnPlayingMusicItemChangeListener(changeListener)
-//        playerClient.removeOnPlaybackStateChangeListener(starryPlaybackStateChangeListener)
-//        liveProgress.unsubscribe()
     }
 
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
@@ -251,6 +251,7 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         if (!playerClient.isConnected) {
             playerClient.connect { success -> Log.d("App", "connect: $success") }
         }
+
         //播放进度
         eventChannel.setStreamHandler(
                 object : EventChannel.StreamHandler {
@@ -262,8 +263,6 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                         liveProgress.unsubscribe()
                     }
                 })
-
-
     }
 
 

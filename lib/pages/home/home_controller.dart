@@ -142,7 +142,7 @@ class HomeController extends SuperController {
     Starry.onPlayerSongChanged.listen((PlayMusicInfo playMusicInfo) async {
       GlobalController.to.song.value = playMusicInfo.musicItem;
       // GlobalController.to.getLocalImage();
-
+      GlobalController.to.animationController?.reset();
       if (GlobalController.to.playListMode.value != PlayListMode.RADIO &&
           GlobalController.to.playListMode.value != PlayListMode.LOCAL)
         NetUtils()
@@ -173,6 +173,11 @@ class HomeController extends SuperController {
     Starry.onPlayerStateChanged.listen((PlayState playState) {
       GlobalController.to.playState.value = playState;
       if (playState == PlayState.ERROR) GlobalController.to.skipToNext();
+      if(playState == PlayState.PLAYING){
+        GlobalController.to.animationController?.repeat();
+      }else if(playState == PlayState.PAUSE||playState == PlayState.STOP){
+        GlobalController.to.animationController?.stop();
+      }
     });
 
     ///播放列表发生变化

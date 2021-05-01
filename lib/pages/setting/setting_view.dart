@@ -3,8 +3,11 @@ import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/pages/setting/setting_controller.dart';
 import 'package:bujuan/utils/sp_util.dart';
 import 'package:bujuan/widget/preload_page_view.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:package_info/package_info.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SettingView extends GetView<SettingController> {
   @override
@@ -107,38 +110,38 @@ class SettingView extends GetView<SettingController> {
               ),
               SliverToBoxAdapter(
                   child: GetBuilder<HomeController>(
-                    builder: (_) => ListTile(
-                      title: Text('播放页样式'),
-                      subtitle: Text('切换风格'),
-                      trailing: Wrap(
-                        children: [
-                          Text(
-                            _.secondPlayView?'方形':'圆形',
-                            style: TextStyle(color: Colors.grey[500]),
-                          ),
-                          Padding(padding: EdgeInsets.symmetric(horizontal: 2.0)),
-                          Icon(
-                            Icons.keyboard_arrow_right,
-                            size: 22.0,
-                          )
-                        ],
+                builder: (_) => ListTile(
+                  title: Text('播放页样式'),
+                  subtitle: Text('切换风格'),
+                  trailing: Wrap(
+                    children: [
+                      Text(
+                        _.secondPlayView ? '方形' : '圆形',
+                        style: TextStyle(color: Colors.grey[500]),
                       ),
-                      onTap: () {
-                        Get.bottomSheet(
-                          _buildPlayViewBottomSheet(),
-                          backgroundColor: Theme.of(Get.context).primaryColor,
-                          elevation: 6.0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(8.0),
-                                topRight: Radius.circular(8.0)),
-                          ),
-                        );
-                      },
-                    ),
-                    id: 'second_view',
-                    init: HomeController(),
-                  )),
+                      Padding(padding: EdgeInsets.symmetric(horizontal: 2.0)),
+                      Icon(
+                        Icons.keyboard_arrow_right,
+                        size: 22.0,
+                      )
+                    ],
+                  ),
+                  onTap: () {
+                    Get.bottomSheet(
+                      _buildPlayViewBottomSheet(),
+                      backgroundColor: Theme.of(Get.context).primaryColor,
+                      elevation: 6.0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(8.0),
+                            topRight: Radius.circular(8.0)),
+                      ),
+                    );
+                  },
+                ),
+                id: 'second_view',
+                init: HomeController(),
+              )),
               SliverToBoxAdapter(
                   child: SwitchListTile(
                 title: Text('默认显示我的页面'),
@@ -222,6 +225,43 @@ class SettingView extends GetView<SettingController> {
                     size: 22.0,
                   ),
                   onTap: () => Get.toNamed('/donate'),
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: ListTile(
+                  title: Text('检查更新'),
+                  subtitle: Text('请理性捐赠'),
+                  trailing: Icon(
+                    Icons.keyboard_arrow_right,
+                    size: 22.0,
+                  ),
+                  onTap: () async {
+                    var dio = Dio();
+                    var response =
+                        await dio.get('http://www.sixbugs.com/update.json');
+                    print(response.data['versionCode']);
+                    if (response.statusCode == 200 &&
+                        !GetUtils.isNullOrBlank(response.data) &&
+                        !GetUtils.isNullOrBlank(response.data['downloadUrl']) &&
+                        !GetUtils.isNullOrBlank(response.data['versionCode'])) {
+                      PackageInfo packageInfo =
+                          await PackageInfo.fromPlatform();
+                      String buildNumber = packageInfo.buildNumber;
+                      if (response.data['versionCode'] >
+                          int.parse(buildNumber)) {
+                        Get.defaultDialog(
+                            title: '发现新版本（${response.data['version']}）',
+                            content: Text('${response.data['updateInfo']}'),
+                            textConfirm: '点击下载',
+                            confirmTextColor: Colors.white,
+                            onConfirm: () async {
+                              var data = response.data['downloadUrl'];
+                              print('${data}');
+                              launch(data);
+                            });
+                      }
+                    }
+                  },
                 ),
               )
             ],
@@ -320,14 +360,16 @@ class SettingView extends GetView<SettingController> {
           title: Text('播放页样式'),
           trailing: Text('确定'),
           onTap: () {
-            HomeController.to.changeSecondPlayView(controller.playViewIndex==1);
-            SpUtil.putBool(SECOND_PLAY_VIEW, controller.playViewIndex==1);
+            HomeController.to
+                .changeSecondPlayView(controller.playViewIndex == 1);
+            SpUtil.putBool(SECOND_PLAY_VIEW, controller.playViewIndex == 1);
             Get.back();
           },
         ),
         Expanded(
             child: PreloadPageView(
-          controller: PreloadPageController(initialPage: controller.playViewIndex,viewportFraction: .9),
+          controller: PreloadPageController(
+              initialPage: controller.playViewIndex, viewportFraction: .9),
           children: [
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 0.0),

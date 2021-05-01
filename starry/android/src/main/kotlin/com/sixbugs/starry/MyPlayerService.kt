@@ -33,11 +33,11 @@ class MyPlayerService : PlayerService() {
         return ExoMusicPlayer(context, uri)
     }
 
-    override fun onCreateAudioEffectManager(): AudioEffectManager? {
+    override fun onCreateAudioEffectManager(): AudioEffectManager {
         return AndroidAudioEffectManager()
     }
 
-    override fun onCreateNotificationView(): NotificationView? {
+    override fun onCreateNotificationView(): NotificationView {
         return AppNotificationView()
     }
 

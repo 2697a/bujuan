@@ -214,6 +214,32 @@ class SquarePlayView extends GetView<GlobalController> {
                   ],
                 )),
           ),
+          Visibility(
+            child: Container(
+                height: 100.h,
+                child: Center(
+                  child: HomeController.to.miniPlayView
+                      ? Text('')
+                      : Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Obx(() => Text(
+                      controller.lyric.value.size > 0 &&
+                          controller.playListMode.value !=
+                              PlayListMode.LOCAL &&
+                          controller.playListMode.value !=
+                              PlayListMode.RADIO
+                          ? '${controller.lyric.value.getLineByTimeStamp(controller.playPos.value * 1000, 0).line}'
+                          : '暂无歌词',
+                      style: TextStyle(
+                          color: Theme.of(Get.context).accentColor,
+                          fontSize: 20.sp,
+                          height: 2.0),
+                      textAlign: TextAlign.center,
+                    )),
+                  ),
+                )),
+            visible: !HomeController.to.miniPlayView,
+          ),
           Container(
             height: HomeController.to.miniPlayView ? 90.h : 110.h,
             child: Row(
@@ -284,32 +310,6 @@ class SquarePlayView extends GetView<GlobalController> {
                     onPressed: () => controller.changePlayMode())),
               ],
             ),
-          ),
-          Visibility(
-            child: Container(
-                height: 100.h,
-                child: Center(
-                  child: HomeController.to.miniPlayView
-                      ? Text('')
-                      : Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 20.0),
-                          child: Obx(() => Text(
-                                controller.lyric.value.size > 0 &&
-                                        controller.playListMode.value !=
-                                            PlayListMode.LOCAL &&
-                                        controller.playListMode.value !=
-                                            PlayListMode.RADIO
-                                    ? '${controller.lyric.value.getLineByTimeStamp(controller.playPos.value * 1000, 0).line}'
-                                    : '暂无歌词',
-                                style: TextStyle(
-                                    color: Theme.of(Get.context).accentColor,
-                                    fontSize: 20.sp,
-                                    height: 2.0),
-                                textAlign: TextAlign.center,
-                              )),
-                        ),
-                )),
-            visible: !HomeController.to.miniPlayView,
           ),
         ],
       ),
