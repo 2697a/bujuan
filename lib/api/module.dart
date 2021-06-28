@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:core';
+import 'dart:developer';
 import 'dart:io';
 import 'dart:math' as math;
 
@@ -69,7 +70,7 @@ final handles = <String, Handler>{
   '/comment/like': comment_like,
   '/comment/music': comment_music,
   '/comment/new': comment_new,
-  'comment/floor':comment_floor,
+  '/comment/floor':comment_floor,
   '/comment/mv': comment_mv,
   '/comment/playlist': comment_playlist,
   '/comment/video': comment_video,

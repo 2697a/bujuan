@@ -64,7 +64,7 @@ class FindController extends GetxController {
       if (newSongEntity != null && newSongEntity.code == 200) {
         newSong
           ..clear()
-          ..addAll(newSongEntity.result.sublist(0, 6));
+          ..addAll(newSongEntity.result);
         loadState.value = LoadState.SUCCESS;
         isLoad = true;
       } else {

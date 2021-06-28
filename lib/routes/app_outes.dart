@@ -36,6 +36,8 @@ import 'package:bujuan/pages/today/today_binding.dart';
 import 'package:bujuan/pages/today/today_view.dart';
 import 'package:bujuan/pages/top/top_binding.dart';
 import 'package:bujuan/pages/top/top_view.dart';
+import 'package:bujuan/pages/top_artists/top_artists_binding.dart';
+import 'package:bujuan/pages/top_artists/top_artists_view.dart';
 import 'package:bujuan/pages/user/cloud/cloud_binding.dart';
 import 'package:bujuan/pages/user/cloud/cloud_view.dart';
 import 'package:bujuan/pages/user/playlist_manager/playlist_manager_binding.dart';
@@ -95,5 +97,9 @@ class AppPages {
         name: '/play_list_manager',
         page: () => PlayListManagerView(),
         binding: PlayListManagerBinding()),
+    GetPage(
+        name: '/top_artists',
+        page: () => TopArtists(),
+        binding: TopArtistsBinding()),
   ];
 }

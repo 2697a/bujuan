@@ -149,9 +149,10 @@ Handler comment_floor = (query, cookies) {
     'time': query['time'] ?? -1,
     'limit': query['limit'] ?? 20,
   };
-
-  return request('POST', 'https://music.163.com/api/v2/resource/comments', data,
+  log('$data');
+  var request2 = request('POST', 'https://music.163.com/api/resource/comment/floor/get', data,
       crypto: Crypto.weapi, cookies: cookies);
+  return request2;
 };
 //mv评论
 Handler comment_mv = (query, cookies) {

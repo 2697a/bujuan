@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:bujuan/api/lyric/lyric_controller.dart';
 import 'package:bujuan/api/lyric/lyric_view.dart';
 import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
@@ -19,7 +18,7 @@ import 'package:starry/starry.dart';
 import 'package:we_slide/we_slide.dart';
 
 import '../main.dart';
-
+//手动移动时自动旋转会停止
 class GlobalController extends SuperController with SingleGetTickerProviderMixin{
   final playState = PlayState.STOP.obs;
   var playPos = 0.obs;

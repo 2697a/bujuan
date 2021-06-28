@@ -19,6 +19,8 @@ import snow.player.SleepTimer.OnStateChangeListener
 import snow.player.audio.MusicItem
 import snow.player.playlist.Playlist
 import snow.player.playlist.PlaylistManager
+//import snow.player.util.AudioScanner
+//import snow.player.util.AudioScanner.*
 
 
 /** StarryPlugin */
@@ -31,7 +33,8 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     private lateinit var starrySleepTimerStateChangeListener: OnStateChangeListener
     private lateinit var liveProgress: LiveProgress
     private lateinit var eventChannel: EventChannel
-    var activity: Activity? = null
+//    private lateinit var audioScanner: AudioScanner<AudioItem?>
+    private var activity: Activity? = null
     var eventSink: EventChannel.EventSink? = null
 
     companion object {
@@ -52,7 +55,12 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 starryPlaybackStateChangeListener = StarryPlaybackStateChangeListener()
                 playerClient.addOnPlaybackStateChangeListener(starryPlaybackStateChangeListener)
                 //播放歌曲发生变化
-                changeListener = { musicItem, position, _ -> channel.invokeMethod("SWITCH_SONG_INFO", hashMapOf("MUSIC" to GsonUtil.GsonString(musicItem), "POSITION" to position)) }
+                changeListener = { musicItem, position, _ ->
+                    channel.invokeMethod(
+                        "SWITCH_SONG_INFO",
+                        hashMapOf("MUSIC" to GsonUtil.GsonString(musicItem), "POSITION" to position)
+                    )
+                }
                 playerClient.addOnPlayingMusicItemChangeListener(changeListener)
                 //监听歌曲播放进度
                 liveProgress = LiveProgress(playerClient) { progressSec, _, _, _ -> eventSink?.success(progressSec) }
@@ -79,13 +87,16 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 starrySleepTimerStateChangeListener = StarrySleepTimerStateChangeListener()
                 playerClient.addOnSleepTimerStateChangeListener(starrySleepTimerStateChangeListener)
                 if (playerClient.isPlaying) {
-                    if(playerClient.isSleepTimerStarted){
-                        channel.invokeMethod("SLEEP_CHANGE", hashMapOf("TIME" to playerClient.sleepTimerTime-playerClient.sleepTimerElapsedTime,"IS_PLAY" to true))
-                    }else{
+                    if (playerClient.isSleepTimerStarted) {
+                        channel.invokeMethod(
+                            "SLEEP_CHANGE",
+                            hashMapOf("TIME" to playerClient.sleepTimerTime - playerClient.sleepTimerElapsedTime, "IS_PLAY" to true)
+                        )
+                    } else {
                         channel.invokeMethod("PLAYING_SONG_INFO", null)
                     }
                 }
-                if (playerClient.isSleepTimerStarted&&!playerClient.isPlaying) playerClient.cancelSleepTimer()
+                if (playerClient.isSleepTimerStarted && !playerClient.isPlaying) playerClient.cancelSleepTimer()
                 result.success("success")
             }
             "PLAY_MUSIC" -> {
@@ -215,9 +226,24 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 result.success("success")
 
             }
-            "SCAN" -> {
-               
-            }
+//            "SCAN" -> {
+//                audioScanner.scan(object : OnProgressUpdateListener<AudioItem?> {
+//                    override fun onStart() {
+//                        // 该方法会在开始扫描前调用（在主线程调用）
+//                    }
+//
+//                    override fun onProgressUpdate(progress: Int) {
+//                        // 当扫描进度更新时会调用该方法（在主线程调用）
+//                    }
+//
+//                    override fun onEnd(audioList: List<AudioItem?>, cancelled: Boolean) {
+//                        // 该方法会在结束扫描或者扫描被取消后调用，并将扫描结果传递给该方法（在主线程调用）结果
+//                        val listStr = GsonUtil.GsonString(audioList.toList())
+//                        channel.invokeMethod("SCAN_RESULT", listStr)
+//
+//                    }
+//                })
+//            }
             else -> result.notImplemented()
 
         }
@@ -251,18 +277,19 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         if (!playerClient.isConnected) {
             playerClient.connect { success -> Log.d("App", "connect: $success") }
         }
-
+//        audioScanner = AudioScanner(activity?.applicationContext!!, AudioItemConverter())
         //播放进度
         eventChannel.setStreamHandler(
-                object : EventChannel.StreamHandler {
-                    override fun onListen(arguments: Any?, events: EventChannel.EventSink) {
-                        eventSink = events
-                    }
+            object : EventChannel.StreamHandler {
+                override fun onListen(arguments: Any?, events: EventChannel.EventSink) {
+                    eventSink = events
+                }
 
-                    override fun onCancel(arguments: Any?) {
-                        liveProgress.unsubscribe()
-                    }
-                })
+                override fun onCancel(arguments: Any?) {
+                    liveProgress.unsubscribe()
+                }
+            })
+
     }
 
 
@@ -288,7 +315,7 @@ class StarryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     class StarrySleepTimerStateChangeListener : OnStateChangeListener {
         override fun onTimerStart(time: Long, startTime: Long, action: SleepTimer.TimeoutAction?) {
             Log.d("App", "onTimerStart: $startTime")
-            channel.invokeMethod("SLEEP_CHANGE", hashMapOf("TIME" to time,"IS_PLAY" to false))
+            channel.invokeMethod("SLEEP_CHANGE", hashMapOf("TIME" to time, "IS_PLAY" to false))
         }
 
         override fun onTimerEnd() {

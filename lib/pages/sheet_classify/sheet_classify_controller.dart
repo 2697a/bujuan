@@ -85,6 +85,7 @@ class SheetClassifyController extends GetxController {
   var classifyData = [].obs;
   var enableLoadMore = true.obs;
   WeSlideController weSlideController;
+
   @override
   void onInit() {
     refreshController = RefreshController();
@@ -107,19 +108,20 @@ class SheetClassifyController extends GetxController {
 
   ///获取数据
   getSheetData(classify) async {
-    var sheetByClassify = await NetUtils().getSheetByClassify(classify, loadPageIndex * 15);
+    var sheetByClassify =
+        await NetUtils().getSheetByClassify(classify, loadPageIndex * 15);
     if (sheetByClassify != null && sheetByClassify.code == 200) {
-      if(loadPageIndex.value==0){
+      if (loadPageIndex.value == 0) {
         classifyData
           ..clear()
           ..addAll(sheetByClassify.playlists);
         refreshController.refreshCompleted();
-        if(sheetByClassify.playlists.length<15)enableLoadMore.value = false;
-      }else{
-        if(sheetByClassify.playlists.length>0){
+        if (sheetByClassify.playlists.length < 15) enableLoadMore.value = false;
+      } else {
+        if (sheetByClassify.more) {
           classifyData.addAll(sheetByClassify.playlists);
           refreshController?.loadComplete();
-        }else{
+        } else {
           refreshController.loadNoData();
         }
       }
@@ -135,14 +137,14 @@ class SheetClassifyController extends GetxController {
   }
 
   ///刷新数据
-  loadMoreData(){
-    loadPageIndex.value ++;
+  loadMoreData() {
+    loadPageIndex.value++;
     getSheetData(classifySelect.value);
   }
 
   @override
   void onClose() {
-    weSlideController=null;
+    weSlideController = null;
     super.onClose();
   }
 }

@@ -47,25 +47,28 @@ android {
         versionName flutterVersionName
         multiDexEnabled true
     }
-    signingConfigs {
-        release {
-            keyAlias keystoreProperties['keyAlias']
-            keyPassword keystoreProperties['keyPassword']
-            storeFile file(keystoreProperties['storeFile'])
-            storePassword keystoreProperties['storePassword']
-        }
-    }
+//    signingConfigs {
+//        release {
+//            keyAlias keystoreProperties['keyAlias']
+//            keyPassword keystoreProperties['keyPassword']
+//            storeFile file(keystoreProperties['storeFile'])
+//            storePassword keystoreProperties['storePassword']
+//        }
+//    }
     buildTypes {
         release {
-            minifyEnabled false
-            shrinkResources false
-            signingConfig signingConfigs.release
+            signingConfig signingConfigs.debug
         }
-        debug {
-            minifyEnabled false
-            shrinkResources false
-            signingConfig signingConfigs.release
-        }
+//        release {
+//            minifyEnabled false
+//            shrinkResources false
+//            signingConfig signingConfigs.release
+//        }
+//        debug {
+//            minifyEnabled false
+//            shrinkResources false
+//            signingConfig signingConfigs.release
+//        }
     }
 }
 

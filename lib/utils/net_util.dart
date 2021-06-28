@@ -14,9 +14,11 @@ import 'package:bujuan/entity/search_hot_entity.dart';
 import 'package:bujuan/entity/search_mv_entity.dart';
 import 'package:bujuan/entity/search_sheet_entity.dart';
 import 'package:bujuan/entity/search_singer_entity.dart';
+import 'package:bujuan/entity/top_artists_entity.dart';
 import 'package:bujuan/entity/user_di_program.dart';
 import 'package:bujuan/entity/user_dj.dart';
 import 'package:bujuan/entity/week_data.dart';
+import 'package:bujuan/generated/json/base/json_convert_content.dart';
 import 'package:bujuan/global/global_config.dart';
 import 'package:bujuan/global/global_controller.dart';
 import 'package:bujuan/main.dart';
@@ -64,7 +66,7 @@ class NetUtils {
       map = answer.body;
       if (!GetUtils.isNullOrBlank(cacheName) && map['code'] == 200)
         _saveCache(cacheName, map);
-      // log('$url======${jsonEncode(map)}');
+      log('$url======${jsonEncode(map)}');
     }
     return map;
   }
@@ -403,8 +405,14 @@ class NetUtils {
   }
 
   ///获取歌曲楼层评论
-  Future<void> getMusicFloorTalk() async {
-    await _doHandler('');
+  Future<void> getMusicFloorTalk(parentId, id, time) async {
+    var map = await _doHandler('/comment/floor', param: {
+      'parentCommentId': parentId,
+      'type': 0,
+      'id': id,
+      'time': time
+    });
+    log('message');
   }
 
   ///获取fm歌曲
@@ -562,6 +570,16 @@ class NetUtils {
       djRecommend = true;
     }
     return djRecommend;
+  }
+
+  ///热门歌手 /top/artists
+  Future<TopArtistsEntity> getTopArtists(offset) async {
+    var topArtists;
+    var map = await _doHandler('/top/artists', param: {'offset': offset});
+    if (map != null) {
+      topArtists = JsonConvert.fromJsonAsT<TopArtistsEntity>(map);
+    }
+    return topArtists;
   }
 }
 

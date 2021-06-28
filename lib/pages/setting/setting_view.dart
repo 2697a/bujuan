@@ -216,21 +216,21 @@ class SettingView extends GetView<SettingController> {
                   onTap: () => Get.toNamed('/about'),
                 ),
               ),
-              SliverToBoxAdapter(
-                child: ListTile(
-                  title: Text('捐赠'),
-                  subtitle: Text('请理性捐赠'),
-                  trailing: Icon(
-                    Icons.keyboard_arrow_right,
-                    size: 22.0,
-                  ),
-                  onTap: () => Get.toNamed('/donate'),
-                ),
-              ),
+              // SliverToBoxAdapter(
+              //   child: ListTile(
+              //     title: Text('捐赠'),
+              //     subtitle: Text('请理性捐赠'),
+              //     trailing: Icon(
+              //       Icons.keyboard_arrow_right,
+              //       size: 22.0,
+              //     ),
+              //     onTap: () => Get.toNamed('/donate'),
+              //   ),
+              // ),
               SliverToBoxAdapter(
                 child: ListTile(
                   title: Text('检查更新'),
-                  subtitle: Text('请理性捐赠'),
+                  subtitle: Text('点击检测'),
                   trailing: Icon(
                     Icons.keyboard_arrow_right,
                     size: 22.0,

@@ -105,7 +105,7 @@ packages:
       name: cupertino_icons
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.0.2"
+    version: "1.0.3"
   dio:
     dependency: "direct main"
     description:
@@ -119,7 +119,7 @@ packages:
       name: direct_select_flutter
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.1.0"
+    version: "1.1.1"
   dots_indicator:
     dependency: "direct main"
     description:
@@ -154,7 +154,7 @@ packages:
       name: file
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "6.1.0"
+    version: "6.1.1"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -187,7 +187,7 @@ packages:
       name: flutter_screenutil
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "5.0.0"
+    version: "5.0.0+2"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -211,7 +211,7 @@ packages:
       name: http
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.13.1"
+    version: "0.13.3"
   http_parser:
     dependency: transitive
     description:
@@ -226,6 +226,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.1.19"
+  intl:
+    dependency: "direct main"
+    description:
+      name: intl
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.17.0"
   js:
     dependency: transitive
     description:
@@ -309,7 +316,7 @@ packages:
       name: path_provider_windows
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "2.0.0"
+    version: "2.0.1"
   pedantic:
     dependency: transitive
     description:
@@ -358,7 +365,7 @@ packages:
       name: progress_state_button
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.0.2"
+    version: "1.0.3"
   pull_to_refresh:
     dependency: "direct main"
     description:
@@ -587,7 +594,7 @@ packages:
       name: win32
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "2.0.4"
+    version: "2.0.5"
   xdg_directories:
     dependency: transitive
     description:

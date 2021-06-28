@@ -199,6 +199,8 @@ class Starry {
         if (arguments['IS_PLAY']) _playerStateController.add(PlayState.PLAYING);
       }
       _sleepStateChangedController.add(time);
+    }else if(method == 'SCAN_RESULT'){
+
     }
   }
 

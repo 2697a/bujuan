@@ -180,6 +180,9 @@ class BuJuanUtil {
       case PlayListMode.RADIO:
         return "电台";
         break;
+      case PlayListMode.LOCAL:
+        // TODO: Handle this case.
+        break;
     }
     return '';
   }

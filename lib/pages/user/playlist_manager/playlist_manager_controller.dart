@@ -17,7 +17,7 @@ class PlayListManagerController extends GetxController {
   delPlayList() {
     if (delList.length > 0) {
       Get.defaultDialog(
-          title: '提示',
+          title: '激活',
           content: Padding(
               padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
               child: Text('确定要删除选中歌单吗?')),

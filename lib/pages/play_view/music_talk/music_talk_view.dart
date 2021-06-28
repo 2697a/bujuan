@@ -1,5 +1,6 @@
 import 'package:bujuan/entity/music_talk.dart';
 import 'package:bujuan/global/global_loding_view.dart';
+import 'package:bujuan/utils/net_util.dart';
 import 'package:bujuan/widget/over_scroll.dart';
 import 'package:bujuan/pages/play_view/music_talk/music_talk_controller.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -36,7 +37,7 @@ class MusicTalkView extends GetView<MusicTalkController> {
                   child: ScrollConfiguration(
                 behavior: OverScrollBehavior(),
                 child: SmartRefresher(
-                  header:  WaterDropMaterialHeader(
+                  header: WaterDropMaterialHeader(
                     color: Theme.of(context).accentColor,
                     backgroundColor: Theme.of(context).primaryColor,
                   ),
@@ -64,18 +65,18 @@ class MusicTalkView extends GetView<MusicTalkController> {
                   onLoading: () => controller.loadMoreTalk(),
                 ),
               )),
-              // Container(
-              //   padding: EdgeInsets.symmetric(vertical: 3.0, horizontal: 12.0),
-              //   child: TextField(
-              //     controller: controller.talkEditingController,
-              //     decoration: InputDecoration(
-              //       contentPadding: EdgeInsets.symmetric(vertical: 0.0,horizontal: 8.0),
-              //
-              //       border: InputBorder.none,
-              //       hintText: '插一嘴？',
-              //     ),
-              //   ),
-              // )
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 3.0, horizontal: 12.0),
+                child: TextField(
+                  controller: controller.talkEditingController,
+                  decoration: InputDecoration(
+                    contentPadding:
+                        EdgeInsets.symmetric(vertical: 0.0, horizontal: 8.0),
+                    border: InputBorder.none,
+                    hintText: '插一嘴？',
+                  ),
+                ),
+              )
             ],
           )),
     );
@@ -100,9 +101,7 @@ class MusicTalkView extends GetView<MusicTalkController> {
                 ),
               ),
               Padding(padding: EdgeInsets.symmetric(horizontal: 3.0)),
-              Text(
-                '${comments.user.nickname}'
-              )
+              Text('${comments.user.nickname}')
             ],
           ),
           Container(
@@ -128,12 +127,14 @@ class MusicTalkView extends GetView<MusicTalkController> {
                   ],
                 ),
               ),
-              onTap: () {},
+              onTap: () async {
+                NetUtils().getMusicFloorTalk(
+                    null, comments.commentId,null);
+              },
             ),
           ),
         ],
       ),
     );
   }
-
 }

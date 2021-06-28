@@ -23,7 +23,7 @@ Handler top_artists = (query, cookie) {
       {
         'limit': query['limit'] ?? 15,
         'offset': query['offset'] ?? 0,
-        'total': true
+        'total': false
       },
       crypto: Crypto.weapi,
       cookies: cookie);

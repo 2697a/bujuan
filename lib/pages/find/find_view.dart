@@ -2,6 +2,7 @@ import 'package:bujuan/entity/new_song_entity.dart';
 import 'package:bujuan/entity/personal_entity.dart';
 import 'package:bujuan/global/global_loding_view.dart';
 import 'package:bujuan/utils/bujuan_util.dart';
+import 'package:bujuan/utils/date.dart';
 import 'package:bujuan/widget/over_scroll.dart';
 import 'package:bujuan/widget/preload_page_view.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -36,7 +37,8 @@ class FindView extends GetView<FindController> {
                     SliverToBoxAdapter(
                       child: _today(),
                     ),
-                    SliverToBoxAdapter(child: Row(
+                    SliverToBoxAdapter(
+                        child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Column(
@@ -48,7 +50,7 @@ class FindView extends GetView<FindController> {
                                   size: 30.0,
                                   color: Colors.red.withOpacity(.8),
                                 ),
-                                onPressed: () =>controller.goToFm()),
+                                onPressed: () => controller.goToFm()),
                             Padding(
                               padding: EdgeInsets.only(bottom: 12.0),
                               child: Text(
@@ -67,7 +69,8 @@ class FindView extends GetView<FindController> {
                                   size: 26.0,
                                   color: Colors.red.withOpacity(.8),
                                 ),
-                                onPressed: () => Get.toNamed('/sheet_classify')),
+                                onPressed: () =>
+                                    Get.toNamed('/sheet_classify')),
                             Padding(
                               padding: EdgeInsets.only(bottom: 12.0),
                               child: Text(
@@ -81,12 +84,12 @@ class FindView extends GetView<FindController> {
                           children: [
                             IconButton(
                                 icon: Icon(
-                                  const  IconData(0xe684,
+                                  const IconData(0xe684,
                                       fontFamily: 'iconfont'),
                                   size: 24.0,
                                   color: Colors.red.withOpacity(.8),
                                 ),
-                                onPressed: () =>Get.toNamed('/top')),
+                                onPressed: () => Get.toNamed('/top')),
                             Padding(
                               padding: EdgeInsets.only(bottom: 12.0),
                               child: Text(
@@ -100,12 +103,14 @@ class FindView extends GetView<FindController> {
                           children: [
                             IconButton(
                                 icon: Icon(
-                                  const  IconData(0xe61f,
+                                  const IconData(0xe61f,
                                       fontFamily: 'iconfont'),
                                   size: 26.0,
                                   color: Colors.red.withOpacity(.8),
                                 ),
-                                onPressed: () {}),
+                                onPressed: () {
+                                  Get.toNamed('/top_artists');
+                                }),
                             Padding(
                               padding: EdgeInsets.only(bottom: 12.0),
                               child: Text(
@@ -129,50 +134,55 @@ class FindView extends GetView<FindController> {
                       ),
                     ),
                     SliverToBoxAdapter(
-                      child: Visibility(child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: 6.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Padding(
-                                  padding:
-                                  EdgeInsets.symmetric(horizontal: 5.0),
-                                  child: Obx(() => DotsIndicator(
-                                    dotsCount: 2,
-                                    position: controller
-                                        .currentIndexPage.value
-                                        .toDouble(),
-                                    decorator: DotsDecorator(
-                                        size: const Size.square(6.0),
-                                        activeSize: const Size(12.0, 6.0),
-                                        activeShape: RoundedRectangleBorder(
-                                            borderRadius:
-                                            BorderRadius.circular(6.0)),
-                                        color: Colors.grey[500],
-                                        // Inactive color
-                                        activeColor: Theme.of(Get.context)
-                                            .accentColor),
-                                  ))),
-                              InkWell(
-                                child: Padding(
-                                  padding:
-                                  EdgeInsets.symmetric(horizontal: 8.0),
-                                  child: Wrap(
-                                    alignment: WrapAlignment.center,
-                                    children: [
-                                      Text('更多',
-                                          style: TextStyle(
+                      child: Visibility(
+                        child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 6.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 5.0),
+                                    child: Obx(() => DotsIndicator(
+                                          dotsCount: 2,
+                                          position: controller
+                                              .currentIndexPage.value
+                                              .toDouble(),
+                                          decorator: DotsDecorator(
+                                              size: const Size.square(6.0),
+                                              activeSize: const Size(12.0, 6.0),
+                                              activeShape:
+                                                  RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              6.0)),
                                               color: Colors.grey[500],
-                                              fontSize: 12.0)),
-                                      Icon(Icons.keyboard_arrow_right,
-                                          size: 18.0, color: Colors.grey[500])
-                                    ],
+                                              // Inactive color
+                                              activeColor: Theme.of(Get.context)
+                                                  .accentColor),
+                                        ))),
+                                InkWell(
+                                  child: Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 8.0),
+                                    child: Wrap(
+                                      alignment: WrapAlignment.center,
+                                      children: [
+                                        Text('更多',
+                                            style: TextStyle(
+                                                color: Colors.grey[500],
+                                                fontSize: 12.0)),
+                                        Icon(Icons.keyboard_arrow_right,
+                                            size: 18.0, color: Colors.grey[500])
+                                      ],
+                                    ),
                                   ),
-                                ),
-                                onTap: () => Get.toNamed('/sheet_classify'),
-                              )
-                            ],
-                          )),visible: orientation == Orientation.portrait,),
+                                  onTap: () => Get.toNamed('/sheet_classify'),
+                                )
+                              ],
+                            )),
+                        visible: orientation == Orientation.portrait,
+                      ),
                     ),
                     SliverToBoxAdapter(
                       child: orientation == Orientation.portrait
@@ -187,8 +197,8 @@ class FindView extends GetView<FindController> {
                                       scrollDirection: Axis.horizontal,
                                       shrinkWrap: true,
                                       itemExtent: (MediaQuery.of(Get.context)
-                                                  .size
-                                                  .width) /
+                                              .size
+                                              .width) /
                                           3,
                                       itemCount: controller.sheet.length > 0
                                           ? controller.sheet[index].length
@@ -246,7 +256,6 @@ class FindView extends GetView<FindController> {
                                   : _newSongItem(
                                       controller.newSong[index], index);
                             },
-                            itemExtent: 110.0,
                             itemCount: controller.newSong.length == 0
                                 ? 10
                                 : controller.newSong.length,
@@ -278,46 +287,46 @@ class FindView extends GetView<FindController> {
                     ),
                     Expanded(
                         child: Stack(
-                          children: [
-                            Container(
-                              height: 120,
-                              alignment: Alignment.center,
-                              child: const Text(
-                                '每日推荐',
+                      children: [
+                        Container(
+                          height: 120,
+                          alignment: Alignment.center,
+                          child: const Text(
+                            '每日推荐',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 20.0),
+                          ),
+                        ),
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 8.0, vertical: 5.0),
+                          height: 120,
+                          alignment: Alignment.bottomRight,
+                          width: double.infinity,
+                          child: Wrap(
+                            children: [
+                              Text(
+                                BuJuanUtil.dateToString(DateTime.now(), 2),
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 20.0),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14.0,
+                                    color: Theme.of(Get.context).accentColor),
                               ),
-                            ),
-                            Container(
-                              padding:
-                              EdgeInsets.symmetric(horizontal: 8.0, vertical: 5.0),
-                              height: 120,
-                              alignment: Alignment.bottomRight,
-                              width: double.infinity,
-                              child: Wrap(
-                                children: [
-                                  Text(
-                                    BuJuanUtil.dateToString(DateTime.now(), 2),
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14.0,
-                                        color: Theme.of(Get.context).accentColor),
-                                  ),
-                                  Text(
-                                    BuJuanUtil.dateToString(DateTime.now(), 1),
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18.0,
-                                        color: Theme.of(Get.context).accentColor),
-                                  )
-                                ],
-                              ),
-                            )
-                          ],
-                        ))
+                              Text(
+                                BuJuanUtil.dateToString(DateTime.now(), 1),
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18.0,
+                                    color: Theme.of(Get.context).accentColor),
+                              )
+                            ],
+                          ),
+                        )
+                      ],
+                    ))
                   ],
                 ),
                 onTap: () => controller.goToTodayMusic(),
@@ -357,8 +366,7 @@ class FindView extends GetView<FindController> {
                     child: Text(personalResult.name,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                            fontSize: 14.0)),
+                        style: TextStyle(fontSize: 14.0)),
                   )
                 ],
               ),
@@ -375,64 +383,80 @@ class FindView extends GetView<FindController> {
   ///新歌itemView
   Widget _newSongItem(NewSongResult newSongResult, index) {
     return InkWell(
-      child: Container(
-        height: 110.0,
-        padding: EdgeInsets.symmetric(horizontal: 2.0, vertical: 5.0),
-        child: Row(
-          children: [
-            Container(
-              margin: EdgeInsets.only(right: 6.0),
-              height: 100.0,
-              width: 110.0,
-              child: Card(
-                child: CachedNetworkImage(
-                  height: 100.0,
-                  width: 110.0,
-                  fit: BoxFit.cover,
-                  imageUrl: '${newSongResult.picUrl}?param=300y300',
-                ),
-              ),
-            ),
-            Expanded(
-                child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8.0),
-              child: Column(
+      child: Card(
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 2.0, vertical: 5.0),
+          child: Column(
+            children: [
+              Row(
                 children: [
                   Container(
-                    height: 38,
-                    alignment: Alignment.centerLeft,
-                    child: Text('${newSongResult.name}',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontSize: 16.0)),
+                    margin: EdgeInsets.only(right: 10.0),
+                    child: Card(
+                      child: CachedNetworkImage(
+                        height: 50.0,
+                        width: 50.0,
+                        fit: BoxFit.cover,
+                        imageUrl: '${newSongResult.picUrl}?param=100y100',
+                      ),
+                    ),
                   ),
-                  Container(
-                    height: 30,
-                    alignment: Alignment.centerLeft,
-                    child: Text(newSongResult.song.artists[0].name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style:
-                            TextStyle(fontSize: 14.0, color: Colors.grey[500])),
-                  ),
-                  Container(
-                    height: 30,
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                        "时长：${BuJuanUtil.unix2TimeTo(newSongResult.song.duration)}",
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style:
-                            TextStyle(fontSize: 14.0, color: Colors.grey[500])),
+                  Expanded(
+                      child: Column(
+                    children: [
+                      Container(
+                        height: 30,
+                        alignment: Alignment.centerLeft,
+                        child: Text('${newSongResult.name}',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(fontSize: 16.0)),
+                      ),
+                      Container(
+                        height: 30,
+                        alignment: Alignment.centerLeft,
+                        child: Text(newSongResult.song.artists[0].name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                                fontSize: 14.0, color: Colors.grey[500])),
+                      ),
+                    ],
+                  )),
+                  IconButton(
+                    icon: Icon(Icons.more_vert),
+                    onPressed: () {},
                   )
                 ],
               ),
-            )),
-            IconButton(
-              icon: Icon(Icons.more_vert),
-              onPressed: () {},
-            )
-          ],
+              Container(
+                  padding: EdgeInsets.symmetric(vertical: 3.0, horizontal: 6.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                          '时长：${BuJuanUtil.unix2TimeTo(newSongResult.song.duration)}',
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                              fontSize: 14.0, color: Colors.grey[500])),
+                      Row(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(right: 6.0),
+                            child: Icon(Icons.access_time_sharp,
+                                size: 20.0, color: Colors.grey[500]),
+                          ),
+                          Text(
+                              '${duTimeLineFormat(DateTime.fromMillisecondsSinceEpoch(newSongResult.song.album.publishTime))}',
+                              textAlign: TextAlign.left,
+                              style: TextStyle(
+                                  fontSize: 14.0, color: Colors.grey[500]))
+                        ],
+                      ),
+                    ],
+                  ))
+            ],
+          ),
         ),
       ),
       onTap: () => controller.playSong(index),
