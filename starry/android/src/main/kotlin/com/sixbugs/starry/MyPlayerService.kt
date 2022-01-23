@@ -48,17 +48,17 @@ class MyPlayerService : PlayerService() {
                 subscribe = Observable.create(ObservableOnSubscribe<String> {
                     StarryPlugin.channel.invokeMethod("GET_SONG_URL", musicItem.musicId, object : MethodChannel.Result {
                         override fun notImplemented() {
-                            result.onSuccess(Uri.parse("http://music.163.com/song/media/outer/url?id" + musicItem.musicId))
+                            result.onSuccess(Uri.parse("http://music.163.com/song/media/outer/url?id=" + musicItem.musicId))
                         }
 
                         override fun error(errorCode: String?, errorMessage: String?, errorDetails: Any?) {
-                            result.onSuccess(Uri.parse("http://music.163.com/song/media/outer/url?id" + musicItem.musicId))
+                            result.onSuccess(Uri.parse("http://music.163.com/song/media/outer/url?id=" + musicItem.musicId))
                             //没有获取到，以后走拼接
                         }
 
                         override fun success(result1: Any?) {
                             if (result1 == null || TextUtils.isEmpty(result1 as String)) {
-                                result.onSuccess(Uri.parse("http://music.163.com/song/media/outer/url?id" + musicItem.musicId))
+                                result.onSuccess(Uri.parse("http://music.163.com/song/media/outer/url?id=" + musicItem.musicId))
                             } else {
                                 result.onSuccess(Uri.parse(result1 as String?))
                             }
