@@ -76,6 +76,7 @@ class RequestBoxState<T> extends State<RequestBox<T>> with RefreshState {
     NetUtils().doHandler<T>(widget.url,
         param: widget.data ?? {},
         onSuccess: (data) {
+          widget.onSuccess?.call(data);
           if (mounted) {
             setState(() {
               _entity = data;

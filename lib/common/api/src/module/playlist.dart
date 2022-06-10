@@ -22,7 +22,7 @@ Handler playlist_create = (query, cookie) {
 };
 
 // 歌单详情
-Handler playlist_detail = (query, cookie) {
+Handler playlistDetail = (query, cookie) {
   return request(
       'POST',
       'https://music.163.com/weapi/v3/playlist/detail',
@@ -34,6 +34,9 @@ Handler playlist_detail = (query, cookie) {
       crypto: Crypto.linuxapi,
       cookies: cookie);
 };
+
+
+
 
 // 热门歌单分类
 Handler playlist_hot = (query, cookie) {

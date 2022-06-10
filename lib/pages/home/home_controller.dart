@@ -1,5 +1,8 @@
 import 'dart:io';
 
+import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:bujuan/common/api/src/netease_util.dart';
+import 'package:bujuan/common/bean/lyric_entity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -7,36 +10,46 @@ import 'package:get/get.dart';
 import '../../widget/weslide/weslide_controller.dart';
 
 class HomeController extends GetxController {
-  RxDouble panelMinSize = 120.w.obs;
-  RxDouble bottomBarHeight = 60.0.obs;
-  RxDouble panelMobileMinSize = (120.w + 60).obs;
+  final String weSlideUpdate = 'weSlide';
+  double panelMinSize = 120.w;
+  double bottomBarHeight = 60;
+  double panelMobileMinSize = 120.w + 60;
 
   //是否折叠
   RxBool isCollapsed = true.obs;
   WeSlideController weSlideController = WeSlideController();
   RxBool isCollapsedAfterSec = true.obs;
   PageController pageController = PageController(viewportFraction: .99);
-
-  //是否是移动端
-  bool isMobile = false;
-
+  RxString lyric = ''.obs;
+  //是否第一次进入首页
+  bool first = true;
   RxInt selectIndex = 0.obs;
+  final assetsAudioPlayer = AssetsAudioPlayer();
 
   @override
   void onInit() {
-    isMobile = Platform.isAndroid || Platform.isIOS || Platform.isFuchsia;
     super.onInit();
   }
 
   @override
-  void onReady() {
+  void onReady() async {
     super.onReady();
-    getBanner();
+    assetsAudioPlayer.current.listen((event) {
+      print('object=========${event?.audio.audio.metas.title}');
+      NetUtils().doHandler<LyricEntity>('/lyric',param: {'id':event?.audio.audio.metas.id},onSuccess: (data){
+        lyric.value = data.lrc?.lyric??'';
+      });
+    });
+    assetsAudioPlayer.playlistAudioFinished.listen((event) {});
   }
 
   static HomeController get to => Get.find();
 
   void getBanner() async {}
+
+  void playOrPause() async {
+    await assetsAudioPlayer.playOrPause();
+  }
 
   void changeSelectIndex(int index) {
     selectIndex.value = index;
@@ -46,12 +59,14 @@ class HomeController extends GetxController {
   void changeRoute(String? route) {
     if (route == '/') {
       //首页
-      bottomBarHeight.value = 60;
-      panelMobileMinSize.value = (120.w + 60);
+      bottomBarHeight = 60;
+      panelMobileMinSize = (120.w + 60);
     } else {
+      first = false;
       //其他页面
-      bottomBarHeight.value = 0;
-      panelMobileMinSize.value = 120.w;
+      bottomBarHeight = 0;
+      panelMobileMinSize = 120.w;
     }
+    if (!first) update([weSlideUpdate]);
   }
 }

@@ -41,7 +41,7 @@ class HomeDesktopView extends GetView<HomeController> {
                     child: const Text('我是播放区域'),
                     color: Colors.transparent,
                   ),
-                  panelMinSize: controller.panelMinSize.value,
+                  panelMinSize: controller.panelMinSize,
                   parallax: true,
                   parallaxOffset: 1,
                   panelMaxSize: Get.height,
@@ -61,7 +61,7 @@ class HomeDesktopView extends GetView<HomeController> {
     return InkWell(
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 20.w),
-        height: controller.panelMinSize.value,
+        height: controller.panelMinSize,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [

@@ -7,6 +7,7 @@ import 'package:bujuan/pages/user/user_binding.dart';
 import 'package:bujuan/pages/user/user_view.dart';
 import 'package:get/get.dart';
 
+import '../common/bean/personalized_entity.dart';
 import '../pages/home/home_binding.dart';
 
 part 'app_routes.dart';
@@ -38,4 +39,10 @@ class AppPages {
       binding: DetailsBinding(),
     ),
   ];
+}
+
+class DetailsArguments {
+  PersonalizedResult personalizedResult;
+
+  DetailsArguments(this.personalizedResult);
 }

@@ -85,7 +85,7 @@ class IndexView extends GetView<IndexController> {
           ],
         ),
       ),
-      onTap: () => Get.toNamed(Routes.details),
+      onTap: () => Get.toNamed(Routes.details,arguments: DetailsArguments(data)),
     );
   }
 

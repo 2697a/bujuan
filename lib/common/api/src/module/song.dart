@@ -3,22 +3,22 @@ part of '../module.dart';
 const _keys = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
 // 歌曲详情
-Handler song_detail = (query, cookie) {
+Handler songDetail = (query, cookie) {
   assert(query != null && query.isNotEmpty);
-  final ids = query!['ids'].toString().split(RegExp(r'\s*,\s*'));
+  final ids = query!['ids'];
   assert(ids.isNotEmpty);
   return request(
       'POST',
       'https://music.163.com/weapi/v3/song/detail',
       {
-        'c': '[${ids.map((id) => ('{"id": ${id}}')).join(',')}]',
+        'c': '[${ids.map((id) => ('{"id": $id}')).join(',')}]',
       },
       crypto: Crypto.weapi,
       cookies: cookie);
 };
 
 // 歌曲链接
-Handler song_url = (query, cookie) {
+Handler songUrl = (query, cookie) {
   if (!cookie.any((cookie) => cookie.name == 'MUSIC_U')) {
     String _createdSecretKey({int size = 16}) {
       StringBuffer buffer = StringBuffer();
