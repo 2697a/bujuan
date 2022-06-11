@@ -16,7 +16,6 @@ class IndexView extends GetView<IndexController> {
     return Scaffold(
       body: Column(
         children: [
-          const Expanded(child: SizedBox.shrink()),
           _rightView(),
         ],
       ),

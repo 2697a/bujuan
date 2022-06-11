@@ -21,10 +21,15 @@ class HomeController extends GetxController {
   RxBool isCollapsedAfterSec = true.obs;
   PageController pageController = PageController(viewportFraction: .99);
   RxString lyric = ''.obs;
+
   //是否第一次进入首页
   bool first = true;
   RxInt selectIndex = 0.obs;
   final assetsAudioPlayer = AssetsAudioPlayer();
+
+  RxInt playPosition = 0.obs;
+  RxDouble slidePosition = 0.0.obs;
+  double scaleImage = .8;
 
   @override
   void onInit() {
@@ -36,9 +41,12 @@ class HomeController extends GetxController {
     super.onReady();
     assetsAudioPlayer.current.listen((event) {
       print('object=========${event?.audio.audio.metas.title}');
-      NetUtils().doHandler<LyricEntity>('/lyric',param: {'id':event?.audio.audio.metas.id},onSuccess: (data){
-        lyric.value = data.lrc?.lyric??'';
+      NetUtils().doHandler<LyricEntity>('/lyric', param: {'id': event?.audio.audio.metas.id}, onSuccess: (data) {
+        lyric.value = data.lrc?.lyric ?? '';
       });
+    });
+    assetsAudioPlayer.currentPosition.listen((event) {
+      playPosition.value = event.inMilliseconds;
     });
     assetsAudioPlayer.playlistAudioFinished.listen((event) {});
   }
@@ -49,6 +57,23 @@ class HomeController extends GetxController {
 
   void playOrPause() async {
     await assetsAudioPlayer.playOrPause();
+  }
+
+  void changeSlidePosition(value) {
+    slidePosition.value = value;
+  }
+
+  double getPanelMinSize() {
+    return panelMinSize * (1 + slidePosition.value * 4);
+  }
+
+  double getImageLeft(){
+    return ((Get.width-60.w)-getPanelMinSize())/2*slidePosition.value;
+  }
+
+
+  double getTitleLeft(){
+    return ((Get.width-60.w)-panelMinSize * (1 + slidePosition.value * 4))/2*slidePosition.value+panelMinSize * (1 + slidePosition.value * 4);
   }
 
   void changeSelectIndex(int index) {

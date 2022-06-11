@@ -1,10 +1,11 @@
+import 'dart:ui';
+
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/pages/index/index_view.dart';
 import 'package:bujuan/pages/user/user_view.dart';
 import 'package:bujuan/widget/simple_extended_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_lyric/lyrics_reader.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
@@ -26,13 +27,15 @@ class HomeMobileView extends GetView<HomeController> {
               bodyWidth: Get.width,
               panelMaxSize: Get.height,
               parallax: true,
-              backgroundColor: Colors.transparent,
+              backgroundColor: Colors.white,
               body: _buildBody(),
               panel: _buildPanel(),
               panelHeader: _buildPanelHeader(),
               footer: _buildFooter(),
-              footerHeight: controller.bottomBarHeight,
+              hidePanelHeader: false,
+              footerHeight: controller.bottomBarHeight*(1+controller.slidePosition.value),
               panelMinSize: controller.panelMobileMinSize,
+              onPosition: (value) => controller.changeSlidePosition(value),
             ),
             init: controller,
             id: controller.weSlideUpdate,
@@ -68,109 +71,89 @@ class HomeMobileView extends GetView<HomeController> {
   }
 
   Widget _buildPanel() {
-    return PlayerBuilder.currentPosition(
+    return PlayerBuilder.isPlaying(
         player: controller.assetsAudioPlayer,
-        builder: (context, position) => PlayerBuilder.isPlaying(
+        builder: (context, playing) => PlayerBuilder.current(
             player: controller.assetsAudioPlayer,
-            builder: (context, playing) => Container(
+            builder: (c, p) => Container(
+                  color: Colors.white,
                   width: Get.width,
-                  color: Colors.grey,
-                  child: Center(
-                    child: Obx(() => LyricsReader(
-                      size: Size(Get.width, Get.height),
-                          position: position.inMilliseconds,
-                          playing: playing,
-                          model: LyricsModelBuilder.create().bindLyricToMain(controller.lyric.value).getModel(),
-                          lyricUi: UINetease(
-                            highlight: false,
-                          ),
-                          selectLineBuilder: (p, c) {
-                            return Row(
-                              children: [IconButton(onPressed: () {
-                                controller.assetsAudioPlayer.seek(Duration(milliseconds: p));
-                                c.call();
-                              }, icon: const Icon(Icons.play_arrow)),
-                              Expanded(child: Container(height: 1.w,color: Colors.black,)),
-                              Text(position.inMilliseconds.toString())],
-                            );
-                          },
-                        )),
+                  child: Text(
+                    p.audio.audio.metas.title ?? '',
+                    style: TextStyle(fontSize: 32.sp),
                   ),
                 )));
   }
 
   Widget _buildPanelHeader() {
     return InkWell(
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 30.w),
-        decoration: BoxDecoration(color: Get.theme.bottomAppBarColor, boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 3,
-          )
-        ]),
-        height: controller.panelMinSize,
-        child: PlayerBuilder.current(
-            player: controller.assetsAudioPlayer,
-            builder: (context, playing) => Row(
-                  children: [
-                    SimpleExtendedImage(
-                      playing.audio.audio.metas.image?.path ?? '',
-                      width: 80.w,
-                      height: 80.w,
-                      borderRadius: BorderRadius.circular(6.w),
-                    ),
-                    Expanded(
-                        child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20.w),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            playing.audio.audio.metas.title ?? '',
-                            style: TextStyle(fontSize: 32.sp, fontWeight: FontWeight.bold),
+      child: Obx(() => AnimatedContainer(
+            color: Colors.white,
+            padding: EdgeInsets.symmetric(horizontal: 30.w),
+            margin: EdgeInsets.symmetric(vertical: MediaQuery.of(Get.context!).padding.top * controller.slidePosition.value),
+            width: Get.width,
+            height: controller.getPanelMinSize(),
+            duration: const Duration(milliseconds: 0),
+            child: PlayerBuilder.current(
+                player: controller.assetsAudioPlayer,
+                builder: (context, playing) => Stack(
+                      alignment: Alignment.centerLeft,
+                      children: [
+                        AnimatedPositioned(
+                            left: controller.getImageLeft() / (controller.scaleImage / 2),
+                            duration: const Duration(milliseconds: 0),
+                            child: SimpleExtendedImage(
+                              playing.audio.audio.metas.image?.path ?? '',
+                              height: controller.getPanelMinSize() * controller.scaleImage,
+                              width: controller.getPanelMinSize() * controller.scaleImage,
+                              borderRadius: BorderRadius.circular(6.w),
+                            )),
+                        AnimatedPositioned(
+                          duration: const Duration(milliseconds: 0),
+                          top:controller.getPanelMinSize(),
+                          left: controller.getTitleLeft(),
+                          child: AnimatedOpacity(
+                            opacity: 1 - controller.slidePosition.value * 2 < 0 ? 0 : 1 - controller.slidePosition.value * 2,
+                            duration: const Duration(milliseconds: 10),
+                            child:
+                                Text(playing.audio.audio.metas.title ?? '', style: TextStyle(fontSize: 28.sp * (1 + controller.slidePosition.value), fontWeight: FontWeight.bold)),
                           ),
-                        ],
-                      ),
+                        )
+                      ],
                     )),
-                    PlayerBuilder.isPlaying(
-                        player: controller.assetsAudioPlayer,
-                        builder: (context, playing) => IconButton(
-                              onPressed: () => controller.playOrPause(),
-                              icon: playing ? const Icon(Icons.pause) : const Icon(Icons.play_arrow),
-                            ))
-                  ],
-                )),
-      ),
+          )),
       onTap: () => controller.weSlideController.show(),
     );
   }
 
   Widget _buildFooter() {
-    return Obx(() => FlashyNavbar(
-          height: controller.bottomBarHeight,
-          selectedIndex: controller.selectIndex.value,
-          showElevation: false,
-          onItemSelected: (index) => controller.changeSelectIndex(index),
-          items: [
-            FlashyNavbarItem(
-              icon: const Icon(Icons.event),
-              title: const Text('Events'),
-            ),
-            FlashyNavbarItem(
-              icon: const Icon(Icons.search),
-              title: const Text('Search'),
-            ),
-            FlashyNavbarItem(
-              icon: const Icon(Icons.highlight),
-              title: const Text('Highlights'),
-            ),
-            FlashyNavbarItem(
-              icon: const Icon(Icons.settings),
-              title: const Text('Settings'),
-            ),
-          ],
+    return Obx(() => AnimatedContainer(
+          height: controller.bottomBarHeight*(1+controller.slidePosition.value),
+          duration: const Duration(milliseconds: 1300),
+          child: FlashyNavbar(
+            height: controller.bottomBarHeight,
+            selectedIndex: controller.selectIndex.value,
+            showElevation: false,
+            onItemSelected: (index) => controller.changeSelectIndex(index),
+            items: [
+              FlashyNavbarItem(
+                icon: const Icon(Icons.event),
+                title: const Text('Events'),
+              ),
+              FlashyNavbarItem(
+                icon: const Icon(Icons.search),
+                title: const Text('Search'),
+              ),
+              FlashyNavbarItem(
+                icon: const Icon(Icons.highlight),
+                title: const Text('Highlights'),
+              ),
+              FlashyNavbarItem(
+                icon: const Icon(Icons.settings),
+                title: const Text('Settings'),
+              ),
+            ],
+          ),
         ));
   }
 }
