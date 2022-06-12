@@ -201,7 +201,7 @@ class WeSlide extends StatefulWidget {
     this.isDismissible = true,
     this.isUpSlide = true,
     List<TweenSequenceItem<double>>? fadeSequence,
-    this.animateDuration = const Duration(milliseconds: 300),
+    this.animateDuration = const Duration(milliseconds: 200),
     this.controller, this.onPosition,  this.isDownSlide = true,
   })  : /*assert(body != null, 'body could not be null'),*/
         assert(panelMinSize >= 0.0, 'panelMinSize cannot be negative'),
