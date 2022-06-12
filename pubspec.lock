@@ -350,6 +350,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.99"
+  slider_controller:
+    dependency: "direct main"
+    description:
+      name: slider_controller
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.0.3"
   source_span:
     dependency: transitive
     description:

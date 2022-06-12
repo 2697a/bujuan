@@ -13,6 +13,7 @@ class DetailsView extends GetView<DetailsController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: const Text('歌单'),),
       backgroundColor: Colors.white,
       body: RequestBox<PlaylistEntity>(
         url: '/playlist/detail',

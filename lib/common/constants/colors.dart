@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class AppTheme {
   static ThemeData light = ThemeData.light().copyWith(
@@ -10,6 +11,7 @@ class AppTheme {
           surface: surface,
           onSurface: onSurface,
         ),
+    appBarTheme: const AppBarTheme(systemOverlayStyle: SystemUiOverlayStyle(statusBarBrightness: Brightness.light,),backgroundColor: onPrimaryDark,foregroundColor: primaryDark,elevation: 0)
   );
 
   static ThemeData dark = ThemeData.dark().copyWith(
@@ -37,7 +39,7 @@ class AppTheme {
 
   //accent color
   //TODO change blue
-  static const secondary = Colors.blueAccent;
+  static const secondary = Colors.white;
   static const onSecondary = Colors.white;
 
   //charge colors

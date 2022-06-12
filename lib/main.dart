@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:bujuan/pages/home/home_binding.dart';
 import 'package:bujuan/pages/home/home_desktop_view.dart';
@@ -9,7 +8,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get.dart';
 
 import 'common/api/netease_cloud_music.dart';
 import 'common/constants/colors.dart';

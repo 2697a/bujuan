@@ -1,3 +1,4 @@
+import 'package:bujuan/common/constants/images.dart';
 import 'package:flutter/material.dart';
 import 'package:extended_image/extended_image.dart';
 
@@ -15,7 +16,7 @@ class SimpleExtendedImage extends StatefulWidget {
       {Key? key,
       this.width,
       this.height,
-      this.placeholder = '',
+      this.placeholder = placeholderImage,
       this.replacement,
       this.fit,
       this.shape = BoxShape.rectangle,
@@ -26,7 +27,7 @@ class SimpleExtendedImage extends StatefulWidget {
       {Key? key,
       this.width,
       this.height,
-      this.placeholder = 'AppIcons.avatarPlaceholder',
+      this.placeholder = placeholderImage,
       this.replacement,
       this.fit,
       this.shape = BoxShape.circle,

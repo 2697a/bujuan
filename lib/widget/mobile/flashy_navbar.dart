@@ -33,7 +33,7 @@ class FlashyNavbar extends StatelessWidget {
     required this.items,
     required this.onItemSelected,
   }) : super(key: key) {
-    assert(height >= 55 && height <= 100);
+    assert(height >= 55 );
     assert(items.length >= 2 && items.length <= 5);
   }
 
@@ -50,7 +50,7 @@ class FlashyNavbar extends StatelessWidget {
       child: Container(
         width: double.infinity,
         height: height,
-        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 0),
+        padding:  EdgeInsets.only(top: 6, bottom: MediaQuery.of(context).padding.bottom),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: items.map((item) {

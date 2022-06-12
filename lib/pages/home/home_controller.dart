@@ -15,9 +15,11 @@ import '../../widget/weslide/weslide_controller.dart';
 
 class HomeController extends GetxController {
   final String weSlideUpdate = 'weSlide';
-  double panelMinSize = 100.w;
+  double panelHeaderSize = 100.w;
+  double secondPanelHeaderSize = 100.w;
   double bottomBarHeight = 60;
   double panelMobileMinSize = 100.w + 60;
+
   double topBarHeight = 90.w;
 
   //是否折叠
@@ -40,11 +42,19 @@ class HomeController extends GetxController {
   Rx<PaletteColorData> rx = PaletteColorData().obs;
   RxBool second = false.obs;
   bool firstSlideIsDownSlide = true;
-  SystemUiOverlayStyle systemUiOverlayStyle =
-      const SystemUiOverlayStyle(systemNavigationBarColor: AppTheme.onPrimary);
+  SystemUiOverlayStyle systemUiOverlayStyle = const SystemUiOverlayStyle(systemNavigationBarColor: AppTheme.onPrimary);
+  RxBool isRoot = true.obs;
+  double paddingTop = 0;
+  double paddingBottom = 0;
 
   @override
   void onInit() {
+    if (Get.context != null) {
+      paddingTop = MediaQuery.of(Get.context!).padding.top;
+      paddingBottom = MediaQuery.of(Get.context!).padding.bottom;
+      bottomBarHeight = 60 + MediaQuery.of(Get.context!).padding.bottom;
+      panelMobileMinSize = 100.w + 60 + MediaQuery.of(Get.context!).padding.bottom;
+    }
     super.onInit();
   }
 
@@ -52,19 +62,14 @@ class HomeController extends GetxController {
   void onReady() async {
     super.onReady();
     assetsAudioPlayer.current.listen((event) {
-      ImageUtils.getImageColor(
-          event?.audio.audio.metas.image?.path ?? '', Get.context!,
-          (paletteColorData) {
+      ImageUtils.getImageColor(event?.audio.audio.metas.image?.path ?? '', Get.context!, (paletteColorData) {
         rx.value = paletteColorData;
-        textColor.value =
-            paletteColorData.light?.bodyTextColor ?? AppTheme.onPrimary;
+        textColor.value = paletteColorData.light?.bodyTextColor ?? AppTheme.onPrimary;
         if (weSlideController.isOpened) {
-          changeSystemNavigationBarColor(
-              rx.value.dark?.color ?? AppTheme.onPrimary);
+          changeSystemNavigationBarColor(rx.value.dark?.color ?? AppTheme.onPrimary);
         }
       });
-      NetUtils().doHandler<LyricEntity>('/lyric',
-          param: {'id': event?.audio.audio.metas.id}, onSuccess: (data) {
+      NetUtils().doHandler<LyricEntity>('/lyric', param: {'id': event?.audio.audio.metas.id}, onSuccess: (data) {
         lyric.value = data.lrc?.lyric ?? '';
       });
     });
@@ -94,11 +99,9 @@ class HomeController extends GetxController {
 
     if (!this.second.value) {
       if (value >= .98) {
-        changeSystemNavigationBarColor(
-            rx.value.dark?.color ?? AppTheme.onPrimary);
+        changeSystemNavigationBarColor(rx.value.dark?.color ?? AppTheme.onPrimary);
       } else {
-        if (systemUiOverlayStyle.systemNavigationBarColor !=
-            AppTheme.onPrimary) {
+        if (systemUiOverlayStyle.systemNavigationBarColor != AppTheme.onPrimary) {
           changeSystemNavigationBarColor(AppTheme.onPrimary);
         }
       }
@@ -107,8 +110,7 @@ class HomeController extends GetxController {
 
   void changeSystemNavigationBarColor(Color color) {
     if (Platform.isAndroid) {
-      systemUiOverlayStyle =
-          SystemUiOverlayStyle(systemNavigationBarColor: color);
+      systemUiOverlayStyle = SystemUiOverlayStyle(systemNavigationBarColor: color);
       SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
     }
   }
@@ -127,11 +129,15 @@ class HomeController extends GetxController {
 
   //外层panel的高度和颜色
   double getPanelMinSize() {
-    return panelMinSize * (1 + slidePosition.value * 5);
+    return panelHeaderSize * (1 + slidePosition.value * 6.5);
+  }
+
+  double getPanelAdd() {
+    return MediaQuery.of(Get.context!).padding.top * (second.value ? 1 : slidePosition.value) + getTopHeight() + (isRoot.value ? 0 : MediaQuery.of(Get.context!).padding.bottom);
   }
 
   double getImageSize() {
-    return panelMinSize *.8 * (1 + slidePosition.value * 5);
+    return panelHeaderSize * .8 * (1 + slidePosition.value * 6.5);
   }
 
   double getImageLeft() {
@@ -139,25 +145,18 @@ class HomeController extends GetxController {
   }
 
   double getTitleLeft() {
-    return ((Get.width - 60.w) - getPanelMinSize()) / 2 * slidePosition.value +
-        getPanelMinSize();
+    return ((Get.width - 60.w) - getPanelMinSize()) / 2 * slidePosition.value + getPanelMinSize();
   }
 
   Color getHeaderColor() {
-    return Color.fromRGBO(
-        255,
-        255,
-        255,
-        (second.value ? (1 - slidePosition.value) : slidePosition.value) > 0
-            ? 0
-            : 1);
+    return Color.fromRGBO(255, 255, 255, (second.value ? (1 - slidePosition.value) : slidePosition.value) > 0 ? 0 : 1);
   }
 
   Color getLightTextColor() {
-    if(!second.value&& slidePosition.value == 1){
+    if (!second.value && slidePosition.value == 1) {
       return textColor.value;
-    }else{
-      if(second.value && slidePosition.value == 0){
+    } else {
+      if (second.value && slidePosition.value == 0) {
         return textColor.value;
       }
       return Get.theme.textTheme.caption?.color ?? AppTheme.onPrimary;
@@ -169,11 +168,12 @@ class HomeController extends GetxController {
   }
 
   EdgeInsets getHeaderPadding() {
-    return EdgeInsets.only(
-        left: 30.w,
-        right: 30.w,
-        top: MediaQuery.of(Get.context!).padding.top *
-            (second.value ? 1 : slidePosition.value));
+    return EdgeInsets.only(left: 30.w, right: 30.w, top: MediaQuery.of(Get.context!).padding.top * (second.value ? 1 : slidePosition.value));
+  }
+
+  //
+  double getSecondPanelMinSize() {
+    return secondPanelHeaderSize + MediaQuery.of(Get.context!).padding.bottom;
   }
 
   void changeSelectIndex(int index) {
@@ -182,15 +182,16 @@ class HomeController extends GetxController {
   }
 
   void changeRoute(String? route) {
-    if (route == '/') {
+    isRoot.value = route == '/';
+    if (isRoot.value) {
       //首页
-      bottomBarHeight = 60;
-      panelMobileMinSize = (100.w + 60);
+      bottomBarHeight = 60 + MediaQuery.of(Get.context!).padding.bottom;
+      panelMobileMinSize = (100.w + 60 + MediaQuery.of(Get.context!).padding.bottom);
     } else {
       first = false;
       //其他页面
       bottomBarHeight = 0;
-      panelMobileMinSize = 100.w;
+      panelMobileMinSize = 100.w + MediaQuery.of(Get.context!).padding.bottom;
     }
     if (!first) update([weSlideUpdate]);
   }
