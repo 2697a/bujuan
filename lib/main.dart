@@ -20,7 +20,7 @@ main() async {
   bool isMobile = Platform.isAndroid || Platform.isIOS || Platform.isFuchsia;
   // android 状态栏为透明的沉浸
   if (Platform.isAndroid) {
-    SystemUiOverlayStyle systemUiOverlayStyle = const SystemUiOverlayStyle(statusBarColor: Colors.transparent, systemNavigationBarColor: AppTheme.onPrimaryDark);
+    SystemUiOverlayStyle systemUiOverlayStyle = const SystemUiOverlayStyle(statusBarColor: Colors.transparent, systemNavigationBarColor: AppTheme.onPrimary);
     SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
   }
   runApp(

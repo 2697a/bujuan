@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:ui';
 
 import 'package:assets_audio_player/assets_audio_player.dart';
@@ -27,20 +28,24 @@ class HomeMobileView extends GetView<HomeController> {
               bodyWidth: Get.width,
               panelMaxSize: Get.height,
               parallax: true,
-              backgroundColor: Colors.white,
               body: _buildBody(),
               panel: _buildPanel(),
               panelHeader: _buildPanelHeader(),
               footer: _buildFooter(),
               hidePanelHeader: false,
-              footerHeight: controller.bottomBarHeight*(1+controller.slidePosition.value),
+              footerHeight: controller.bottomBarHeight,
               panelMinSize: controller.panelMobileMinSize,
               onPosition: (value) => controller.changeSlidePosition(value),
+              isDownSlide: controller.firstSlideIsDownSlide,
             ),
             init: controller,
             id: controller.weSlideUpdate,
           ),
           onWillPop: () async {
+            if(controller.weSlideController1.isOpened){
+              controller.weSlideController1.hide();
+              return false;
+            }
             if (controller.weSlideController.isOpened) {
               controller.weSlideController.hide();
               return false;
@@ -71,53 +76,153 @@ class HomeMobileView extends GetView<HomeController> {
   }
 
   Widget _buildPanel() {
-    return PlayerBuilder.isPlaying(
-        player: controller.assetsAudioPlayer,
-        builder: (context, playing) => PlayerBuilder.current(
-            player: controller.assetsAudioPlayer,
-            builder: (c, p) => Container(
-                  color: Colors.white,
-                  width: Get.width,
-                  child: Text(
-                    p.audio.audio.metas.title ?? '',
-                    style: TextStyle(fontSize: 32.sp),
-                  ),
-                )));
+    return Obx(() => WeSlide(
+          controller: controller.weSlideController1,
+          panelMaxSize: Get.height -
+              controller.panelMinSize -
+              MediaQuery.of(Get.context!).padding.top -
+              20.w,
+          panelMinSize: 152.w,
+          hidePanelHeader: false,
+          boxDecoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20.w),
+                  topRight: Radius.circular(20.w)),
+              gradient: LinearGradient(colors: [
+                controller.rx.value.light?.color ?? Colors.white,
+                controller.rx.value.light?.color ?? Colors.white
+              ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
+          onPosition: (value) =>
+              controller.changeSlidePosition(1 - value, second: true),
+          body: PlayerBuilder.isPlaying(
+              player: controller.assetsAudioPlayer,
+              builder: (context, playing) => PlayerBuilder.current(
+                  player: controller.assetsAudioPlayer,
+                  builder: (c, p) => Container(
+                        width: Get.width,
+                        padding: EdgeInsets.only(
+                            top: controller.getPanelMinSize() +
+                                MediaQuery.of(Get.context!).padding.top),
+                        child: AnimatedOpacity(
+                          duration: const Duration(milliseconds: 0),
+                          opacity: controller.slidePosition.value <= 0
+                              ? 0
+                              : controller.slidePosition.value,
+                        ),
+                      ))),
+          panel: Container(
+            width: Get.width,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(25.w),
+                    topRight: Radius.circular(25.w)),
+                gradient: LinearGradient(colors: [
+                  controller.rx.value.dark?.color ?? Colors.white,
+                  controller.rx.value.dark?.color ?? Colors.white
+                ], begin: Alignment.centerLeft, end: Alignment.centerRight)),
+          ),
+          panelHeader: InkWell(
+            child: SizedBox(
+              width: Get.width,
+              child: Column(
+                children: [
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 12.w),
+                    decoration: BoxDecoration(
+                        color: Colors.grey,
+                        borderRadius: BorderRadius.circular(5.w)),
+                    width: 80.w,
+                    height: 10.w,
+                  )
+                ],
+              ),
+            ),
+            onTap: () {
+              if (!controller.weSlideController1.isOpened) {
+                controller.weSlideController1.show();
+              }
+            },
+          ),
+        ));
   }
 
   Widget _buildPanelHeader() {
     return InkWell(
       child: Obx(() => AnimatedContainer(
-            color: Colors.white,
-            padding: EdgeInsets.symmetric(horizontal: 30.w),
-            margin: EdgeInsets.symmetric(vertical: MediaQuery.of(Get.context!).padding.top * controller.slidePosition.value),
+            color: Color.fromRGBO(
+                255,
+                255,
+                255,
+                (controller.second.value
+                            ? (1 - controller.slidePosition.value)
+                            : controller.slidePosition.value) >
+                        0
+                    ? 0
+                    : 1),
+            padding: EdgeInsets.only(
+                left: 30.w,
+                right: 30.w,
+                top: MediaQuery.of(Get.context!).padding.top *
+                    (controller.second.value
+                        ? 1
+                        : controller.slidePosition.value)),
             width: Get.width,
-            height: controller.getPanelMinSize(),
+            height: controller.getPanelMinSize() +
+                MediaQuery.of(Get.context!).padding.top *
+                    (controller.second.value
+                        ? 1
+                        : controller.slidePosition.value),
             duration: const Duration(milliseconds: 0),
             child: PlayerBuilder.current(
                 player: controller.assetsAudioPlayer,
-                builder: (context, playing) => Stack(
-                      alignment: Alignment.centerLeft,
+                builder: (context, playing) => Row(
                       children: [
-                        AnimatedPositioned(
-                            left: controller.getImageLeft() / (controller.scaleImage / 2),
-                            duration: const Duration(milliseconds: 0),
-                            child: SimpleExtendedImage(
-                              playing.audio.audio.metas.image?.path ?? '',
-                              height: controller.getPanelMinSize() * controller.scaleImage,
-                              width: controller.getPanelMinSize() * controller.scaleImage,
-                              borderRadius: BorderRadius.circular(6.w),
-                            )),
-                        AnimatedPositioned(
-                          duration: const Duration(milliseconds: 0),
-                          top:controller.getPanelMinSize(),
-                          left: controller.getTitleLeft(),
-                          child: AnimatedOpacity(
-                            opacity: 1 - controller.slidePosition.value * 2 < 0 ? 0 : 1 - controller.slidePosition.value * 2,
-                            duration: const Duration(milliseconds: 10),
-                            child:
-                                Text(playing.audio.audio.metas.title ?? '', style: TextStyle(fontSize: 28.sp * (1 + controller.slidePosition.value), fontWeight: FontWeight.bold)),
-                          ),
+                        Expanded(
+                            child: Stack(
+                          alignment: Alignment.centerLeft,
+                          children: [
+                            AnimatedPositioned(
+                                left: controller.getImageLeft(),
+                                duration: const Duration(milliseconds: 0),
+                                child: SimpleExtendedImage(
+                                  playing.audio.audio.metas.image?.path ?? '',
+                                  height: controller.getImageSize(),
+                                  width: controller.getImageSize(),
+                                  fit: BoxFit.fill,
+                                  borderRadius: BorderRadius.circular(6.w),
+                                )),
+                            AnimatedPositioned(
+                              duration: const Duration(milliseconds: 0),
+                              left: controller.getTitleLeft(),
+                              child: AnimatedOpacity(
+                                opacity:
+                                    controller.slidePosition.value > 0 ? 0 : 1,
+                                duration: const Duration(milliseconds: 10),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(playing.audio.audio.metas.title ?? '',
+                                        style: TextStyle(
+                                            fontSize: 28.sp,
+                                            fontWeight: FontWeight.bold)),
+                                    Text(playing.audio.audio.metas.artist ?? '',
+                                        style: TextStyle(fontSize: 24.sp))
+                                  ],
+                                ),
+                              ),
+                            )
+                          ],
+                        )),
+                        Visibility(
+                          visible: controller.slidePosition.value == 0,
+                          child: PlayerBuilder.isPlaying(
+                              player: controller.assetsAudioPlayer,
+                              builder: (c, isPlaying) => IconButton(
+                                  onPressed: () => controller.playOrPause(),
+                                  icon: Icon(isPlaying
+                                      ? Icons.pause
+                                      : Icons.play_arrow))),
                         )
                       ],
                     )),
@@ -128,7 +233,8 @@ class HomeMobileView extends GetView<HomeController> {
 
   Widget _buildFooter() {
     return Obx(() => AnimatedContainer(
-          height: controller.bottomBarHeight*(1+controller.slidePosition.value),
+          height:
+              controller.bottomBarHeight * (1 + controller.slidePosition.value),
           duration: const Duration(milliseconds: 1300),
           child: FlashyNavbar(
             height: controller.bottomBarHeight,

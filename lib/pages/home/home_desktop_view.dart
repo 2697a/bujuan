@@ -28,7 +28,6 @@ class HomeDesktopView extends GetView<HomeController> {
                   controller: controller.weSlideController,
                   panelWidth: Get.width - (controller.isCollapsedAfterSec.isTrue ? 100.w : 300.w),
                   bodyWidth: Get.width - (controller.isCollapsedAfterSec.isTrue ? 100.w : 300.w),
-                  backgroundColor: Colors.transparent,
                   body: GetMaterialApp(
                     initialRoute: AppPages.inital,
                     getPages: AppPages.routes,

@@ -112,7 +112,7 @@ class WeSlide extends StatefulWidget {
 
   /// This is the value that defines background color.
   /// By default is Colors.black end should be the same as [body]
-  final Color backgroundColor;
+  final BoxDecoration? boxDecoration;
 
   /// This is the value that defines if you want to hide the footer.
   /// By default is true
@@ -150,6 +150,8 @@ class WeSlide extends StatefulWidget {
   /// to enable Slide up through panel. By default is true
   final bool isUpSlide;
 
+  final bool isDownSlide;
+
   /// This is the value that create a fade transition over panel header
   final List<TweenSequenceItem<double>> fadeSequence;
 
@@ -186,7 +188,7 @@ class WeSlide extends StatefulWidget {
     this.blurSigma = 5.0,
     this.overlayColor = Colors.black,
     this.blurColor = Colors.black,
-    this.backgroundColor = Colors.black,
+    this.boxDecoration,
     this.footerHeight = 60.0,
     this.appBarHeight = 80.0,
     this.hideFooter = true,
@@ -200,7 +202,7 @@ class WeSlide extends StatefulWidget {
     this.isUpSlide = true,
     List<TweenSequenceItem<double>>? fadeSequence,
     this.animateDuration = const Duration(milliseconds: 300),
-    this.controller, this.onPosition,
+    this.controller, this.onPosition,  this.isDownSlide = true,
   })  : /*assert(body != null, 'body could not be null'),*/
         assert(panelMinSize >= 0.0, 'panelMinSize cannot be negative'),
         assert(footerHeight >= 0.0, 'footerHeight cannot be negative'),
@@ -303,6 +305,9 @@ class _WeSlideState extends State<WeSlide> with SingleTickerProviderStateMixin {
     if (widget.isUpSlide == false && _effectiveController.value == false) {
       return;
     }
+    if (widget.isDownSlide == false && _effectiveController.value == true) {
+      return;
+    }
     _ac.value -= 1.5 * fractionDragged;
   }
 
@@ -311,9 +316,12 @@ class _WeSlideState extends State<WeSlide> with SingleTickerProviderStateMixin {
     var velocity = endDetails.primaryVelocity!;
 
     if (velocity > 0.0) {
-      _ac.reverse().then((x) {
+      print('object===============1');
+      if(widget.isDownSlide) {
+        _ac.reverse().then((x) {
         _effectiveController.value = false;
       });
+      }
     } else if (velocity < 0.0) {
       if (widget.isUpSlide) {
         _ac.forward().then((x) {
@@ -325,6 +333,7 @@ class _WeSlideState extends State<WeSlide> with SingleTickerProviderStateMixin {
         _effectiveController.value = true;
       });
     } else {
+      print('object===============2');
       _ac.reverse().then((x) {
         _effectiveController.value = false;
       });
@@ -401,7 +410,7 @@ class _WeSlideState extends State<WeSlide> with SingleTickerProviderStateMixin {
 
     return Container(
       height: height,
-      color: widget.backgroundColor, // Same as body,
+      decoration: widget.boxDecoration??const BoxDecoration(),
       child: Stack(
         alignment: Alignment.bottomCenter,
         children: <Widget>[
