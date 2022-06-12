@@ -38,7 +38,9 @@ class HomeController extends GetxController {
   Rx<PaletteColorData> rx = PaletteColorData().obs;
   RxBool second = false.obs;
   bool firstSlideIsDownSlide = true;
-  SystemUiOverlayStyle systemUiOverlayStyle = const SystemUiOverlayStyle(systemNavigationBarColor: AppTheme.onPrimary);
+  SystemUiOverlayStyle systemUiOverlayStyle =
+      const SystemUiOverlayStyle(systemNavigationBarColor: AppTheme.onPrimary);
+
   @override
   void onInit() {
     super.onInit();
@@ -51,13 +53,13 @@ class HomeController extends GetxController {
       print('object=========${event?.audio.audio.metas.title}');
       ImageUtils.getImageColor(
           event?.audio.audio.metas.image?.path ?? '', Get.context!,
-              (paletteColorData) {
-            rx.value = paletteColorData;
-          });
+          (paletteColorData) {
+        rx.value = paletteColorData;
+      });
       NetUtils().doHandler<LyricEntity>('/lyric',
           param: {'id': event?.audio.audio.metas.id}, onSuccess: (data) {
-            lyric.value = data.lrc?.lyric ?? '';
-          });
+        lyric.value = data.lrc?.lyric ?? '';
+      });
     });
     assetsAudioPlayer.currentPosition.listen((event) {
       playPosition.value = event.inMilliseconds;
@@ -86,59 +88,91 @@ class HomeController extends GetxController {
     if (!this.second.value) {
       if (value == 1) {
         print('转开1');
-        changeSystemNavigationBarColor(rx.value.dark?.color??AppTheme.onPrimary);
+        changeSystemNavigationBarColor(
+            rx.value.dark?.color ?? AppTheme.onPrimary);
       } else {
         if (systemUiOverlayStyle.systemNavigationBarColor !=
             AppTheme.onPrimary) {
           changeSystemNavigationBarColor(AppTheme.onPrimary);
-          print('转开2====${SystemUiOverlayStyle.light.systemNavigationBarColor}=====${AppTheme.onPrimary}');
+          print(
+              '转开2====${SystemUiOverlayStyle.light.systemNavigationBarColor}=====${AppTheme.onPrimary}');
         }
+      }
     }
   }
-}
 
-void changeSystemNavigationBarColor(Color color) {
-  if (Platform.isAndroid) {
-    systemUiOverlayStyle =
-    SystemUiOverlayStyle(systemNavigationBarColor: color);
-    SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
+  void changeSystemNavigationBarColor(Color color) {
+    if (Platform.isAndroid) {
+      systemUiOverlayStyle =
+          SystemUiOverlayStyle(systemNavigationBarColor: color);
+      SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
+    }
   }
-}
 
-double getPanelMinSize() {
-  return panelMinSize * (1 + slidePosition.value * 4);
-}
+  Future<bool> onWillPop() async {
+    if (weSlideController1.isOpened) {
+      weSlideController1.hide();
+      return false;
+    }
+    if (weSlideController.isOpened) {
+      weSlideController.hide();
+      return false;
+    }
+    return true;
+  }
+
+  //外层panel的高度和颜色
+  double getPanelMinSize() {
+    return panelMinSize * (1 + slidePosition.value * 4);
+  }
+
   double getImageSize() {
-    return panelMinSize*.8 * (1 + slidePosition.value * 5.5);
+    return panelMinSize * .8 * (1 + slidePosition.value * 5.5);
   }
 
-
-double getImageLeft() {
-  return ((Get.width - 60.w) - getImageSize()) / 2 * slidePosition.value;
-}
-
-double getTitleLeft() {
-  return ((Get.width - 60.w) - getPanelMinSize()) /
-      2 *
-      slidePosition.value +
-      getPanelMinSize();
-}
-
-void changeSelectIndex(int index) {
-  selectIndex.value = index;
-  pageController.jumpToPage(index);
-}
-
-void changeRoute(String? route) {
-  if (route == '/') {
-    //首页
-    bottomBarHeight = 60;
-    panelMobileMinSize = (100.w + 60);
-  } else {
-    first = false;
-    //其他页面
-    bottomBarHeight = 0;
-    panelMobileMinSize = 100.w;
+  double getImageLeft() {
+    return ((Get.width - 60.w) - getImageSize()) / 2 * slidePosition.value;
   }
-  if (!first) update([weSlideUpdate]);
-}}
+
+  double getTitleLeft() {
+    return ((Get.width - 60.w) - getPanelMinSize()) / 2 * slidePosition.value +
+        getPanelMinSize();
+  }
+
+  Color getHeaderColor() {
+    return Color.fromRGBO(
+        255,
+        255,
+        255,
+        (second.value ? (1 - slidePosition.value) : slidePosition.value) > 0
+            ? 0
+            : 1);
+  }
+
+  EdgeInsets getHeaderPadding() {
+    return EdgeInsets.only(
+        left: 30.w,
+        right: 30.w,
+        top: MediaQuery.of(Get.context!).padding.top *
+            (second.value ? 1 : slidePosition.value));
+  }
+
+  void changeSelectIndex(int index) {
+    selectIndex.value = index;
+    pageController.jumpToPage(index);
+  }
+
+  void changeRoute(String? route) {
+    if (route == '/') {
+      //首页
+      bottomBarHeight = 60;
+      panelMobileMinSize = (100.w + 60);
+    } else {
+      first = false;
+      //其他页面
+      bottomBarHeight = 0;
+      panelMobileMinSize = 100.w;
+    }
+    if (!first) update([weSlideUpdate]);
+  }
+}

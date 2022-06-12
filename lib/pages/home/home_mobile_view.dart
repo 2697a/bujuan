@@ -41,17 +41,7 @@ class HomeMobileView extends GetView<HomeController> {
             init: controller,
             id: controller.weSlideUpdate,
           ),
-          onWillPop: () async {
-            if(controller.weSlideController1.isOpened){
-              controller.weSlideController1.hide();
-              return false;
-            }
-            if (controller.weSlideController.isOpened) {
-              controller.weSlideController.hide();
-              return false;
-            }
-            return true;
-          }),
+          onWillPop: () => controller.onWillPop()),
     );
   }
 
@@ -149,23 +139,8 @@ class HomeMobileView extends GetView<HomeController> {
   Widget _buildPanelHeader() {
     return InkWell(
       child: Obx(() => AnimatedContainer(
-            color: Color.fromRGBO(
-                255,
-                255,
-                255,
-                (controller.second.value
-                            ? (1 - controller.slidePosition.value)
-                            : controller.slidePosition.value) >
-                        0
-                    ? 0
-                    : 1),
-            padding: EdgeInsets.only(
-                left: 30.w,
-                right: 30.w,
-                top: MediaQuery.of(Get.context!).padding.top *
-                    (controller.second.value
-                        ? 1
-                        : controller.slidePosition.value)),
+            color: controller.getHeaderColor(),
+            padding:controller.getHeaderPadding(),
             width: Get.width,
             height: controller.getPanelMinSize() +
                 MediaQuery.of(Get.context!).padding.top *
@@ -173,12 +148,12 @@ class HomeMobileView extends GetView<HomeController> {
                         ? 1
                         : controller.slidePosition.value),
             duration: const Duration(milliseconds: 0),
-            child: PlayerBuilder.current(
+            child:  PlayerBuilder.current(
                 player: controller.assetsAudioPlayer,
                 builder: (context, playing) => Row(
-                      children: [
-                        Expanded(
-                            child: Stack(
+                  children: [
+                    Expanded(
+                        child: Stack(
                           alignment: Alignment.centerLeft,
                           children: [
                             AnimatedPositioned(
@@ -196,7 +171,7 @@ class HomeMobileView extends GetView<HomeController> {
                               left: controller.getTitleLeft(),
                               child: AnimatedOpacity(
                                 opacity:
-                                    controller.slidePosition.value > 0 ? 0 : 1,
+                                controller.slidePosition.value > 0 ? 0 : 1,
                                 duration: const Duration(milliseconds: 10),
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -214,20 +189,32 @@ class HomeMobileView extends GetView<HomeController> {
                             )
                           ],
                         )),
-                        Visibility(
-                          visible: controller.slidePosition.value == 0,
-                          child: PlayerBuilder.isPlaying(
-                              player: controller.assetsAudioPlayer,
-                              builder: (c, isPlaying) => IconButton(
-                                  onPressed: () => controller.playOrPause(),
-                                  icon: Icon(isPlaying
-                                      ? Icons.pause
-                                      : Icons.play_arrow))),
-                        )
-                      ],
-                    )),
+                    Visibility(
+                      visible: controller.slidePosition.value == 0,
+                      child: PlayerBuilder.isPlaying(
+                          player: controller.assetsAudioPlayer,
+                          builder: (c, isPlaying) => IconButton(
+                              onPressed: () => controller.playOrPause(),
+                              icon: Icon(isPlaying
+                                  ? Icons.pause
+                                  : Icons.play_arrow))),
+                    )
+                  ],
+                )),
           )),
       onTap: () => controller.weSlideController.show(),
+    );
+  }
+
+
+  Widget _buildTopHeader(){
+    return SizedBox(
+      height: 80.w,
+      child: Row(
+        children: [
+          IconButton(onPressed: (){}, icon: Icon(Icons.add))
+        ],
+      ),
     );
   }
 
