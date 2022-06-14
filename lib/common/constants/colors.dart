@@ -11,7 +11,7 @@ class AppTheme {
           surface: surface,
           onSurface: onSurface,
         ),
-    appBarTheme: const AppBarTheme(systemOverlayStyle: SystemUiOverlayStyle(statusBarBrightness: Brightness.light,),backgroundColor: onPrimaryDark,foregroundColor: primaryDark,elevation: 0)
+    appBarTheme: const AppBarTheme(systemOverlayStyle: SystemUiOverlayStyle(statusBarBrightness: Brightness.light,statusBarIconBrightness: Brightness.dark),backgroundColor: onPrimaryDark,foregroundColor: primaryDark,elevation: 0)
   );
 
   static ThemeData dark = ThemeData.dark().copyWith(

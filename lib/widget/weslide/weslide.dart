@@ -202,7 +202,9 @@ class WeSlide extends StatefulWidget {
     this.isUpSlide = true,
     List<TweenSequenceItem<double>>? fadeSequence,
     this.animateDuration = const Duration(milliseconds: 200),
-    this.controller, this.onPosition,  this.isDownSlide = true,
+    this.controller,
+    this.onPosition,
+    this.isDownSlide = true,
   })  : /*assert(body != null, 'body could not be null'),*/
         assert(panelMinSize >= 0.0, 'panelMinSize cannot be negative'),
         assert(footerHeight >= 0.0, 'footerHeight cannot be negative'),
@@ -316,11 +318,10 @@ class _WeSlideState extends State<WeSlide> with SingleTickerProviderStateMixin {
     var velocity = endDetails.primaryVelocity!;
 
     if (velocity > 0.0) {
-      print('object===============1');
-      if(widget.isDownSlide) {
+      if (widget.isDownSlide) {
         _ac.reverse().then((x) {
-        _effectiveController.value = false;
-      });
+          _effectiveController.value = false;
+        });
       }
     } else if (velocity < 0.0) {
       if (widget.isUpSlide) {
@@ -410,7 +411,7 @@ class _WeSlideState extends State<WeSlide> with SingleTickerProviderStateMixin {
 
     return Container(
       height: height,
-      decoration: widget.boxDecoration??const BoxDecoration(),
+      decoration: widget.boxDecoration ?? const BoxDecoration(),
       child: Stack(
         alignment: Alignment.bottomCenter,
         children: <Widget>[
@@ -526,9 +527,7 @@ class _WeSlideState extends State<WeSlide> with SingleTickerProviderStateMixin {
                       )
                     : const SizedBox.shrink(),
                 /** panelHeader widget is null ?**/
-                widget.panelHeader != null && !widget.hidePanelHeader
-                    ? widget.panelHeader!
-                    : const SizedBox.shrink(),
+                widget.panelHeader != null && !widget.hidePanelHeader ? widget.panelHeader! : const SizedBox.shrink(),
               ],
             ),
           ),

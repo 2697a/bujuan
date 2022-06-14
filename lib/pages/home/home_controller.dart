@@ -1,10 +1,12 @@
+import 'dart:async';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:bujuan/common/api/src/netease_util.dart';
 import 'package:bujuan/common/bean/lyric_entity.dart';
 import 'package:bujuan/common/constants/other.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:bujuan/widget/refresh_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -13,14 +15,16 @@ import 'package:get/get.dart';
 import '../../common/constants/colors.dart';
 import '../../widget/weslide/weslide_controller.dart';
 
-class HomeController extends GetxController {
+class HomeController extends SuperController {
   final String weSlideUpdate = 'weSlide';
-  double panelHeaderSize = 100.w;
-  double secondPanelHeaderSize = 100.w;
-  double bottomBarHeight = 60;
-  double panelMobileMinSize = 100.w + 60;
+  double panelHeaderSize = 110.w;
+  double secondPanelHeaderSize = 120.w;
+  double paddingBottom = MediaQueryData.fromWindow(window).padding.bottom / 2;
+  double paddingTop = MediaQueryData.fromWindow(window).padding.top;
+  double bottomBarHeight = 0;
+  double panelMobileMinSize = 0;
 
-  double topBarHeight = 90.w;
+  double topBarHeight = 120.w;
 
   //是否折叠
   RxBool isCollapsed = true.obs;
@@ -30,41 +34,39 @@ class HomeController extends GetxController {
   PageController pageController = PageController(viewportFraction: .99);
   RxString lyric = ''.obs;
   Rx<Color> textColor = const Color(0xFFFFFFFF).obs;
-
+  double offset = 0;
+  double down = 0;
+  RxBool isScroll = true.obs;
   //是否第一次进入首页
   bool first = true;
   RxInt selectIndex = 0.obs;
   final assetsAudioPlayer = AssetsAudioPlayer();
-
   RxInt playPosition = 0.obs;
   RxDouble slidePosition = 0.0.obs;
-  double scaleImage = 1;
   Rx<PaletteColorData> rx = PaletteColorData().obs;
   RxBool second = false.obs;
   bool firstSlideIsDownSlide = true;
   SystemUiOverlayStyle systemUiOverlayStyle = const SystemUiOverlayStyle(systemNavigationBarColor: AppTheme.onPrimary);
   RxBool isRoot = true.obs;
-  double paddingTop = 0;
-  double paddingBottom = 0;
+
+  PageController secondPageController = PageController();
+  RequestRefreshController refreshController = RequestRefreshController();
 
   @override
   void onInit() {
-    if (Get.context != null) {
-      paddingTop = MediaQuery.of(Get.context!).padding.top;
-      paddingBottom = MediaQuery.of(Get.context!).padding.bottom;
-      bottomBarHeight = 60 + MediaQuery.of(Get.context!).padding.bottom;
-      panelMobileMinSize = 100.w + 60 + MediaQuery.of(Get.context!).padding.bottom;
-    }
+    bottomBarHeight = 60 + paddingBottom;
+    panelMobileMinSize = 120.w + bottomBarHeight;
     super.onInit();
   }
 
   @override
   void onReady() async {
     super.onReady();
+    WidgetsBinding.instance.addPostFrameCallback((_) => SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,overlays: [SystemUiOverlay.bottom,SystemUiOverlay.top]));
     assetsAudioPlayer.current.listen((event) {
       ImageUtils.getImageColor(event?.audio.audio.metas.image?.path ?? '', Get.context!, (paletteColorData) {
         rx.value = paletteColorData;
-        textColor.value = paletteColorData.light?.bodyTextColor ?? AppTheme.onPrimary;
+        textColor.value = paletteColorData.light?.titleTextColor ?? AppTheme.onPrimary;
         if (weSlideController.isOpened) {
           changeSystemNavigationBarColor(rx.value.dark?.color ?? AppTheme.onPrimary);
         }
@@ -102,7 +104,7 @@ class HomeController extends GetxController {
         changeSystemNavigationBarColor(rx.value.dark?.color ?? AppTheme.onPrimary);
       } else {
         if (systemUiOverlayStyle.systemNavigationBarColor != AppTheme.onPrimary) {
-          changeSystemNavigationBarColor(AppTheme.onPrimary);
+          changeSystemNavigationBarColor(Get.isPlatformDarkMode ? ThemeData.dark().bottomAppBarColor : ThemeData.light().bottomAppBarColor);
         }
       }
     }
@@ -129,15 +131,15 @@ class HomeController extends GetxController {
 
   //外层panel的高度和颜色
   double getPanelMinSize() {
-    return panelHeaderSize * (1 + slidePosition.value * 6.5);
+    return panelHeaderSize * (1 + slidePosition.value * 4.8);
   }
 
   double getPanelAdd() {
-    return MediaQuery.of(Get.context!).padding.top * (second.value ? 1 : slidePosition.value) + getTopHeight() + (isRoot.value ? 0 : MediaQuery.of(Get.context!).padding.bottom);
+    return paddingTop * (second.value ? 1 : slidePosition.value) + getTopHeight() + (isRoot.value ? 0 : paddingBottom);
   }
 
   double getImageSize() {
-    return panelHeaderSize * .8 * (1 + slidePosition.value * 6.5);
+    return (panelHeaderSize * .8) * (1 + slidePosition.value * 4.8);
   }
 
   double getImageLeft() {
@@ -149,7 +151,8 @@ class HomeController extends GetxController {
   }
 
   Color getHeaderColor() {
-    return Color.fromRGBO(255, 255, 255, (second.value ? (1 - slidePosition.value) : slidePosition.value) > 0 ? 0 : 1);
+    return Get.theme.bottomAppBarColor.withOpacity((second.value ? (1 - slidePosition.value) : slidePosition.value) > 0 ? 0 : 1);
+    // return Color.fromRGBO(255, 255, 255, (second.value ? (1 - slidePosition.value) : slidePosition.value) > 0 ? 0 : 1);
   }
 
   Color getLightTextColor() {
@@ -159,7 +162,7 @@ class HomeController extends GetxController {
       if (second.value && slidePosition.value == 0) {
         return textColor.value;
       }
-      return Get.theme.textTheme.caption?.color ?? AppTheme.onPrimary;
+      return Colors.black;
     }
   }
 
@@ -168,12 +171,12 @@ class HomeController extends GetxController {
   }
 
   EdgeInsets getHeaderPadding() {
-    return EdgeInsets.only(left: 30.w, right: 30.w, top: MediaQuery.of(Get.context!).padding.top * (second.value ? 1 : slidePosition.value));
+    return EdgeInsets.only(left: 30.w, right: 30.w, top: paddingTop * (second.value ? 1 : slidePosition.value));
   }
 
   //
   double getSecondPanelMinSize() {
-    return secondPanelHeaderSize + MediaQuery.of(Get.context!).padding.bottom;
+    return secondPanelHeaderSize + paddingBottom;
   }
 
   void changeSelectIndex(int index) {
@@ -185,14 +188,38 @@ class HomeController extends GetxController {
     isRoot.value = route == '/';
     if (isRoot.value) {
       //首页
-      bottomBarHeight = 60 + MediaQuery.of(Get.context!).padding.bottom;
-      panelMobileMinSize = (100.w + 60 + MediaQuery.of(Get.context!).padding.bottom);
+      bottomBarHeight = 60 + paddingBottom;
+      panelMobileMinSize = panelHeaderSize + bottomBarHeight;
     } else {
       first = false;
       //其他页面
       bottomBarHeight = 0;
-      panelMobileMinSize = 100.w + MediaQuery.of(Get.context!).padding.bottom;
+      panelMobileMinSize = panelHeaderSize + paddingBottom;
     }
     if (!first) update([weSlideUpdate]);
   }
+
+  @override
+  void didChangePlatformBrightness() {
+    super.didChangePlatformBrightness();
+    // Future.delayed(const Duration(seconds: 1),() =>
+    //     changeSystemNavigationBarColor(Theme.of(Get.context!).bottomAppBarColor));
+  }
+
+  @override
+  void onDetached() {
+  }
+
+  @override
+  void onInactive() {
+  }
+
+  @override
+  void onPaused() {
+  }
+
+  @override
+  void onResumed() {
+  }
+
 }

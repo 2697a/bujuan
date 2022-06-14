@@ -45,12 +45,12 @@ class FlashyNavbar extends StatelessWidget {
       decoration: BoxDecoration(
         color: bg,
         boxShadow: showElevation ? shadows : [],
-        border: Border(top: BorderSide(color: Colors.grey.withOpacity(.1),width: 1.w))
+        // border: Border(top: BorderSide(color: Colors.grey.withOpacity(.1),width: 1.w))
       ),
       child: Container(
         width: double.infinity,
         height: height,
-        padding:  EdgeInsets.only(top: 6, bottom: MediaQuery.of(context).padding.bottom),
+        padding:  EdgeInsets.only(top: 6, bottom: MediaQuery.of(context).padding.bottom/2),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: items.map((item) {

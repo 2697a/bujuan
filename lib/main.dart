@@ -1,13 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:bujuan/pages/home/home_binding.dart';
-import 'package:bujuan/pages/home/home_desktop_view.dart';
-import 'package:bujuan/pages/home/home_mobile_view.dart';
+import 'package:bujuan/pages/splash_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 
 import 'common/api/netease_cloud_music.dart';
 import 'common/constants/colors.dart';
@@ -17,23 +18,23 @@ main() async {
   await _startServer();
   bool isMobile = Platform.isAndroid || Platform.isIOS || Platform.isFuchsia;
   // android 状态栏为透明的沉浸
+  // SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive,overlays: [SystemUiOverlay.bottom,SystemUiOverlay.top]);
   if (Platform.isAndroid) {
-    SystemUiOverlayStyle systemUiOverlayStyle = const SystemUiOverlayStyle(statusBarColor: Colors.transparent, systemNavigationBarColor: AppTheme.onPrimary);
+    SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent, systemNavigationBarColor: Get.isPlatformDarkMode ? ThemeData.dark().bottomAppBarColor : ThemeData.light().bottomAppBarColor);
     SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
   }
-  runApp(
-    ScreenUtilInit(
-      designSize: isMobile?const Size(750, 1334):const Size(2160, 1406),
-      builder: (BuildContext context, Widget? child) => MaterialApp(
-        title: "Application",
-        theme: AppTheme.light,
-        darkTheme: AppTheme.dark,
-        themeMode: ThemeMode.system,
-        debugShowCheckedModeBanner: false,
-        home: isMobile ? const HomeMobileView() : const HomeDesktopView(),
-      ),
+  runApp(ScreenUtilInit(
+    designSize: isMobile ? const Size(750, 1334) : const Size(2160, 1406),
+    builder: (BuildContext context, Widget? child) => MaterialApp(
+      title: "Application",
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
+      themeMode: ThemeMode.system,
+      debugShowCheckedModeBanner: false,
+      home: const SplashPage(),
     ),
-  );
+  ));
 }
 
 Future<HttpServer> _startServer({int port = 0}) {

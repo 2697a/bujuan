@@ -27,12 +27,7 @@ class DetailsController extends GetxController {
             .map((e) => Audio.network(
                   data.data?.singleWhere((element) => element.id == e.id).url ?? '',
                   metas: Metas(
-                    title: e.name,
-                    artist: e.ar?.map((e) => e.name).toList().join(','),
-                    album: e.al?.name ?? '',
-                    image: MetasImage.network(e.al?.picUrl ?? ''),
-                    id: '${e.id}'
-                  ),
+                      title: e.name, artist: e.ar?.map((e) => e.name).toList().join(','), album: e.al?.name ?? '', image: MetasImage.network(e.al?.picUrl ?? ''), id: '${e.id}'),
                 ))
             .toList();
         this.audios
@@ -44,12 +39,8 @@ class DetailsController extends GetxController {
 
   void playByIndex(int index) async {
     if (!added) {
-      await HomeController.to.assetsAudioPlayer.open(
-        Playlist(audios: audios),
-        loopMode: LoopMode.playlist,
-        autoStart: false,
-        showNotification: true,
-      );
+      await HomeController.to.assetsAudioPlayer
+          .open(Playlist(audios: audios), loopMode: LoopMode.playlist, autoStart: false, showNotification: true, playInBackground: PlayInBackground.enabled);
       added = true;
     }
     await HomeController.to.assetsAudioPlayer.playlistPlayAtIndex(index);

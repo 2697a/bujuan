@@ -60,30 +60,22 @@ class IndexView extends GetView<IndexController> {
 
   Widget _buildItem(PersonalizedResult data) {
     return InkWell(
-      child: Container(
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20.w), boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 3,
-          )
-        ]),
-        child: Column(
-          children: [
-            SimpleExtendedImage(
-              data.picUrl ?? '',
-              borderRadius: BorderRadius.circular(20.w),
+      child: Column(
+        children: [
+          SimpleExtendedImage(
+            data.picUrl ?? '',
+            borderRadius: BorderRadius.circular(20.w),
+          ),
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 8.w),
+            child: Text(
+              data.name ?? '',
+              style: TextStyle(fontSize: 24.sp),
+              maxLines: 2,
             ),
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 8.w),
-              child: Text(
-                data.name ?? '',
-                style: TextStyle(fontSize: 24.sp),
-                maxLines: 2,
-              ),
-            )
-          ],
-        ),
+          )
+        ],
       ),
       onTap: () => Get.toNamed(Routes.details,arguments: DetailsArguments(data)),
     );
