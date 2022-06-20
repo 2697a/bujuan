@@ -3,8 +3,10 @@ import 'package:bujuan/routes/app_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 
 import '../../common/bean/personalized_entity.dart';
+import '../../common/constants/other.dart';
 import '../../widget/request_widget.dart';
 import '../../widget/simple_extended_image.dart';
 
@@ -14,71 +16,41 @@ class IndexView extends GetView<IndexController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: Column(
-        children: [
-          _rightView(),
-        ],
-      ),
+      body: Obx(() => ListView.builder(
+            padding: EdgeInsets.symmetric(horizontal: 20.w),
+            itemBuilder: (context, index) => _buildItem(controller.songs[index], index),
+            itemCount: controller.songs.length,
+          )),
       backgroundColor: Colors.transparent,
     );
   }
 
-  Widget _rightView() {
-    return Wrap(
-      children: [
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.w),
-          child: Text(
-            '推荐歌单',
-            style: TextStyle(fontSize: 36.sp, fontWeight: FontWeight.bold),
-          ),
-        ),
-        RequestBox<PersonalizedEntity>(
-          url: '/personalized',
-          childBuilder: (data) => GridView.builder(
-            padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 20.w),
-            addAutomaticKeepAlives: false,
-            addRepaintBoundaries: false,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              crossAxisSpacing: 10.w,
-              mainAxisSpacing: 20.w,
-              childAspectRatio: .7,
-            ),
-            itemCount: data.result?.length ?? 0,
-            itemBuilder: (BuildContext context, int index) {
-              return _buildItem(data.result![index]);
-            },
-          ),
-        )
-      ],
-    );
-  }
-
-  Widget _buildItem(PersonalizedResult data) {
+  Widget _buildItem(SongModel data, int index) {
     return InkWell(
-      child: Column(
-        children: [
-          SimpleExtendedImage(
-            data.picUrl ?? '',
-            borderRadius: BorderRadius.circular(20.w),
-          ),
-          Container(
-            width: double.infinity,
-            padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 8.w),
-            child: Text(
-              data.name ?? '',
-              style: TextStyle(fontSize: 24.sp),
-              maxLines: 2,
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 15.w),
+        child: Row(
+          children: [
+            QueryArtworkWidget(
+              id: data.id,
+              type: ArtworkType.AUDIO,
+              artworkBorder: BorderRadius.circular(10.w),
+              artworkWidth: 80.w,
+              artworkHeight: 80.w,
             ),
-          )
-        ],
+            Expanded(
+                child:Padding(padding: EdgeInsets.symmetric(horizontal: 10.w),child:  Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(data.title,style: TextStyle(fontSize: 26.sp,fontWeight: FontWeight.bold),),
+                    Text(data.artist ?? 'No Artist',style: TextStyle(fontSize: 24.sp,fontWeight: FontWeight.normal),),
+                  ],
+                ),)),
+            Text( ImageUtils.getTimeStamp(data.duration??0),)
+          ],
+        ),
       ),
-      onTap: () => Get.toNamed(Routes.details,arguments: DetailsArguments(data)),
+      onTap: () => controller.play(index),
     );
   }
-
 }

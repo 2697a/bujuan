@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 
 class FlashyNavbar extends StatelessWidget {
   final int selectedIndex;
@@ -33,7 +34,7 @@ class FlashyNavbar extends StatelessWidget {
     required this.items,
     required this.onItemSelected,
   }) : super(key: key) {
-    assert(height >= 55 );
+    // assert(height >= 55 );
     assert(items.length >= 2 && items.length <= 5);
   }
 
@@ -42,13 +43,14 @@ class FlashyNavbar extends StatelessWidget {
     final bg = (backgroundColor == null) ? Theme.of(context).bottomAppBarColor : backgroundColor;
 
     return Container(
+      height: height,
       decoration: BoxDecoration(
         color: bg,
         boxShadow: showElevation ? shadows : [],
         // border: Border(top: BorderSide(color: Colors.grey.withOpacity(.1),width: 1.w))
       ),
       child: Container(
-        width: double.infinity,
+        width: Get.width,
         height: height,
         padding:  EdgeInsets.only(top: 6, bottom: MediaQuery.of(context).padding.bottom/2),
         child: Row(

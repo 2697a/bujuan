@@ -11,7 +11,7 @@ class SecondPanelView extends GetView<HomeController> {
   Widget build(BuildContext context) {
     return Obx(() => Container(
           width: Get.width,
-          padding: EdgeInsets.only(top: 120.w),
+          padding: EdgeInsets.only(top: controller.secondPanelHeaderSize + controller.paddingBottom),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)), color: controller.rx.value.dark?.color ?? Colors.white),
           child: PageView(
@@ -46,16 +46,18 @@ class SecondPanelView extends GetView<HomeController> {
           onPointerDown: (event) {
             controller.down = event.position.dy;
           },
-          child: PlayerBuilder.current(player: controller.assetsAudioPlayer, builder: (context,playing) => ListView.builder(
-            physics: controller.isScroll.value ? const ClampingScrollPhysics() : const NeverScrollableScrollPhysics(),
-            itemBuilder: (context, index) => _buildPlayListItem(audios[index], index,playing),
-            itemCount: audios.length,
-            padding: EdgeInsets.symmetric(vertical: 0, horizontal: 30.w),
-          )),
+          child: PlayerBuilder.current(
+              player: controller.assetsAudioPlayer,
+              builder: (context, playing) => ListView.builder(
+                    physics: controller.isScroll.value ? const ClampingScrollPhysics() : const NeverScrollableScrollPhysics(),
+                    itemBuilder: (context, index) => _buildPlayListItem(audios[index], index, playing),
+                    itemCount: audios.length,
+                    padding: EdgeInsets.symmetric(vertical: 0, horizontal: 30.w),
+                  )),
         ));
   }
 
-  Widget _buildPlayListItem(Audio audio, int index,Playing playing) {
+  Widget _buildPlayListItem(Audio audio, int index, Playing playing) {
     return InkWell(
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 15.w),

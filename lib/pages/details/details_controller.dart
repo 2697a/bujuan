@@ -19,22 +19,16 @@ class DetailsController extends GetxController {
   }
 
   void initSong(List<SongDetailsSongs> songs) {
-    NetUtils().doHandler<SongUrlEntity>(
-      '/song/url',
-      param: {'id': songs.map((e) => e.id).toList().join(',')},
-      onSuccess: (data) {
-        List<Audio> audios = songs
-            .map((e) => Audio.network(
-                  data.data?.singleWhere((element) => element.id == e.id).url ?? '',
-                  metas: Metas(
-                      title: e.name, artist: e.ar?.map((e) => e.name).toList().join(','), album: e.al?.name ?? '', image: MetasImage.network(e.al?.picUrl ?? ''), id: '${e.id}'),
-                ))
-            .toList();
-        this.audios
-          ..clear()
-          ..addAll(audios);
-      },
-    );
+    List<Audio> audios = songs
+        .map((e) => Audio.network(
+              'https://music.163.com/song/media/outer/url?id=${e.id}.mp3',
+              metas:
+                  Metas(title: e.name, artist: e.ar?.map((e) => e.name).toList().join(','), album: e.al?.name ?? '', image: MetasImage.network(e.al?.picUrl ?? ''), id: '${e.id}'),
+            ))
+        .toList();
+    this.audios
+      ..clear()
+      ..addAll(audios);
   }
 
   void playByIndex(int index) async {
@@ -43,6 +37,5 @@ class DetailsController extends GetxController {
           .open(Playlist(audios: audios), loopMode: LoopMode.playlist, autoStart: false, showNotification: true, playInBackground: PlayInBackground.enabled);
       added = true;
     }
-    await HomeController.to.assetsAudioPlayer.playlistPlayAtIndex(index);
   }
 }

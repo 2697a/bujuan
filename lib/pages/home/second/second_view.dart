@@ -20,13 +20,14 @@ class SecondView extends GetView<HomeController> {
           boxDecoration: BoxDecoration(
               borderRadius: BorderRadius.only(topLeft: Radius.circular(20.w), topRight: Radius.circular(20.w)),
               gradient: LinearGradient(
-                  colors: [controller.rx.value.light?.color ?? Colors.white, controller.rx.value.dark?.color ?? Colors.white],
+                  colors: [controller.rx.value.light?.color.withOpacity(controller.second.value?1:controller.slidePosition.value) ?? Colors.white, controller.rx.value.dark?.color.withOpacity(controller.second.value?1:controller.slidePosition.value) ?? Colors.white],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter)),
           onPosition: (value) => controller.changeSlidePosition(1 - value, second: true),
           body: const SecondBodyView(),
           panel: const SecondPanelView(),
           panelHeader: _buildSecondHead(),
+          isUpSlide: false,
         ));
   }
 

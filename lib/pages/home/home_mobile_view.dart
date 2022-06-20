@@ -8,7 +8,7 @@ class HomeMobileView extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return  const Scaffold(
       body: FirstView(),
     );
   }

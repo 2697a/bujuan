@@ -13,9 +13,27 @@ class DetailsView extends GetView<DetailsController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('歌单'),),
-      backgroundColor: Colors.white,
-      body: RequestBox<PlaylistEntity>(
+      body: NestedScrollView(
+        physics: const ClampingScrollPhysics(),
+          headerSliverBuilder:(BuildContext context, bool innerBoxIsScrolled)=> [
+        SliverAppBar(
+          pinned: true,
+          //滚动是是否拉伸图片
+          stretch: true,
+          expandedHeight: 500.w,
+          snap: false,
+          elevation: 0,
+          title: innerBoxIsScrolled?Text(controller.detailsArguments?.personalizedResult.name??''):const SizedBox.shrink(),
+          flexibleSpace:  FlexibleSpaceBar(
+            background: Hero(tag: controller.detailsArguments?.personalizedResult.id??'', child: SimpleExtendedImage(
+              controller.detailsArguments?.personalizedResult.picUrl??'',
+              height: 450.w,
+              width: Get.width,
+              borderRadius: BorderRadius.circular(30.w),
+            )),
+          ),
+        )
+      ], body: RequestBox<PlaylistEntity>(
         url: '/playlist/detail',
         data: {'id': controller.detailsArguments?.personalizedResult.id},
         childBuilder: (playListDetails) {
@@ -27,13 +45,50 @@ class DetailsView extends GetView<DetailsController> {
               controller.initSong(data.songs!);
             },
             childBuilder: (data) => ListView.builder(
+              padding: const EdgeInsets.all(0),
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
               itemBuilder: (context, index) => _buildItem(data.songs![index],index),
               itemCount: data.songs?.length ?? 0,
             ),
           );
         },
-      ),
+      )),
     );
+    // return Scaffold(
+    //   body: CustomScrollView(
+    //     slivers: [
+    //       SliverToBoxAdapter(child: Hero(tag: controller.detailsArguments?.personalizedResult.id??'', child: SimpleExtendedImage(
+    //         controller.detailsArguments?.personalizedResult.picUrl??'',
+    //         height: 450.w,
+    //         width: Get.width,
+    //         borderRadius: BorderRadius.circular(30.w),
+    //       )),),
+    //       SliverToBoxAdapter(
+    //         child: RequestBox<PlaylistEntity>(
+    //           url: '/playlist/detail',
+    //           data: {'id': controller.detailsArguments?.personalizedResult.id},
+    //           childBuilder: (playListDetails) {
+    //             return RequestBox<SongDetailsEntity>(
+    //               url: '/song/detail',
+    //               data: {'ids': playListDetails.playlist?.trackIds?.map((e) => e.id).toList()},
+    //               onSuccess: (data) {
+    //                 print('object========sd==sa=d=');
+    //                 controller.initSong(data.songs!);
+    //               },
+    //               childBuilder: (data) => ListView.builder(
+    //                 shrinkWrap: true,
+    //                 physics: const NeverScrollableScrollPhysics(),
+    //                 itemBuilder: (context, index) => _buildItem(data.songs![index],index),
+    //                 itemCount: data.songs?.length ?? 0,
+    //               ),
+    //             );
+    //           },
+    //         ),
+    //       )
+    //     ],
+    //   ),
+    // );
   }
 
   Widget _buildItem(SongDetailsSongs data,int index) {

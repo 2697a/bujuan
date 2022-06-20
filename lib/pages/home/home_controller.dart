@@ -11,9 +11,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 
 import '../../common/constants/colors.dart';
 import '../../widget/weslide/weslide_controller.dart';
+import '../index/index_binding.dart';
 
 class HomeController extends SuperController {
   final String weSlideUpdate = 'weSlide';
@@ -37,12 +39,14 @@ class HomeController extends SuperController {
   double offset = 0;
   double down = 0;
   RxBool isScroll = true.obs;
+
   //是否第一次进入首页
   bool first = true;
   RxInt selectIndex = 0.obs;
   final assetsAudioPlayer = AssetsAudioPlayer();
   RxInt playPosition = 0.obs;
   RxDouble slidePosition = 0.0.obs;
+  RxDouble slidePosition2 = 0.0.obs;
   Rx<PaletteColorData> rx = PaletteColorData().obs;
   RxBool second = false.obs;
   bool firstSlideIsDownSlide = true;
@@ -51,39 +55,43 @@ class HomeController extends SuperController {
 
   PageController secondPageController = PageController();
   RequestRefreshController refreshController = RequestRefreshController();
+  final OnAudioQuery audioQuery = OnAudioQuery();
 
   @override
   void onInit() {
     bottomBarHeight = 60 + paddingBottom;
-    panelMobileMinSize = 120.w + bottomBarHeight;
+    panelMobileMinSize = 110.w + bottomBarHeight;
     super.onInit();
   }
 
   @override
   void onReady() async {
     super.onReady();
-    WidgetsBinding.instance.addPostFrameCallback((_) => SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,overlays: [SystemUiOverlay.bottom,SystemUiOverlay.top]));
     assetsAudioPlayer.current.listen((event) {
-      ImageUtils.getImageColor(event?.audio.audio.metas.image?.path ?? '', Get.context!, (paletteColorData) {
+      if (event == null) {
+        assetsAudioPlayer.next();
+        return;
+      }
+      ImageUtils.getImageColor(event.audio.audio.metas.image?.path ?? '', Get.context!, (paletteColorData) {
         rx.value = paletteColorData;
         textColor.value = paletteColorData.light?.titleTextColor ?? AppTheme.onPrimary;
-        if (weSlideController.isOpened) {
-          changeSystemNavigationBarColor(rx.value.dark?.color ?? AppTheme.onPrimary);
-        }
-      });
-      NetUtils().doHandler<LyricEntity>('/lyric', param: {'id': event?.audio.audio.metas.id}, onSuccess: (data) {
-        lyric.value = data.lrc?.lyric ?? '';
       });
     });
     assetsAudioPlayer.currentPosition.listen((event) {
       playPosition.value = event.inMilliseconds;
     });
-    assetsAudioPlayer.playlistAudioFinished.listen((event) {});
+    requestPermission();
   }
 
   static HomeController get to => Get.find();
 
-  void getBanner() async {}
+  requestPermission() async {
+    // Web platform don't support permissions methods.
+    bool permissionStatus = await audioQuery.permissionsStatus();
+    if (!permissionStatus) {
+      await audioQuery.permissionsRequest();
+    }
+  }
 
   void playOrPause() async {
     await assetsAudioPlayer.playOrPause();
@@ -99,15 +107,15 @@ class HomeController extends SuperController {
       if (!first) update([weSlideUpdate]);
     }
 
-    if (!this.second.value) {
-      if (value >= .98) {
-        changeSystemNavigationBarColor(rx.value.dark?.color ?? AppTheme.onPrimary);
-      } else {
-        if (systemUiOverlayStyle.systemNavigationBarColor != AppTheme.onPrimary) {
-          changeSystemNavigationBarColor(Get.isPlatformDarkMode ? ThemeData.dark().bottomAppBarColor : ThemeData.light().bottomAppBarColor);
-        }
-      }
-    }
+    // if (!this.second.value) {
+    //   if (value >= .98) {
+    //     changeSystemNavigationBarColor(rx.value.dark?.color ?? AppTheme.onPrimary);
+    //   } else {
+    //     if (systemUiOverlayStyle.systemNavigationBarColor != AppTheme.onPrimary) {
+    //       changeSystemNavigationBarColor(Get.isPlatformDarkMode ? ThemeData.dark().bottomAppBarColor : ThemeData.light().bottomAppBarColor);
+    //     }
+    //   }
+    // }
   }
 
   void changeSystemNavigationBarColor(Color color) {
@@ -151,7 +159,7 @@ class HomeController extends SuperController {
   }
 
   Color getHeaderColor() {
-    return Get.theme.bottomAppBarColor.withOpacity((second.value ? (1 - slidePosition.value) : slidePosition.value) > 0 ? 0 : 1);
+    return Theme.of(Get.context!).bottomAppBarColor.withOpacity((second.value ? (1 - slidePosition.value) : slidePosition.value) > 0 ? 0 : 1);
     // return Color.fromRGBO(255, 255, 255, (second.value ? (1 - slidePosition.value) : slidePosition.value) > 0 ? 0 : 1);
   }
 
@@ -186,17 +194,17 @@ class HomeController extends SuperController {
 
   void changeRoute(String? route) {
     isRoot.value = route == '/';
-    if (isRoot.value) {
-      //首页
-      bottomBarHeight = 60 + paddingBottom;
-      panelMobileMinSize = panelHeaderSize + bottomBarHeight;
-    } else {
-      first = false;
-      //其他页面
-      bottomBarHeight = 0;
-      panelMobileMinSize = panelHeaderSize + paddingBottom;
-    }
-    if (!first) update([weSlideUpdate]);
+    // if (isRoot.value) {
+    //   //首页
+    //   bottomBarHeight = 60 + paddingBottom;
+    //   panelMobileMinSize = panelHeaderSize + bottomBarHeight;
+    // } else {
+    //   first = false;
+    //   //其他页面
+    //   bottomBarHeight = 0;
+    //   panelMobileMinSize = panelHeaderSize + paddingBottom;
+    // }
+    // if (!first) update([weSlideUpdate]);
   }
 
   @override
@@ -207,19 +215,14 @@ class HomeController extends SuperController {
   }
 
   @override
-  void onDetached() {
-  }
+  void onDetached() {}
 
   @override
-  void onInactive() {
-  }
+  void onInactive() {}
 
   @override
-  void onPaused() {
-  }
+  void onPaused() {}
 
   @override
-  void onResumed() {
-  }
-
+  void onResumed() {}
 }

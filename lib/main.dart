@@ -21,7 +21,7 @@ main() async {
   // SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive,overlays: [SystemUiOverlay.bottom,SystemUiOverlay.top]);
   if (Platform.isAndroid) {
     SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent, systemNavigationBarColor: Get.isPlatformDarkMode ? ThemeData.dark().bottomAppBarColor : ThemeData.light().bottomAppBarColor);
+        statusBarColor: Colors.transparent, systemNavigationBarColor: Colors.transparent);
     SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
   }
   runApp(ScreenUtilInit(

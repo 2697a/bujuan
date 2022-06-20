@@ -1,4 +1,5 @@
 import 'package:bujuan/pages/home/home_controller.dart';
+import 'package:bujuan/pages/index/album_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -18,14 +19,14 @@ class FirstBodyView extends GetView<HomeController>{
       themeMode: ThemeMode.system,
       getPages: AppPages.routes,
       debugShowCheckedModeBanner: false,
-      defaultTransition: Transition.circularReveal,
+      defaultTransition: Transition.fadeIn,
       routingCallback: (r) => controller.changeRoute(r?.current),
       home: PageView(
         controller: controller.pageController,
         physics: const NeverScrollableScrollPhysics(),
         children: const [
           IndexView(),
-          UserView(),
+          AlbumView(),
           IndexView(),
           UserView(),
         ],

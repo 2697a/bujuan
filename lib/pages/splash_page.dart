@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:io';
+import 'package:bujuan/pages/home/home_desktop_view.dart';
 import 'package:bujuan/pages/home/home_mobile_view.dart';
 import 'package:bujuan/routes/app_pages.dart';
 import 'package:flutter/services.dart';
@@ -25,12 +27,13 @@ class SplashPageState extends State<SplashPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,overlays: [SystemUiOverlay.top]);
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
       changeOpacity();
     });
 
     Future.delayed(durationFinish, () {
-      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const HomeMobileView()), (route) => false);
+      bool isMobile = Platform.isAndroid || Platform.isIOS || Platform.isFuchsia;
+      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => isMobile?const HomeMobileView(): const HomeDesktopView()), (route) => false);
     });
   }
 
@@ -60,17 +63,18 @@ class SplashPageState extends State<SplashPage> {
             scale: scale,
             duration: duration,
             child: Stack(
+              alignment: Alignment.center,
               children: [
-                Positioned(bottom:0,child: Image.asset(
+                Image.asset(
                   'assets/images/splash_bottom.png',
                   width: Get.width,
                   fit: BoxFit.cover,
-                )),
-                Container(
-                  alignment: Alignment.topCenter,
-                  padding: EdgeInsets.only(top: 400.w),
-                  child:  Text('不倦',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 56.sp),),
-                )
+                ),
+                // Container(
+                //   alignment: Alignment.bottomCenter,
+                //   padding: EdgeInsets.only(bottom: 100.w),
+                //   child:  Text('不倦',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 56.sp),),
+                // )
               ],
             ),
           ),

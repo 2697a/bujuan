@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bujuan/common/constants/images.dart';
 import 'package:flutter/material.dart';
 import 'package:extended_image/extended_image.dart';
@@ -56,47 +58,84 @@ class SimpleExtendedImageState extends State<SimpleExtendedImage> {
   @override
   Widget build(BuildContext context) {
     if (widget.url.startsWith('http')) {
-      url = widget.url;
+      return ExtendedImage.network(
+        url ?? '',
+        width: widget.width,
+        height: widget.height,
+        shape: widget.shape,
+        fit: BoxFit.cover,
+        borderRadius: widget.borderRadius,
+        cache: true,
+        cacheWidth: widget.cacheWidth??800,
+        //展厅
+        loadStateChanged: (ExtendedImageState state) {
+          Widget image;
+          switch (state.extendedImageLoadState) {
+            case LoadState.loading:
+              image = widget.replacement ??
+                  Image.asset(
+                    widget.placeholder,
+                    fit: BoxFit.cover,
+                  );
+              break;
+            case LoadState.completed:
+              image = ExtendedRawImage(
+                image: state.extendedImageInfo?.image,
+                width: widget.width,
+                height: widget.height,
+                fit: widget.fit ?? BoxFit.cover,
+              );
+              break;
+            case LoadState.failed:
+              image = Image.asset(
+                widget.placeholder,
+                fit: BoxFit.cover,
+              );
+              break;
+          }
+          return image;
+        },
+      );
     } else {
-      url = widget.url;
+      print('object==============${widget.url}');
+      return ExtendedImage.file(
+        File(url ?? ''),
+        width: widget.width,
+        height: widget.height,
+        shape: widget.shape,
+        fit: BoxFit.cover,
+        borderRadius: widget.borderRadius,
+        cacheWidth: widget.cacheWidth??800,
+        //展厅
+        loadStateChanged: (ExtendedImageState state) {
+          Widget image;
+          switch (state.extendedImageLoadState) {
+            case LoadState.loading:
+              image = widget.replacement ??
+                  Image.asset(
+                    widget.placeholder,
+                    fit: BoxFit.cover,
+                  );
+              break;
+            case LoadState.completed:
+              image = ExtendedRawImage(
+                image: state.extendedImageInfo?.image,
+                width: widget.width,
+                height: widget.height,
+                fit: widget.fit ?? BoxFit.cover,
+              );
+              break;
+            case LoadState.failed:
+              image = Image.asset(
+                widget.placeholder,
+                fit: BoxFit.cover,
+              );
+              break;
+          }
+          return image;
+        },
+      );
     }
-    return ExtendedImage.network(
-      url ?? '',
-      width: widget.width,
-      height: widget.height,
-      shape: widget.shape,
-      fit: BoxFit.cover,
-      borderRadius: widget.borderRadius,
-      cache: true,
-      cacheWidth: widget.cacheWidth??800,
-      //展厅
-      loadStateChanged: (ExtendedImageState state) {
-        Widget image;
-        switch (state.extendedImageLoadState) {
-          case LoadState.loading:
-            image = widget.replacement ??
-                Image.asset(
-                  widget.placeholder,
-                  fit: BoxFit.cover,
-                );
-            break;
-          case LoadState.completed:
-            image = ExtendedRawImage(
-              image: state.extendedImageInfo?.image,
-              width: widget.width,
-              height: widget.height,
-              fit: widget.fit ?? BoxFit.cover,
-            );
-            break;
-          case LoadState.failed:
-            image = Image.asset(
-              widget.placeholder,
-              fit: BoxFit.cover,
-            );
-            break;
-        }
-        return image;
-      },
-    );
+
   }
 }

@@ -1,19 +1,31 @@
 PODS:
+  - assets_audio_player (0.0.1):
+    - FlutterMacOS
+  - assets_audio_player_web (0.0.1):
+    - FlutterMacOS
   - FlutterMacOS (1.0.0)
   - path_provider_macos (0.0.1):
     - FlutterMacOS
 
 DEPENDENCIES:
+  - assets_audio_player (from `Flutter/ephemeral/.symlinks/plugins/assets_audio_player/macos`)
+  - assets_audio_player_web (from `Flutter/ephemeral/.symlinks/plugins/assets_audio_player_web/macos`)
   - FlutterMacOS (from `Flutter/ephemeral`)
   - path_provider_macos (from `Flutter/ephemeral/.symlinks/plugins/path_provider_macos/macos`)
 
 EXTERNAL SOURCES:
+  assets_audio_player:
+    :path: Flutter/ephemeral/.symlinks/plugins/assets_audio_player/macos
+  assets_audio_player_web:
+    :path: Flutter/ephemeral/.symlinks/plugins/assets_audio_player_web/macos
   FlutterMacOS:
     :path: Flutter/ephemeral
   path_provider_macos:
     :path: Flutter/ephemeral/.symlinks/plugins/path_provider_macos/macos
 
 SPEC CHECKSUMS:
+  assets_audio_player: be2578e6f11dd4d183412e97143673c3c4cb2e8a
+  assets_audio_player_web: 917101123b6db8f73156835c0fa266c11340ff15
   FlutterMacOS: 57701585bf7de1b3fc2bb61f6378d73bbdea8424
   path_provider_macos: 3c0c3b4b0d4a76d2bf989a913c2de869c5641a19
 

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/widget/weslide/weslide.dart';
@@ -6,7 +8,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 import '../../../widget/mobile/flashy_navbar.dart';
-import '../../../widget/simple_extended_image.dart';
 import '../second/second_view.dart';
 import 'first_body_view.dart';
 
@@ -16,25 +17,23 @@ class FirstView extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-        child: GetBuilder(
-          builder: (_) => WeSlide(
-            controller: controller.weSlideController,
-            panelWidth: Get.width,
-            bodyWidth: Get.width,
-            panelMaxSize: Get.height,
-            parallax: true,
-            body: const FirstBodyView(),
-            panel: const SecondView(),
-            panelHeader: _buildPanelHeader(),
-            footer: _buildFooter(),
-            hidePanelHeader: false,
-            footerHeight: controller.bottomBarHeight,
-            panelMinSize: controller.panelMobileMinSize,
-            onPosition: (value) => controller.changeSlidePosition(value),
-            isDownSlide: controller.firstSlideIsDownSlide,
-          ),
-          init: controller,
-          id: controller.weSlideUpdate,
+        child: WeSlide(
+          appBar: AppBar(),
+          hideAppBar: true,
+          controller: controller.weSlideController,
+          panelWidth: Get.width,
+          bodyWidth: Get.width,
+          panelMaxSize: Get.height,
+          parallax: true,
+          body: const FirstBodyView(),
+          panel: const SecondView(),
+          panelHeader: _buildPanelHeader(),
+          footer: _buildFooter(),
+          hidePanelHeader: false,
+          footerHeight: controller.bottomBarHeight,
+          panelMinSize: controller.panelMobileMinSize,
+          onPosition: (value) => controller.changeSlidePosition(value),
+          isDownSlide: controller.firstSlideIsDownSlide,
         ),
         onWillPop: () => controller.onWillPop());
   }
@@ -103,12 +102,10 @@ class FirstView extends GetView<HomeController> {
                         AnimatedPositioned(
                             left: controller.getImageLeft(),
                             duration: const Duration(milliseconds: 0),
-                            child: SimpleExtendedImage(
-                              playing.audio.audio.metas.image?.path ?? '',
+                            child: Image.file(
+                              File(playing.audio.audio.metas.image?.path ?? ''),
                               height: controller.getImageSize(),
                               width: controller.getImageSize(),
-                              fit: BoxFit.fill,
-                              borderRadius: BorderRadius.circular(10.w),
                             )),
                         AnimatedOpacity(
                           opacity: controller.slidePosition.value > 0 ? 0 : 1,
@@ -157,31 +154,36 @@ class FirstView extends GetView<HomeController> {
   }
 
   Widget _buildFooter() {
-    return Obx(() => controller.bottomBarHeight == 0
-        ? const SizedBox.shrink()
-        : FlashyNavbar(
-            height: controller.bottomBarHeight,
-            selectedIndex: controller.selectIndex.value,
-            showElevation: false,
-            onItemSelected: (index) => controller.changeSelectIndex(index),
-            items: [
-              FlashyNavbarItem(
-                icon: const Icon(Icons.event),
-                title: const Text('Home'),
-              ),
-              FlashyNavbarItem(
-                icon: const Icon(Icons.search),
-                title: const Text('Search'),
-              ),
-              FlashyNavbarItem(
-                icon: const Icon(Icons.highlight),
-                title: const Text('Me'),
-              ),
-              FlashyNavbarItem(
-                icon: const Icon(Icons.settings),
-                title: const Text('Settings'),
-              ),
-            ],
-          ));
+    return Obx(() => FlashyNavbar(
+          height: controller.bottomBarHeight,
+          selectedIndex: controller.selectIndex.value,
+          showElevation: false,
+          onItemSelected: (index) {
+            controller.changeSelectIndex(index);
+            if (!controller.isRoot.value) {
+              // Get.offUntil(GetPageRoute(page: () => const HomeMobileView()), (r) => true);
+              // Get.offNamedUntil('/', (route) => true);
+              Get.back();
+            }
+          },
+          items: [
+            FlashyNavbarItem(
+              icon: const Icon(Icons.event),
+              title: const Text('首页'),
+            ),
+            FlashyNavbarItem(
+              icon: const Icon(Icons.search),
+              title: const Text('搜索'),
+            ),
+            FlashyNavbarItem(
+              icon: const Icon(Icons.highlight),
+              title: const Text('我的'),
+            ),
+            FlashyNavbarItem(
+              icon: const Icon(Icons.settings),
+              title: const Text('设置'),
+            ),
+          ],
+        ));
   }
 }
