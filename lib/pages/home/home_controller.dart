@@ -18,7 +18,7 @@ class HomeController extends SuperController {
   final String weSlideUpdate = 'weSlide';
   double panelHeaderSize = 110.w;
   double secondPanelHeaderSize = 120.w;
-  double paddingBottom = MediaQueryData.fromWindow(window).padding.bottom / 2;
+  double paddingBottom = MediaQueryData.fromWindow(window).padding.bottom;
   double paddingTop = MediaQueryData.fromWindow(window).padding.top;
   double bottomBarHeight = 0;
   double panelMobileMinSize = 0;

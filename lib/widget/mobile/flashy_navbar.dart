@@ -52,7 +52,7 @@ class FlashyNavbar extends StatelessWidget {
       child: Container(
         width: Get.width,
         height: height,
-        padding:  EdgeInsets.only(top: 6, bottom: MediaQuery.of(context).padding.bottom/2),
+        padding:  EdgeInsets.only(top: 6, bottom: MediaQuery.of(context).padding.bottom),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: items.map((item) {
