@@ -14,28 +14,11 @@ class ImageUtils {
   static ImageStreamListener? _imageStreamListener;
   static ImageStream? _imageStream;
 
-  static getImageColor(String url, BuildContext context, ImageColorCallBack imageCallBack) {
+  static getImageColor(String url, ImageColorCallBack imageCallBack) {
     ExtendedFileImageProvider imageProvider = ExtendedFileImageProvider(File(url));
     _imageStream = imageProvider.resolve(ImageConfiguration.empty);
     _imageStreamListener = ImageStreamListener((ImageInfo image, bool synchronousCall) async {
       ImageProvider _imageProvider = imageProvider;
-      // if (image.image.width > 500 || image.image.height > 500) {
-      //   var imageData = await imageProvider.getNetworkImageData();
-      //   if (imageData == null) {
-      //     _imageProvider =  AssetImage('');
-      //   } else {
-      //     print('====大于阀值，显示加载动画');
-      //     bool isShowLoading = imageData.length > (1024 * 1024);
-      //     if (isShowLoading) {
-      //       print('====大于阀值，显示加载动画');
-      //     }
-      //     Uint8List compressImageData = await testCompressList(imageData);
-      //     _imageProvider = MemoryImage(compressImageData);
-      //     if (isShowLoading) {
-      //       print('====大于阀值，开启页面之前关闭弹窗');
-      //     }
-      //   }
-      // }
       _imageStream?.removeListener(_imageStreamListener!);
       _getImageColorByProvider(_imageProvider).then((value) {
         imageCallBack.call(value);

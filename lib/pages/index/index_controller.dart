@@ -17,8 +17,10 @@ class IndexController extends GetxController {
   @override
   void onReady() async {
     super.onReady();
-    querySong();
-    queryAlbum();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      querySong();
+      queryAlbum();
+    });
   }
 
   querySong() {

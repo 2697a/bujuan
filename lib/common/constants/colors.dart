@@ -3,27 +3,36 @@ import 'package:flutter/services.dart';
 
 class AppTheme {
   static ThemeData light = ThemeData.light().copyWith(
-    colorScheme: ThemeData.light().colorScheme.copyWith(
-          primary: primary,
-          onPrimary: onPrimary,
-          secondary: secondary,
-          onSecondary: onSecondary,
-          surface: surface,
-          onSurface: onSurface,
-        ),
-    appBarTheme: const AppBarTheme(systemOverlayStyle: SystemUiOverlayStyle(statusBarBrightness: Brightness.light,statusBarIconBrightness: Brightness.dark),backgroundColor: onPrimaryDark,foregroundColor: primaryDark,elevation: 0)
-  );
+      colorScheme: ThemeData.light().colorScheme.copyWith(
+            primary: primary,
+            onPrimary: onPrimary,
+            secondary: secondary,
+            onSecondary: onSecondary,
+            surface: surface,
+            onSurface: onSurface,
+          ),
+      bottomAppBarColor: onPrimaryDark,
+      appBarTheme: const AppBarTheme(
+          systemOverlayStyle: SystemUiOverlayStyle(statusBarBrightness: Brightness.light, statusBarIconBrightness: Brightness.dark),
+          backgroundColor: onPrimaryDark,
+          foregroundColor: primaryDark,
+          elevation: 0));
 
   static ThemeData dark = ThemeData.dark().copyWith(
-    colorScheme: ThemeData.dark().colorScheme.copyWith(
-          primary: primaryDark,
-          onPrimary: onPrimaryDark,
-          secondary: secondary,
-          onSecondary: onSecondary,
-          surface: surfaceDark,
-          onSurface: onSurfaceDark,
-        ),
-  );
+      colorScheme: ThemeData.dark().colorScheme.copyWith(
+            primary: primaryDark,
+            onPrimary: onPrimaryDark,
+            secondary: secondary,
+            onSecondary: onSecondary,
+            surface: surfaceDark,
+            onSurface: onSurfaceDark,
+          ),
+      bottomAppBarColor: onSurfaceDark,
+      appBarTheme: const AppBarTheme(
+          systemOverlayStyle: SystemUiOverlayStyle(statusBarBrightness: Brightness.dark, statusBarIconBrightness: Brightness.light),
+          backgroundColor: onPrimaryDark,
+          foregroundColor: primaryDark,
+          elevation: 0));
 
   //right background
   static const primaryDark = Color(0xFF1c1d1f);
@@ -35,7 +44,7 @@ class AppTheme {
   static const surfaceDark = Color(0xFF333436);
   static const onSurfaceDark = Color(0xFF6e7073);
   static const surface = Color(0xff787878);
-  static const onSurface =Color(0xFFAEAEAE);
+  static const onSurface = Color(0xFFAEAEAE);
 
   //accent color
   //TODO change blue

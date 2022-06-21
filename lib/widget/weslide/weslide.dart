@@ -243,6 +243,7 @@ class _WeSlideState extends State<WeSlide> with SingleTickerProviderStateMixin {
   // PanelHeader animation Effect [Tween]
   late Animation<double> _fadeAnimation;
   double position = 0;
+  double lastFootHeight = 0;
 
   // Get current controller
   WeSlideController get _effectiveController => widget.controller!;
@@ -252,6 +253,7 @@ class _WeSlideState extends State<WeSlide> with SingleTickerProviderStateMixin {
 
   @override
   void initState() {
+    lastFootHeight = widget.footerHeight;
     // Subscribe to animated when value change
     _effectiveController.addListener(_animatedPanel);
     // Animation controller;

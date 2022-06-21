@@ -59,7 +59,7 @@ class SimpleExtendedImageState extends State<SimpleExtendedImage> {
   Widget build(BuildContext context) {
     if (widget.url.startsWith('http')) {
       return ExtendedImage.network(
-        url ?? '',
+        widget.url,
         width: widget.width,
         height: widget.height,
         shape: widget.shape,
@@ -97,9 +97,8 @@ class SimpleExtendedImageState extends State<SimpleExtendedImage> {
         },
       );
     } else {
-      print('object==============${widget.url}');
       return ExtendedImage.file(
-        File(url ?? ''),
+        File(widget.url),
         width: widget.width,
         height: widget.height,
         shape: widget.shape,

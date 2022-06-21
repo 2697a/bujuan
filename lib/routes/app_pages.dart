@@ -18,11 +18,11 @@ class AppPages {
   static const inital = Routes.home;
 
   static final routes = [
-    GetPage(
-      name: _Paths.home,
-      page: () => const HomeMobileView(),
-      binding: HomeBinding(),
-    ),
+    // GetPage(
+    //   name: _Paths.home,
+    //   page: () => const HomeMobileView(),
+    //   binding: HomeBinding(),
+    // ),
     GetPage(
       name: _Paths.index,
       page: () => const IndexView(),

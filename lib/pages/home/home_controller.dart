@@ -3,8 +3,6 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:assets_audio_player/assets_audio_player.dart';
-import 'package:bujuan/common/api/src/netease_util.dart';
-import 'package:bujuan/common/bean/lyric_entity.dart';
 import 'package:bujuan/common/constants/other.dart';
 import 'package:bujuan/widget/refresh_controller.dart';
 import 'package:flutter/material.dart';
@@ -15,9 +13,8 @@ import 'package:on_audio_query/on_audio_query.dart';
 
 import '../../common/constants/colors.dart';
 import '../../widget/weslide/weslide_controller.dart';
-import '../index/index_binding.dart';
 
-class HomeController extends SuperController {
+class HomeController extends SuperController with GetSingleTickerProviderStateMixin{
   final String weSlideUpdate = 'weSlide';
   double panelHeaderSize = 110.w;
   double secondPanelHeaderSize = 120.w;
@@ -25,7 +22,6 @@ class HomeController extends SuperController {
   double paddingTop = MediaQueryData.fromWindow(window).padding.top;
   double bottomBarHeight = 0;
   double panelMobileMinSize = 0;
-
   double topBarHeight = 120.w;
 
   //是否折叠
@@ -56,7 +52,8 @@ class HomeController extends SuperController {
   PageController secondPageController = PageController();
   RequestRefreshController refreshController = RequestRefreshController();
   final OnAudioQuery audioQuery = OnAudioQuery();
-
+  late BuildContext buildContext;
+  AnimationController? animationController;
   @override
   void onInit() {
     bottomBarHeight = 60 + paddingBottom;
@@ -66,13 +63,15 @@ class HomeController extends SuperController {
 
   @override
   void onReady() async {
+    animationController = AnimationController(vsync: this,duration: const Duration(milliseconds: 200));
     super.onReady();
+
     assetsAudioPlayer.current.listen((event) {
       if (event == null) {
         assetsAudioPlayer.next();
         return;
       }
-      ImageUtils.getImageColor(event.audio.audio.metas.image?.path ?? '', Get.context!, (paletteColorData) {
+      ImageUtils.getImageColor(event.audio.audio.metas.image?.path ?? '', (paletteColorData) {
         rx.value = paletteColorData;
         textColor.value = paletteColorData.light?.titleTextColor ?? AppTheme.onPrimary;
       });
@@ -99,6 +98,7 @@ class HomeController extends SuperController {
 
   void changeSlidePosition(value, {bool second = false}) {
     slidePosition.value = value;
+    animationController?.value = value;
     if (this.second.value != second || (second && value == 1)) {
       this.second.value = second && value < 1;
     }
@@ -159,7 +159,7 @@ class HomeController extends SuperController {
   }
 
   Color getHeaderColor() {
-    return Theme.of(Get.context!).bottomAppBarColor.withOpacity((second.value ? (1 - slidePosition.value) : slidePosition.value) > 0 ? 0 : 1);
+      return Theme.of(buildContext).bottomAppBarColor.withOpacity((second.value ? (1 - slidePosition.value) : slidePosition.value) > 0 ? 0 : 1);
     // return Color.fromRGBO(255, 255, 255, (second.value ? (1 - slidePosition.value) : slidePosition.value) > 0 ? 0 : 1);
   }
 
@@ -194,16 +194,14 @@ class HomeController extends SuperController {
 
   void changeRoute(String? route) {
     isRoot.value = route == '/';
-    // if (isRoot.value) {
-    //   //首页
-    //   bottomBarHeight = 60 + paddingBottom;
-    //   panelMobileMinSize = panelHeaderSize + bottomBarHeight;
-    // } else {
-    //   first = false;
-    //   //其他页面
-    //   bottomBarHeight = 0;
-    //   panelMobileMinSize = panelHeaderSize + paddingBottom;
-    // }
+    print('object=========$route');
+    if (isRoot.value) {
+      animationController?.value = 0;
+    } else {
+      first = false;
+      //其他页面
+      animationController?.value = 1;
+    }
     // if (!first) update([weSlideUpdate]);
   }
 

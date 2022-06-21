@@ -1,14 +1,10 @@
 import 'package:bujuan/pages/index/index_controller.dart';
-import 'package:bujuan/routes/app_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
-import '../../common/bean/personalized_entity.dart';
 import '../../common/constants/other.dart';
-import '../../widget/request_widget.dart';
-import '../../widget/simple_extended_image.dart';
 
 class IndexView extends GetView<IndexController> {
   const IndexView({Key? key}) : super(key: key);

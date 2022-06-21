@@ -184,6 +184,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "4.6.5"
+  go_router:
+    dependency: "direct main"
+    description:
+      name: go_router
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "4.0.0"
   http:
     dependency: transitive
     description:
@@ -226,6 +233,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.0.0"
+  logging:
+    dependency: transitive
+    description:
+      name: logging
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.2"
   matcher:
     dependency: transitive
     description:
@@ -247,6 +261,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.7.0"
+  move_to_background:
+    dependency: transitive
+    description:
+      name: move_to_background
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.2"
   on_audio_query:
     dependency: "direct main"
     description:
@@ -427,6 +448,69 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.3.1"
+  url_launcher:
+    dependency: transitive
+    description:
+      name: url_launcher
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "6.1.3"
+  url_launcher_android:
+    dependency: transitive
+    description:
+      name: url_launcher_android
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "6.0.17"
+  url_launcher_ios:
+    dependency: transitive
+    description:
+      name: url_launcher_ios
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "6.0.17"
+  url_launcher_linux:
+    dependency: transitive
+    description:
+      name: url_launcher_linux
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "3.0.1"
+  url_launcher_macos:
+    dependency: transitive
+    description:
+      name: url_launcher_macos
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "3.0.1"
+  url_launcher_platform_interface:
+    dependency: transitive
+    description:
+      name: url_launcher_platform_interface
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.1.0"
+  url_launcher_web:
+    dependency: transitive
+    description:
+      name: url_launcher_web
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.0.12"
+  url_launcher_windows:
+    dependency: transitive
+    description:
+      name: url_launcher_windows
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "3.0.1"
+  url_strategy:
+    dependency: transitive
+    description:
+      name: url_strategy
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.2.0"
   uuid:
     dependency: transitive
     description:
@@ -441,6 +525,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.1.2"
+  vrouter:
+    dependency: "direct main"
+    description:
+      name: vrouter
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.2.1"
   win32:
     dependency: transitive
     description:
