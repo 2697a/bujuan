@@ -14,7 +14,7 @@ import 'package:on_audio_query/on_audio_query.dart';
 import '../../common/constants/colors.dart';
 import '../../widget/weslide/weslide_controller.dart';
 
-class HomeController extends SuperController with GetSingleTickerProviderStateMixin{
+class HomeController extends SuperController {
   final String weSlideUpdate = 'weSlide';
   double panelHeaderSize = 110.w;
   double secondPanelHeaderSize = 120.w;
@@ -53,7 +53,6 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   RequestRefreshController refreshController = RequestRefreshController();
   final OnAudioQuery audioQuery = OnAudioQuery();
   late BuildContext buildContext;
-  AnimationController? animationController;
   @override
   void onInit() {
     bottomBarHeight = 60 + paddingBottom;
@@ -63,7 +62,6 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
 
   @override
   void onReady() async {
-    animationController = AnimationController(vsync: this,duration: const Duration(milliseconds: 200));
     super.onReady();
 
     assetsAudioPlayer.current.listen((event) {
@@ -98,7 +96,6 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
 
   void changeSlidePosition(value, {bool second = false}) {
     slidePosition.value = value;
-    animationController?.value = value;
     if (this.second.value != second || (second && value == 1)) {
       this.second.value = second && value < 1;
     }
@@ -195,13 +192,16 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   void changeRoute(String? route) {
     isRoot.value = route == '/';
     print('object=========$route');
-    if (isRoot.value) {
-      animationController?.value = 0;
-    } else {
-      first = false;
-      //其他页面
-      animationController?.value = 1;
-    }
+    // if (isRoot.value) {
+    //   //首页
+    //   bottomBarHeight = 60 + paddingBottom;
+    //   panelMobileMinSize = panelHeaderSize + bottomBarHeight;
+    // } else {
+    //   first = false;
+    //   //其他页面
+    //   bottomBarHeight = 0;
+    //   panelMobileMinSize = panelHeaderSize + paddingBottom;
+    // }
     // if (!first) update([weSlideUpdate]);
   }
 

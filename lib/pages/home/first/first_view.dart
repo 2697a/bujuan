@@ -33,7 +33,7 @@ class FirstView extends GetView<HomeController> {
             panelHeader: _buildPanelHeader(),
             footer: _buildFooter(),
             hidePanelHeader: false,
-            footerHeight: MediaQuery.of(context).padding.bottom,
+            footerHeight: controller.bottomBarHeight,
             panelMinSize: controller.panelMobileMinSize,
             onPosition: (value) => controller.changeSlidePosition(value),
             isDownSlide: controller.firstSlideIsDownSlide,
