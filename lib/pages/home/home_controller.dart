@@ -1,13 +1,14 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:ui';
 
-import 'package:assets_audio_player/assets_audio_player.dart';
+// import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:bujuan/common/audio_handler.dart';
 import 'package:bujuan/common/constants/other.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
 import '../../common/constants/colors.dart';
@@ -34,7 +35,7 @@ class HomeController extends SuperController {
   RxBool isScroll = true.obs;
 
   RxInt selectIndex = 0.obs;
-  final assetsAudioPlayer = AssetsAudioPlayer();
+  // final assetsAudioPlayer = AssetsAudioPlayer();
   RxDouble slidePosition = 0.0.obs;
   Rx<PaletteColorData> rx = PaletteColorData().obs;
   RxBool second = false.obs;
@@ -46,6 +47,8 @@ class HomeController extends SuperController {
   final OnAudioQuery audioQuery = OnAudioQuery();
   late BuildContext buildContext;
 
+  final AudioServeHandler audioServeHandler = GetIt.instance<AudioServeHandler>();
+
   @override
   void onInit() {
     panelMobileMinSize = 110.w + bottomBarHeight;
@@ -55,17 +58,18 @@ class HomeController extends SuperController {
   @override
   void onReady() async {
     super.onReady();
-    assetsAudioPlayer.current.listen((event) {
-      if (event == null) {
-        assetsAudioPlayer.next();
-        return;
-      }
-      ImageUtils.getImageColor(event.audio.audio.metas.image?.path ?? '', (paletteColorData) {
-        rx.value = paletteColorData;
-        textColor.value = paletteColorData.light?.titleTextColor ?? AppTheme.onPrimary;
-      });
-    });
-    assetsAudioPlayer.currentPosition.listen((event) {});
+    audioServeHandler.play();
+    // assetsAudioPlayer.current.listen((event) {
+    //   if (event == null) {
+    //     assetsAudioPlayer.next();
+    //     return;
+    //   }
+    //   ImageUtils.getImageColor(event.audio.audio.metas.image?.path ?? '', (paletteColorData) {
+    //     rx.value = paletteColorData;
+    //     textColor.value = paletteColorData.light?.titleTextColor ?? AppTheme.onPrimary;
+    //   });
+    // });
+    // assetsAudioPlayer.currentPosition.listen((event) {});
     requestPermission();
   }
 
@@ -80,7 +84,7 @@ class HomeController extends SuperController {
   }
 
   void playOrPause() async {
-    await assetsAudioPlayer.playOrPause();
+    // await assetsAudioPlayer.playOrPause();
   }
 
   void changeSlidePosition(value, {bool second = false}) {

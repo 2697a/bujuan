@@ -1,4 +1,3 @@
-import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/widget/simple_extended_image.dart';
 import 'package:bujuan/widget/weslide/weslide.dart';
@@ -98,68 +97,64 @@ class FirstView extends GetView<HomeController> {
 
   Widget _buildPlayBar() {
     return Expanded(
-        child: PlayerBuilder.current(
-            player: controller.assetsAudioPlayer,
-            builder: (context, playing) => Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+                child: Stack(
+                  alignment: Alignment.centerLeft,
                   children: [
-                    Expanded(
-                        child: Stack(
-                      alignment: Alignment.centerLeft,
-                      children: [
-                        AnimatedPositioned(
-                            left: controller.getImageLeft(),
-                            duration: const Duration(milliseconds: 0),
-                            child: SimpleExtendedImage(
-                              playing.audio.audio.metas.image?.path ?? '',
-                              height: controller.getImageSize(),
-                              width: controller.getImageSize(),
-                              borderRadius: BorderRadius.circular(15.w),
-                            )),
-                        AnimatedOpacity(
-                          opacity: controller.slidePosition.value > 0 ? 0 : 1,
-                          duration: const Duration(milliseconds: 10),
-                          child: Padding(
-                            padding: EdgeInsets.only(left: controller.panelHeaderSize),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  playing.audio.audio.metas.title ?? '',
-                                  style: TextStyle(fontSize: 26.sp, fontWeight: FontWeight.bold, color: controller.getLightTextColor()),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                Text('${controller.bottomBarHeight}', style: TextStyle(fontSize: 22.sp, color: controller.getLightTextColor()))
-                              ],
+                    AnimatedPositioned(
+                        left: controller.getImageLeft(),
+                        duration: const Duration(milliseconds: 0),
+                        child: SimpleExtendedImage(
+                          '',
+                          height: controller.getImageSize(),
+                          width: controller.getImageSize(),
+                          borderRadius: BorderRadius.circular(15.w),
+                        )),
+                    AnimatedOpacity(
+                      opacity: controller.slidePosition.value > 0 ? 0 : 1,
+                      duration: const Duration(milliseconds: 10),
+                      child: Padding(
+                        padding: EdgeInsets.only(left: controller.panelHeaderSize),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                             '',
+                              style: TextStyle(fontSize: 26.sp, fontWeight: FontWeight.bold, color: controller.getLightTextColor()),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                          ),
+                            Text('${controller.bottomBarHeight}', style: TextStyle(fontSize: 22.sp, color: controller.getLightTextColor()))
+                          ],
                         ),
-                      ],
-                    )),
-                    Visibility(
-                      visible: controller.slidePosition.value == 0,
-                      child: PlayerBuilder.isPlaying(
-                          player: controller.assetsAudioPlayer,
-                          builder: (c, isPlaying) => IconButton(
-                              onPressed: () => controller.playOrPause(),
-                              icon: Icon(
-                                isPlaying ? Icons.pause : Icons.play_arrow,
-                                color: controller.getLightTextColor(),
-                              ))),
+                      ),
                     ),
-                    Visibility(
-                      visible: controller.slidePosition.value == 0,
-                      child: IconButton(
-                          onPressed: () => controller.assetsAudioPlayer.next(),
-                          icon: Icon(
-                            Icons.skip_next_sharp,
-                            color: controller.getLightTextColor(),
-                          )),
-                    )
                   ],
-                )));
+                )),
+            Visibility(
+              visible: controller.slidePosition.value == 0,
+              child: IconButton(
+                  onPressed: () => controller.playOrPause(),
+                  icon: Icon(
+                   Icons.play_arrow,
+                    color: controller.getLightTextColor(),
+                  )),
+            ),
+            Visibility(
+              visible: controller.slidePosition.value == 0,
+              child: IconButton(
+                  onPressed: () {},
+                  icon: Icon(
+                    Icons.skip_next_sharp,
+                    color: controller.getLightTextColor(),
+                  )),
+            )
+          ],
+        ));
   }
 
   Widget _buildFooter() {

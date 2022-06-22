@@ -15,20 +15,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.1.0"
-  assets_audio_player:
-    dependency: "direct main"
-    description:
-      name: assets_audio_player
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "3.0.4+3"
-  assets_audio_player_web:
-    dependency: transitive
-    description:
-      name: assets_audio_player_web
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "3.0.4+3"
   async:
     dependency: transitive
     description:
@@ -219,6 +205,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "4.6.5"
+  get_it:
+    dependency: "direct main"
+    description:
+      name: get_it
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "7.2.0"
   go_router:
     dependency: "direct main"
     description:

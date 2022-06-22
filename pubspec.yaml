@@ -43,7 +43,6 @@ dependencies:
   path_provider: ^2.0.11
   flutter_screenutil: ^5.5.3+2
   extended_image: ^6.0.1
-  assets_audio_player: ^3.0.4+3
   flutter_image_compress: ^1.1.0
   palette_generator: ^0.3.3
   on_audio_query:
@@ -51,6 +50,8 @@ dependencies:
   go_router: ^4.0.0
   just_audio: ^0.9.25
   audio_service: ^0.18.5
+  get_it: ^7.2.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
