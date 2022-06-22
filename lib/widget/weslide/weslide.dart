@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'weslide_controller.dart';
 
@@ -41,6 +42,8 @@ class WeSlide extends StatefulWidget {
   /// if you want that panel cover the whole [Body], set with
   /// MediaQuery.of(context).size.height
   final double panelMaxSize;
+
+  final double? height;
 
   /// This is the value that set the panel width
   /// by default is MediaQuery.of(context).size.width
@@ -204,7 +207,7 @@ class WeSlide extends StatefulWidget {
     this.animateDuration = const Duration(milliseconds: 200),
     this.controller,
     this.onPosition,
-    this.isDownSlide = true,
+    this.isDownSlide = true,  this.height,
   })  : /*assert(body != null, 'body could not be null'),*/
         assert(panelMinSize >= 0.0, 'panelMinSize cannot be negative'),
         assert(footerHeight >= 0.0, 'footerHeight cannot be negative'),
@@ -412,7 +415,7 @@ class _WeSlideState extends State<WeSlide> with SingleTickerProviderStateMixin {
     final width = MediaQuery.of(context).size.width;
 
     return Container(
-      height: height,
+      height: widget.height??height,
       decoration: widget.boxDecoration ?? const BoxDecoration(),
       child: Stack(
         alignment: Alignment.bottomCenter,
@@ -436,8 +439,8 @@ class _WeSlideState extends State<WeSlide> with SingleTickerProviderStateMixin {
                 ),
               );
             },
-            child: Container(
-              height: height - _getBodyHeight(),
+            child: SizedBox(
+              height: height - _getBodyHeight()+(HomeController.to.isRoot.value?0:HomeController.to.bottomBarHeight),
               width: widget.bodyWidth ?? width,
               child: widget.body,
             ),
@@ -492,13 +495,21 @@ class _WeSlideState extends State<WeSlide> with SingleTickerProviderStateMixin {
                   onVerticalDragUpdate: _handleVerticalUpdate,
                   onVerticalDragEnd: _handleVerticalEnd,
                   child: AnimatedContainer(
+                    decoration: const BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 5,
+                        ),
+                      ]
+                    ),
                     height: widget.panelMaxSize,
                     width: widget.panelWidth ?? width,
                     duration: const Duration(milliseconds: 300),
                     child: ClipRRect(
                       borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(_panelborderRadius.value),
-                        topRight: Radius.circular(_panelborderRadius.value),
+                        topLeft: Radius.circular(35.w),
+                        topRight: Radius.circular(35.w),
                       ),
                       child: child,
                     ),

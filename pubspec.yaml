@@ -48,9 +48,9 @@ dependencies:
   palette_generator: ^0.3.3
   on_audio_query:
     path: plugins/on_audio_query-2.6.1
-  vrouter: ^1.2.1
   go_router: ^4.0.0
-
+  just_audio: ^0.9.25
+  audio_service: ^0.18.5
 dev_dependencies:
   flutter_test:
     sdk: flutter

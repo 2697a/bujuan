@@ -11,7 +11,7 @@ class SecondPanelView extends GetView<HomeController> {
   Widget build(BuildContext context) {
     return Obx(() => Container(
           width: Get.width,
-          padding: EdgeInsets.only(top: controller.secondPanelHeaderSize + controller.paddingBottom),
+          padding: EdgeInsets.only(top: controller.secondPanelHeaderSize + MediaQuery.of(context).padding.bottom),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)), color: controller.rx.value.dark?.color ?? Colors.white),
           child: PageView(

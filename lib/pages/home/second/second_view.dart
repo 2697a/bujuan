@@ -14,27 +14,28 @@ class SecondView extends GetView<HomeController> {
   Widget build(BuildContext context) {
     return Obx(() => WeSlide(
           controller: controller.weSlideController1,
-          panelMaxSize: Get.height - controller.panelHeaderSize - controller.paddingTop - 10.w,
+          panelMaxSize: Get.height - controller.panelHeaderSize - MediaQuery.of(context).padding.top - 10.w,
           panelMinSize: controller.getSecondPanelMinSize(),
           hidePanelHeader: false,
           boxDecoration: BoxDecoration(
               borderRadius: BorderRadius.only(topLeft: Radius.circular(20.w), topRight: Radius.circular(20.w)),
-              gradient: LinearGradient(
-                  colors: [controller.rx.value.light?.color.withOpacity(controller.second.value?1:controller.slidePosition.value) ?? Colors.white, controller.rx.value.dark?.color.withOpacity(controller.second.value?1:controller.slidePosition.value) ?? Colors.white],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter)),
+              gradient: LinearGradient(colors: [
+                controller.rx.value.light?.color.withOpacity(controller.second.value ? 1 : controller.slidePosition.value) ?? Colors.white,
+                controller.rx.value.dark?.color.withOpacity(controller.second.value ? 1 : controller.slidePosition.value) ?? Colors.white
+              ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
           onPosition: (value) => controller.changeSlidePosition(1 - value, second: true),
           body: const SecondBodyView(),
           panel: const SecondPanelView(),
           panelHeader: _buildSecondHead(),
-          isUpSlide: false,
+          footer: Container(color: controller.rx.value.dark?.color ?? Colors.white,height: MediaQuery.of(context).padding.bottom,),
+          footerHeight: MediaQuery.of(context).padding.bottom,
         ));
   }
 
   Widget _buildSecondHead() {
     return InkWell(
       child: Container(
-        padding: EdgeInsets.only(bottom: controller.paddingBottom),
+        padding: EdgeInsets.only(bottom: MediaQuery.of(controller.buildContext).padding.bottom),
         decoration:
             BoxDecoration(borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)), color: controller.rx.value.dark?.color ?? Colors.white),
         width: Get.width,
