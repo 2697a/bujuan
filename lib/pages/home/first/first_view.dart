@@ -1,4 +1,5 @@
 import 'package:bujuan/pages/home/home_controller.dart';
+import 'package:bujuan/pages/home/home_mobile_view.dart';
 import 'package:bujuan/widget/simple_extended_image.dart';
 import 'package:bujuan/widget/weslide/weslide.dart';
 import 'package:flutter/material.dart';
@@ -10,9 +11,8 @@ import '../second/second_view.dart';
 import 'first_body_view.dart';
 
 class FirstView extends GetView<HomeController> {
-  final Widget widget;
 
-  const FirstView(this.widget, {Key? key}) : super(key: key);
+  const FirstView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,27 +22,27 @@ class FirstView extends GetView<HomeController> {
       body: WillPopScope(
           child: Stack(
             children: [
-              AnimatedPositioned(
+              GetBuilder(builder: (c) =>AnimatedPositioned(
                 duration: const Duration(milliseconds: 200),
                 bottom: controller.isRoot.value ? 0 : -controller.bottomBarHeight,
                 child: WeSlide(
                   controller: controller.weSlideController,
                   panelWidth: Get.width,
                   bodyWidth: Get.width,
-                  panelMaxSize: Get.height + (controller.isRoot.value ? 0 : controller.bottomBarHeight),
+                  panelMaxSize: Get.height + (controller.isRoot1 ? 0 : controller.bottomBarHeight),
                   parallax: true,
-                  body: FirstBodyView(widget),
+                  body: const HomeMobileView(),
                   panel: const SecondView(),
                   panelHeader: _buildPanelHeader(),
                   footer: _buildFooter(),
                   hidePanelHeader: false,
-                  height: Get.height + (controller.isRoot.value ? 0 : controller.bottomBarHeight),
+                  height: Get.height + (controller.isRoot1 ? 0 : controller.bottomBarHeight),
                   footerHeight: controller.bottomBarHeight + MediaQuery.of(context).padding.bottom,
                   panelMinSize: controller.panelMobileMinSize + MediaQuery.of(context).padding.bottom,
                   onPosition: (value) => controller.changeSlidePosition(value),
                   isDownSlide: controller.firstSlideIsDownSlide,
                 ),
-              )
+              ),id: controller.weSlideUpdate,init: controller,)
             ],
           ),
           onWillPop: () => controller.onWillPop()),

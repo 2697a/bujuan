@@ -1,12 +1,12 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:just_audio/just_audio.dart';
 
-class AudioServeHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
+class AudioServeHandler extends BaseAudioHandler
+    with QueueHandler, SeekHandler {
   final AudioPlayer _player = AudioPlayer(); //真正去播放的实例
   final _playlist = ConcatenatingAudioSource(children: []);
 
   AudioServeHandler() {
-    _loadEmptyPlaylist();
     _notifyAudioHandlerAboutPlaybackEvents();
     _listenForDurationChanges();
     _listenForCurrentSongIndexChanges();
@@ -28,8 +28,14 @@ class AudioServeHandler extends BaseAudioHandler with QueueHandler, SeekHandler 
         controls: [
           MediaControl.skipToPrevious,
           if (playing) MediaControl.pause else MediaControl.play,
-          const MediaControl(label: 'rating', action: MediaAction.setRating, androidIcon: 'drawable/audio_service_fast_forward'),
-          const MediaControl(label: 'rating1', action: MediaAction.setShuffleMode, androidIcon: 'drawable/audio_service_fast_forward'),
+          const MediaControl(
+              label: 'rating',
+              action: MediaAction.setRating,
+              androidIcon: 'drawable/audio_service_fast_forward'),
+          const MediaControl(
+              label: 'rating1',
+              action: MediaAction.setShuffleMode,
+              androidIcon: 'drawable/audio_service_fast_forward'),
           MediaControl.skipToNext,
         ],
         systemActions: const {
@@ -48,7 +54,9 @@ class AudioServeHandler extends BaseAudioHandler with QueueHandler, SeekHandler 
           LoopMode.one: AudioServiceRepeatMode.one,
           LoopMode.all: AudioServiceRepeatMode.all,
         }[_player.loopMode]!,
-        shuffleMode: (_player.shuffleModeEnabled) ? AudioServiceShuffleMode.all : AudioServiceShuffleMode.none,
+        shuffleMode: (_player.shuffleModeEnabled)
+            ? AudioServiceShuffleMode.all
+            : AudioServiceShuffleMode.none,
         playing: playing,
         updatePosition: _player.position,
         bufferedPosition: _player.bufferedPosition,
@@ -56,13 +64,11 @@ class AudioServeHandler extends BaseAudioHandler with QueueHandler, SeekHandler 
         queueIndex: event.currentIndex,
       ));
     });
-    playbackState.listen((value) {});
   }
 
   void _listenForDurationChanges() {
     _player.durationStream.listen((duration) {
       var index = _player.currentIndex;
-      print('object==========$index');
       final newQueue = queue.value;
       if (index == null || newQueue.isEmpty) return;
       if (_player.shuffleModeEnabled) {
@@ -100,26 +106,26 @@ class AudioServeHandler extends BaseAudioHandler with QueueHandler, SeekHandler 
   Future<void> addQueueItems(List<MediaItem> mediaItems) async {
     // 管理 Just Audio
     final audioSource = mediaItems.map(_createAudioSource);
-    _playlist
-      ..clear()
-      ..addAll(audioSource.toList());
+    _playlist.addAll(audioSource.toList());
+    await _loadEmptyPlaylist();
     // 通知系统
-    final newQueue = queue.value
-      ..clear()
-      ..addAll(mediaItems);
+    final newQueue = queue.value..addAll(mediaItems);
     queue.add(newQueue);
   }
 
-  Future<void> replaceQueueItems(List<MediaItem> mediaItems) async {
+  Future<void> replaceQueueItems(
+      List<MediaItem> mediaItems, String title) async {
     // 管理 Just Audio
     final audioSource = mediaItems.map(_createAudioSource);
     _playlist
       ..clear()
       ..addAll(audioSource.toList());
+    await _loadEmptyPlaylist();
     // 通知系统
     final newQueue = queue.value
       ..clear()
       ..addAll(mediaItems);
+    queueTitle.value = title;
     queue.add(newQueue);
   }
 
@@ -132,7 +138,6 @@ class AudioServeHandler extends BaseAudioHandler with QueueHandler, SeekHandler 
 
   @override
   Future<void> play() async {
-    print('i can play');
     await _player.play();
   }
 
@@ -153,12 +158,12 @@ class AudioServeHandler extends BaseAudioHandler with QueueHandler, SeekHandler 
 
   @override
   Future<void> skipToQueueItem(int index) async {
-    // if (index < 0 || index >= queue.value.length) return;
-    // if (_player.shuffleModeEnabled) {
-    //   print('================');
-    //   index = _player.shuffleIndices![index];
-    // }
-    // print('================$index');
+    if (index < 0 || index >= queue.value.length) return;
+    if (_player.shuffleModeEnabled) {
+      print('================');
+      index = _player.shuffleIndices![index];
+    }
+    print('================$index');
     _player.seek(Duration.zero, index: index);
   }
 

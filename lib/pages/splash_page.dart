@@ -1,10 +1,6 @@
 import 'dart:async';
-import 'dart:io';
-import 'package:auto_route/auto_route.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({Key? key}) : super(key: key);
@@ -30,7 +26,6 @@ class SplashPageState extends State<SplashPage> {
     });
 
     Future.delayed(durationFinish, () {
-     context.go('/home');
     });
   }
 

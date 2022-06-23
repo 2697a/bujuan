@@ -65,7 +65,7 @@ packages:
     source: hosted
     version: "0.1.7"
   auto_route:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: auto_route
       url: "https://pub.flutter-io.cn"
@@ -225,6 +225,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.2.3"
+  dio:
+    dependency: "direct main"
+    description:
+      name: dio
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "4.0.6"
   encrypt:
     dependency: "direct main"
     description:
@@ -345,13 +352,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.1.0"
-  go_router:
-    dependency: "direct main"
-    description:
-      name: go_router
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "4.0.0"
   graphs:
     dependency: transitive
     description:
@@ -450,6 +450,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.0.0"
+  loading_animation_widget:
+    dependency: "direct main"
+    description:
+      name: loading_animation_widget
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.2.0+2"
   logging:
     dependency: transitive
     description:

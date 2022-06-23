@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:io';
 
-// import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:bujuan/common/audio_handler.dart';
 import 'package:bujuan/common/constants/other.dart';
+import 'package:dio/dio.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -41,15 +41,22 @@ class HomeController extends SuperController {
   Rx<PaletteColorData> rx = PaletteColorData().obs;
   RxBool second = false.obs;
   bool firstSlideIsDownSlide = true;
-  SystemUiOverlayStyle systemUiOverlayStyle = const SystemUiOverlayStyle(systemNavigationBarColor: AppTheme.onPrimary);
+  SystemUiOverlayStyle systemUiOverlayStyle =
+      const SystemUiOverlayStyle(systemNavigationBarColor: AppTheme.onPrimary);
   RxBool isRoot = true.obs;
-  Rx<MediaItem> mediaItem = const MediaItem(id: 'id', title: '暂无').obs;
+  bool isRoot1 = true;
+  bool first = true;
+  Rx<MediaItem> mediaItem =
+      const MediaItem(id: 'id', title: '暂无', duration: Duration(seconds: 10))
+          .obs;
   RxBool playing = false.obs;
   PageController secondPageController = PageController();
   final OnAudioQuery audioQuery = OnAudioQuery();
   late BuildContext buildContext;
-  final AudioServeHandler audioServeHandler = GetIt.instance<AudioServeHandler>();
+  final AudioServeHandler audioServeHandler =
+      GetIt.instance<AudioServeHandler>();
   Rx<Duration> duration = Duration.zero.obs;
+  var dio = http.Dio();
 
   @override
   void onInit() {
@@ -60,17 +67,27 @@ class HomeController extends SuperController {
   @override
   void onReady() async {
     super.onReady();
-    audioServeHandler.mediaItem.listen((value) {
+    audioServeHandler.mediaItem.listen((value) async {
       if (value == null) return;
+      http.Response response = await dio.get(
+          'https://mobileservice.kugou.com/api/v3/lyric/search?version=9108&highlight=1&plat=0&pagesize=20&area_code=1&page=1&with_res_tag=1',
+          queryParameters: {'keyword': value.title});
+      print(response.data.toString());
+      //
       mediaItem.value = value;
       ImageUtils.getImageColor(value.artUri?.path ?? '', (paletteColorData) {
         rx.value = paletteColorData;
-        textColor.value = paletteColorData.light?.titleTextColor ?? AppTheme.onPrimary;
+        textColor.value =
+            paletteColorData.light?.titleTextColor ?? AppTheme.onPrimary;
       });
     });
-    audioServeHandler.playbackState.listen((value) => playing.value = value.playing);
+    audioServeHandler.playbackState
+        .listen((value) => playing.value = value.playing);
     AudioService.position.listen((event) => duration.value = event);
 
+    // audioServeHandler.queue.listen((value) {
+    //   print('audioServeHandler.queue.listen=====${value.length}');
+    // });
     // assetsAudioPlayer.current.listen((event) {
     //   if (event == null) {
     //     assetsAudioPlayer.next();
@@ -127,7 +144,8 @@ class HomeController extends SuperController {
 
   void changeSystemNavigationBarColor(Color color) {
     if (Platform.isAndroid) {
-      systemUiOverlayStyle = SystemUiOverlayStyle(systemNavigationBarColor: color);
+      systemUiOverlayStyle =
+          SystemUiOverlayStyle(systemNavigationBarColor: color);
       SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
     }
   }
@@ -150,7 +168,10 @@ class HomeController extends SuperController {
   }
 
   double getPanelAdd() {
-    return MediaQuery.of(buildContext).padding.top * (second.value ? 1 : slidePosition.value) + getTopHeight() + (isRoot.value ? 0 : MediaQuery.of(buildContext).padding.bottom);
+    return MediaQuery.of(buildContext).padding.top *
+            (second.value ? 1 : slidePosition.value) +
+        getTopHeight() +
+        (isRoot.value ? 0 : MediaQuery.of(buildContext).padding.bottom);
   }
 
   double getImageSize() {
@@ -162,11 +183,15 @@ class HomeController extends SuperController {
   }
 
   double getTitleLeft() {
-    return ((Get.width - 60.w) - getPanelMinSize()) / 2 * slidePosition.value + getPanelMinSize();
+    return ((Get.width - 60.w) - getPanelMinSize()) / 2 * slidePosition.value +
+        getPanelMinSize();
   }
 
   Color getHeaderColor() {
-    return Theme.of(buildContext).bottomAppBarColor.withOpacity((second.value ? (1 - slidePosition.value) : slidePosition.value) > 0 ? 0 : 1);
+    return Theme.of(buildContext).bottomAppBarColor.withOpacity(
+        (second.value ? (1 - slidePosition.value) : slidePosition.value) > 0
+            ? 0
+            : 1);
     // return Color.fromRGBO(255, 255, 255, (second.value ? (1 - slidePosition.value) : slidePosition.value) > 0 ? 0 : 1);
   }
 
@@ -186,7 +211,11 @@ class HomeController extends SuperController {
   }
 
   EdgeInsets getHeaderPadding() {
-    return EdgeInsets.only(left: 30.w, right: 30.w, top: MediaQuery.of(buildContext).padding.top * (second.value ? 1 : slidePosition.value));
+    return EdgeInsets.only(
+        left: 30.w,
+        right: 30.w,
+        top: MediaQuery.of(buildContext).padding.top *
+            (second.value ? 1 : slidePosition.value));
   }
 
   //
@@ -200,7 +229,10 @@ class HomeController extends SuperController {
   }
 
   void changeRoute(String? route) {
-    isRoot.value = route == '/home';
+    isRoot.value = route == '/';
+    isRoot1 = route == '/';
+    if (!isRoot1) first = false;
+    if (!first) update([weSlideUpdate]);
     print('object=========$route');
   }
 

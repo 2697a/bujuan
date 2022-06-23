@@ -1,8 +1,8 @@
 import 'package:bujuan/pages/index/index_controller.dart';
+import 'package:bujuan/routes/app_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:go_router/go_router.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
 class AlbumView extends GetView<IndexController> {
@@ -16,7 +16,7 @@ class AlbumView extends GetView<IndexController> {
 
   Widget _buildAlbumView(){
     return GridView.builder(
-      padding: EdgeInsets.symmetric(horizontal: 30.w),
+      padding: EdgeInsets.symmetric(horizontal: 30.w,vertical: 20.w),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         crossAxisSpacing: 20.w,
@@ -44,7 +44,7 @@ class AlbumView extends GetView<IndexController> {
           ],
         ),
       ),
-      onTap:() => controller.buildContext.go('/home/details',extra: albumModel),
+      onTap:() => Get.toNamed(Routes.details,arguments: DetailsArguments(albumModel)),
     );
   }
 }

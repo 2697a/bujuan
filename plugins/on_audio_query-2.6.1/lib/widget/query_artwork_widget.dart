@@ -314,10 +314,7 @@ class QueryArtworkWidget extends StatelessWidget {
           );
         }
         return nullArtworkWidget ??
-            const Icon(
-              Icons.image_not_supported,
-              size: 50,
-            );
+            const SizedBox();
       },
     );
   }

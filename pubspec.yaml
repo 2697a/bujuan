@@ -47,11 +47,11 @@ dependencies:
   palette_generator: ^0.3.3
   on_audio_query:
     path: plugins/on_audio_query-2.6.1
-  go_router: ^4.0.0
   just_audio: ^0.9.25
   audio_service: ^0.18.5
   get_it: ^7.2.0
-  auto_route: ^4.0.1
+  loading_animation_widget: ^1.2.0+2
+  dio: ^4.0.6
 
 dev_dependencies:
   flutter_test:

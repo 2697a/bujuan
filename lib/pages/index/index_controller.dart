@@ -13,6 +13,7 @@ class IndexController extends GetxController {
   RxList<AlbumModel> albums = <AlbumModel>[].obs;
   final List<MediaItem> mediaItems = [];
   late BuildContext buildContext;
+  final String queueTitle = Get.routing.current;
 
   // List<Audio> audios = [];
 
@@ -25,15 +26,15 @@ class IndexController extends GetxController {
     });
   }
 
-  querySong() {
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
+  querySong() async{
       songs.value = await HomeController.to.audioQuery.querySongs();
       for (var songModel in songs) {
         Directory directory = await getTemporaryDirectory();
         String path = '${directory.path}${songModel.id}';
         File file = File(path);
         if (!await file.exists()) {
-          Uint8List? a = await HomeController.to.audioQuery.queryArtwork(songModel.id, ArtworkType.AUDIO, size: 800);
+          Uint8List? a = await HomeController.to.audioQuery
+              .queryArtwork(songModel.id, ArtworkType.AUDIO, size: 800);
           await file.writeAsBytes(a!);
         }
         MediaItem mediaItem = MediaItem(
@@ -45,7 +46,6 @@ class IndexController extends GetxController {
             artist: songModel.artist);
         mediaItems.add(mediaItem);
       }
-    });
   }
 
   queryAlbum() async {
@@ -53,12 +53,13 @@ class IndexController extends GetxController {
   }
 
   play(index) async {
-    HomeController.to.audioServeHandler.replaceQueueItems(mediaItems).then((value) {
-      HomeController.to.audioServeHandler
-        ..skipToQueueItem(index)
-        ..play();
-    });
+    String title = HomeController.to.audioServeHandler.queueTitle.value;
+    if (title.isEmpty || title != queueTitle) {
+      await HomeController.to.audioServeHandler
+          .replaceQueueItems(mediaItems, queueTitle);
+    }
+    HomeController.to.audioServeHandler
+      ..skipToQueueItem(index)
+      ..play();
   }
-
-
 }

@@ -1,7 +1,10 @@
+import 'package:audio_service/audio_service.dart';
+import 'package:bujuan/common/constants/other.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class SecondPanelView extends GetView<HomeController> {
   const SecondPanelView({Key? key}) : super(key: key);
@@ -26,63 +29,63 @@ class SecondPanelView extends GetView<HomeController> {
   }
 
   Widget _buildPlayList() {
-    return Container();
-    // return NotificationListener<ScrollNotification>(
-    //     onNotification: (ScrollNotification notification) {
-    //       controller.offset = notification.metrics.pixels;
-    //       return false;
-    //     },
-    //     child: Listener(
-    //       onPointerMove: (event) {
-    //         // 触摸事件过程 手指一直在屏幕上且发生距离滑动
-    //         if (controller.isScroll.value != !(controller.offset == 0 && event.position.dy > controller.down)) {
-    //           controller.isScroll.value = !(controller.offset == 0 && event.position.dy > controller.down);
-    //         }
-    //       },
-    //       onPointerUp: (event) {
-    //         controller.isScroll.value = true;
-    //       },
-    //       onPointerDown: (event) {
-    //         controller.down = event.position.dy;
-    //       },
-    //       child: PlayerBuilder.current(
-    //           player: controller.assetsAudioPlayer,
-    //           builder: (context, playing) => ListView.builder(
-    //                 physics: controller.isScroll.value ? const ClampingScrollPhysics() : const NeverScrollableScrollPhysics(),
-    //                 itemBuilder: (context, index) => _buildPlayListItem(audios[index], index, playing),
-    //                 itemCount: audios.length,
-    //                 padding: EdgeInsets.symmetric(vertical: 0, horizontal: 30.w),
-    //               )),
-    //     ));
+    return NotificationListener<ScrollNotification>(
+        onNotification: (ScrollNotification notification) {
+          controller.offset = notification.metrics.pixels;
+          return false;
+        },
+        child: Listener(
+          onPointerMove: (event) {
+            // 触摸事件过程 手指一直在屏幕上且发生距离滑动
+            if (controller.isScroll.value != !(controller.offset == 0 && event.position.dy > controller.down)) {
+              controller.isScroll.value = !(controller.offset == 0 && event.position.dy > controller.down);
+            }
+          },
+          onPointerUp: (event) {
+            controller.isScroll.value = true;
+          },
+          onPointerDown: (event) {
+            controller.down = event.position.dy;
+          },
+          child: ListView.builder(
+            physics: controller.isScroll.value ? const ClampingScrollPhysics() : const NeverScrollableScrollPhysics(),
+            itemBuilder: (context, index) => _buildPlayListItem(controller.audioServeHandler.queue.value[index], index),
+            itemCount: controller.audioServeHandler.queue.value.length,
+            padding: EdgeInsets.symmetric(vertical: 0, horizontal: 30.w),
+          ),
+        ));
   }
 
-  // Widget _buildPlayListItem(Audio audio, int index, Playing playing) {
-  //   return InkWell(
-  //     child: Padding(
-  //       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 15.w),
-  //       child: Row(
-  //         children: [
-  //           Expanded(
-  //               child: Column(
-  //             crossAxisAlignment: CrossAxisAlignment.start,
-  //             children: [
-  //               Text(
-  //                 audio.metas.title ?? '',
-  //                 style: TextStyle(color: controller.rx.value.dark?.bodyTextColor),
-  //               ),
-  //               Text(
-  //                 audio.metas.artist ?? '',
-  //                 style: TextStyle(color: controller.rx.value.dark?.bodyTextColor),
-  //               )
-  //             ],
-  //           )),
-  //           Icon(playing.audio.audio.metas.id == audio.metas.id ? Icons.play_arrow : null, color: controller.rx.value.dark?.bodyTextColor)
-  //         ],
-  //       ),
-  //     ),
-  //     onTap: () => controller.assetsAudioPlayer.playlistPlayAtIndex(index),
-  //   );
-  // }
+  Widget _buildPlayListItem(MediaItem audio, int index) {
+    return InkWell(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 15.w),
+        child: Row(
+          children: [
+            Expanded(
+                child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  audio.title,
+                  style: TextStyle(color: controller.rx.value.dark?.bodyTextColor,fontSize: 28.sp),
+                ),
+                Text(
+                  '${audio.artist ?? ''}  ${ImageUtils.getTimeStamp(audio.duration?.inMilliseconds??0)}',
+                  style: TextStyle(color: controller.rx.value.dark?.bodyTextColor,fontSize: 24.sp),
+                )
+              ],
+            )),
+            Offstage(
+              offstage: controller.mediaItem.value.id != audio.id,
+              child: LoadingAnimationWidget.staggeredDotsWave(color: controller.rx.value.dark?.bodyTextColor??Colors.white, size: 38.w),
+            )
+          ],
+        ),
+      ),
+      onTap: () => controller.audioServeHandler.skipToQueueItem(index),
+    );
+  }
 
   Widget _buildLyricList() {
     return NotificationListener<ScrollNotification>(
