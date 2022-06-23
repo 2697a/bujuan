@@ -1,11 +1,11 @@
+import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/routes/app_pages.dart';
 import 'package:get/get.dart';
-
-import '../../common/bean/song_details_entity.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 
 class DetailsController extends GetxController {
   DetailsArguments? detailsArguments;
-  bool added = false;
+  RxList<SongModel> songs = <SongModel>[].obs;
 
   @override
   void onInit() {
@@ -13,7 +13,7 @@ class DetailsController extends GetxController {
     super.onInit();
   }
 
-  void initSong(List<SongDetailsSongs> songs) {}
-
-  void playByIndex(int index) async {}
+  queryAudiosFrom() async {
+    songs.value = await HomeController.to.audioQuery.queryAudiosFrom(AudiosFromType.ALBUM, 1);
+  }
 }

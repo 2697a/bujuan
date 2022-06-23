@@ -28,31 +28,35 @@ main() async {
       GoRoute(
           path: '/',
           builder: (context, state) {
+            return const SplashPage();
+          },
+          routes: []),
+      GoRoute(
+          path: '/home',
+          builder: (context, state) {
             HomeBinding().dependencies();
             return const HomeMobileView();
           },
           routes: [
             GoRoute(
               path: 'details',
-              pageBuilder: (context, state) {
+              builder: (context, state) {
                 DetailsBinding().dependencies();
-                return CustomTransitionPage(
-                    child: const DetailsView(), transitionsBuilder: (context, animation, secondaryAnimation, child) => FadeTransition(opacity: animation, child: child));
-              },
+                return const DetailsView();
+                },
             ),
           ]),
     ],
     navigatorBuilder: (context, state, child) {
+      if (state.location == '/') return child;
       HomeController.to.changeRoute(state.location);
-      return Stack(
-        children: [FirstView(child), const SplashPage()],
-      );
+      return FirstView(child);
     },
   );
   runApp(ScreenUtilInit(
     designSize: isMobile ? const Size(750, 1334) : const Size(2160, 1406),
     builder: (BuildContext context, Widget? child) => GetMaterialApp.router(
-      key: Get.key,
+      color: Colors.red,
       title: "Application",
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
@@ -71,7 +75,7 @@ Future<void> _initAudioServer() async {
   final getIt = GetIt.instance;
   getIt.registerSingleton<AudioServeHandler>(await AudioService.init<AudioServeHandler>(
     builder: () => AudioServeHandler(),
-    config:   AudioServiceConfig(
+    config: const AudioServiceConfig(
       androidNotificationChannelId: 'com.sixbugs.bujuan.channel.audio',
       androidNotificationChannelName: 'Music playback',
     ),

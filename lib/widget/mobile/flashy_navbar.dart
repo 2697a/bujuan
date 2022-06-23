@@ -21,9 +21,9 @@ class FlashyNavbar extends StatelessWidget {
     this.selectedIndex = 0,
     this.height = 60,
     this.showElevation = true,
-    this.iconSize = 20,
+    this.iconSize = 23,
     this.backgroundColor,
-    this.animationDuration = const Duration(milliseconds: 170),
+    this.animationDuration = const Duration(milliseconds: 300),
     this.animationCurve = Curves.linear,
     this.shadows = const [
       BoxShadow(
@@ -131,7 +131,7 @@ class _FlashyNavbarItem extends StatelessWidget {
                   opacity: isSelected ? 1.0 : 1.0,
                   duration: animationDuration,
                   child: IconTheme(
-                    data: IconThemeData(size: iconSize, color: isSelected ? item.activeColor.withOpacity(1) : item.inactiveColor),
+                    data: IconThemeData(size: iconSize, color: isSelected ? item.activeColor.withOpacity(1) : Theme.of(context).colorScheme.onPrimary),
                     child: item.icon,
                   )),
             ),
@@ -165,8 +165,9 @@ class _FlashyNavbarItem extends StatelessWidget {
                     duration: animationDuration,
                     child: DefaultTextStyle.merge(
                       style: TextStyle(
-                        color: item.activeColor,
-                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).primaryColor,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 28.sp
                       ),
                       child: item.title,
                     ))),
@@ -190,7 +191,7 @@ class _FlashyNavbarItem extends StatelessWidget {
                     alignment: Alignment.bottomCenter,
                     margin: const EdgeInsets.all(5),
                     decoration: BoxDecoration(
-                      color: item.activeColor,
+                      color: Theme.of(context).primaryColor,
                       borderRadius: BorderRadius.circular(2.5),
                     ),
                   )),

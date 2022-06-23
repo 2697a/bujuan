@@ -16,6 +16,7 @@ class FirstView extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
+    print('object===first');
     controller.buildContext = context;
     return Scaffold(
       body: WillPopScope(
@@ -108,7 +109,7 @@ class FirstView extends GetView<HomeController> {
                         left: controller.getImageLeft(),
                         duration: const Duration(milliseconds: 0),
                         child: SimpleExtendedImage(
-                          '',
+                          controller.mediaItem.value.artUri?.path??'',
                           height: controller.getImageSize(),
                           width: controller.getImageSize(),
                           borderRadius: BorderRadius.circular(15.w),
@@ -123,12 +124,12 @@ class FirstView extends GetView<HomeController> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                             '',
+                             controller.mediaItem.value.title,
                               style: TextStyle(fontSize: 26.sp, fontWeight: FontWeight.bold, color: controller.getLightTextColor()),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
-                            Text('${controller.bottomBarHeight}', style: TextStyle(fontSize: 22.sp, color: controller.getLightTextColor()))
+                            Text(controller.mediaItem.value.artist??'', style: TextStyle(fontSize: 22.sp, color: controller.getLightTextColor()))
                           ],
                         ),
                       ),
@@ -140,14 +141,14 @@ class FirstView extends GetView<HomeController> {
               child: IconButton(
                   onPressed: () => controller.playOrPause(),
                   icon: Icon(
-                   Icons.play_arrow,
+                   controller.playing.value?Icons.pause:Icons.play_arrow,
                     color: controller.getLightTextColor(),
                   )),
             ),
             Visibility(
               visible: controller.slidePosition.value == 0,
               child: IconButton(
-                  onPressed: () {},
+                  onPressed: () => controller.audioServeHandler.skipToNext(),
                   icon: Icon(
                     Icons.skip_next_sharp,
                     color: controller.getLightTextColor(),
@@ -158,31 +159,33 @@ class FirstView extends GetView<HomeController> {
   }
 
   Widget _buildFooter() {
-    return Obx(() => FlashyNavbar(
-          height: controller.bottomBarHeight,
-          selectedIndex: controller.selectIndex.value,
-          showElevation: false,
-          onItemSelected: (index) {
-            controller.changeSelectIndex(index);
-          },
-          items: [
-            FlashyNavbarItem(
-              icon: const Icon(Icons.event),
-              title: const Text('首页'),
-            ),
-            FlashyNavbarItem(
-              icon: const Icon(Icons.search),
-              title: const Text('搜索'),
-            ),
-            FlashyNavbarItem(
-              icon: const Icon(Icons.highlight),
-              title: const Text('我的'),
-            ),
-            FlashyNavbarItem(
-              icon: const Icon(Icons.settings),
-              title: const Text('设置'),
-            ),
-          ],
-        ));
+    return Obx(() => controller.isRoot.value?FlashyNavbar(
+      height: controller.bottomBarHeight,
+      selectedIndex: controller.selectIndex.value,
+      showElevation: false,
+      onItemSelected: (index) {
+        controller.changeSelectIndex(index);
+      },
+      items: [
+        FlashyNavbarItem(
+          icon: const Icon(Icons.event),
+          title: const Text('首页'),
+        ),
+        FlashyNavbarItem(
+          icon: const Icon(Icons.search),
+          title: const Text('搜索'),
+        ),
+        FlashyNavbarItem(
+          icon: const Icon(Icons.highlight),
+          title: const Text('我的'),
+        ),
+        FlashyNavbarItem(
+          icon: const Icon(Icons.settings),
+          title: const Text('设置'),
+        ),
+      ],
+    ):Container(
+      color: Theme.of(controller.buildContext).bottomAppBarColor,
+    ));
   }
 }

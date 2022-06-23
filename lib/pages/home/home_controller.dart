@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 // import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:audio_service/audio_service.dart';
 import 'package:bujuan/common/audio_handler.dart';
 import 'package:bujuan/common/constants/other.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +28,7 @@ class HomeController extends SuperController {
   WeSlideController weSlideController = WeSlideController();
   WeSlideController weSlideController1 = WeSlideController();
   RxBool isCollapsedAfterSec = true.obs;
-  PageController pageController = PageController(viewportFraction: .99);
+  PageController pageController = PageController();
   RxString lyric = ''.obs;
   Rx<Color> textColor = const Color(0xFFFFFFFF).obs;
   double offset = 0;
@@ -35,19 +36,20 @@ class HomeController extends SuperController {
   RxBool isScroll = true.obs;
 
   RxInt selectIndex = 0.obs;
-  // final assetsAudioPlayer = AssetsAudioPlayer();
+
   RxDouble slidePosition = 0.0.obs;
   Rx<PaletteColorData> rx = PaletteColorData().obs;
   RxBool second = false.obs;
   bool firstSlideIsDownSlide = true;
   SystemUiOverlayStyle systemUiOverlayStyle = const SystemUiOverlayStyle(systemNavigationBarColor: AppTheme.onPrimary);
   RxBool isRoot = true.obs;
-
+  Rx<MediaItem> mediaItem = const MediaItem(id: 'id', title: '暂无').obs;
+  RxBool playing = false.obs;
   PageController secondPageController = PageController();
   final OnAudioQuery audioQuery = OnAudioQuery();
   late BuildContext buildContext;
-
   final AudioServeHandler audioServeHandler = GetIt.instance<AudioServeHandler>();
+  Rx<Duration> duration = Duration.zero.obs;
 
   @override
   void onInit() {
@@ -58,7 +60,17 @@ class HomeController extends SuperController {
   @override
   void onReady() async {
     super.onReady();
-    audioServeHandler.play();
+    audioServeHandler.mediaItem.listen((value) {
+      if (value == null) return;
+      mediaItem.value = value;
+      ImageUtils.getImageColor(value.artUri?.path ?? '', (paletteColorData) {
+        rx.value = paletteColorData;
+        textColor.value = paletteColorData.light?.titleTextColor ?? AppTheme.onPrimary;
+      });
+    });
+    audioServeHandler.playbackState.listen((value) => playing.value = value.playing);
+    AudioService.position.listen((event) => duration.value = event);
+
     // assetsAudioPlayer.current.listen((event) {
     //   if (event == null) {
     //     assetsAudioPlayer.next();
@@ -84,6 +96,12 @@ class HomeController extends SuperController {
   }
 
   void playOrPause() async {
+    if (playing.value) {
+      await audioServeHandler.pause();
+    } else {
+      await audioServeHandler.play();
+    }
+
     // await assetsAudioPlayer.playOrPause();
   }
 
@@ -159,7 +177,7 @@ class HomeController extends SuperController {
       if (second.value && slidePosition.value == 0) {
         return textColor.value;
       }
-      return Colors.black;
+      return Theme.of(buildContext).colorScheme.onPrimary;
     }
   }
 
@@ -182,7 +200,7 @@ class HomeController extends SuperController {
   }
 
   void changeRoute(String? route) {
-    isRoot.value = route == '/';
+    isRoot.value = route == '/home';
     print('object=========$route');
   }
 

@@ -11,10 +11,12 @@ class AppTheme {
             surface: surface,
             onSurface: onSurface,
           ),
+      primaryColor: Colors.blue,
       bottomAppBarColor: onPrimaryDark,
+      scaffoldBackgroundColor: const Color(0xFFFAF7F7),
       appBarTheme: const AppBarTheme(
           systemOverlayStyle: SystemUiOverlayStyle(statusBarBrightness: Brightness.light, statusBarIconBrightness: Brightness.dark),
-          backgroundColor: onPrimaryDark,
+          backgroundColor: Color(0xFFFAF7F7),
           foregroundColor: primaryDark,
           elevation: 0));
 
@@ -27,10 +29,12 @@ class AppTheme {
             surface: surfaceDark,
             onSurface: onSurfaceDark,
           ),
+      primaryColor: Colors.blue,
       bottomAppBarColor: onSurfaceDark,
+      scaffoldBackgroundColor: const Color(0xFF2C2B2B),
       appBarTheme: const AppBarTheme(
           systemOverlayStyle: SystemUiOverlayStyle(statusBarBrightness: Brightness.dark, statusBarIconBrightness: Brightness.light),
-          backgroundColor: onPrimaryDark,
+          backgroundColor:  Color(0xFF2C2B2B),
           foregroundColor: primaryDark,
           elevation: 0));
 
@@ -38,11 +42,11 @@ class AppTheme {
   static const primaryDark = Color(0xFF1c1d1f);
   static const onPrimaryDark = Colors.white;
   static const primary = Color(0xFFd7d9d8);
-  static const onPrimary = Colors.white;
+  static const onPrimary = Color(0xFF1c1d1f);
 
   //disabled or inactive background
   static const surfaceDark = Color(0xFF333436);
-  static const onSurfaceDark = Color(0xFF6e7073);
+  static const onSurfaceDark = Color(0xff1f1f1f);
   static const surface = Color(0xff787878);
   static const onSurface = Color(0xFFAEAEAE);
 

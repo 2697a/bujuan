@@ -13,7 +13,7 @@ class IndexView extends GetView<IndexController> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Obx(() => ListView.builder(
-            padding: EdgeInsets.symmetric(horizontal: 20.w),
+            padding: EdgeInsets.only(left: 40.w,right: 10.w),
             itemBuilder: (context, index) => _buildItem(controller.songs[index], index),
             itemCount: controller.songs.length,
           )),
@@ -30,19 +30,19 @@ class IndexView extends GetView<IndexController> {
             QueryArtworkWidget(
               id: data.id,
               type: ArtworkType.AUDIO,
-              artworkBorder: BorderRadius.circular(10.w),
-              artworkWidth: 80.w,
-              artworkHeight: 80.w,
+              artworkBorder: BorderRadius.circular(5.w),
+              artworkWidth: 90.w,
+              artworkHeight: 90.w,
             ),
             Expanded(
-                child:Padding(padding: EdgeInsets.symmetric(horizontal: 10.w),child:  Column(
+                child:Padding(padding: EdgeInsets.symmetric(horizontal: 20.w),child:  Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(data.title,style: TextStyle(fontSize: 26.sp,fontWeight: FontWeight.bold),),
-                    Text(data.artist ?? 'No Artist',style: TextStyle(fontSize: 24.sp,fontWeight: FontWeight.normal),),
+                    Text(data.title,style: TextStyle(fontSize: 28.sp),),
+                    Text('${data.artist ?? 'No Artist'} - ${ImageUtils.getTimeStamp(data.duration??0)}',style: TextStyle(fontSize: 24.sp,fontWeight: FontWeight.normal),),
                   ],
                 ),)),
-            Text( ImageUtils.getTimeStamp(data.duration??0),)
+            IconButton(onPressed: (){}, icon: const Icon(Icons.more_vert))
           ],
         ),
       ),

@@ -25,13 +25,13 @@ class SecondBodyView extends GetView<HomeController> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                         'n',
+                         controller.mediaItem.value.title,
                         style: TextStyle(fontSize: 36.sp, fontWeight: FontWeight.bold, color: controller.rx.value.dark?.bodyTextColor),
                         maxLines: 1,
                       ),
                       Padding(padding: EdgeInsets.symmetric(vertical: 5.w)),
                       Text(
-                        'a',
+                        controller.mediaItem.value.artist??'',
                         style: TextStyle(fontSize: 28.sp, color: controller.rx.value.dark?.bodyTextColor),
                         maxLines: 1,
                       )
@@ -59,9 +59,10 @@ class SecondBodyView extends GetView<HomeController> {
                     thumbShape: RoundSliderThumbShape(elevation: 0, enabledThumbRadius: 3.w),
                     thumbColor: Colors.transparent),
                 child: Slider(
-                    value: 1,
+                    value: controller.duration.value.inMilliseconds /( controller.mediaItem.value.duration?.inMilliseconds??0) * 100,
                     max: 100,
                     onChanged: (value) {
+                      controller.audioServeHandler.seek(Duration(milliseconds: ( controller.mediaItem.value.duration?.inMilliseconds??0) * value~/100));
                     })),
           ),
           Padding(
@@ -70,11 +71,11 @@ class SecondBodyView extends GetView<HomeController> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  ImageUtils.getTimeStamp(0),
+                  ImageUtils.getTimeStamp(controller.duration.value.inMilliseconds),
                   style: TextStyle(color: controller.rx.value.dark?.bodyTextColor, fontSize: 32.sp),
                 ),
                 Text(
-                  ImageUtils.getTimeStamp(0),
+                  ImageUtils.getTimeStamp(controller.mediaItem.value.duration?.inMilliseconds??0),
                   style: TextStyle(color: controller.rx.value.dark?.bodyTextColor, fontSize: 32.sp),
                 ),
               ],
@@ -94,7 +95,7 @@ class SecondBodyView extends GetView<HomeController> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           IconButton(
-              onPressed: () {},
+              onPressed: () => controller.audioServeHandler.skipToPrevious(),
               icon: Icon(
                 Icons.skip_previous,
                 size: 60.w,
@@ -104,7 +105,7 @@ class SecondBodyView extends GetView<HomeController> {
             padding: EdgeInsets.symmetric(horizontal: 60.w),
             child: InkWell(
               child: Icon(
-               Icons.play_circle_fill,
+               controller.playing.value?Icons.pause_circle:Icons.play_circle_fill,
                 size: 140.w,
                 color: controller.rx.value.dark?.bodyTextColor.withOpacity(.6),
               ),
@@ -112,7 +113,7 @@ class SecondBodyView extends GetView<HomeController> {
             ),
           ),
           IconButton(
-              onPressed: (){},
+              onPressed: ()=> controller.audioServeHandler.skipToNext(),
               icon: Icon(
                 Icons.skip_next,
                 size: 60.w,

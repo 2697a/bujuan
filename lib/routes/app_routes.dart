@@ -13,8 +13,8 @@ abstract class Routes {
 abstract class _Paths {
   _Paths._();
   static const home = '/home';
-  static const index = '/index';
-  static const user = '/user';
+  static const index = '/home/index';
+  static const user = '/home/user';
   static const details = '/details';
-  static const splash = '/splash';
+  static const splash = '/';
 }

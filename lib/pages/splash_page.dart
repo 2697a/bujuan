@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +30,7 @@ class SplashPageState extends State<SplashPage> {
     });
 
     Future.delayed(durationFinish, () {
-      setState(() => isFinish = true);
+     context.go('/home');
     });
   }
 
@@ -50,7 +51,6 @@ class SplashPageState extends State<SplashPage> {
     return Offstage(
       offstage: isFinish,
       child: Scaffold(
-        backgroundColor: Colors.white,
         body: SizedBox(
           width: Get.width,
           height: Get.height,
