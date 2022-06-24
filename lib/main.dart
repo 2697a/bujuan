@@ -44,6 +44,7 @@ Future<void> _initAudioServer() async {
     config: const AudioServiceConfig(
       androidNotificationChannelId: 'com.sixbugs.bujuan.channel.audio',
       androidNotificationChannelName: 'Music playback',
+      androidNotificationIcon: 'drawable/audio_service_icon'
     ),
   ));
   // android 状态栏为透明的沉浸

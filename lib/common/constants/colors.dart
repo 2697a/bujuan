@@ -11,12 +11,12 @@ class AppTheme {
             surface: surface,
             onSurface: onSurface,
           ),
-      primaryColor: Colors.blue,
+      primaryColor: const Color(0xff3e8d41),
       bottomAppBarColor: onPrimaryDark,
-      scaffoldBackgroundColor: const Color(0xFFFAF7F7),
+      scaffoldBackgroundColor: const Color(0xFFF5F3F3),
       appBarTheme: const AppBarTheme(
           systemOverlayStyle: SystemUiOverlayStyle(statusBarBrightness: Brightness.light, statusBarIconBrightness: Brightness.dark),
-          backgroundColor: Color(0xFFFAF7F7),
+          backgroundColor: Color(0xFFF5F3F3),
           foregroundColor: primaryDark,
           elevation: 0));
 

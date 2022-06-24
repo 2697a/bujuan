@@ -41,20 +41,16 @@ class HomeController extends SuperController {
   Rx<PaletteColorData> rx = PaletteColorData().obs;
   RxBool second = false.obs;
   bool firstSlideIsDownSlide = true;
-  SystemUiOverlayStyle systemUiOverlayStyle =
-      const SystemUiOverlayStyle(systemNavigationBarColor: AppTheme.onPrimary);
+  SystemUiOverlayStyle systemUiOverlayStyle = const SystemUiOverlayStyle(systemNavigationBarColor: AppTheme.onPrimary);
   RxBool isRoot = true.obs;
   bool isRoot1 = true;
   bool first = true;
-  Rx<MediaItem> mediaItem =
-      const MediaItem(id: 'id', title: '暂无', duration: Duration(seconds: 10))
-          .obs;
+  Rx<MediaItem> mediaItem = const MediaItem(id: 'id', title: '暂无', duration: Duration(seconds: 10)).obs;
   RxBool playing = false.obs;
   PageController secondPageController = PageController();
   final OnAudioQuery audioQuery = OnAudioQuery();
   late BuildContext buildContext;
-  final AudioServeHandler audioServeHandler =
-      GetIt.instance<AudioServeHandler>();
+  final AudioServeHandler audioServeHandler = GetIt.instance<AudioServeHandler>();
   Rx<Duration> duration = Duration.zero.obs;
   var dio = http.Dio();
 
@@ -69,20 +65,49 @@ class HomeController extends SuperController {
     super.onReady();
     audioServeHandler.mediaItem.listen((value) async {
       if (value == null) return;
-      http.Response response = await dio.get(
-          'https://mobileservice.kugou.com/api/v3/lyric/search?version=9108&highlight=1&plat=0&pagesize=20&area_code=1&page=1&with_res_tag=1',
-          queryParameters: {'keyword': value.title});
-      print(response.data.toString());
+      // Directory directory = await getTemporaryDirectory();
+      // String path = '${directory.path}/${value.id}-lyric';
+      // File file = File(path);
+      // if(await file.exists()){
+      //   String lyric = await file.readAsString();
+      //   log('exists == lyric=====$lyric');
+      // }else {
+      //   dio.get('https://mobileservice.kugou.com/api/v3/lyric/search?version=9108&highlight=1&plat=0&pagesize=20&area_code=1&page=1&with_res_tag=1',
+      //       queryParameters: {'keyword': value.title}).then((value1) {
+      //     String dataStr = value1.data.toString().replaceAll("<!--KG_TAG_RES_END-->", '').replaceAll('<!--KG_TAG_RES_START-->', '');
+      //     LyricHashEntity? lyricHashEntity = JsonConvert.fromJsonAsT<LyricHashEntity>(jsonDecode(dataStr));
+      //     if (lyricHashEntity != null && lyricHashEntity.status == 1) {
+      //       dio.get('http://krcs.kugou.com/search?ver=1&man=yes&client=mobi&keyword=&duration=&album_audio_id=',
+      //           queryParameters: {'hash': lyricHashEntity.data?.info?[0].hash}).then((value2) {
+      //         LyricKeyEntity? lyricKeyEntity =JsonConvert.fromJsonAsT<LyricKeyEntity>(jsonDecode(jsonEncode(value2.data)));
+      //         if(lyricKeyEntity!=null&&lyricKeyEntity.status ==200&&lyricKeyEntity.candidates!.isNotEmpty){
+      //           String  id = lyricKeyEntity.candidates?[0].id??'';
+      //           String key = lyricKeyEntity.candidates?[0].accesskey??'';
+      //           dio.get('http://lyrics.kugou.com/download?ver=1&client=pc&fmt=krc&charset=utf8',
+      //               queryParameters: {'id': id,'accesskey':key}).then((value3) async{
+      //             LyricContentEntity? lyricContentEntity =  JsonConvert.fromJsonAsT<LyricContentEntity>(jsonDecode(jsonEncode(value3.data)));
+      //             if(lyricContentEntity!=null&&lyricContentEntity.status==200){
+      //               Uint8List uint8list = base64Decode(lyricContentEntity.content??'');
+      //               File file1 = await file.writeAsBytes(uint8list);
+      //               String lyric = await file1.readAsString();
+      //               log('lyric=====$lyric');
+      //             }
+      //
+      //           });
+      //         }
+      //       });
+      //     }
+      //   });
+      // }
+
       //
       mediaItem.value = value;
       ImageUtils.getImageColor(value.artUri?.path ?? '', (paletteColorData) {
         rx.value = paletteColorData;
-        textColor.value =
-            paletteColorData.light?.titleTextColor ?? AppTheme.onPrimary;
+        textColor.value = paletteColorData.light?.titleTextColor ?? AppTheme.onPrimary;
       });
     });
-    audioServeHandler.playbackState
-        .listen((value) => playing.value = value.playing);
+    audioServeHandler.playbackState.listen((value) => playing.value = value.playing);
     AudioService.position.listen((event) => duration.value = event);
 
     // audioServeHandler.queue.listen((value) {
@@ -144,8 +169,7 @@ class HomeController extends SuperController {
 
   void changeSystemNavigationBarColor(Color color) {
     if (Platform.isAndroid) {
-      systemUiOverlayStyle =
-          SystemUiOverlayStyle(systemNavigationBarColor: color);
+      systemUiOverlayStyle = SystemUiOverlayStyle(systemNavigationBarColor: color);
       SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
     }
   }
@@ -168,10 +192,7 @@ class HomeController extends SuperController {
   }
 
   double getPanelAdd() {
-    return MediaQuery.of(buildContext).padding.top *
-            (second.value ? 1 : slidePosition.value) +
-        getTopHeight() +
-        (isRoot.value ? 0 : MediaQuery.of(buildContext).padding.bottom);
+    return MediaQuery.of(buildContext).padding.top * (second.value ? 1 : slidePosition.value) + getTopHeight() + (isRoot.value ? 0 : MediaQuery.of(buildContext).padding.bottom);
   }
 
   double getImageSize() {
@@ -183,15 +204,11 @@ class HomeController extends SuperController {
   }
 
   double getTitleLeft() {
-    return ((Get.width - 60.w) - getPanelMinSize()) / 2 * slidePosition.value +
-        getPanelMinSize();
+    return ((Get.width - 60.w) - getPanelMinSize()) / 2 * slidePosition.value + getPanelMinSize();
   }
 
   Color getHeaderColor() {
-    return Theme.of(buildContext).bottomAppBarColor.withOpacity(
-        (second.value ? (1 - slidePosition.value) : slidePosition.value) > 0
-            ? 0
-            : 1);
+    return Theme.of(buildContext).bottomAppBarColor.withOpacity((second.value ? (1 - slidePosition.value) : slidePosition.value) > 0 ? 0 : 1);
     // return Color.fromRGBO(255, 255, 255, (second.value ? (1 - slidePosition.value) : slidePosition.value) > 0 ? 0 : 1);
   }
 
@@ -211,11 +228,7 @@ class HomeController extends SuperController {
   }
 
   EdgeInsets getHeaderPadding() {
-    return EdgeInsets.only(
-        left: 30.w,
-        right: 30.w,
-        top: MediaQuery.of(buildContext).padding.top *
-            (second.value ? 1 : slidePosition.value));
+    return EdgeInsets.only(left: 30.w, right: 30.w, top: MediaQuery.of(buildContext).padding.top * (second.value ? 1 : slidePosition.value));
   }
 
   //
@@ -228,12 +241,14 @@ class HomeController extends SuperController {
     pageController.jumpToPage(index);
   }
 
-  void changeRoute(String? route) {
-    isRoot.value = route == '/';
+  void changeRoute(String? route) async {
     isRoot1 = route == '/';
-    if (!isRoot1) first = false;
+    if (!isRoot1) {
+      first = false;
+      await Future.delayed(const Duration(milliseconds: 120));
+    }
+    isRoot.value = route == '/';
     if (!first) update([weSlideUpdate]);
-    print('object=========$route');
   }
 
   @override

@@ -25,18 +25,14 @@ class AudioServeHandler extends BaseAudioHandler
     _player.playbackEventStream.listen((PlaybackEvent event) {
       final playing = _player.playing;
       playbackState.add(playbackState.value.copyWith(
-        controls: [
+        controls: [ const MediaControl(
+            label: 'rating',
+            action: MediaAction.setRating,
+            androidIcon: 'drawable/audio_service_unlike'),
           MediaControl.skipToPrevious,
           if (playing) MediaControl.pause else MediaControl.play,
-          const MediaControl(
-              label: 'rating',
-              action: MediaAction.setRating,
-              androidIcon: 'drawable/audio_service_fast_forward'),
-          const MediaControl(
-              label: 'rating1',
-              action: MediaAction.setShuffleMode,
-              androidIcon: 'drawable/audio_service_fast_forward'),
           MediaControl.skipToNext,
+          MediaControl.stop
         ],
         systemActions: const {
           MediaAction.seek,

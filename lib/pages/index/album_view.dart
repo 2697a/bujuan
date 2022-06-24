@@ -5,6 +5,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
+import '../../widget/query_artwork_widget.dart' as custom;
+
 class AlbumView extends GetView<IndexController> {
   const AlbumView({Key? key}) : super(key: key);
 
@@ -21,7 +23,7 @@ class AlbumView extends GetView<IndexController> {
         crossAxisCount: 2,
         crossAxisSpacing: 20.w,
         mainAxisSpacing: 20.w,
-        childAspectRatio: .83,
+        childAspectRatio: .8,
       ),
       itemCount: controller.albums.length,
       itemBuilder: (BuildContext context, int index) => _buildItem(controller.albums[index]),
@@ -30,19 +32,19 @@ class AlbumView extends GetView<IndexController> {
 
   Widget _buildItem(AlbumModel albumModel){
     return InkWell(
-      child: Container(
-        child: Column(
-          children: [
-            QueryArtworkWidget(
-              id: albumModel.id,
-              type: ArtworkType.ALBUM,
-              artworkBorder: BorderRadius.circular(5.w),
-              artworkWidth: double.infinity,
-              artworkHeight: Get.width/2.2,
-            ),
-            Text(albumModel.album)
-          ],
-        ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          custom.QueryArtworkWidget(
+            id: albumModel.id,
+            type: ArtworkType.ALBUM,
+            artworkBorder: BorderRadius.circular(15.w),
+            artworkWidth: double.infinity,
+            artworkHeight: Get.width/2.2,
+          ),
+          Text(albumModel.album,style: TextStyle(fontSize: 28.sp),maxLines: 1,overflow: TextOverflow.ellipsis,),
+          Text(albumModel.artist??'',style: TextStyle(fontSize: 24.sp),),
+        ],
       ),
       onTap:() => Get.toNamed(Routes.details,arguments: DetailsArguments(albumModel)),
     );

@@ -52,14 +52,12 @@ dependencies:
   get_it: ^7.2.0
   loading_animation_widget: ^1.2.0+2
   dio: ^4.0.6
+  just_waveform: ^0.0.3
+  font_awesome_flutter: ^10.1.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
-  # 路由生成
-  auto_route_generator: ^4.0.0
-  build_runner:
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

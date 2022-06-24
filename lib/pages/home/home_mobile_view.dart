@@ -18,31 +18,30 @@ class HomeMobileView extends GetView<HomeController> {
     return GetMaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Row(
-            children: [
-              Expanded(
-                  child: Container(
-                    width: double.infinity,
-                    height: 76.w,
-                    decoration: BoxDecoration(
-                        color: Theme.of(context).bottomAppBarColor,
-                        borderRadius: BorderRadius.circular(38.w),
-                        boxShadow:  const [
-                          BoxShadow(
-                            color: Colors.black12,
-                            blurRadius: 3,
-                          ),
-                        ]
-                    ),
-                  )),
-              Padding(padding: EdgeInsets.only(left: 15.w)),
-              SimpleExtendedImage(
-                'https://img0.baidu.com/it/u=3849465600,224519353&fm=253&fmt=auto&app=138&f=PNG?w=500&h=499',
-                width: 70.w,
-                height: 70.w,
-                borderRadius: BorderRadius.circular(35.w),
-              )
-            ],
+          title:  Container(
+            width: double.infinity,
+            height: 86.w,
+            decoration: BoxDecoration(
+                color: Theme.of(context).bottomAppBarColor,
+                borderRadius: BorderRadius.circular(43.w),
+                boxShadow:  const [
+                  BoxShadow(
+                    color: Color(0x13000000),
+                    blurRadius: 5,
+                  ),
+                ]
+            ),
+            child: Row(
+              children: [
+                Padding(padding: EdgeInsets.symmetric(horizontal: 20.w),child: SimpleExtendedImage(
+                  'https://img0.baidu.com/it/u=3849465600,224519353&fm=253&fmt=auto&app=138&f=PNG?w=500&h=499',
+                  width: 68.w,
+                  height: 68.w,
+                  borderRadius: BorderRadius.circular(41.w),
+                ),),
+                Expanded(child: Text(' 点击搜索...',style: TextStyle(fontSize: 30.sp,color: Colors.grey,fontWeight: FontWeight.w500),))
+              ],
+            ),
           ),
         ),
         body: PageView(
@@ -64,7 +63,8 @@ class HomeMobileView extends GetView<HomeController> {
       // 开启FPS监控
       themeMode: ThemeMode.system,
       getPages: AppPages.routes,
-      // defaultTransition: Transition.fa,
+      defaultTransition: Transition.fadeIn,
+      transitionDuration: const Duration(milliseconds: 200),
       routingCallback: (Routing? r){
         HomeController.to.changeRoute(r?.current);
       },

@@ -27,13 +27,6 @@ class DetailsView extends GetView<DetailsController> {
         padding: EdgeInsets.symmetric(vertical: 15.w),
         child: Row(
           children: [
-            QueryArtworkWidget(
-              id: data.id,
-              type: ArtworkType.AUDIO,
-              artworkBorder: BorderRadius.circular(5.w),
-              artworkWidth: 90.w,
-              artworkHeight: 90.w,
-            ),
             Expanded(
                 child:Padding(padding: EdgeInsets.symmetric(horizontal: 20.w),child:  Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

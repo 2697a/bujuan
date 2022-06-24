@@ -14,26 +14,13 @@ class SimpleExtendedImage extends StatefulWidget {
   final Widget? replacement;
   final BoxFit? fit;
   final int? cacheWidth;
+
   const SimpleExtendedImage(this.url,
-      {Key? key,
-      this.width,
-      this.height,
-      this.placeholder = placeholderImage,
-      this.replacement,
-      this.fit,
-      this.shape = BoxShape.rectangle,
-      this.borderRadius, this.cacheWidth})
+      {Key? key, this.width, this.height, this.placeholder = placeholderImage, this.replacement, this.fit, this.shape = BoxShape.rectangle, this.borderRadius, this.cacheWidth})
       : super(key: key);
 
   const SimpleExtendedImage.avatar(this.url,
-      {Key? key,
-      this.width,
-      this.height,
-      this.placeholder = placeholderImage,
-      this.replacement,
-      this.fit,
-      this.shape = BoxShape.circle,
-      this.borderRadius, this.cacheWidth = 300})
+      {Key? key, this.width, this.height, this.placeholder = placeholderImage, this.replacement, this.fit, this.shape = BoxShape.circle, this.borderRadius, this.cacheWidth = 300})
       : super(key: key);
 
   @override
@@ -64,9 +51,10 @@ class SimpleExtendedImageState extends State<SimpleExtendedImage> {
         height: widget.height,
         shape: widget.shape,
         fit: BoxFit.cover,
+        gaplessPlayback: true,
         borderRadius: widget.borderRadius,
         cache: true,
-        cacheWidth: widget.cacheWidth??800,
+        cacheWidth: widget.cacheWidth ?? 800,
         //展厅
         loadStateChanged: (ExtendedImageState state) {
           Widget image;
@@ -102,9 +90,12 @@ class SimpleExtendedImageState extends State<SimpleExtendedImage> {
         width: widget.width,
         height: widget.height,
         shape: widget.shape,
+        cacheRawData: true,
+        gaplessPlayback: true,
         fit: BoxFit.cover,
         borderRadius: widget.borderRadius,
-        cacheWidth: widget.cacheWidth??800,
+        cacheWidth: widget.cacheWidth ?? 800,
+
         //展厅
         loadStateChanged: (ExtendedImageState state) {
           Widget image;
@@ -135,6 +126,5 @@ class SimpleExtendedImageState extends State<SimpleExtendedImage> {
         },
       );
     }
-
   }
 }

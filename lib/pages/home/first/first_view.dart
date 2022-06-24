@@ -8,7 +8,6 @@ import 'package:get/get.dart';
 
 import '../../../widget/mobile/flashy_navbar.dart';
 import '../second/second_view.dart';
-import 'first_body_view.dart';
 
 class FirstView extends GetView<HomeController> {
 
@@ -16,7 +15,6 @@ class FirstView extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
-    print('object===first');
     controller.buildContext = context;
     return Scaffold(
       body: WillPopScope(
@@ -129,6 +127,7 @@ class FirstView extends GetView<HomeController> {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
+                            Padding(padding: EdgeInsets.symmetric(vertical: 4.w)),
                             Text(controller.mediaItem.value.artist??'', style: TextStyle(fontSize: 22.sp, color: controller.getLightTextColor()))
                           ],
                         ),

@@ -498,7 +498,7 @@ class _WeSlideState extends State<WeSlide> with SingleTickerProviderStateMixin {
                     decoration: const BoxDecoration(
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black12,
+                          color: Color(0x13000000),
                           blurRadius: 5,
                         ),
                       ]

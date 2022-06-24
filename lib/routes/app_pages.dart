@@ -31,15 +31,11 @@ class AppPages {
     //     binding: HomeBinding(),
     // ),
     GetPage(
-      fullscreenDialog: true,
-      popGesture: false,
       name: _Paths.details,
       page: () => const DetailsView(),
       binding: DetailsBinding(),
     ),
     GetPage(
-      fullscreenDialog: true,
-      popGesture: false,
       name: _Paths.user,
       page: () => const UserView(),
       binding: UserBinding(),
