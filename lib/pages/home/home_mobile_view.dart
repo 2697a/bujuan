@@ -33,13 +33,12 @@ class HomeMobileView extends GetView<HomeController> {
             ),
             child: Row(
               children: [
-                Padding(padding: EdgeInsets.symmetric(horizontal: 20.w),child: SimpleExtendedImage(
-                  'https://img0.baidu.com/it/u=3849465600,224519353&fm=253&fmt=auto&app=138&f=PNG?w=500&h=499',
+                Padding(padding: EdgeInsets.only(left: 20.w,right: 10.w),child: Image.asset(
+                  'assets/images/logo.png',
                   width: 68.w,
                   height: 68.w,
-                  borderRadius: BorderRadius.circular(41.w),
                 ),),
-                Expanded(child: Text(' 点击搜索...',style: TextStyle(fontSize: 30.sp,color: Colors.grey,fontWeight: FontWeight.w500),))
+                Expanded(child: Text(' 点击搜索...',style: TextStyle(fontSize: 30.sp,color:  const Color(0xffe56260),fontWeight: FontWeight.w500),))
               ],
             ),
           ),

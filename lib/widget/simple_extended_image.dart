@@ -102,9 +102,11 @@ class SimpleExtendedImageState extends State<SimpleExtendedImage> {
           switch (state.extendedImageLoadState) {
             case LoadState.loading:
               image = widget.replacement ??
-                  Image.asset(
-                    widget.placeholder,
-                    fit: BoxFit.cover,
+                  Container(
+                    color: Colors.grey,
+                    width: widget.width,
+                    height: widget.height,
+                    child: Icon(Icons.image,size:( widget.width??100/3).toDouble(),),
                   );
               break;
             case LoadState.completed:

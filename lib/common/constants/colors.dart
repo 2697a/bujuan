@@ -11,7 +11,7 @@ class AppTheme {
             surface: surface,
             onSurface: onSurface,
           ),
-      primaryColor: const Color(0xff3e8d41),
+      primaryColor: const Color(0xffe56260),
       bottomAppBarColor: onPrimaryDark,
       scaffoldBackgroundColor: const Color(0xFFF5F3F3),
       appBarTheme: const AppBarTheme(
@@ -29,7 +29,7 @@ class AppTheme {
             surface: surfaceDark,
             onSurface: onSurfaceDark,
           ),
-      primaryColor: Colors.blue,
+      primaryColor:  const Color(0xffe56260),
       bottomAppBarColor: onSurfaceDark,
       scaffoldBackgroundColor: const Color(0xFF2C2B2B),
       appBarTheme: const AppBarTheme(
