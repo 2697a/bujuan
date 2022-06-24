@@ -17,11 +17,11 @@ import '../../widget/weslide/weslide_controller.dart';
 
 class HomeController extends SuperController {
   final String weSlideUpdate = 'weSlide';
-  double panelHeaderSize = 110.w;
+  double panelHeaderSize = 100.w;
   double secondPanelHeaderSize = 120.w;
   double bottomBarHeight = 60;
   double panelMobileMinSize = 0;
-  double topBarHeight = 120.w;
+  double topBarHeight = 90.w;
 
   //是否折叠
   RxBool isCollapsed = true.obs;
@@ -56,7 +56,7 @@ class HomeController extends SuperController {
 
   @override
   void onInit() {
-    panelMobileMinSize = 110.w + bottomBarHeight;
+    panelMobileMinSize = panelHeaderSize + bottomBarHeight;
     super.onInit();
   }
 
@@ -188,7 +188,7 @@ class HomeController extends SuperController {
 
   //外层panel的高度和颜色
   double getPanelMinSize() {
-    return panelHeaderSize * (1 + slidePosition.value * 5);
+    return panelHeaderSize * (1 + slidePosition.value * 6.6);
   }
 
   double getPanelAdd() {
@@ -196,7 +196,7 @@ class HomeController extends SuperController {
   }
 
   double getImageSize() {
-    return (panelHeaderSize * .8) * (1 + slidePosition.value * 5);
+    return (panelHeaderSize * .8) * (1 + slidePosition.value * 6.6);
   }
 
   double getImageLeft() {

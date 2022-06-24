@@ -18,41 +18,33 @@ class HomeMobileView extends GetView<HomeController> {
     return GetMaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title:  Container(
-            width: double.infinity,
-            height: 86.w,
-            decoration: BoxDecoration(
-                color: Theme.of(context).bottomAppBarColor,
-                borderRadius: BorderRadius.circular(43.w),
-                boxShadow:  const [
-                  BoxShadow(
-                    color: Color(0x13000000),
-                    blurRadius: 5,
-                  ),
-                ]
-            ),
-            child: Row(
-              children: [
-                Padding(padding: EdgeInsets.only(left: 20.w,right: 10.w),child: Image.asset(
-                  'assets/images/logo.png',
-                  width: 68.w,
-                  height: 68.w,
-                ),),
-                Expanded(child: Text(' 点击搜索...',style: TextStyle(fontSize: 30.sp,color:  const Color(0xffe56260),fontWeight: FontWeight.w500),))
-              ],
-            ),
+          leadingWidth: 0,
+          title: Row(
+            children: [
+              Image.asset(
+                'assets/images/logo.png',
+                width: 68.w,
+                height: 68.w,
+              ),
+              const Expanded(child: Text('  Tireless')),
+            ],
           ),
+          actions: [
+            IconButton(
+                onPressed: () => Get.toNamed(Routes.setting),
+                icon: const Icon(Icons.settings))
+          ],
         ),
-        body: PageView(
+        body: Padding(padding: EdgeInsets.symmetric(vertical: 2.w),child: PageView(
           controller: controller.pageController,
           physics: const NeverScrollableScrollPhysics(),
           children: const [
             AlbumView(),
             IndexView(),
-            IndexView(),
+            UserView(),
             UserView(),
           ],
-        ),
+        ),),
       ),
       title: "Application",
       theme: AppTheme.light,
@@ -64,7 +56,7 @@ class HomeMobileView extends GetView<HomeController> {
       getPages: AppPages.routes,
       defaultTransition: Transition.fadeIn,
       transitionDuration: const Duration(milliseconds: 200),
-      routingCallback: (Routing? r){
+      routingCallback: (Routing? r) {
         HomeController.to.changeRoute(r?.current);
       },
     );

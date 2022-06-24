@@ -18,12 +18,12 @@ class AlbumView extends GetView<IndexController> {
 
   Widget _buildAlbumView(){
     return GridView.builder(
-      padding: EdgeInsets.symmetric(horizontal: 30.w,vertical: 20.w),
+      padding: EdgeInsets.symmetric(horizontal: 10.w,vertical: 20.w),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         crossAxisSpacing: 20.w,
         mainAxisSpacing: 20.w,
-        childAspectRatio: .8,
+        childAspectRatio: .82,
       ),
       itemCount: controller.albums.length,
       itemBuilder: (BuildContext context, int index) => _buildItem(controller.albums[index]),
@@ -31,22 +31,25 @@ class AlbumView extends GetView<IndexController> {
   }
 
   Widget _buildItem(AlbumModel albumModel){
-    return InkWell(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          custom.QueryArtworkWidget(
-            id: albumModel.id,
-            type: ArtworkType.ALBUM,
-            artworkBorder: BorderRadius.circular(15.w),
-            artworkWidth: double.infinity,
-            artworkHeight: Get.width/2.2,
-          ),
-          Text(albumModel.album,style: TextStyle(fontSize: 28.sp),maxLines: 1,overflow: TextOverflow.ellipsis,),
-          Text(albumModel.artist??'',style: TextStyle(fontSize: 24.sp),),
-        ],
+    return Container(
+      decoration: BoxDecoration(color: Theme.of(controller.buildContext).bottomAppBarColor,borderRadius: BorderRadius.circular(15.w)),
+      child: InkWell(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            custom.QueryArtworkWidget(
+              id: albumModel.id,
+              type: ArtworkType.ALBUM,
+              artworkBorder: BorderRadius.circular(15.w),
+              artworkWidth: double.infinity,
+              artworkHeight: Get.width/2-40.w,
+            ),
+            Padding(padding: EdgeInsets.symmetric(horizontal: 10.w,vertical: 4.w),child: Text(albumModel.album,style: TextStyle(fontSize: 28.sp),maxLines: 1,overflow: TextOverflow.ellipsis,),),
+            Padding(padding: EdgeInsets.symmetric(horizontal: 10.w),child: Text(albumModel.artist??'',style: TextStyle(fontSize: 24.sp),),),
+          ],
+        ),
+        onTap:() => Get.toNamed(Routes.details,arguments: DetailsArguments(albumModel)),
       ),
-      onTap:() => Get.toNamed(Routes.details,arguments: DetailsArguments(albumModel)),
     );
   }
 }

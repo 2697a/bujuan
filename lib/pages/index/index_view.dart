@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import '../../widget/query_artwork_widget.dart' as custom;
 
 import '../../common/constants/other.dart';
 
@@ -13,7 +14,7 @@ class IndexView extends GetView<IndexController> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Obx(() => ListView.builder(
-            padding: EdgeInsets.only(left: 40.w,right: 10.w),
+            padding: EdgeInsets.only(left: 10.w,right: 10.w),
             itemBuilder: (context, index) => _buildItem(controller.songs[index], index),
             itemCount: controller.songs.length,
           )),
@@ -27,7 +28,7 @@ class IndexView extends GetView<IndexController> {
         padding: EdgeInsets.symmetric(vertical: 15.w),
         child: Row(
           children: [
-            QueryArtworkWidget(
+            custom.QueryArtworkWidget(
               id: data.id,
               type: ArtworkType.AUDIO,
               artworkBorder: BorderRadius.circular(5.w),

@@ -539,6 +539,20 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.1.2"
+  wheel_chooser:
+    dependency: transitive
+    description:
+      name: wheel_chooser
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.0"
+  wheel_slider:
+    dependency: "direct main"
+    description:
+      name: wheel_slider
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.0"
   win32:
     dependency: transitive
     description:

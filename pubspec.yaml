@@ -54,6 +54,7 @@ dependencies:
   dio: ^4.0.6
   just_waveform: ^0.0.3
   font_awesome_flutter: ^10.1.0
+  wheel_slider: ^1.0.0
 
 dev_dependencies:
   flutter_test:

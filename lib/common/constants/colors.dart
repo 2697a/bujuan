@@ -18,7 +18,7 @@ class AppTheme {
           systemOverlayStyle: SystemUiOverlayStyle(statusBarBrightness: Brightness.light, statusBarIconBrightness: Brightness.dark),
           backgroundColor: Color(0xFFF5F3F3),
           foregroundColor: primaryDark,
-          elevation: 0));
+          elevation: .5));
 
   static ThemeData dark = ThemeData.dark().copyWith(
       colorScheme: ThemeData.dark().colorScheme.copyWith(
@@ -35,8 +35,8 @@ class AppTheme {
       appBarTheme: const AppBarTheme(
           systemOverlayStyle: SystemUiOverlayStyle(statusBarBrightness: Brightness.dark, statusBarIconBrightness: Brightness.light),
           backgroundColor:  Color(0xFF2C2B2B),
-          foregroundColor: primaryDark,
-          elevation: 0));
+          foregroundColor: primary,
+          elevation: .5));
 
   //right background
   static const primaryDark = Color(0xFF1c1d1f);

@@ -7,10 +7,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 import '../../../widget/mobile/flashy_navbar.dart';
+import '../../../widget/wheel_slider.dart';
 import '../second/second_view.dart';
 
 class FirstView extends GetView<HomeController> {
-
   const FirstView({Key? key}) : super(key: key);
 
   @override
@@ -20,27 +20,37 @@ class FirstView extends GetView<HomeController> {
       body: WillPopScope(
           child: Stack(
             children: [
-              GetBuilder(builder: (c) =>AnimatedPositioned(
-                duration: const Duration(milliseconds: 200),
-                bottom: controller.isRoot.value ? 0 : -controller.bottomBarHeight,
-                child: WeSlide(
-                  controller: controller.weSlideController,
-                  panelWidth: Get.width,
-                  bodyWidth: Get.width,
-                  panelMaxSize: Get.height + (controller.isRoot1 ? 0 : controller.bottomBarHeight),
-                  parallax: true,
-                  body: const HomeMobileView(),
-                  panel: const SecondView(),
-                  panelHeader: _buildPanelHeader(),
-                  footer: _buildFooter(),
-                  hidePanelHeader: false,
-                  height: Get.height + (controller.isRoot1 ? 0 : controller.bottomBarHeight),
-                  footerHeight: controller.bottomBarHeight + MediaQuery.of(context).padding.bottom,
-                  panelMinSize: controller.panelMobileMinSize + MediaQuery.of(context).padding.bottom,
-                  onPosition: (value) => controller.changeSlidePosition(value),
-                  isDownSlide: controller.firstSlideIsDownSlide,
+              GetBuilder(
+                builder: (c) => AnimatedPositioned(
+                  duration: const Duration(milliseconds: 200),
+                  bottom:
+                      controller.isRoot.value ? 0 : -controller.bottomBarHeight,
+                  child: WeSlide(
+                    controller: controller.weSlideController,
+                    panelWidth: Get.width,
+                    bodyWidth: Get.width,
+                    panelMaxSize: Get.height +
+                        (controller.isRoot1 ? 0 : controller.bottomBarHeight),
+                    parallax: true,
+                    body: const HomeMobileView(),
+                    panel: const SecondView(),
+                    panelHeader: _buildPanelHeader(),
+                    footer: _buildFooter(),
+                    hidePanelHeader: false,
+                    height: Get.height +
+                        (controller.isRoot1 ? 0 : controller.bottomBarHeight),
+                    footerHeight: controller.bottomBarHeight +
+                        MediaQuery.of(context).padding.bottom,
+                    panelMinSize: controller.panelMobileMinSize +
+                        MediaQuery.of(context).padding.bottom,
+                    onPosition: (value) =>
+                        controller.changeSlidePosition(value),
+                    isDownSlide: controller.firstSlideIsDownSlide,
+                  ),
                 ),
-              ),id: controller.weSlideUpdate,init: controller,)
+                id: controller.weSlideUpdate,
+                init: controller,
+              )
             ],
           ),
           onWillPop: () => controller.onWillPop()),
@@ -53,16 +63,14 @@ class FirstView extends GetView<HomeController> {
             color: controller.getHeaderColor(),
             padding: controller.getHeaderPadding(),
             width: Get.width,
-            height: controller.getPanelMinSize() + controller.getPanelAdd(),
+            height: controller.getPanelMinSize() +
+                MediaQuery.of(controller.buildContext).padding.top *
+                    (controller.second.value
+                        ? 1
+                        : controller.slidePosition.value),
             duration: const Duration(milliseconds: 0),
             child: Column(
-              children: [
-                _buildTopHeader(),
-                _buildPlayBar(),
-                SizedBox(
-                  height: (controller.isRoot.value ? 0 : MediaQuery.of(controller.buildContext).padding.bottom),
-                )
-              ],
+              children: [_buildTopHeader(), Expanded(child: _buildPlayBar())],
             ),
           )),
       onTap: () {
@@ -84,10 +92,31 @@ class FirstView extends GetView<HomeController> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             InkWell(
-              child: Icon(Icons.keyboard_arrow_down, color: controller.rx.value.light?.titleTextColor),
+              child: Icon(Icons.keyboard_arrow_down,
+                  color: controller.rx.value.light?.titleTextColor),
               onTap: () => controller.weSlideController.hide(),
             ),
-            Icon(Icons.more_horiz, color: controller.rx.value.light?.titleTextColor)
+            IconButton(
+                onPressed: () {
+                  Get.defaultDialog(content: SizedBox(
+                    height: 300.w,
+                    child: WheelSlider(
+                      totalCount: 100,
+                      initValue: 1,
+                      perspective: 0.01,
+                      pointerColor: Theme.of(controller.buildContext).colorScheme.onPrimary,
+                      lineColor: Theme.of(controller.buildContext).colorScheme.onPrimary.withOpacity(.7),
+                      onValueChanged: (val) {
+                      }, fixedExtentScrollController: FixedExtentScrollController(),
+                    ),
+                  ),title: '睡眠定时');
+                },
+                icon: Icon(
+                  Icons.timer_rounded,
+                  color: controller.rx.value.light?.titleTextColor,
+                )),
+            Icon(Icons.more_horiz,
+                color: controller.rx.value.light?.titleTextColor)
           ],
         ),
       ),
@@ -95,96 +124,103 @@ class FirstView extends GetView<HomeController> {
   }
 
   Widget _buildPlayBar() {
-    return Expanded(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Expanded(
+            child: Stack(
+          alignment: Alignment.centerLeft,
           children: [
-            Expanded(
-                child: Stack(
-                  alignment: Alignment.centerLeft,
-                  children: [
-                    AnimatedPositioned(
-                        left: controller.getImageLeft(),
-                        duration: const Duration(milliseconds: 0),
-                        child: SimpleExtendedImage(
-                          controller.mediaItem.value.artUri?.path??'',
-                          height: controller.getImageSize(),
-                          width: controller.getImageSize(),
-                          borderRadius: BorderRadius.circular(15.w),
-                        )),
-                    AnimatedOpacity(
-                      opacity: controller.slidePosition.value > 0 ? 0 : 1,
-                      duration: const Duration(milliseconds: 10),
-                      child: Padding(
-                        padding: EdgeInsets.only(left: controller.panelHeaderSize),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                             controller.mediaItem.value.title,
-                              style: TextStyle(fontSize: 26.sp, fontWeight: FontWeight.bold, color: controller.getLightTextColor()),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            Padding(padding: EdgeInsets.symmetric(vertical: 4.w)),
-                            Text(controller.mediaItem.value.artist??'', style: TextStyle(fontSize: 22.sp, color: controller.getLightTextColor()))
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
+            AnimatedPositioned(
+                left: controller.getImageLeft(),
+                duration: const Duration(milliseconds: 0),
+                child: SimpleExtendedImage(
+                  controller.mediaItem.value.artUri?.path ?? '',
+                  height: controller.getImageSize(),
+                  width: controller.getImageSize(),
+                  borderRadius: BorderRadius.circular(15.w),
                 )),
-            Visibility(
-              visible: controller.slidePosition.value == 0,
-              child: IconButton(
-                  onPressed: () => controller.playOrPause(),
-                  icon: Icon(
-                   controller.playing.value?Icons.pause:Icons.play_arrow,
-                    color: controller.getLightTextColor(),
-                  )),
+            AnimatedOpacity(
+              opacity: controller.slidePosition.value > 0 ? 0 : 1,
+              duration: const Duration(milliseconds: 10),
+              child: Padding(
+                padding: EdgeInsets.only(left: controller.panelHeaderSize),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      controller.mediaItem.value.title,
+                      style: TextStyle(
+                          fontSize: 26.sp,
+                          fontWeight: FontWeight.bold,
+                          color: controller.getLightTextColor()),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Padding(padding: EdgeInsets.symmetric(vertical: 4.w)),
+                    Text(controller.mediaItem.value.artist ?? '',
+                        style: TextStyle(
+                            fontSize: 22.sp,
+                            color: controller.getLightTextColor()))
+                  ],
+                ),
+              ),
             ),
-            Visibility(
-              visible: controller.slidePosition.value == 0,
-              child: IconButton(
-                  onPressed: () => controller.audioServeHandler.skipToNext(),
-                  icon: Icon(
-                    Icons.skip_next_sharp,
-                    color: controller.getLightTextColor(),
-                  )),
-            )
           ],
-        ));
+        )),
+        Visibility(
+          visible: controller.slidePosition.value == 0,
+          child: IconButton(
+              onPressed: () => controller.playOrPause(),
+              icon: Icon(
+                controller.playing.value ? Icons.pause : Icons.play_arrow,
+                color: controller.getLightTextColor(),
+              )),
+        ),
+        Visibility(
+          visible: controller.slidePosition.value == 0,
+          child: IconButton(
+              onPressed: () => controller.audioServeHandler.skipToNext(),
+              icon: Icon(
+                Icons.skip_next_sharp,
+                color: controller.getLightTextColor(),
+              )),
+        )
+      ],
+    );
   }
 
   Widget _buildFooter() {
-    return Obx(() => controller.isRoot.value?FlashyNavbar(
-      height: controller.bottomBarHeight,
-      selectedIndex: controller.selectIndex.value,
-      showElevation: false,
-      onItemSelected: (index) {
-        controller.changeSelectIndex(index);
-      },
-      items: [
-        FlashyNavbarItem(
-          icon: const Icon(Icons.event),
-          title: const Text('首页'),
-        ),
-        FlashyNavbarItem(
-          icon: const Icon(Icons.search),
-          title: const Text('搜索'),
-        ),
-        FlashyNavbarItem(
-          icon: const Icon(Icons.highlight),
-          title: const Text('我的'),
-        ),
-        FlashyNavbarItem(
-          icon: const Icon(Icons.settings),
-          title: const Text('设置'),
-        ),
-      ],
-    ):Container(
-      color: Theme.of(controller.buildContext).bottomAppBarColor,
-    ));
+    return Obx(() => controller.isRoot.value
+        ? FlashyNavbar(
+            height: controller.bottomBarHeight,
+            selectedIndex: controller.selectIndex.value,
+            showElevation: false,
+            onItemSelected: (index) {
+              controller.changeSelectIndex(index);
+            },
+            items: [
+              FlashyNavbarItem(
+                icon: const Icon(Icons.album_rounded),
+                title: const Text('专辑'),
+              ),
+              FlashyNavbarItem(
+                icon: const Icon(Icons.library_music_rounded),
+                title: const Text('单曲'),
+              ),
+              FlashyNavbarItem(
+                icon: const Icon(Icons.people_alt_rounded),
+                title: const Text('歌手'),
+              ),
+              FlashyNavbarItem(
+                icon: const Icon(Icons.home_filled),
+                title: const Text('首页'),
+              ),
+            ],
+          )
+        : Container(
+            color: Theme.of(controller.buildContext).bottomAppBarColor,
+          ));
   }
 }

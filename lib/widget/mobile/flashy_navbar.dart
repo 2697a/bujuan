@@ -131,7 +131,7 @@ class _FlashyNavbarItem extends StatelessWidget {
                   opacity: isSelected ? 1.0 : 1.0,
                   duration: animationDuration,
                   child: IconTheme(
-                    data: IconThemeData(size: iconSize, color: isSelected ? item.activeColor.withOpacity(1) : Theme.of(context).colorScheme.onPrimary),
+                    data: IconThemeData(size: iconSize, color: isSelected ? item.activeColor.withOpacity(0) : Theme.of(context).colorScheme.onPrimary),
                     child: item.icon,
                   )),
             ),
