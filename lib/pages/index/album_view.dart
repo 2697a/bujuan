@@ -19,12 +19,12 @@ class AlbumView extends GetView<IndexController> {
 
   Widget _buildAlbumView(){
     return GridView.builder(
-      padding: EdgeInsets.only(left: 10.w,right: 10.w,bottom: HomeController.to.getHomeBottomPadding()),
+      padding: EdgeInsets.only(left: 20.w,right: 20.w,bottom: HomeController.to.getHomeBottomPadding()),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         crossAxisSpacing: 20.w,
         mainAxisSpacing: 20.w,
-        childAspectRatio: .82,
+        childAspectRatio: .8,
       ),
       itemCount: controller.albums.length,
       itemBuilder: (BuildContext context, int index) => _buildItem(controller.albums[index]),

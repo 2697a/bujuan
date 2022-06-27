@@ -22,22 +22,28 @@ class FirstView extends GetView<HomeController> {
               GetBuilder(
                 builder: (c) => AnimatedPositioned(
                   duration: const Duration(milliseconds: 200),
-                  bottom: controller.isRoot.value ? 0 : -controller.bottomBarHeight,
+                  bottom:
+                      controller.isRoot.value ? 0 : -controller.bottomBarHeight,
                   child: WeSlide(
                     controller: controller.weSlideController,
                     panelWidth: Get.width,
                     bodyWidth: Get.width,
-                    panelMaxSize: Get.height + (controller.isRoot1 ? 0 : controller.bottomBarHeight),
+                    panelMaxSize: Get.height +
+                        (controller.isRoot1 ? 0 : controller.bottomBarHeight),
                     parallax: true,
                     body: const HomeMobileView(),
                     panel: const SecondView(),
                     panelHeader: _buildPanelHeader(),
                     footer: _buildFooter(),
                     hidePanelHeader: false,
-                    height: Get.height + (controller.isRoot1 ? 0 : controller.bottomBarHeight),
-                    footerHeight: controller.bottomBarHeight + MediaQuery.of(context).padding.bottom,
-                    panelMinSize: controller.panelMobileMinSize + MediaQuery.of(context).padding.bottom,
-                    onPosition: (value) => controller.changeSlidePosition(value),
+                    height: Get.height +
+                        (controller.isRoot1 ? 0 : controller.bottomBarHeight),
+                    footerHeight: controller.bottomBarHeight +
+                        MediaQuery.of(context).padding.bottom,
+                    panelMinSize: controller.panelMobileMinSize +
+                        MediaQuery.of(context).padding.bottom,
+                    onPosition: (value) =>
+                        controller.changeSlidePosition(value),
                     isDownSlide: controller.firstSlideIsDownSlide,
                   ),
                 ),
@@ -53,10 +59,18 @@ class FirstView extends GetView<HomeController> {
   Widget _buildPanelHeader() {
     return InkWell(
       child: Obx(() => AnimatedContainer(
-            decoration: BoxDecoration(color: controller.getHeaderColor(), border: Border(bottom: BorderSide(color: controller.getHeaderColor(), width: 1.w))),
+            decoration: BoxDecoration(
+                color: controller.getHeaderColor(),
+                border: Border(
+                    bottom: BorderSide(
+                        color: controller.getHeaderColor(), width: 1.w))),
             padding: controller.getHeaderPadding(),
             width: Get.width,
-            height: controller.getPanelMinSize() + MediaQuery.of(controller.buildContext).padding.top * (controller.second.value ? 1 : controller.slidePosition.value),
+            height: controller.getPanelMinSize() +
+                MediaQuery.of(controller.buildContext).padding.top *
+                    (controller.second.value
+                        ? 1
+                        : controller.slidePosition.value),
             duration: const Duration(milliseconds: 0),
             child: Column(
               children: [_buildTopHeader(), Expanded(child: _buildPlayBar())],
@@ -81,10 +95,12 @@ class FirstView extends GetView<HomeController> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             InkWell(
-              child: Icon(Icons.keyboard_arrow_down, color: controller.rx.value.light?.titleTextColor),
+              child: Icon(Icons.keyboard_arrow_down,
+                  color: controller.rx.value.light?.titleTextColor),
               onTap: () => controller.weSlideController.hide(),
             ),
-            Icon(Icons.more_horiz, color: controller.rx.value.light?.titleTextColor)
+            Icon(Icons.more_horiz,
+                color: controller.rx.value.light?.titleTextColor)
           ],
         ),
       ),
@@ -106,7 +122,13 @@ class FirstView extends GetView<HomeController> {
                   controller.mediaItem.value.artUri?.path ?? '',
                   height: controller.getImageSize(),
                   width: controller.getImageSize(),
-                  borderRadius: BorderRadius.circular(controller.getImageSize() / 2 * (1 - controller.slidePosition.value)),
+                  borderRadius: BorderRadius.circular(
+                      controller.getImageSize() /
+                          2 *
+                          (1 -
+                              (controller.slidePosition.value == 1
+                                  ? 0.92
+                                  : controller.slidePosition.value))),
                 )),
             AnimatedOpacity(
               opacity: controller.slidePosition.value > 0 ? 0 : 1,
@@ -119,12 +141,17 @@ class FirstView extends GetView<HomeController> {
                   children: [
                     Text(
                       controller.mediaItem.value.title,
-                      style: TextStyle(fontSize: 28.sp,  color: controller.getLightTextColor()),
+                      style: TextStyle(
+                          fontSize: 28.sp,
+                          color: controller.getLightTextColor()),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                     Padding(padding: EdgeInsets.symmetric(vertical: 4.w)),
-                    Text(controller.mediaItem.value.artist ?? '', style: TextStyle(fontSize: 22.sp, color: controller.getLightTextColor()))
+                    Text(controller.mediaItem.value.artist ?? '',
+                        style: TextStyle(
+                            fontSize: 22.sp,
+                            color: controller.getLightTextColor()))
                   ],
                 ),
               ),
@@ -136,8 +163,10 @@ class FirstView extends GetView<HomeController> {
           child: IconButton(
               onPressed: () => controller.playOrPause(),
               icon: Icon(
-                controller.playing.value ? const IconData(0xe63e, fontFamily: 'iconfont') : const IconData(0xe63a, fontFamily: 'iconfont'),
-                size: 34.w,
+                controller.playing.value
+                    ? const IconData(0xe638, fontFamily: 'iconfont')
+                    : const IconData(0xe634, fontFamily: 'iconfont'),
+                size: 44.w,
                 color: controller.getLightTextColor(),
               )),
         ),
@@ -146,8 +175,8 @@ class FirstView extends GetView<HomeController> {
           child: IconButton(
               onPressed: () => controller.audioServeHandler.skipToNext(),
               icon: Icon(
-                const IconData(0xe63d, fontFamily: 'iconfont'),
-                size: 30.w,
+                const IconData(0xe637, fontFamily: 'iconfont'),
+                size: 42.w,
                 color: controller.getLightTextColor(),
               )),
         )
@@ -158,7 +187,7 @@ class FirstView extends GetView<HomeController> {
   Widget _buildFooter() {
     return Obx(() => controller.isRoot.value
         ? FlashyNavbar(
-            iconSize: 56.w,
+            iconSize: 54.w,
             height: controller.bottomBarHeight,
             selectedIndex: controller.selectIndex.value,
             showElevation: false,
@@ -167,19 +196,19 @@ class FirstView extends GetView<HomeController> {
             },
             items: [
               FlashyNavbarItem(
-                icon: const Icon( IconData(0xe6a1, fontFamily: 'iconfont')),
+                icon: const Icon(IconData(0xe6a1, fontFamily: 'iconfont')),
                 title: const Text('首页'),
               ),
               FlashyNavbarItem(
-                icon: const Icon( IconData(0xe6b5, fontFamily: 'iconfont')),
+                icon: const Icon(IconData(0xe6b5, fontFamily: 'iconfont')),
                 title: const Text('专辑'),
               ),
               FlashyNavbarItem(
-                icon:  const Icon( IconData(0xe692, fontFamily: 'iconfont')),
+                icon: const Icon(IconData(0xe692, fontFamily: 'iconfont')),
                 title: const Text('单曲'),
               ),
               FlashyNavbarItem(
-                icon: const Icon( IconData(0xe683, fontFamily: 'iconfont')),
+                icon: const Icon(IconData(0xe683, fontFamily: 'iconfont')),
                 title: const Text('歌手'),
               ),
             ],

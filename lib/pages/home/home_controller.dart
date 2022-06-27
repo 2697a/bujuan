@@ -9,7 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
-import 'package:jaudiotagger/jaudiotagger.dart';
+// import 'package:jaudiotagger/jaudiotagger.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
 import '../../common/constants/colors.dart';
@@ -30,7 +30,7 @@ class HomeController extends GetxController {
   WeSlideController weSlideController = WeSlideController();
   WeSlideController weSlideController1 = WeSlideController();
   RxBool isCollapsedAfterSec = true.obs;
-  PageController pageController = PageController();
+  PageController pageController = PageController(viewportFraction: .99);
   Rx<Color> textColor = const Color(0xFFFFFFFF).obs;
   double offset = 0;
   double down = 0;
@@ -53,7 +53,7 @@ class HomeController extends GetxController {
   late BuildContext buildContext;
   final AudioServeHandler audioServeHandler = GetIt.instance<AudioServeHandler>();
   Rx<Duration> duration = Duration.zero.obs;
-  Jaudiotagger audioTagger = Jaudiotagger();
+  // Jaudiotagger audioTagger = Jaudiotagger();
   var dio = http.Dio();
   ScrollController scrollController = ScrollController();
   RxList<LyricsLineModel> lyricList = <LyricsLineModel>[].obs;
@@ -75,10 +75,10 @@ class HomeController extends GetxController {
       if (value == null) return;
       setHeaderHeight();
       //获取歌词
-      audioTagger.getPlatformVersion(value.extras?['data'] ?? '').then((value) {
-        if (value == null || value.isEmpty) return;
-        lyricList.value = ParserLrc(value).parseLines();
-      });
+      // audioTagger.getPlatformVersion(value.extras?['data'] ?? '').then((value) {
+      //   if (value == null || value.isEmpty) return;
+      //   lyricList.value = ParserLrc(value).parseLines();
+      // });
       mediaItem.value = value;
       ImageUtils.getImageColor(value.artUri?.path ?? '', (paletteColorData) {
         rx.value = paletteColorData;
@@ -222,12 +222,12 @@ class HomeController extends GetxController {
 
   //外层panel的高度和颜色
   double getPanelMinSize() {
-    return panelHeaderSize * (1 + slidePosition.value * 6);
+    return panelHeaderSize * (1 + slidePosition.value * 5.6);
   }
 
   //获取图片的宽高
   double getImageSize() {
-    return (panelHeaderSize * .8) * (1 + slidePosition.value * 6);
+    return (panelHeaderSize * .8) * (1 + slidePosition.value * 5.6);
   }
 
   //获取图片离左侧的间距

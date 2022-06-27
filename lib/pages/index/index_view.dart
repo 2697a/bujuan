@@ -16,7 +16,7 @@ class IndexView extends GetView<IndexController> {
     controller.buildContext = context;
     return Scaffold(
       body: Obx(() => ListView.builder(
-            padding: EdgeInsets.only(left: 10.w,right: 10.w,bottom: HomeController.to.getHomeBottomPadding()),
+            padding: EdgeInsets.only(left: 20.w,right: 20.w,bottom: HomeController.to.getHomeBottomPadding()),
             itemBuilder: (context, index) => _buildItem(controller.songs[index], index),
             itemCount: controller.songs.length,
           )),

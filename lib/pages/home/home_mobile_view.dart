@@ -55,8 +55,8 @@ class HomeMobileView extends GetView<HomeController> {
       // 开启FPS监控
       themeMode: ThemeMode.system,
       getPages: AppPages.routes,
-      defaultTransition: Transition.upToDown,
-      transitionDuration: const Duration(milliseconds: 200),
+      defaultTransition: Transition.circularReveal,
+      // transitionDuration: const Duration(milliseconds: 200),
       routingCallback: (Routing? r) {
         HomeController.to.changeRoute(r?.current);
       },

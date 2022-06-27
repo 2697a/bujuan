@@ -16,7 +16,6 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:bujuan/widget/simple_extended_image.dart';
-import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:path_provider/path_provider.dart';

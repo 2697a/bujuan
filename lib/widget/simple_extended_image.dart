@@ -95,7 +95,6 @@ class SimpleExtendedImageState extends State<SimpleExtendedImage> {
         fit: BoxFit.cover,
         borderRadius: widget.borderRadius,
         cacheWidth: widget.cacheWidth ?? 800,
-
         //展厅
         loadStateChanged: (ExtendedImageState state) {
           Widget image;

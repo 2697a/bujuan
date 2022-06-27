@@ -132,8 +132,8 @@ class SecondBodyView extends GetView<HomeController> {
                   onPressed: () =>
                       controller.audioServeHandler.skipToPrevious(),
                   icon: Icon(
-                    const IconData(0xe63c, fontFamily: 'iconfont'),
-                    size: 32.w,
+                    const IconData(0xe636, fontFamily: 'iconfont'),
+                    size: 46.w,
                     color: controller.rx.value.dark?.bodyTextColor,
                   )),
               Padding(
@@ -147,8 +147,8 @@ class SecondBodyView extends GetView<HomeController> {
                     ),
                     child: Icon(
                       controller.playing.value
-                          ?  const IconData(0xe63e, fontFamily: 'iconfont') : const IconData(0xe63a, fontFamily: 'iconfont'),
-                      size: 52.w,
+                          ?  const IconData(0xe638, fontFamily: 'iconfont') : const IconData(0xe634, fontFamily: 'iconfont'),
+                      size: 62.w,
                       color:
                       controller.rx.value.dark?.bodyTextColor.withOpacity(.6),
                     ),
@@ -159,8 +159,8 @@ class SecondBodyView extends GetView<HomeController> {
               IconButton(
                   onPressed: () => controller.audioServeHandler.skipToNext(),
                   icon: Icon(
-                    const IconData(0xe63d, fontFamily: 'iconfont'),
-                    size: 32.w,
+                    const IconData(0xe637, fontFamily: 'iconfont'),
+                    size: 46.w,
                     color: controller.rx.value.dark?.bodyTextColor,
                   )),
             ],
