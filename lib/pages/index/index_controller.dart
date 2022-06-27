@@ -29,6 +29,7 @@ class IndexController extends GetxController {
   querySong() async{
       songs.value = await HomeController.to.audioQuery.querySongs();
       for (var songModel in songs) {
+        print('object=======${songModel.data}');
         Directory directory = await getTemporaryDirectory();
         String path = '${directory.path}${songModel.id}';
         File file = File(path);
@@ -41,7 +42,8 @@ class IndexController extends GetxController {
             id: '${songModel.id}',
             duration: Duration(milliseconds: songModel.duration ?? 0),
             artUri: Uri.file(path),
-            extras: {'url': songModel.uri},
+            rating: const Rating.newHeartRating(false),
+            extras: {'url': songModel.uri,'data':songModel.data},
             title: songModel.title,
             artist: songModel.artist);
         mediaItems.add(mediaItem);

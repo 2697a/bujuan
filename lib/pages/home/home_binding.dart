@@ -1,3 +1,4 @@
+import 'package:bujuan/pages/home/first/first_controller.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/pages/index/index_controller.dart';
 import 'package:get/get.dart';

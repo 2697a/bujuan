@@ -116,13 +116,13 @@ class SecondBodyView extends GetView<HomeController> {
           left: 40.w,
           right: 40.w,
           bottom:
-              controller.isRoot.value ? 0 : controller.secondPanelHeaderSize),
+              controller.isRoot.value ? controller.secondPanelHeaderSize : 0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           IconButton(
-              onPressed: () {},
-              icon: Icon(Icons.loop,
+              onPressed: () => controller.changeRepeatMode(),
+              icon: Icon(controller.getRepeatIcon(),
                   color: controller.rx.value.dark?.bodyTextColor)),
           Expanded(
               child: Row(
@@ -132,20 +132,26 @@ class SecondBodyView extends GetView<HomeController> {
                   onPressed: () =>
                       controller.audioServeHandler.skipToPrevious(),
                   icon: Icon(
-                    Icons.skip_previous,
-                    size: 60.w,
+                    const IconData(0xe63c, fontFamily: 'iconfont'),
+                    size: 32.w,
                     color: controller.rx.value.dark?.bodyTextColor,
                   )),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 60.w),
                 child: InkWell(
-                  child: Icon(
-                    controller.playing.value
-                        ? Icons.pause_circle
-                        : Icons.play_circle_fill,
-                    size: 140.w,
-                    color:
-                        controller.rx.value.dark?.bodyTextColor.withOpacity(.6),
+                  child: Container(
+                    padding: EdgeInsets.all(30.w),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(80.w),
+                      color: controller.rx.value.dark?.color,
+                    ),
+                    child: Icon(
+                      controller.playing.value
+                          ?  const IconData(0xe63e, fontFamily: 'iconfont') : const IconData(0xe63a, fontFamily: 'iconfont'),
+                      size: 52.w,
+                      color:
+                      controller.rx.value.dark?.bodyTextColor.withOpacity(.6),
+                    ),
                   ),
                   onTap: () => controller.playOrPause(),
                 ),
@@ -153,15 +159,15 @@ class SecondBodyView extends GetView<HomeController> {
               IconButton(
                   onPressed: () => controller.audioServeHandler.skipToNext(),
                   icon: Icon(
-                    Icons.skip_next,
-                    size: 60.w,
+                    const IconData(0xe63d, fontFamily: 'iconfont'),
+                    size: 32.w,
                     color: controller.rx.value.dark?.bodyTextColor,
                   )),
             ],
           )),
           IconButton(
-              onPressed: () {},
-              icon: Icon(Icons.shuffle,
+              onPressed: () => controller.changeShuffleMode(),
+              icon: Icon(controller.getShuffleIcon(),
                   color: controller.rx.value.dark?.bodyTextColor)),
         ],
       ),

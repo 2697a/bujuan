@@ -12,6 +12,7 @@ class SecondView extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
+    controller.buildContext = context;
     return Obx(() => WeSlide(
           controller: controller.weSlideController1,
           panelMaxSize: Get.height - controller.panelHeaderSize - MediaQuery.of(context).padding.top - 10.w,
@@ -20,14 +21,17 @@ class SecondView extends GetView<HomeController> {
           boxDecoration: BoxDecoration(
               borderRadius: BorderRadius.only(topLeft: Radius.circular(20.w), topRight: Radius.circular(20.w)),
               gradient: LinearGradient(colors: [
-                controller.rx.value.light?.color.withOpacity(controller.second.value ? 1 : controller.slidePosition.value) ?? Colors.white,
-                controller.rx.value.dark?.color.withOpacity(controller.second.value ? 1 : controller.slidePosition.value) ?? Colors.white
+                controller.rx.value.light?.color.withOpacity(controller.second.value ? 1 : controller.slidePosition.value) ?? Colors.transparent,
+                controller.rx.value.dark?.color.withOpacity(controller.second.value ? 1 : controller.slidePosition.value) ?? Colors.transparent
               ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
           onPosition: (value) => controller.changeSlidePosition(1 - value, second: true),
           body: const SecondBodyView(),
           panel: const SecondPanelView(),
           panelHeader: _buildSecondHead(),
-          footer: Container(color: controller.rx.value.dark?.color ?? Colors.white,height: MediaQuery.of(context).padding.bottom,),
+          footer: Container(
+            color: controller.rx.value.dark?.color ?? Colors.transparent,
+            height: MediaQuery.of(context).padding.bottom,
+          ),
           footerHeight: MediaQuery.of(context).padding.bottom,
         ));
   }
@@ -49,35 +53,40 @@ class SecondView extends GetView<HomeController> {
               height: 8.w,
             ),
             Expanded(
-                child: DefaultTabController(
-              length: 3,
-              child: TabBar(
-                isScrollable: false,
-                labelColor: controller.rx.value.dark?.bodyTextColor,
-                unselectedLabelColor: controller.rx.value.dark?.titleTextColor,
-                indicatorSize: TabBarIndicatorSize.label,
-                indicatorColor: controller.rx.value.dark?.bodyTextColor,
-                // indicator: const BoxDecoration(),
-                labelStyle: TextStyle(fontSize: 28.sp, fontWeight: FontWeight.bold),
-                unselectedLabelStyle: TextStyle(fontSize: 28.sp),
-                onTap: (index) {
-                  if (!controller.weSlideController1.isOpened) {
-                    controller.weSlideController1.show();
-                  }
-                  controller.secondPageController.jumpToPage(index);
-                },
-                tabs: const [
-                  Tab(
-                    text: '列表',
+                child: Row(
+              children: [
+                Expanded(
+                    child: DefaultTabController(
+                  length: 3,
+                  child: TabBar(
+                    isScrollable: false,
+                    labelColor: controller.rx.value.dark?.bodyTextColor,
+                    unselectedLabelColor: controller.rx.value.dark?.titleTextColor,
+                    indicatorSize: TabBarIndicatorSize.label,
+                    indicatorColor: controller.rx.value.dark?.bodyTextColor,
+                    // indicator: const BoxDecoration(),
+                    labelStyle: TextStyle(fontSize: 28.sp, fontWeight: FontWeight.bold),
+                    unselectedLabelStyle: TextStyle(fontSize: 28.sp),
+                    onTap: (index) {
+                      if (!controller.weSlideController1.isOpened) {
+                        controller.weSlideController1.show();
+                      }
+                      controller.secondPageController.jumpToPage(index);
+                    },
+                    tabs: const [
+                      Tab(
+                        text: '列表',
+                      ),
+                      Tab(
+                        text: '歌词',
+                      ),
+                      Tab(
+                        text: '相关',
+                      )
+                    ],
                   ),
-                  Tab(
-                    text: '歌词',
-                  ),
-                  Tab(
-                    text: '相关',
-                  )
-                ],
-              ),
+                )),
+              ],
             ))
           ],
         ),

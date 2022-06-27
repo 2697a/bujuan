@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
 import '../../widget/query_artwork_widget.dart' as custom;
+import '../home/home_controller.dart';
 
 class AlbumView extends GetView<IndexController> {
   const AlbumView({Key? key}) : super(key: key);
@@ -18,7 +19,7 @@ class AlbumView extends GetView<IndexController> {
 
   Widget _buildAlbumView(){
     return GridView.builder(
-      padding: EdgeInsets.symmetric(horizontal: 10.w,vertical: 20.w),
+      padding: EdgeInsets.only(left: 10.w,right: 10.w,bottom: HomeController.to.getHomeBottomPadding()),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         crossAxisSpacing: 20.w,

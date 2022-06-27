@@ -19,7 +19,7 @@ class FlashyNavbar extends StatelessWidget {
   FlashyNavbar({
     Key? key,
     this.selectedIndex = 0,
-    this.height = 60,
+    this.height = 55,
     this.showElevation = true,
     this.iconSize = 23,
     this.backgroundColor,
@@ -52,7 +52,7 @@ class FlashyNavbar extends StatelessWidget {
       child: Container(
         width: Get.width,
         height: height,
-        padding:  EdgeInsets.only(top: 6, bottom: MediaQuery.of(context).padding.bottom),
+        padding:  EdgeInsets.only(top: 0, bottom: MediaQuery.of(context).padding.bottom),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: items.map((item) {
@@ -131,7 +131,8 @@ class _FlashyNavbarItem extends StatelessWidget {
                   opacity: isSelected ? 1.0 : 1.0,
                   duration: animationDuration,
                   child: IconTheme(
-                    data: IconThemeData(size: iconSize, color: isSelected ? item.activeColor.withOpacity(0) : Theme.of(context).colorScheme.onPrimary),
+
+                    data: IconThemeData(size: iconSize, color: isSelected ? item.activeColor.withOpacity(0) : Theme.of(context).iconTheme.color),
                     child: item.icon,
                   )),
             ),

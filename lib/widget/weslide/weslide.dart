@@ -207,7 +207,8 @@ class WeSlide extends StatefulWidget {
     this.animateDuration = const Duration(milliseconds: 200),
     this.controller,
     this.onPosition,
-    this.isDownSlide = true,  this.height,
+    this.isDownSlide = true,
+    this.height,
   })  : /*assert(body != null, 'body could not be null'),*/
         assert(panelMinSize >= 0.0, 'panelMinSize cannot be negative'),
         assert(footerHeight >= 0.0, 'footerHeight cannot be negative'),
@@ -415,8 +416,8 @@ class _WeSlideState extends State<WeSlide> with SingleTickerProviderStateMixin {
     final width = MediaQuery.of(context).size.width;
 
     return Container(
-      height: widget.height??height,
-      decoration: widget.boxDecoration ?? const BoxDecoration(),
+      height: widget.height ?? height,
+      decoration: widget.boxDecoration ?? BoxDecoration(borderRadius: BorderRadius.only(topLeft: Radius.circular(35.w), topRight: Radius.circular(35.w))),
       child: Stack(
         alignment: Alignment.bottomCenter,
         children: <Widget>[
@@ -440,7 +441,7 @@ class _WeSlideState extends State<WeSlide> with SingleTickerProviderStateMixin {
               );
             },
             child: SizedBox(
-              height: height - _getBodyHeight()+(HomeController.to.isRoot.value?0:HomeController.to.bottomBarHeight),
+              height: height - (HomeController.to.isRoot.value ? 0 : HomeController.to.bottomBarHeight)-25.w,
               width: widget.bodyWidth ?? width,
               child: widget.body,
             ),
@@ -496,20 +497,21 @@ class _WeSlideState extends State<WeSlide> with SingleTickerProviderStateMixin {
                   onVerticalDragEnd: _handleVerticalEnd,
                   child: AnimatedContainer(
                     decoration: const BoxDecoration(
+                      color: Colors.transparent,
                       boxShadow: [
                         BoxShadow(
                           color: Color(0x13000000),
                           blurRadius: 5,
                         ),
-                      ]
+                      ],
                     ),
                     height: widget.panelMaxSize,
                     width: widget.panelWidth ?? width,
                     duration: const Duration(milliseconds: 300),
                     child: ClipRRect(
                       borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(25.w),
-                        topRight: Radius.circular(25.w),
+                        topLeft: Radius.circular(45.w),
+                        topRight: Radius.circular(45.w),
                       ),
                       child: child,
                     ),

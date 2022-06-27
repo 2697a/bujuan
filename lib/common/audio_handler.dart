@@ -37,7 +37,7 @@ class AudioServeHandler extends BaseAudioHandler
         systemActions: const {
           MediaAction.seek,
         },
-        androidCompactActionIndices: const [0, 1, 3],
+        androidCompactActionIndices: const [ 1,2, 3],
         processingState: const {
           ProcessingState.idle: AudioProcessingState.idle,
           ProcessingState.loading: AudioProcessingState.loading,
@@ -145,7 +145,9 @@ class AudioServeHandler extends BaseAudioHandler
   @override
   Future<void> stop() async {
     _player.stop();
+    return super.stop();
   }
+
 
   @override
   Future<void> seek(Duration position) async {
@@ -156,11 +158,36 @@ class AudioServeHandler extends BaseAudioHandler
   Future<void> skipToQueueItem(int index) async {
     if (index < 0 || index >= queue.value.length) return;
     if (_player.shuffleModeEnabled) {
-      print('================');
       index = _player.shuffleIndices![index];
     }
-    print('================$index');
     _player.seek(Duration.zero, index: index);
+  }
+
+  @override
+  Future<void> setRepeatMode(AudioServiceRepeatMode repeatMode) async {
+    switch (repeatMode) {
+      case AudioServiceRepeatMode.none:
+        _player.setLoopMode(LoopMode.off);
+        break;
+      case AudioServiceRepeatMode.one:
+        _player.setLoopMode(LoopMode.one);
+        break;
+      case AudioServiceRepeatMode.group:
+      case AudioServiceRepeatMode.all:
+        _player.setLoopMode(LoopMode.all);
+        break;
+    }
+    return super.setRepeatMode(repeatMode);
+  }
+
+  @override
+  Future<void> setShuffleMode(AudioServiceShuffleMode shuffleMode) async {
+    if (shuffleMode == AudioServiceShuffleMode.none) {
+      _player.setShuffleModeEnabled(false);
+    } else {
+      await _player.shuffle();
+      _player.setShuffleModeEnabled(true);
+    }
   }
 
   @override

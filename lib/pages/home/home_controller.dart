@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:bujuan/common/audio_handler.dart';
@@ -10,16 +9,19 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
+import 'package:jaudiotagger/jaudiotagger.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
 import '../../common/constants/colors.dart';
+import '../../widget/lyric/lyric_parser/parser_lrc.dart';
+import '../../widget/lyric/lyrics_reader_model.dart';
 import '../../widget/weslide/weslide_controller.dart';
 
-class HomeController extends SuperController {
+class HomeController extends GetxController {
   final String weSlideUpdate = 'weSlide';
-  double panelHeaderSize = 100.w;
+  double panelHeaderSize = 110.w;
   double secondPanelHeaderSize = 120.w;
-  double bottomBarHeight = 60;
+  double bottomBarHeight = 55;
   double panelMobileMinSize = 0;
   double topBarHeight = 90.w;
 
@@ -29,7 +31,6 @@ class HomeController extends SuperController {
   WeSlideController weSlideController1 = WeSlideController();
   RxBool isCollapsedAfterSec = true.obs;
   PageController pageController = PageController();
-  RxString lyric = ''.obs;
   Rx<Color> textColor = const Color(0xFFFFFFFF).obs;
   double offset = 0;
   double down = 0;
@@ -45,108 +46,156 @@ class HomeController extends SuperController {
   RxBool isRoot = true.obs;
   bool isRoot1 = true;
   bool first = true;
-  Rx<MediaItem> mediaItem = const MediaItem(id: 'id', title: '暂无', duration: Duration(seconds: 10)).obs;
+  Rx<MediaItem> mediaItem = const MediaItem(id: 'no', title: '暂无', duration: Duration(seconds: 10)).obs;
   RxBool playing = false.obs;
   PageController secondPageController = PageController();
   final OnAudioQuery audioQuery = OnAudioQuery();
   late BuildContext buildContext;
   final AudioServeHandler audioServeHandler = GetIt.instance<AudioServeHandler>();
   Rx<Duration> duration = Duration.zero.obs;
+  Jaudiotagger audioTagger = Jaudiotagger();
   var dio = http.Dio();
+  ScrollController scrollController = ScrollController();
+  RxList<LyricsLineModel> lyricList = <LyricsLineModel>[].obs;
+
+  Rx<AudioServiceRepeatMode> audioServiceRepeatMode = AudioServiceRepeatMode.all.obs;
+  Rx<AudioServiceShuffleMode> audioServiceShuffleMode = AudioServiceShuffleMode.none.obs;
 
   @override
   void onInit() {
-    panelMobileMinSize = panelHeaderSize + bottomBarHeight;
+    setHeaderHeight();
     super.onInit();
   }
 
   @override
   void onReady() async {
     super.onReady();
+    audioServeHandler.setRepeatMode(audioServiceRepeatMode.value);
     audioServeHandler.mediaItem.listen((value) async {
       if (value == null) return;
-      // Directory directory = await getTemporaryDirectory();
-      // String path = '${directory.path}/${value.id}-lyric';
-      // File file = File(path);
-      // if(await file.exists()){
-      //   String lyric = await file.readAsString();
-      //   log('exists == lyric=====$lyric');
-      // }else {
-      //   dio.get('https://mobileservice.kugou.com/api/v3/lyric/search?version=9108&highlight=1&plat=0&pagesize=20&area_code=1&page=1&with_res_tag=1',
-      //       queryParameters: {'keyword': value.title}).then((value1) {
-      //     String dataStr = value1.data.toString().replaceAll("<!--KG_TAG_RES_END-->", '').replaceAll('<!--KG_TAG_RES_START-->', '');
-      //     LyricHashEntity? lyricHashEntity = JsonConvert.fromJsonAsT<LyricHashEntity>(jsonDecode(dataStr));
-      //     if (lyricHashEntity != null && lyricHashEntity.status == 1) {
-      //       dio.get('http://krcs.kugou.com/search?ver=1&man=yes&client=mobi&keyword=&duration=&album_audio_id=',
-      //           queryParameters: {'hash': lyricHashEntity.data?.info?[0].hash}).then((value2) {
-      //         LyricKeyEntity? lyricKeyEntity =JsonConvert.fromJsonAsT<LyricKeyEntity>(jsonDecode(jsonEncode(value2.data)));
-      //         if(lyricKeyEntity!=null&&lyricKeyEntity.status ==200&&lyricKeyEntity.candidates!.isNotEmpty){
-      //           String  id = lyricKeyEntity.candidates?[0].id??'';
-      //           String key = lyricKeyEntity.candidates?[0].accesskey??'';
-      //           dio.get('http://lyrics.kugou.com/download?ver=1&client=pc&fmt=krc&charset=utf8',
-      //               queryParameters: {'id': id,'accesskey':key}).then((value3) async{
-      //             LyricContentEntity? lyricContentEntity =  JsonConvert.fromJsonAsT<LyricContentEntity>(jsonDecode(jsonEncode(value3.data)));
-      //             if(lyricContentEntity!=null&&lyricContentEntity.status==200){
-      //               Uint8List uint8list = base64Decode(lyricContentEntity.content??'');
-      //               File file1 = await file.writeAsBytes(uint8list);
-      //               String lyric = await file1.readAsString();
-      //               log('lyric=====$lyric');
-      //             }
-      //
-      //           });
-      //         }
-      //       });
-      //     }
-      //   });
-      // }
-
-      //
+      setHeaderHeight();
+      //获取歌词
+      audioTagger.getPlatformVersion(value.extras?['data'] ?? '').then((value) {
+        if (value == null || value.isEmpty) return;
+        lyricList.value = ParserLrc(value).parseLines();
+      });
       mediaItem.value = value;
       ImageUtils.getImageColor(value.artUri?.path ?? '', (paletteColorData) {
         rx.value = paletteColorData;
         textColor.value = paletteColorData.light?.titleTextColor ?? AppTheme.onPrimary;
       });
     });
-    audioServeHandler.playbackState.listen((value) => playing.value = value.playing);
-    AudioService.position.listen((event) => duration.value = event);
-
-    // audioServeHandler.queue.listen((value) {
-    //   print('audioServeHandler.queue.listen=====${value.length}');
-    // });
-    // assetsAudioPlayer.current.listen((event) {
-    //   if (event == null) {
-    //     assetsAudioPlayer.next();
-    //     return;
-    //   }
-    //   ImageUtils.getImageColor(event.audio.audio.metas.image?.path ?? '', (paletteColorData) {
-    //     rx.value = paletteColorData;
-    //     textColor.value = paletteColorData.light?.titleTextColor ?? AppTheme.onPrimary;
-    //   });
-    // });
-    // assetsAudioPlayer.currentPosition.listen((event) {});
+    //监听实时进度变化
+    AudioService.position.listen((event) {
+      if (event.inMilliseconds > (mediaItem.value.duration?.inMilliseconds ?? 0)) {
+        duration.value = Duration.zero;
+        return;
+      }
+      duration.value = event;
+    });
+    audioServeHandler.playbackState.listen((value) {
+      playing.value = value.playing;
+    });
     requestPermission();
   }
 
   static HomeController get to => Get.find();
 
+  //动态设置Header高度
+  setHeaderHeight() {
+    if (mediaItem.value.id == 'no' && panelHeaderSize > 0) {
+      panelHeaderSize = 0;
+      panelMobileMinSize = panelHeaderSize + bottomBarHeight;
+    } else {
+      if (panelHeaderSize == 110.w) return;
+      panelHeaderSize = 110.w;
+      panelMobileMinSize = panelHeaderSize + bottomBarHeight;
+      update([weSlideUpdate]);
+    }
+  }
+
+  //改变循环模式
+  changeRepeatMode() {
+    switch (audioServiceRepeatMode.value) {
+      case AudioServiceRepeatMode.one:
+        audioServiceRepeatMode.value = AudioServiceRepeatMode.all;
+        break;
+      case AudioServiceRepeatMode.none:
+        audioServiceRepeatMode.value = AudioServiceRepeatMode.one;
+        break;
+      case AudioServiceRepeatMode.all:
+      case AudioServiceRepeatMode.group:
+        audioServiceRepeatMode.value = AudioServiceRepeatMode.none;
+        break;
+    }
+    audioServeHandler.setRepeatMode(audioServiceRepeatMode.value);
+  }
+
+  //改变随机模式
+  changeShuffleMode() {
+    // switch (audioServiceShuffleMode.value) {
+    //   case AudioServiceShuffleMode.none:
+    //     audioServiceShuffleMode.value = AudioServiceShuffleMode.all;
+    //     break;
+    //   case AudioServiceShuffleMode.all:
+    //   case AudioServiceShuffleMode.group:
+    //     audioServiceShuffleMode.value = AudioServiceShuffleMode.none;
+    //     break;
+    // }
+    // audioServeHandler.setShuffleMode(audioServiceShuffleMode.value);
+  }
+
+  //获取当前循环icon
+  IconData getRepeatIcon() {
+    IconData icon;
+    switch (audioServiceRepeatMode.value) {
+      case AudioServiceRepeatMode.none:
+        icon = Icons.link_off_outlined;
+        break;
+      case AudioServiceRepeatMode.one:
+        icon = Icons.repeat_one;
+        break;
+      case AudioServiceRepeatMode.all:
+      case AudioServiceRepeatMode.group:
+        icon = Icons.repeat;
+        break;
+    }
+    return icon;
+  }
+
+  //获取是否随机图标
+  IconData getShuffleIcon() {
+    IconData icon;
+    switch (audioServiceShuffleMode.value) {
+      case AudioServiceShuffleMode.none:
+        icon = Icons.shuffle;
+        break;
+      case AudioServiceShuffleMode.all:
+      case AudioServiceShuffleMode.group:
+        icon = Icons.shuffle_on;
+        break;
+    }
+    return icon;
+  }
+
+  //请求权限
   requestPermission() async {
-    // Web platform don't support permissions methods.
     bool permissionStatus = await audioQuery.permissionsStatus();
     if (!permissionStatus) {
       await audioQuery.permissionsRequest();
     }
   }
 
+  //播放 or 暂停
   void playOrPause() async {
     if (playing.value) {
       await audioServeHandler.pause();
     } else {
       await audioServeHandler.play();
     }
-
-    // await assetsAudioPlayer.playOrPause();
   }
 
+  //改变panel位置
   void changeSlidePosition(value, {bool second = false}) {
     slidePosition.value = value;
     if (this.second.value != second || (second && value == 1)) {
@@ -154,26 +203,11 @@ class HomeController extends SuperController {
     }
     if (this.second.value) {
       firstSlideIsDownSlide = value > 0;
-    }
-
-    // if (!this.second.value) {
-    //   if (value >= .98) {
-    //     changeSystemNavigationBarColor(rx.value.dark?.color ?? AppTheme.onPrimary);
-    //   } else {
-    //     if (systemUiOverlayStyle.systemNavigationBarColor != AppTheme.onPrimary) {
-    //       changeSystemNavigationBarColor(Get.isPlatformDarkMode ? ThemeData.dark().bottomAppBarColor : ThemeData.light().bottomAppBarColor);
-    //     }
-    //   }
-    // }
-  }
-
-  void changeSystemNavigationBarColor(Color color) {
-    if (Platform.isAndroid) {
-      systemUiOverlayStyle = SystemUiOverlayStyle(systemNavigationBarColor: color);
-      SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
+      update([weSlideUpdate]);
     }
   }
 
+  //当按下返回键
   Future<bool> onWillPop() async {
     if (weSlideController1.isOpened) {
       weSlideController1.hide();
@@ -188,30 +222,25 @@ class HomeController extends SuperController {
 
   //外层panel的高度和颜色
   double getPanelMinSize() {
-    return panelHeaderSize * (1 + slidePosition.value * 6.6);
+    return panelHeaderSize * (1 + slidePosition.value * 6);
   }
 
-  double getPanelAdd() {
-    return MediaQuery.of(buildContext).padding.top * (second.value ? 1 : slidePosition.value) + getTopHeight() + (isRoot.value ? 0 : MediaQuery.of(buildContext).padding.bottom);
-  }
-
+  //获取图片的宽高
   double getImageSize() {
-    return (panelHeaderSize * .8) * (1 + slidePosition.value * 6.6);
+    return (panelHeaderSize * .8) * (1 + slidePosition.value * 6);
   }
 
+  //获取图片离左侧的间距
   double getImageLeft() {
     return ((Get.width - 60.w) - getImageSize()) / 2 * slidePosition.value;
   }
 
-  double getTitleLeft() {
-    return ((Get.width - 60.w) - getPanelMinSize()) / 2 * slidePosition.value + getPanelMinSize();
-  }
-
+  //动态设置获取Header颜色
   Color getHeaderColor() {
     return Theme.of(buildContext).bottomAppBarColor.withOpacity((second.value ? (1 - slidePosition.value) : slidePosition.value) > 0 ? 0 : 1);
-    // return Color.fromRGBO(255, 255, 255, (second.value ? (1 - slidePosition.value) : slidePosition.value) > 0 ? 0 : 1);
   }
 
+  //获取图片亮色背景下文字显示的颜色
   Color getLightTextColor() {
     if (!second.value && slidePosition.value == 1) {
       return textColor.value;
@@ -219,28 +248,32 @@ class HomeController extends SuperController {
       if (second.value && slidePosition.value == 0) {
         return textColor.value;
       }
-      return Theme.of(buildContext).colorScheme.onPrimary;
+      return Theme.of(buildContext).iconTheme.color ?? Colors.transparent;
     }
   }
 
+  //获取panel页面顶部的高度
   double getTopHeight() {
     return topBarHeight * slidePosition.value;
   }
 
+  //获取Header的padding
   EdgeInsets getHeaderPadding() {
     return EdgeInsets.only(left: 30.w, right: 30.w, top: MediaQuery.of(buildContext).padding.top * (second.value ? 1 : slidePosition.value));
   }
 
-  //
+  //获取歌词和列表Header的高度
   double getSecondPanelMinSize() {
     return secondPanelHeaderSize + MediaQuery.of(buildContext).padding.bottom;
   }
 
+  //改变pageView和底部导航栏下标
   void changeSelectIndex(int index) {
     selectIndex.value = index;
     pageController.jumpToPage(index);
   }
 
+  //当路由发生变化时调用
   void changeRoute(String? route) async {
     isRoot1 = route == '/';
     if (!isRoot1) {
@@ -251,22 +284,7 @@ class HomeController extends SuperController {
     if (!first) update([weSlideUpdate]);
   }
 
-  @override
-  void didChangePlatformBrightness() {
-    super.didChangePlatformBrightness();
-    // Future.delayed(const Duration(seconds: 1),() =>
-    //     changeSystemNavigationBarColor(Theme.of(Get.context!).bottomAppBarColor));
+  getHomeBottomPadding() {
+    return (mediaItem.value.id == 'no' ? bottomBarHeight : bottomBarHeight + panelHeaderSize)+20.w;
   }
-
-  @override
-  void onDetached() {}
-
-  @override
-  void onInactive() {}
-
-  @override
-  void onPaused() {}
-
-  @override
-  void onResumed() {}
 }

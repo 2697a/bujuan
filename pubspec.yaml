@@ -45,8 +45,7 @@ dependencies:
   extended_image: ^6.0.1
   flutter_image_compress: ^1.1.0
   palette_generator: ^0.3.3
-  on_audio_query:
-    path: plugins/on_audio_query-2.6.1
+  on_audio_query: ^2.6.1
   just_audio: ^0.9.25
   audio_service: ^0.18.5
   get_it: ^7.2.0
@@ -55,6 +54,9 @@ dependencies:
   just_waveform: ^0.0.3
   font_awesome_flutter: ^10.1.0
   wheel_slider: ^1.0.0
+  jaudiotagger:
+    path: ../jaudiotagger
+  flutter_lyric: ^2.0.4
 
 dev_dependencies:
   flutter_test:
@@ -94,10 +96,10 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
+  fonts:
+    - family: iconfont
+      fonts:
+        - asset: assets/font/iconfont.ttf
   #       - asset: fonts/Schyler-Italic.ttf
   #         style: italic
   #   - family: Trajan Pro

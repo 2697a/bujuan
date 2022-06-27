@@ -188,6 +188,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.0.1"
+  flutter_lyric:
+    dependency: "direct main"
+    description:
+      name: flutter_lyric
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.0.4"
   flutter_screenutil:
     dependency: "direct main"
     description:
@@ -254,6 +261,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.0.2"
+  jaudiotagger:
+    dependency: "direct main"
+    description:
+      path: "../jaudiotagger"
+      relative: true
+    source: path
+    version: "0.0.1"
   js:
     dependency: transitive
     description:
@@ -327,9 +341,9 @@ packages:
   on_audio_query:
     dependency: "direct main"
     description:
-      path: "plugins/on_audio_query-2.6.1"
-      relative: true
-    source: path
+      name: on_audio_query
+      url: "https://pub.flutter-io.cn"
+    source: hosted
     version: "2.6.1"
   on_audio_query_platform_interface:
     dependency: transitive

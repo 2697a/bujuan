@@ -1,4 +1,5 @@
 import 'package:bujuan/pages/home/home_controller.dart';
+import 'package:bujuan/pages/index/main_view.dart';
 import 'package:bujuan/routes/app_pages.dart';
 import 'package:bujuan/widget/simple_extended_image.dart';
 import 'package:flutter/material.dart';
@@ -32,19 +33,19 @@ class HomeMobileView extends GetView<HomeController> {
           actions: [
             IconButton(
                 onPressed: () => Get.toNamed(Routes.setting),
-                icon: const Icon(Icons.settings))
+                icon: const Icon( IconData(0xe69e, fontFamily: 'iconfont')),)
           ],
         ),
-        body: Padding(padding: EdgeInsets.symmetric(vertical: 2.w),child: PageView(
+        body: PageView(
           controller: controller.pageController,
           physics: const NeverScrollableScrollPhysics(),
           children: const [
+            MainView(),
             AlbumView(),
             IndexView(),
             UserView(),
-            UserView(),
           ],
-        ),),
+        ),
       ),
       title: "Application",
       theme: AppTheme.light,
@@ -54,7 +55,7 @@ class HomeMobileView extends GetView<HomeController> {
       // 开启FPS监控
       themeMode: ThemeMode.system,
       getPages: AppPages.routes,
-      defaultTransition: Transition.fadeIn,
+      defaultTransition: Transition.upToDown,
       transitionDuration: const Duration(milliseconds: 200),
       routingCallback: (Routing? r) {
         HomeController.to.changeRoute(r?.current);
