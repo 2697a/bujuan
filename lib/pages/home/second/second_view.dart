@@ -13,6 +13,7 @@ class SecondView extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     controller.buildContext = context;
+return SecondBodyView();
     return Obx(() => WeSlide(
           controller: controller.weSlideController1,
           panelMaxSize: Get.height - controller.panelHeaderSize - MediaQuery.of(context).padding.top - 10.w,
@@ -26,7 +27,7 @@ class SecondView extends GetView<HomeController> {
               ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
           onPosition: (value) => controller.changeSlidePosition(1 - value, second: true),
           body: const SecondBodyView(),
-          panel: const SecondPanelView(),
+          panel:Container(),
           panelHeader: _buildSecondHead(),
           footer: Container(
             color: controller.rx.value.dark?.color ?? Colors.transparent,

@@ -2,39 +2,40 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:extended_image/extended_image.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:palette_generator/palette_generator.dart';
 
 typedef ImageColorCallBack = void Function(PaletteColorData paletteColorData);
 
 class ImageUtils {
-  static ImageStreamListener? _imageStreamListener;
-  static ImageStream? _imageStream;
+  // static ImageStreamListener? _imageStreamListener;
+  // static ImageStream? _imageStream;
+
 
   static getImageColor(String url, ImageColorCallBack imageCallBack) {
     ExtendedFileImageProvider imageProvider = ExtendedFileImageProvider(File(url));
-    _imageStream = imageProvider.resolve(ImageConfiguration.empty);
-    _imageStreamListener = ImageStreamListener((ImageInfo image, bool synchronousCall) async {
-      ImageProvider _imageProvider = imageProvider;
-      _imageStream?.removeListener(_imageStreamListener!);
-      _getImageColorByProvider(_imageProvider).then((value) {
-        imageCallBack.call(value);
-      });
-    }, onError: (Object exception, StackTrace? stackTrace) {
-      ImageProvider imageProvider =  AssetImage('');
-      _getImageColorByProvider(imageProvider).then((value) {
-        imageCallBack.call(value);
-      });
+    _getImageColorByProvider(imageProvider).then((value) {
+      imageCallBack.call(value);
     });
-    _imageStream?.addListener(_imageStreamListener!);
+    // _imageStream = imageProvider.resolve(ImageConfiguration.empty);
+    // _imageStreamListener = ImageStreamListener((ImageInfo image, bool synchronousCall) async {
+    //   ImageProvider _imageProvider = imageProvider;
+    //   _imageStream?.removeListener(_imageStreamListener!);
+    //   _getImageColorByProvider(_imageProvider).then((value) {
+    //     imageCallBack.call(value);
+    //   });
+    // }, onError: (Object exception, StackTrace? stackTrace) {
+    //   ImageProvider imageProvider =  AssetImage('');
+    //   _getImageColorByProvider(imageProvider).then((value) {
+    //     imageCallBack.call(value);
+    //   });
+    // });
+    // _imageStream?.addListener(_imageStreamListener!);
   }
 
   static Future<PaletteColorData> _getImageColorByProvider(ImageProvider imageProvider) async {
     PaletteColorData paletteColorData = PaletteColorData();
-
     final PaletteGenerator paletteGenerator = await PaletteGenerator.fromImageProvider(imageProvider, size: Size(50.w, 50.w));
     paletteColorData.light = paletteGenerator.lightMutedColor ?? paletteGenerator.lightVibrantColor;
     paletteColorData.dark = paletteGenerator.darkMutedColor ?? paletteGenerator.darkVibrantColor;
@@ -49,19 +50,19 @@ class ImageUtils {
     return paletteColorData;
   }
 
-  static Future<Uint8List> testCompressList(Uint8List list) async {
-    print('压缩前========${list.length}====${DateTime.now()}');
-    var result = await FlutterImageCompress.compressWithList(
-      list,
-      minHeight: 400,
-      minWidth: 400,
-      quality: 96,
-    );
-    if (kDebugMode) {
-      print('压缩后========${result.length}====${DateTime.now()}');
-    }
-    return result;
-  }
+  // static Future<Uint8List> testCompressList(Uint8List list) async {
+  //   print('压缩前========${list.length}====${DateTime.now()}');
+  //   var result = await FlutterImageCompress.compressWithList(
+  //     list,
+  //     minHeight: 400,
+  //     minWidth: 400,
+  //     quality: 96,
+  //   );
+  //   if (kDebugMode) {
+  //     print('压缩后========${result.length}====${DateTime.now()}');
+  //   }
+  //   return result;
+  // }
 
   static String getTimeStamp(int milliseconds) {
     int seconds = (milliseconds / 1000).truncate();

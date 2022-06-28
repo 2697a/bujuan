@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:bujuan/common/audio_handler.dart';
@@ -9,11 +10,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
+
 // import 'package:jaudiotagger/jaudiotagger.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:tuna_flutter_range_slider/tuna_flutter_range_slider.dart';
 
 import '../../common/constants/colors.dart';
-import '../../widget/lyric/lyric_parser/parser_lrc.dart';
 import '../../widget/lyric/lyrics_reader_model.dart';
 import '../../widget/weslide/weslide_controller.dart';
 
@@ -49,10 +51,11 @@ class HomeController extends GetxController {
   Rx<MediaItem> mediaItem = const MediaItem(id: 'no', title: '暂无', duration: Duration(seconds: 10)).obs;
   RxBool playing = false.obs;
   PageController secondPageController = PageController();
-  final OnAudioQuery audioQuery = OnAudioQuery();
+  final OnAudioQuery audioQuery = GetIt.instance<OnAudioQuery>();
   late BuildContext buildContext;
   final AudioServeHandler audioServeHandler = GetIt.instance<AudioServeHandler>();
   Rx<Duration> duration = Duration.zero.obs;
+
   // Jaudiotagger audioTagger = Jaudiotagger();
   var dio = http.Dio();
   ScrollController scrollController = ScrollController();
@@ -61,9 +64,19 @@ class HomeController extends GetxController {
   Rx<AudioServiceRepeatMode> audioServiceRepeatMode = AudioServiceRepeatMode.all.obs;
   Rx<AudioServiceShuffleMode> audioServiceShuffleMode = AudioServiceShuffleMode.none.obs;
 
+  List<FlutterSliderHatchMarkLabel> effects = [];
+  List<Map<dynamic, dynamic>> mEffects = [];
+  double ellv = 30;
+  double euuv = 60;
+
   @override
   void onInit() {
     setHeaderHeight();
+    var rng = Random();
+    for (double i = 0; i < 100; i++) {
+      mEffects.add({"percent": i, "size": 5 + rng.nextInt(60 - 5).toDouble()});
+    }
+    effects = updateEffects(ellv * 100 / mEffects.length, euuv * 100 / mEffects.length);
     super.onInit();
   }
 
@@ -74,19 +87,21 @@ class HomeController extends GetxController {
     audioServeHandler.mediaItem.listen((value) async {
       if (value == null) return;
       setHeaderHeight();
+      print('=============${value.title}');
       //获取歌词
       // audioTagger.getPlatformVersion(value.extras?['data'] ?? '').then((value) {
       //   if (value == null || value.isEmpty) return;
       //   lyricList.value = ParserLrc(value).parseLines();
       // });
       mediaItem.value = value;
-      ImageUtils.getImageColor(value.artUri?.path ?? '', (paletteColorData) {
+      ImageUtils.getImageColor(mediaItem.value.artUri?.path ?? '', (paletteColorData) {
         rx.value = paletteColorData;
         textColor.value = paletteColorData.light?.titleTextColor ?? AppTheme.onPrimary;
       });
     });
     //监听实时进度变化
     AudioService.position.listen((event) {
+      if (slidePosition.value != 1) return;
       if (event.inMilliseconds > (mediaItem.value.duration?.inMilliseconds ?? 0)) {
         duration.value = Duration.zero;
         return;
@@ -96,7 +111,6 @@ class HomeController extends GetxController {
     audioServeHandler.playbackState.listen((value) {
       playing.value = value.playing;
     });
-    requestPermission();
   }
 
   static HomeController get to => Get.find();
@@ -178,14 +192,6 @@ class HomeController extends GetxController {
     return icon;
   }
 
-  //请求权限
-  requestPermission() async {
-    bool permissionStatus = await audioQuery.permissionsStatus();
-    if (!permissionStatus) {
-      await audioQuery.permissionsRequest();
-    }
-  }
-
   //播放 or 暂停
   void playOrPause() async {
     if (playing.value) {
@@ -222,12 +228,12 @@ class HomeController extends GetxController {
 
   //外层panel的高度和颜色
   double getPanelMinSize() {
-    return panelHeaderSize * (1 + slidePosition.value * 5.6);
+    return panelHeaderSize * (1 + slidePosition.value * 6);
   }
 
   //获取图片的宽高
   double getImageSize() {
-    return (panelHeaderSize * .8) * (1 + slidePosition.value * 5.6);
+    return (panelHeaderSize * .8) * (1 + slidePosition.value * 6);
   }
 
   //获取图片离左侧的间距
@@ -285,6 +291,20 @@ class HomeController extends GetxController {
   }
 
   getHomeBottomPadding() {
-    return (mediaItem.value.id == 'no' ? bottomBarHeight : bottomBarHeight + panelHeaderSize)+20.w;
+    return (mediaItem.value.id == 'no' ? bottomBarHeight : bottomBarHeight + panelHeaderSize) + 20.w;
+  }
+
+  List<FlutterSliderHatchMarkLabel> updateEffects(double leftPercent, double rightPercent) {
+    List<FlutterSliderHatchMarkLabel> newLabels = [];
+    for (Map<dynamic, dynamic> label in mEffects) {
+      newLabels.add(FlutterSliderHatchMarkLabel(
+          percent: label['percent'],
+          label: Container(
+            height: label['size'] / 2.8,
+            width: 1,
+            color: rx.value.dark?.bodyTextColor ?? Colors.white.withOpacity(.3),
+          )));
+    }
+    return newLabels;
   }
 }

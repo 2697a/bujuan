@@ -1,7 +1,7 @@
 package com.sixbugs.bujuan
 
-//import com.ryanheise.audioservice.AudioServiceActivity
-import io.flutter.embedding.android.FlutterActivity
+import com.ryanheise.audioservice.AudioServiceActivity
+//import io.flutter.embedding.android.FlutterActivity
 
-class MainActivity: FlutterActivity() {
+class MainActivity: AudioServiceActivity() {
 }

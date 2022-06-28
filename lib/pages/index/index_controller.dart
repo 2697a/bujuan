@@ -29,7 +29,7 @@ class IndexController extends GetxController {
   querySong() async{
       songs.value = await HomeController.to.audioQuery.querySongs();
       for (var songModel in songs) {
-        print('object=======${songModel.data}');
+        print('object=======${songModel.bookmark}');
         Directory directory = await getTemporaryDirectory();
         String path = '${directory.path}${songModel.id}';
         File file = File(path);

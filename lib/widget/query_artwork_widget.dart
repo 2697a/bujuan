@@ -298,25 +298,27 @@ class QueryArtworkWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (quality != null && quality! > 100) {
-      throw Exception(
-        '[quality] value cannot be greater than [100]',
-      );
-    }
-    return FutureBuilder<File?>(
-      future: getFile(),
-      builder: (context, item) {
-        if (item.data != null) {
-          return SimpleExtendedImage(
-            item.data?.path ?? '',
-            borderRadius: artworkBorder ?? BorderRadius.circular(50),
-            width: artworkWidth ?? 50,
-            height: artworkHeight ?? 50,
-            fit: artworkFit ?? BoxFit.cover,
-          );
-        }
-        return nullArtworkWidget ??  SizedBox(height: artworkHeight??50,);
-      },
-    );
+    // if (quality != null && quality! > 100) {
+    //   throw Exception(
+    //     '[quality] value cannot be greater than [100]',
+    //   );
+    // }
+    // return FutureBuilder<File?>(
+    //   future: getFile(),
+    //   builder: (context, item) {
+    //     if (item.data != null) {
+    //       return SimpleExtendedImage(
+    //         item.data?.path ?? '',
+    //         cacheWidth: 100,
+    //         borderRadius: artworkBorder ?? BorderRadius.circular(50),
+    //         width: artworkWidth ?? 50,
+    //         height: artworkHeight ?? 50,
+    //         fit: artworkFit ?? BoxFit.cover,
+    //       );
+    //     }
+    //     return nullArtworkWidget ??  SizedBox(height: artworkHeight??50,);
+    //   },
+    // );
+    return Container();
   }
 }

@@ -174,13 +174,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "3.3.0"
-  flutter_image_compress:
-    dependency: "direct main"
-    description:
-      name: flutter_image_compress
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "1.1.0"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -261,6 +254,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.0.2"
+  jaudiotagger:
+    dependency: "direct main"
+    description:
+      path: "../jaudiotagger"
+      relative: true
+    source: path
+    version: "0.0.1"
   js:
     dependency: transitive
     description:
@@ -525,6 +525,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.4.9"
+  tuna_flutter_range_slider:
+    dependency: "direct main"
+    description:
+      name: tuna_flutter_range_slider
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.0"
   typed_data:
     dependency: transitive
     description:

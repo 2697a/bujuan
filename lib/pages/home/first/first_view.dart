@@ -1,5 +1,6 @@
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/pages/home/home_mobile_view.dart';
+import 'package:bujuan/pages/home/second/second_body_view.dart';
 import 'package:bujuan/widget/simple_extended_image.dart';
 import 'package:bujuan/widget/weslide/weslide.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +33,7 @@ class FirstView extends GetView<HomeController> {
                         (controller.isRoot1 ? 0 : controller.bottomBarHeight),
                     parallax: true,
                     body: const HomeMobileView(),
-                    panel: const SecondView(),
+                    panel: const SecondBodyView(),
                     panelHeader: _buildPanelHeader(),
                     footer: _buildFooter(),
                     hidePanelHeader: false,
@@ -126,8 +127,8 @@ class FirstView extends GetView<HomeController> {
                       controller.getImageSize() /
                           2 *
                           (1 -
-                              (controller.slidePosition.value == 1
-                                  ? 0.92
+                              (controller.slidePosition.value >=.8
+                                  ? .92
                                   : controller.slidePosition.value))),
                 )),
             AnimatedOpacity(
