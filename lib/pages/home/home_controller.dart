@@ -4,6 +4,10 @@ import 'dart:math';
 import 'package:audio_service/audio_service.dart';
 import 'package:bujuan/common/audio_handler.dart';
 import 'package:bujuan/common/constants/other.dart';
+import 'package:bujuan/pages/index/album_view.dart';
+import 'package:bujuan/pages/index/index_view.dart';
+import 'package:bujuan/pages/index/main_view.dart';
+import 'package:bujuan/pages/user/user_view.dart';
 import 'package:dio/dio.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -32,7 +36,7 @@ class HomeController extends GetxController {
   WeSlideController weSlideController = WeSlideController();
   WeSlideController weSlideController1 = WeSlideController();
   RxBool isCollapsedAfterSec = true.obs;
-  PageController pageController = PageController(viewportFraction: .99);
+  // PageController pageController = PageController(viewportFraction: .99);
   Rx<Color> textColor = const Color(0xFFFFFFFF).obs;
   double offset = 0;
   double down = 0;
@@ -44,16 +48,20 @@ class HomeController extends GetxController {
   Rx<PaletteColorData> rx = PaletteColorData().obs;
   RxBool second = false.obs;
   bool firstSlideIsDownSlide = true;
-  SystemUiOverlayStyle systemUiOverlayStyle = const SystemUiOverlayStyle(systemNavigationBarColor: AppTheme.onPrimary);
+  SystemUiOverlayStyle systemUiOverlayStyle =
+      const SystemUiOverlayStyle(systemNavigationBarColor: AppTheme.onPrimary);
   RxBool isRoot = true.obs;
   bool isRoot1 = true;
   bool first = true;
-  Rx<MediaItem> mediaItem = const MediaItem(id: 'no', title: '暂无', duration: Duration(seconds: 10)).obs;
+  Rx<MediaItem> mediaItem =
+      const MediaItem(id: 'no', title: '暂无', duration: Duration(seconds: 10))
+          .obs;
   RxBool playing = false.obs;
   PageController secondPageController = PageController();
   final OnAudioQuery audioQuery = GetIt.instance<OnAudioQuery>();
   late BuildContext buildContext;
-  final AudioServeHandler audioServeHandler = GetIt.instance<AudioServeHandler>();
+  final AudioServeHandler audioServeHandler =
+      GetIt.instance<AudioServeHandler>();
   Rx<Duration> duration = Duration.zero.obs;
 
   // Jaudiotagger audioTagger = Jaudiotagger();
@@ -61,22 +69,32 @@ class HomeController extends GetxController {
   ScrollController scrollController = ScrollController();
   RxList<LyricsLineModel> lyricList = <LyricsLineModel>[].obs;
 
-  Rx<AudioServiceRepeatMode> audioServiceRepeatMode = AudioServiceRepeatMode.all.obs;
-  Rx<AudioServiceShuffleMode> audioServiceShuffleMode = AudioServiceShuffleMode.none.obs;
+  Rx<AudioServiceRepeatMode> audioServiceRepeatMode =
+      AudioServiceRepeatMode.all.obs;
+  Rx<AudioServiceShuffleMode> audioServiceShuffleMode =
+      AudioServiceShuffleMode.none.obs;
 
   List<FlutterSliderHatchMarkLabel> effects = [];
   List<Map<dynamic, dynamic>> mEffects = [];
   double ellv = 30;
   double euuv = 60;
 
+  List<Widget> pages = [
+    const MainView(),
+    const AlbumView(),
+    const IndexView(),
+    const UserView()
+  ];
+
   @override
   void onInit() {
     setHeaderHeight();
     var rng = Random();
     for (double i = 0; i < 100; i++) {
-      mEffects.add({"percent": i, "size": 5 + rng.nextInt(60 - 5).toDouble()});
+      mEffects.add({"percent": i, "size": 5 + rng.nextInt(35 - 5).toDouble()});
     }
-    effects = updateEffects(ellv * 100 / mEffects.length, euuv * 100 / mEffects.length);
+    effects = updateEffects(
+        ellv * 100 / mEffects.length, euuv * 100 / mEffects.length);
     super.onInit();
   }
 
@@ -86,23 +104,26 @@ class HomeController extends GetxController {
     audioServeHandler.setRepeatMode(audioServiceRepeatMode.value);
     audioServeHandler.mediaItem.listen((value) async {
       if (value == null) return;
+      print('=============mediaItem${value.title}');
       setHeaderHeight();
-      print('=============${value.title}');
       //获取歌词
       // audioTagger.getPlatformVersion(value.extras?['data'] ?? '').then((value) {
       //   if (value == null || value.isEmpty) return;
       //   lyricList.value = ParserLrc(value).parseLines();
       // });
       mediaItem.value = value;
-      ImageUtils.getImageColor(mediaItem.value.artUri?.path ?? '', (paletteColorData) {
+      ImageUtils.getImageColor(mediaItem.value.artUri?.path ?? '',
+          (paletteColorData) {
         rx.value = paletteColorData;
-        textColor.value = paletteColorData.light?.titleTextColor ?? AppTheme.onPrimary;
+        textColor.value =
+            paletteColorData.light?.titleTextColor ?? AppTheme.onPrimary;
       });
     });
     //监听实时进度变化
     AudioService.position.listen((event) {
-      if (slidePosition.value != 1) return;
-      if (event.inMilliseconds > (mediaItem.value.duration?.inMilliseconds ?? 0)) {
+      if (!weSlideController.isOpened) return;
+      if (event.inMilliseconds >
+          (mediaItem.value.duration?.inMilliseconds ?? 0)) {
         duration.value = Duration.zero;
         return;
       }
@@ -243,7 +264,10 @@ class HomeController extends GetxController {
 
   //动态设置获取Header颜色
   Color getHeaderColor() {
-    return Theme.of(buildContext).bottomAppBarColor.withOpacity((second.value ? (1 - slidePosition.value) : slidePosition.value) > 0 ? 0 : 1);
+    return Theme.of(buildContext).bottomAppBarColor.withOpacity(
+        (second.value ? (1 - slidePosition.value) : slidePosition.value) > 0
+            ? 0
+            : 1);
   }
 
   //获取图片亮色背景下文字显示的颜色
@@ -265,7 +289,11 @@ class HomeController extends GetxController {
 
   //获取Header的padding
   EdgeInsets getHeaderPadding() {
-    return EdgeInsets.only(left: 30.w, right: 30.w, top: MediaQuery.of(buildContext).padding.top * (second.value ? 1 : slidePosition.value));
+    return EdgeInsets.only(
+        left: 30.w,
+        right: 30.w,
+        top: MediaQuery.of(buildContext).padding.top *
+            (second.value ? 1 : slidePosition.value));
   }
 
   //获取歌词和列表Header的高度
@@ -276,7 +304,7 @@ class HomeController extends GetxController {
   //改变pageView和底部导航栏下标
   void changeSelectIndex(int index) {
     selectIndex.value = index;
-    pageController.jumpToPage(index);
+    // pageController.jumpToPage(index);
   }
 
   //当路由发生变化时调用
@@ -291,16 +319,20 @@ class HomeController extends GetxController {
   }
 
   getHomeBottomPadding() {
-    return (mediaItem.value.id == 'no' ? bottomBarHeight : bottomBarHeight + panelHeaderSize) + 20.w;
+    return (mediaItem.value.id == 'no'
+            ? bottomBarHeight
+            : bottomBarHeight + panelHeaderSize) +
+        20.w;
   }
 
-  List<FlutterSliderHatchMarkLabel> updateEffects(double leftPercent, double rightPercent) {
+  List<FlutterSliderHatchMarkLabel> updateEffects(
+      double leftPercent, double rightPercent) {
     List<FlutterSliderHatchMarkLabel> newLabels = [];
     for (Map<dynamic, dynamic> label in mEffects) {
       newLabels.add(FlutterSliderHatchMarkLabel(
           percent: label['percent'],
           label: Container(
-            height: label['size'] / 2.8,
+            height: label['size'],
             width: 1,
             color: rx.value.dark?.bodyTextColor ?? Colors.white.withOpacity(.3),
           )));

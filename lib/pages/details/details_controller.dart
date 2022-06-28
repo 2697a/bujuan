@@ -34,6 +34,7 @@ class DetailsController extends GetxController {
     songs.value = await HomeController.to.audioQuery.queryAudiosFrom(
         AudiosFromType.ALBUM_ID, detailsArguments?.albumModel.id ?? 0);
     for (var songModel in songs) {
+      print('object========${songModel.getMap.toString()}');
       Directory directory = await getTemporaryDirectory();
       String path = '${directory.path}${songModel.id}';
       File file = File(path);

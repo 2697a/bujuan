@@ -53,10 +53,11 @@ dependencies:
   just_waveform: ^0.0.3
   font_awesome_flutter: ^10.1.0
   wheel_slider: ^1.0.0
-  jaudiotagger:
-    path: ../jaudiotagger
+#  jaudiotagger:
+#    path: ../jaudiotagger
   flutter_lyric: ^2.0.4
   tuna_flutter_range_slider: ^1.0.0
+  flutter_svg: ^1.1.0
 
 dev_dependencies:
   flutter_test:
@@ -70,7 +71,7 @@ dev_dependencies:
   flutter_lints: ^2.0.0
 
 # For information on the generic Dart part of this file, see the
-# following page: https://dart.dev/tools/pub/pubspec什么父亲啊？我怎么弄啊，你玩玩你号啊，你要让图吗？这周等了没办法。
+# following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
 flutter:

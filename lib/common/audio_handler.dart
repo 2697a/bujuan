@@ -7,8 +7,9 @@ class AudioServeHandler extends BaseAudioHandler
   final _playlist = ConcatenatingAudioSource(children: []);
 
   AudioServeHandler() {
+    _loadEmptyPlaylist();
     _notifyAudioHandlerAboutPlaybackEvents();
-    _listenForDurationChanges();
+    // _listenForDurationChanges();
     _listenForCurrentSongIndexChanges();
     _listenForSequenceStateChanges();
   }
@@ -25,10 +26,11 @@ class AudioServeHandler extends BaseAudioHandler
     _player.playbackEventStream.listen((PlaybackEvent event) {
       final playing = _player.playing;
       playbackState.add(playbackState.value.copyWith(
-        controls: [ const MediaControl(
-            label: 'rating',
-            action: MediaAction.setRating,
-            androidIcon: 'drawable/audio_service_unlike'),
+        controls: [
+          const MediaControl(
+              label: 'rating',
+              action: MediaAction.setRating,
+              androidIcon: 'drawable/audio_service_unlike'),
           MediaControl.skipToPrevious,
           if (playing) MediaControl.pause else MediaControl.play,
           MediaControl.skipToNext,
@@ -37,7 +39,7 @@ class AudioServeHandler extends BaseAudioHandler
         systemActions: const {
           MediaAction.seek,
         },
-        androidCompactActionIndices: const [ 1,2, 3],
+        androidCompactActionIndices: const [1, 2, 3],
         processingState: const {
           ProcessingState.idle: AudioProcessingState.idle,
           ProcessingState.loading: AudioProcessingState.loading,
@@ -116,7 +118,6 @@ class AudioServeHandler extends BaseAudioHandler
     _playlist
       ..clear()
       ..addAll(audioSource.toList());
-    await _loadEmptyPlaylist();
     // 通知系统
     final newQueue = queue.value
       ..clear()
@@ -147,7 +148,6 @@ class AudioServeHandler extends BaseAudioHandler
     _player.stop();
     return super.stop();
   }
-
 
   @override
   Future<void> seek(Duration position) async {

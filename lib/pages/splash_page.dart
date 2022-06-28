@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:bujuan/pages/home/first/first_view.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -30,7 +31,7 @@ class SplashPageState extends State<SplashPage> {
     });
 
     Future.delayed(durationFinish, () {
-      requestPermission().then((value) => {if (value) Navigator.push(context, MaterialPageRoute(builder: (c) => const FirstView()))});
+      requestPermission().then((value) => {if (value) Navigator.pushReplacement(context, MaterialPageRoute(builder: (c) => const FirstView()))});
     });
   }
 
@@ -71,11 +72,7 @@ class SplashPageState extends State<SplashPage> {
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  Image.asset(
-                    'assets/images/splash_bottom.png',
-                    width: Get.width,
-                    fit: BoxFit.cover,
-                  ),
+                  SvgPicture.asset('assets/images/splash.svg',width: Get.width/1.8,fit: BoxFit.fitWidth,),
                   // Container(
                   //   alignment: Alignment.bottomCenter,
                   //   padding: EdgeInsets.only(bottom: 100.w),

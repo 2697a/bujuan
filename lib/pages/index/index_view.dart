@@ -20,13 +20,17 @@ class IndexView extends GetView<IndexController> {
             itemBuilder: (context, index) => _buildItem(controller.songs[index], index),
             itemCount: controller.songs.length,
           )),
-      backgroundColor: Colors.transparent,
     );
   }
 
   Widget _buildItem(SongModel data, int index) {
     return InkWell(
-      child: Padding(
+      child: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(controller.buildContext).bottomAppBarColor,
+          borderRadius: BorderRadius.circular(20.w)
+        ),
+        margin: EdgeInsets.symmetric(vertical: 10.w),
         padding: EdgeInsets.symmetric(vertical: 15.w),
         child: Row(
           children: [

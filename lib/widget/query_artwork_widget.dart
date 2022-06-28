@@ -290,7 +290,6 @@ class QueryArtworkWidget extends StatelessWidget {
         format: format ?? ArtworkFormat.JPEG,
         quality: quality ?? 100,
       );
-      print('object========${a?.length??0}');
       await file.writeAsBytes(a!);
     }
     return file;

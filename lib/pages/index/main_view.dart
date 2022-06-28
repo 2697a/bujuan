@@ -12,10 +12,12 @@ class MainView extends GetView<IndexController> {
   @override
   Widget build(BuildContext context) {
     controller.buildContext = context;
-    return SingleChildScrollView(
-      padding: EdgeInsets.symmetric(horizontal: 15.w),
-      child: Column(
-        children: [ _buildTopSong()],
+    return Scaffold(
+      body: SingleChildScrollView(
+        padding: EdgeInsets.symmetric(horizontal: 15.w),
+        child: Column(
+          children: [ _buildTopSong()],
+        ),
       ),
     );
   }

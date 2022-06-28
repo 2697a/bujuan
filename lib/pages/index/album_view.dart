@@ -14,7 +14,9 @@ class AlbumView extends GetView<IndexController> {
   @override
   Widget build(BuildContext context) {
     controller.buildContext = context;
-    return Obx(() => _buildAlbumView());
+    return Scaffold(
+      body:  Obx(() => _buildAlbumView()),
+    );
   }
 
   Widget _buildAlbumView(){

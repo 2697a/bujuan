@@ -35,6 +35,7 @@ class DetailsView extends GetView<DetailsController> {
                     Text('${data.artist ?? 'No Artist'} - ${ImageUtils.getTimeStamp(data.duration??0)}',style: TextStyle(fontSize: 24.sp,fontWeight: FontWeight.normal),),
                   ],
                 ),)),
+            Text(data.fileExtension),
             IconButton(onPressed: (){}, icon: const Icon(Icons.more_vert))
           ],
         ),

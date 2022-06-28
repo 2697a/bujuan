@@ -8,7 +8,6 @@ class UserView extends GetView<UserController> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      backgroundColor: Colors.transparent,
       body: Center(
         child: Text('用户页'),
       ),

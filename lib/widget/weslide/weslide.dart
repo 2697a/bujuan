@@ -340,7 +340,6 @@ class _WeSlideState extends State<WeSlide> with SingleTickerProviderStateMixin {
         _effectiveController.value = true;
       });
     } else {
-      print('object===============2');
       _ac.reverse().then((x) {
         _effectiveController.value = false;
       });
