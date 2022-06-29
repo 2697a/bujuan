@@ -25,18 +25,19 @@ import '../../widget/weslide/weslide_controller.dart';
 
 class HomeController extends GetxController {
   final String weSlideUpdate = 'weSlide';
-  double panelHeaderSize = 110.w;
+  double panelHeaderSize = 90.h;
   double secondPanelHeaderSize = 120.w;
   double bottomBarHeight = 55;
   double panelMobileMinSize = 0;
-  double topBarHeight = 90.w;
+  double topBarHeight = 50.h;
 
   //是否折叠
   RxBool isCollapsed = true.obs;
   WeSlideController weSlideController = WeSlideController();
   WeSlideController weSlideController1 = WeSlideController();
   RxBool isCollapsedAfterSec = true.obs;
-  // PageController pageController = PageController(viewportFraction: .99);
+
+  // PageController pageController = PageController(viewportFraction: .99);1.778666   421.66666
   Rx<Color> textColor = const Color(0xFFFFFFFF).obs;
   double offset = 0;
   double down = 0;
@@ -91,7 +92,7 @@ class HomeController extends GetxController {
     setHeaderHeight();
     var rng = Random();
     for (double i = 0; i < 100; i++) {
-      mEffects.add({"percent": i, "size": 5 + rng.nextInt(35 - 5).toDouble()});
+      mEffects.add({"percent": i, "size": 5 + rng.nextInt(32 - 5).toDouble()});
     }
     effects = updateEffects(
         ellv * 100 / mEffects.length, euuv * 100 / mEffects.length);
@@ -142,8 +143,8 @@ class HomeController extends GetxController {
       panelHeaderSize = 0;
       panelMobileMinSize = panelHeaderSize + bottomBarHeight;
     } else {
-      if (panelHeaderSize == 110.w) return;
-      panelHeaderSize = 110.w;
+      if (panelHeaderSize == 90.h) return;
+      panelHeaderSize = 90.h;
       panelMobileMinSize = panelHeaderSize + bottomBarHeight;
       update([weSlideUpdate]);
     }
@@ -249,12 +250,12 @@ class HomeController extends GetxController {
 
   //外层panel的高度和颜色
   double getPanelMinSize() {
-    return panelHeaderSize * (1 + slidePosition.value * 6);
+    return panelHeaderSize * (1 + slidePosition.value * 5.6);
   }
 
   //获取图片的宽高
   double getImageSize() {
-    return (panelHeaderSize * .8) * (1 + slidePosition.value * 6);
+    return (panelHeaderSize * .85) * (1 + slidePosition.value * 5.6);
   }
 
   //获取图片离左侧的间距

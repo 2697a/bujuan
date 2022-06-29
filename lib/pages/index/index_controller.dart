@@ -56,8 +56,8 @@ class IndexController extends GetxController {
   play(index) async {
     String title = HomeController.to.audioServeHandler.queueTitle.value;
     if (title.isEmpty || title != queueTitle) {
-      await HomeController.to.audioServeHandler
-          .replaceQueueItems(mediaItems, queueTitle);
+      await HomeController.to.audioServeHandler.addQueueItems(mediaItems);
+      HomeController.to.audioServeHandler.queueTitle.value = queueTitle;
     }
     HomeController.to.audioServeHandler
       ..skipToQueueItem(index)

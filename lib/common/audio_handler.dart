@@ -87,6 +87,14 @@ class AudioServeHandler extends BaseAudioHandler
       if (_player.shuffleModeEnabled) {
         index = _player.shuffleIndices![index];
       }
+      if (index >= playlist.length) {
+        if (_player.loopMode == LoopMode.all) {
+          index = 0;
+          _player.seek(Duration.zero, index: index);
+        } else {
+          return;
+        }
+      }
       mediaItem.add(playlist[index]);
     });
   }
@@ -104,9 +112,10 @@ class AudioServeHandler extends BaseAudioHandler
   Future<void> addQueueItems(List<MediaItem> mediaItems) async {
     // 管理 Just Audio
     final audioSource = mediaItems.map(_createAudioSource);
-    _playlist.addAll(audioSource.toList());
-    await _loadEmptyPlaylist();
+    await _playlist.clear();
+    await _playlist.addAll(audioSource.toList());
     // 通知系统
+    queue.value.clear();
     final newQueue = queue.value..addAll(mediaItems);
     queue.add(newQueue);
   }
