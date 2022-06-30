@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
@@ -13,16 +14,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
-import 'package:jaudiotagger/jaudiotagger.dart';
+// import 'package:jaudiotagger/jaudiotagger.dart';
 
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:tuna_flutter_range_slider/tuna_flutter_range_slider.dart';
 
 import '../../widget/lyric/lyric_parser/parser_lrc.dart';
 import '../../widget/lyric/lyrics_reader_model.dart';
 import '../../widget/weslide/weslide_controller.dart';
 
-class HomeController extends GetxController with GetSingleTickerProviderStateMixin {
+class HomeController extends GetxController
+    with GetSingleTickerProviderStateMixin {
   final String weSlideUpdate = 'weSlide';
   double panelHeaderSize = 90.h;
   double secondPanelHeaderSize = 120.w;
@@ -37,44 +40,60 @@ class HomeController extends GetxController with GetSingleTickerProviderStateMix
   RxInt selectIndex = 0.obs;
 
   RxDouble slidePosition = 0.0.obs;
+  RxDouble slidePosition1 = 0.0.obs;
   Rx<PaletteColorData> rx = PaletteColorData().obs;
   RxBool isRoot = true.obs;
   bool isRoot1 = true;
   bool first = true;
-  Rx<MediaItem> mediaItem = const MediaItem(id: 'no', title: '暂无', duration: Duration(seconds: 10)).obs;
+  Rx<MediaItem> mediaItem =
+      const MediaItem(id: 'no', title: '暂无', duration: Duration(seconds: 10))
+          .obs;
   RxBool playing = false.obs;
   PageController secondPageController = PageController();
   final OnAudioQuery audioQuery = GetIt.instance<OnAudioQuery>();
   late BuildContext buildContext;
-  final AudioServeHandler audioServeHandler = GetIt.instance<AudioServeHandler>();
+  final AudioServeHandler audioServeHandler =
+      GetIt.instance<AudioServeHandler>();
   Rx<Duration> duration = Duration.zero.obs;
 
-  Jaudiotagger audioTagger = Jaudiotagger();
+  // Jaudiotagger audioTagger = Jaudiotagger();
   var dio = http.Dio();
   ScrollController scrollController = ScrollController();
   RxList<LyricsLineModel> lyricList = <LyricsLineModel>[].obs;
 
-  Rx<AudioServiceRepeatMode> audioServiceRepeatMode = AudioServiceRepeatMode.all.obs;
-  Rx<AudioServiceShuffleMode> audioServiceShuffleMode = AudioServiceShuffleMode.none.obs;
+  Rx<AudioServiceRepeatMode> audioServiceRepeatMode =
+      AudioServiceRepeatMode.all.obs;
+  Rx<AudioServiceShuffleMode> audioServiceShuffleMode =
+      AudioServiceShuffleMode.none.obs;
 
   List<FlutterSliderHatchMarkLabel> effects = [];
   List<Map<dynamic, dynamic>> mEffects = [];
   double ellv = 30;
   double euuv = 60;
   AnimationController? animationController;
-  List<Widget> pages = [const MainView(), const AlbumView(), const IndexView(), const UserView()];
-  RxBool second = false.obs;
+  List<Widget> pages = [
+    const MainView(),
+    const AlbumView(),
+    const IndexView(),
+    const UserView()
+  ];
+  RxInt sleep = 0.obs;
+  String directoryPath = '';
 
   //进度
   @override
-  void onInit() {
+  void onInit() async {
+    Directory directory = await getTemporaryDirectory();
+    directoryPath = directory.path;
     setHeaderHeight();
-    animationController = AnimationController(vsync: this, duration: const Duration(milliseconds: 100));
+    animationController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 100));
     var rng = Random();
     for (double i = 0; i < 100; i++) {
       mEffects.add({"percent": i, "size": 5 + rng.nextInt(30 - 5).toDouble()});
     }
-    effects = updateEffects(ellv * 100 / mEffects.length, euuv * 100 / mEffects.length);
+    effects = updateEffects(
+        ellv * 100 / mEffects.length, euuv * 100 / mEffects.length);
     super.onInit();
   }
 
@@ -82,31 +101,28 @@ class HomeController extends GetxController with GetSingleTickerProviderStateMix
   void onReady() async {
     super.onReady();
     animationController?.addListener(() {
-      slidePosition.value = (1 - (animationController?.value ?? 0));
-      if ((animationController?.value ?? 0) == 0) {
-        second.value = false;
-      } else {
-        if (!second.value) second.value = true;
-      }
+      slidePosition1.value = animationController?.value ?? 0;
     });
     audioServeHandler.setRepeatMode(audioServiceRepeatMode.value);
     audioServeHandler.mediaItem.listen((value) async {
       if (value == null) return;
       setHeaderHeight();
       //获取歌词
-      audioTagger.getPlatformVersion(value.extras?['data'] ?? '').then((value) {
-        if (value == null || value.isEmpty) return;
-        lyricList.value = ParserLrc(value).parseLines();
-      });
+      // audioTagger.getPlatformVersion(value.extras?['data'] ?? '').then((value) {
+      //   if (value == null || value.isEmpty) return;
+      //   lyricList.value = ParserLrc(value).parseLines();
+      // });
       mediaItem.value = value;
-      ImageUtils.getImageColor(mediaItem.value.artUri?.path ?? '', (paletteColorData) {
+      ImageUtils.getImageColor(mediaItem.value.artUri?.path ?? '',
+          (paletteColorData) {
         rx.value = paletteColorData;
       });
     });
     //监听实时进度变化
     AudioService.position.listen((event) {
       if (!weSlideController.isOpened) return;
-      if (event.inMilliseconds > (mediaItem.value.duration?.inMilliseconds ?? 0)) {
+      if (event.inMilliseconds >
+          (mediaItem.value.duration?.inMilliseconds ?? 0)) {
         duration.value = Duration.zero;
         return;
       }
@@ -208,7 +224,6 @@ class HomeController extends GetxController with GetSingleTickerProviderStateMix
   //改变panel位置
   void changeSlidePosition(value) {
     slidePosition.value = value;
-    if (second.value) second.value = false;
   }
 
   //当按下返回键
@@ -237,7 +252,9 @@ class HomeController extends GetxController with GetSingleTickerProviderStateMix
 
   //动态设置获取Header颜色
   Color getHeaderColor() {
-    return Theme.of(buildContext).bottomAppBarColor.withOpacity(slidePosition.value > 0 ? 0 : 1);
+    return Theme.of(buildContext)
+        .bottomAppBarColor
+        .withOpacity(slidePosition.value > 0 ? 0 : 1);
   }
 
   //获取图片亮色背景下文字显示的颜色
@@ -256,7 +273,10 @@ class HomeController extends GetxController with GetSingleTickerProviderStateMix
 
   //获取Header的padding
   EdgeInsets getHeaderPadding() {
-    return EdgeInsets.only(left: 30.w, right: 30.w, top: MediaQuery.of(buildContext).padding.top * (second.value ? (1 - slidePosition.value) : slidePosition.value));
+    return EdgeInsets.only(
+        left: 30.w,
+        right: 30.w,
+        top: MediaQuery.of(buildContext).padding.top * slidePosition.value);
   }
 
   //获取歌词和列表Header的高度
@@ -282,10 +302,14 @@ class HomeController extends GetxController with GetSingleTickerProviderStateMix
   }
 
   getHomeBottomPadding() {
-    return (mediaItem.value.id == 'no' ? bottomBarHeight : bottomBarHeight + panelHeaderSize) + 20.w;
+    return (mediaItem.value.id == 'no'
+            ? bottomBarHeight
+            : bottomBarHeight + panelHeaderSize) +
+        20.w;
   }
 
-  List<FlutterSliderHatchMarkLabel> updateEffects(double leftPercent, double rightPercent) {
+  List<FlutterSliderHatchMarkLabel> updateEffects(
+      double leftPercent, double rightPercent) {
     List<FlutterSliderHatchMarkLabel> newLabels = [];
     for (Map<dynamic, dynamic> label in mEffects) {
       newLabels.add(FlutterSliderHatchMarkLabel(

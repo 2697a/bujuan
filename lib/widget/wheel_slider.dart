@@ -21,7 +21,6 @@ class WheelSlider extends StatefulWidget {
   final Widget background;
   final bool isVibrate;
   final bool showPointer;
-  final FixedExtentScrollController fixedExtentScrollController;
   final TextStyle? selectedNumberStyle, unSelectedNumberStyle;
   final List<Widget> children;
   int? currentIndex;
@@ -47,7 +46,7 @@ class WheelSlider extends StatefulWidget {
     this.pointerWidth = 3.0,
     this.background = const Center(),
     this.isVibrate = true,
-    this.showPointer = true, required this.fixedExtentScrollController,
+    this.showPointer = true,
   }) : assert(perspective <= 0.01),
         selectedNumberStyle = null, unSelectedNumberStyle = null,
         children = barUI(totalCount, horizontal, lineColor),
@@ -100,7 +99,7 @@ class WheelSlider extends StatefulWidget {
     this.showPointer = false,
     this.selectedNumberStyle = const TextStyle(fontWeight: FontWeight.bold),
     this.unSelectedNumberStyle = const TextStyle(),
-    required this.currentIndex, required this.fixedExtentScrollController,
+    required this.currentIndex,
   }) : assert(perspective <= 0.01),
         lineColor = null,
         children = List.generate(totalCount+1, (index) {

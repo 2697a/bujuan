@@ -26,32 +26,40 @@ class IndexController extends GetxController {
     });
   }
 
-  querySong() async{
-      songs.value = await HomeController.to.audioQuery.querySongs();
-      for (var songModel in songs) {
-        Directory directory = await getTemporaryDirectory();
-        String path = '${directory.path}${songModel.id}';
-        File file = File(path);
-        if (!await file.exists()) {
-          Uint8List? a = await HomeController.to.audioQuery
-              .queryArtwork(songModel.id, ArtworkType.AUDIO, size: 800);
-          await file.writeAsBytes(a!);
-        }
-        MediaItem mediaItem = MediaItem(
-            id: '${songModel.id}',
-            duration: Duration(milliseconds: songModel.duration ?? 0),
-            artUri: Uri.file(path),
-            rating: const Rating.newHeartRating(false),
-            extras: {'url': songModel.uri, 'data': songModel.data,'type':songModel.fileExtension},
-            title: songModel.title,
-            artist: songModel.artist);
-        mediaItems.add(mediaItem);
+  querySong() async {
+    List<AlbumModel> albumList =
+        await HomeController.to.audioQuery.queryAlbums();
+    for (var element in albumList) {
+      String path = '${HomeController.to.directoryPath}${element.id}';
+      File file = File(path);
+      if (!await file.exists()) {
+        Uint8List? a = await HomeController.to.audioQuery
+            .queryArtwork(element.id, ArtworkType.ALBUM, size: 800);
+        await file.writeAsBytes(a!);
       }
+    }
+    albums.value = albumList;
+    List<SongModel> songList = await HomeController.to.audioQuery.querySongs();
+    for (var songModel in songs) {
+      String path = '${HomeController.to.directoryPath}${songModel.albumId}';
+      MediaItem mediaItem = MediaItem(
+          id: '${songModel.id}',
+          duration: Duration(milliseconds: songModel.duration ?? 0),
+          artUri: Uri.file(path),
+          rating: const Rating.newHeartRating(false),
+          extras: {
+            'url': songModel.uri,
+            'data': songModel.data,
+            'type': songModel.fileExtension
+          },
+          title: songModel.title,
+          artist: songModel.artist);
+      mediaItems.add(mediaItem);
+    }
+    songs.value = songList;
   }
 
-  queryAlbum() async {
-    albums.value = await HomeController.to.audioQuery.queryAlbums();
-  }
+  queryAlbum() async {}
 
   play(index) async {
     String title = HomeController.to.audioServeHandler.queueTitle.value;

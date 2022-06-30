@@ -7,6 +7,7 @@ import 'package:on_audio_query/on_audio_query.dart';
 import '../../widget/query_artwork_widget.dart' as custom;
 
 import '../../common/constants/other.dart';
+import '../../widget/simple_extended_image.dart';
 
 class IndexView extends GetView<IndexController> {
   const IndexView({Key? key}) : super(key: key);
@@ -26,21 +27,11 @@ class IndexView extends GetView<IndexController> {
   Widget _buildItem(SongModel data, int index) {
     return InkWell(
       child: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(controller.buildContext).bottomAppBarColor,
-          borderRadius: BorderRadius.circular(20.w)
-        ),
         margin: EdgeInsets.symmetric(vertical: 10.w),
         padding: EdgeInsets.symmetric(vertical: 15.w),
         child: Row(
           children: [
-            custom.QueryArtworkWidget(
-              id: data.id,
-              type: ArtworkType.AUDIO,
-              artworkBorder: BorderRadius.circular(5.w),
-              artworkWidth: 90.w,
-              artworkHeight: 90.w,
-            ),
+            SimpleExtendedImage('${HomeController.to.directoryPath}${data.albumId}',cacheWidth: 100,width: 90.w,height: 90.w,),
             Expanded(
                 child:Padding(padding: EdgeInsets.symmetric(horizontal: 20.w),child:  Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -49,7 +40,6 @@ class IndexView extends GetView<IndexController> {
                     Text('${data.artist ?? 'No Artist'} - ${ImageUtils.getTimeStamp(data.duration??0)}',style: TextStyle(fontSize: 24.sp,fontWeight: FontWeight.normal),),
                   ],
                 ),)),
-            IconButton(onPressed: (){}, icon: const Icon(Icons.more_vert))
           ],
         ),
       ),

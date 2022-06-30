@@ -16,6 +16,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:bujuan/widget/simple_extended_image.dart';
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:path_provider/path_provider.dart';
@@ -297,27 +298,39 @@ class QueryArtworkWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // if (quality != null && quality! > 100) {
-    //   throw Exception(
-    //     '[quality] value cannot be greater than [100]',
-    //   );
-    // }
-    // return FutureBuilder<File?>(
-    //   future: getFile(),
-    //   builder: (context, item) {
-    //     if (item.data != null) {
-    //       return SimpleExtendedImage(
-    //         item.data?.path ?? '',
-    //         cacheWidth: 100,
-    //         borderRadius: artworkBorder ?? BorderRadius.circular(50),
-    //         width: artworkWidth ?? 50,
-    //         height: artworkHeight ?? 50,
-    //         fit: artworkFit ?? BoxFit.cover,
-    //       );
-    //     }
-    //     return nullArtworkWidget ??  SizedBox(height: artworkHeight??50,);
-    //   },
-    // );
-    return Container();
+    if (quality != null && quality! > 100) {
+      throw Exception(
+        '[quality] value cannot be greater than [100]',
+      );
+    }
+    return FutureBuilder<Uint8List?>(
+      future: Future.delayed(const Duration(milliseconds: 400),(){
+        return HomeController.to.audioQuery.queryArtwork(
+          id,
+          type,
+          size: 800,
+          format: format ?? ArtworkFormat.JPEG,
+          quality: quality ?? 100,
+        );
+      }),
+      builder: (context, item) {
+        if (item.data != null) {
+          return ExtendedImage.memory(
+            item.data!,
+            cacheWidth: 500,
+            borderRadius: artworkBorder ?? BorderRadius.circular(50),
+            width: artworkWidth ?? 50,
+            height: artworkHeight ?? 50,
+            fit: artworkFit ?? BoxFit.cover,
+          );
+        }
+        return nullArtworkWidget ??
+            SizedBox(
+              height: artworkHeight ?? 50,
+              width: artworkWidth,
+            );
+      },
+    );
+    // return Container();
   }
 }

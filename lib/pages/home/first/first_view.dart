@@ -23,22 +23,28 @@ class FirstView extends GetView<HomeController> {
               GetBuilder(
                 builder: (c) => AnimatedPositioned(
                   duration: const Duration(milliseconds: 200),
-                  bottom: controller.isRoot.value ? 0 : -controller.bottomBarHeight,
+                  bottom:
+                      controller.isRoot.value ? 0 : -controller.bottomBarHeight,
                   child: WeSlide(
                     controller: controller.weSlideController,
                     panelWidth: Get.width,
                     bodyWidth: Get.width,
-                    panelMaxSize: Get.height + (controller.isRoot1 ? 0 : controller.bottomBarHeight),
+                    panelMaxSize: Get.height +
+                        (controller.isRoot1 ? 0 : controller.bottomBarHeight),
                     parallax: true,
                     body: const HomeMobileView(),
                     panel: const SecondBodyView(),
                     panelHeader: _buildPanelHeader(),
                     footer: _buildFooter(),
                     hidePanelHeader: false,
-                    height: Get.height + (controller.isRoot1 ? 0 : controller.bottomBarHeight),
-                    footerHeight: controller.bottomBarHeight + MediaQuery.of(context).padding.bottom,
-                    panelMinSize: controller.panelMobileMinSize + MediaQuery.of(context).padding.bottom,
-                    onPosition: (value) => controller.changeSlidePosition(value),
+                    height: Get.height +
+                        (controller.isRoot1 ? 0 : controller.bottomBarHeight),
+                    footerHeight: controller.bottomBarHeight +
+                        MediaQuery.of(context).padding.bottom,
+                    panelMinSize: controller.panelMobileMinSize +
+                        MediaQuery.of(context).padding.bottom,
+                    onPosition: (value) =>
+                        controller.changeSlidePosition(value),
                   ),
                 ),
                 id: controller.weSlideUpdate,
@@ -56,7 +62,8 @@ class FirstView extends GetView<HomeController> {
             decoration: BoxDecoration(color: controller.getHeaderColor()),
             padding: controller.getHeaderPadding(),
             width: Get.width,
-            height: controller.getPanelMinSize() + controller.getHeaderPadding().top,
+            height: controller.getPanelMinSize() +
+                controller.getHeaderPadding().top,
             duration: const Duration(milliseconds: 0),
             child: _buildPlayBar(),
           )),
@@ -101,11 +108,21 @@ class FirstView extends GetView<HomeController> {
             AnimatedPositioned(
                 left: controller.getImageLeft(),
                 duration: const Duration(milliseconds: 0),
-                child: SimpleExtendedImage(
-                  controller.mediaItem.value.artUri?.path ?? '',
-                  height: controller.getImageSize(),
-                  width: controller.getImageSize(),
-                  borderRadius: BorderRadius.circular(controller.getImageSize() / 2 * (1 - (controller.slidePosition.value >= .8 ? .92 : controller.slidePosition.value))),
+                child: AnimatedScale(
+                  scale: 1 + (controller.slidePosition1.value/5.2),
+                  duration:  Duration.zero,
+                  child: SimpleExtendedImage(
+                    controller.mediaItem.value.artUri?.path ?? '',
+                    height: controller.getImageSize(),
+                    width: controller.getImageSize(),
+                    borderRadius: BorderRadius.circular(
+                        controller.getImageSize() /
+                            2 *
+                            (1 -
+                                (controller.slidePosition.value >= .8
+                                    ? .92
+                                    : controller.slidePosition.value))),
+                  ),
                 )),
             AnimatedOpacity(
               opacity: controller.slidePosition.value > 0 ? 0 : 1,
@@ -118,12 +135,17 @@ class FirstView extends GetView<HomeController> {
                   children: [
                     Text(
                       controller.mediaItem.value.title,
-                      style: TextStyle(fontSize: 28.sp, color: controller.getLightTextColor()),
+                      style: TextStyle(
+                          fontSize: 28.sp,
+                          color: controller.getLightTextColor()),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                     Padding(padding: EdgeInsets.symmetric(vertical: 4.w)),
-                    Text(controller.mediaItem.value.artist ?? '', style: TextStyle(fontSize: 22.sp, color: controller.getLightTextColor()))
+                    Text(controller.mediaItem.value.artist ?? '',
+                        style: TextStyle(
+                            fontSize: 22.sp,
+                            color: controller.getLightTextColor()))
                   ],
                 ),
               ),
@@ -135,8 +157,10 @@ class FirstView extends GetView<HomeController> {
           child: IconButton(
               onPressed: () => controller.playOrPause(),
               icon: Icon(
-                controller.playing.value ? const IconData(0xe638, fontFamily: 'iconfont') : const IconData(0xe634, fontFamily: 'iconfont'),
-                size: 44.w,
+                controller.playing.value
+                    ? const IconData(0xe638, fontFamily: 'iconfont')
+                    : const IconData(0xe634, fontFamily: 'iconfont'),
+                size: 40.w,
                 color: controller.getLightTextColor(),
               )),
         ),
@@ -146,7 +170,7 @@ class FirstView extends GetView<HomeController> {
               onPressed: () => controller.audioServeHandler.skipToNext(),
               icon: Icon(
                 const IconData(0xe637, fontFamily: 'iconfont'),
-                size: 42.w,
+                size: 38.w,
                 color: controller.getLightTextColor(),
               )),
         )
