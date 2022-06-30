@@ -43,7 +43,7 @@ class HomeMobileView extends GetView<HomeController> {
       title: "Application",
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
-      showPerformanceOverlay: true,
+      // showPerformanceOverlay: true,
       // debugShowCheckedModeBanner: false,
       // 开启FPS监控
       themeMode: ThemeMode.system,
