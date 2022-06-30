@@ -10,20 +10,19 @@ import 'package:bujuan/pages/index/main_view.dart';
 import 'package:bujuan/pages/user/user_view.dart';
 import 'package:dio/dio.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
+import 'package:jaudiotagger/jaudiotagger.dart';
 
-// import 'package:jaudiotagger/jaudiotagger.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:tuna_flutter_range_slider/tuna_flutter_range_slider.dart';
 
-import '../../common/constants/colors.dart';
+import '../../widget/lyric/lyric_parser/parser_lrc.dart';
 import '../../widget/lyric/lyrics_reader_model.dart';
 import '../../widget/weslide/weslide_controller.dart';
 
-class HomeController extends GetxController {
+class HomeController extends GetxController with GetSingleTickerProviderStateMixin {
   final String weSlideUpdate = 'weSlide';
   double panelHeaderSize = 90.h;
   double secondPanelHeaderSize = 120.w;
@@ -34,97 +33,80 @@ class HomeController extends GetxController {
   //是否折叠
   RxBool isCollapsed = true.obs;
   WeSlideController weSlideController = WeSlideController();
-  WeSlideController weSlideController1 = WeSlideController();
   RxBool isCollapsedAfterSec = true.obs;
-
-  // PageController pageController = PageController(viewportFraction: .99);1.778666   421.66666
-  Rx<Color> textColor = const Color(0xFFFFFFFF).obs;
-  double offset = 0;
-  double down = 0;
-  RxBool isScroll = true.obs;
-
   RxInt selectIndex = 0.obs;
 
   RxDouble slidePosition = 0.0.obs;
   Rx<PaletteColorData> rx = PaletteColorData().obs;
-  RxBool second = false.obs;
-  bool firstSlideIsDownSlide = true;
-  SystemUiOverlayStyle systemUiOverlayStyle =
-      const SystemUiOverlayStyle(systemNavigationBarColor: AppTheme.onPrimary);
   RxBool isRoot = true.obs;
   bool isRoot1 = true;
   bool first = true;
-  Rx<MediaItem> mediaItem =
-      const MediaItem(id: 'no', title: '暂无', duration: Duration(seconds: 10))
-          .obs;
+  Rx<MediaItem> mediaItem = const MediaItem(id: 'no', title: '暂无', duration: Duration(seconds: 10)).obs;
   RxBool playing = false.obs;
   PageController secondPageController = PageController();
   final OnAudioQuery audioQuery = GetIt.instance<OnAudioQuery>();
   late BuildContext buildContext;
-  final AudioServeHandler audioServeHandler =
-      GetIt.instance<AudioServeHandler>();
+  final AudioServeHandler audioServeHandler = GetIt.instance<AudioServeHandler>();
   Rx<Duration> duration = Duration.zero.obs;
 
-  // Jaudiotagger audioTagger = Jaudiotagger();
+  Jaudiotagger audioTagger = Jaudiotagger();
   var dio = http.Dio();
   ScrollController scrollController = ScrollController();
   RxList<LyricsLineModel> lyricList = <LyricsLineModel>[].obs;
 
-  Rx<AudioServiceRepeatMode> audioServiceRepeatMode =
-      AudioServiceRepeatMode.all.obs;
-  Rx<AudioServiceShuffleMode> audioServiceShuffleMode =
-      AudioServiceShuffleMode.none.obs;
+  Rx<AudioServiceRepeatMode> audioServiceRepeatMode = AudioServiceRepeatMode.all.obs;
+  Rx<AudioServiceShuffleMode> audioServiceShuffleMode = AudioServiceShuffleMode.none.obs;
 
   List<FlutterSliderHatchMarkLabel> effects = [];
   List<Map<dynamic, dynamic>> mEffects = [];
   double ellv = 30;
   double euuv = 60;
+  AnimationController? animationController;
+  List<Widget> pages = [const MainView(), const AlbumView(), const IndexView(), const UserView()];
+  RxBool second = false.obs;
 
-  List<Widget> pages = [
-    const MainView(),
-    const AlbumView(),
-    const IndexView(),
-    const UserView()
-  ];
-
+  //进度
   @override
   void onInit() {
     setHeaderHeight();
+    animationController = AnimationController(vsync: this, duration: const Duration(milliseconds: 100));
     var rng = Random();
     for (double i = 0; i < 100; i++) {
-      mEffects.add({"percent": i, "size": 5 + rng.nextInt(32 - 5).toDouble()});
+      mEffects.add({"percent": i, "size": 5 + rng.nextInt(30 - 5).toDouble()});
     }
-    effects = updateEffects(
-        ellv * 100 / mEffects.length, euuv * 100 / mEffects.length);
+    effects = updateEffects(ellv * 100 / mEffects.length, euuv * 100 / mEffects.length);
     super.onInit();
   }
 
   @override
   void onReady() async {
     super.onReady();
+    animationController?.addListener(() {
+      slidePosition.value = (1 - (animationController?.value ?? 0));
+      if ((animationController?.value ?? 0) == 0) {
+        second.value = false;
+      } else {
+        if (!second.value) second.value = true;
+      }
+    });
     audioServeHandler.setRepeatMode(audioServiceRepeatMode.value);
     audioServeHandler.mediaItem.listen((value) async {
       if (value == null) return;
-      print('=============mediaItem${value.title}');
       setHeaderHeight();
       //获取歌词
-      // audioTagger.getPlatformVersion(value.extras?['data'] ?? '').then((value) {
-      //   if (value == null || value.isEmpty) return;
-      //   lyricList.value = ParserLrc(value).parseLines();
-      // });
+      audioTagger.getPlatformVersion(value.extras?['data'] ?? '').then((value) {
+        if (value == null || value.isEmpty) return;
+        lyricList.value = ParserLrc(value).parseLines();
+      });
       mediaItem.value = value;
-      ImageUtils.getImageColor(mediaItem.value.artUri?.path ?? '',
-          (paletteColorData) {
+      ImageUtils.getImageColor(mediaItem.value.artUri?.path ?? '', (paletteColorData) {
         rx.value = paletteColorData;
-        textColor.value =
-            paletteColorData.light?.titleTextColor ?? AppTheme.onPrimary;
       });
     });
     //监听实时进度变化
     AudioService.position.listen((event) {
       if (!weSlideController.isOpened) return;
-      if (event.inMilliseconds >
-          (mediaItem.value.duration?.inMilliseconds ?? 0)) {
+      if (event.inMilliseconds > (mediaItem.value.duration?.inMilliseconds ?? 0)) {
         duration.value = Duration.zero;
         return;
       }
@@ -224,23 +206,13 @@ class HomeController extends GetxController {
   }
 
   //改变panel位置
-  void changeSlidePosition(value, {bool second = false}) {
+  void changeSlidePosition(value) {
     slidePosition.value = value;
-    if (this.second.value != second || (second && value == 1)) {
-      this.second.value = second && value < 1;
-    }
-    if (this.second.value) {
-      firstSlideIsDownSlide = value > 0;
-      update([weSlideUpdate]);
-    }
+    if (second.value) second.value = false;
   }
 
   //当按下返回键
   Future<bool> onWillPop() async {
-    if (weSlideController1.isOpened) {
-      weSlideController1.hide();
-      return false;
-    }
     if (weSlideController.isOpened) {
       weSlideController.hide();
       return false;
@@ -265,20 +237,14 @@ class HomeController extends GetxController {
 
   //动态设置获取Header颜色
   Color getHeaderColor() {
-    return Theme.of(buildContext).bottomAppBarColor.withOpacity(
-        (second.value ? (1 - slidePosition.value) : slidePosition.value) > 0
-            ? 0
-            : 1);
+    return Theme.of(buildContext).bottomAppBarColor.withOpacity(slidePosition.value > 0 ? 0 : 1);
   }
 
   //获取图片亮色背景下文字显示的颜色
   Color getLightTextColor() {
-    if (!second.value && slidePosition.value == 1) {
-      return textColor.value;
+    if (slidePosition.value == 1) {
+      return rx.value.light?.bodyTextColor ?? Colors.transparent;
     } else {
-      if (second.value && slidePosition.value == 0) {
-        return textColor.value;
-      }
       return Theme.of(buildContext).iconTheme.color ?? Colors.transparent;
     }
   }
@@ -290,11 +256,7 @@ class HomeController extends GetxController {
 
   //获取Header的padding
   EdgeInsets getHeaderPadding() {
-    return EdgeInsets.only(
-        left: 30.w,
-        right: 30.w,
-        top: MediaQuery.of(buildContext).padding.top *
-            (second.value ? 1 : slidePosition.value));
+    return EdgeInsets.only(left: 30.w, right: 30.w, top: MediaQuery.of(buildContext).padding.top * (second.value ? (1 - slidePosition.value) : slidePosition.value));
   }
 
   //获取歌词和列表Header的高度
@@ -320,14 +282,10 @@ class HomeController extends GetxController {
   }
 
   getHomeBottomPadding() {
-    return (mediaItem.value.id == 'no'
-            ? bottomBarHeight
-            : bottomBarHeight + panelHeaderSize) +
-        20.w;
+    return (mediaItem.value.id == 'no' ? bottomBarHeight : bottomBarHeight + panelHeaderSize) + 20.w;
   }
 
-  List<FlutterSliderHatchMarkLabel> updateEffects(
-      double leftPercent, double rightPercent) {
+  List<FlutterSliderHatchMarkLabel> updateEffects(double leftPercent, double rightPercent) {
     List<FlutterSliderHatchMarkLabel> newLabels = [];
     for (Map<dynamic, dynamic> label in mEffects) {
       newLabels.add(FlutterSliderHatchMarkLabel(

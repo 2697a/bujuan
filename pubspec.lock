@@ -261,6 +261,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.0.2"
+  jaudiotagger:
+    dependency: "direct main"
+    description:
+      path: "../jaudiotagger"
+      relative: true
+    source: path
+    version: "0.0.1"
   js:
     dependency: transitive
     description:
@@ -331,6 +338,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.7.0"
+  modal_bottom_sheet:
+    dependency: "direct main"
+    description:
+      name: modal_bottom_sheet
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.1.0"
   on_audio_query:
     dependency: "direct main"
     description:

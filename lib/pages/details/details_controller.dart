@@ -47,7 +47,7 @@ class DetailsController extends GetxController {
           id: '${songModel.id}',
           duration: Duration(milliseconds: songModel.duration ?? 0),
           artUri: Uri.file(path),
-          extras: {'url': songModel.uri, 'data': songModel.data},
+          extras: {'url': songModel.uri, 'data': songModel.data,'type':songModel.fileExtension},
           title: songModel.title,
           artist: songModel.artist);
       mediaItems.add(mediaItem);

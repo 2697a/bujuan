@@ -8,9 +8,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 import '../../common/constants/colors.dart';
-import '../index/album_view.dart';
-import '../index/index_view.dart';
-import '../user/user_view.dart';
 
 class HomeMobileView extends GetView<HomeController> {
   const HomeMobileView({Key? key}) : super(key: key);
@@ -46,12 +43,12 @@ class HomeMobileView extends GetView<HomeController> {
       title: "Application",
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
-      // showPerformanceOverlay: true,
+      showPerformanceOverlay: true,
       // debugShowCheckedModeBanner: false,
       // 开启FPS监控
       themeMode: ThemeMode.system,
       getPages: AppPages.routes,
-      // defaultTransition: Transition.circularReveal,
+      defaultTransition: Transition.fadeIn,
       // transitionDuration: const Duration(milliseconds: 200),
       routingCallback: (Routing? r) {
         HomeController.to.changeRoute(r?.current);
