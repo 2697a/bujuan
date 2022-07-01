@@ -102,6 +102,11 @@ flutter:
     - family: iconfont
       fonts:
         - asset: assets/font/iconfont.ttf
+    - family: tabler-icons
+      fonts:
+        - asset: assets/fonts/v1.68.0.ttf
+          style: normal
+          weight: 400
   #       - asset: fonts/Schyler-Italic.ttf
   #         style: italic
   #   - family: Trajan Pro

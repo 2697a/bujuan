@@ -1,3 +1,4 @@
+import 'package:bujuan/common/constants/tabler_icons.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/pages/home/home_mobile_view.dart';
 import 'package:bujuan/pages/home/second/second_body_view.dart';
@@ -158,7 +159,7 @@ class FirstView extends GetView<HomeController> {
               onPressed: () => controller.playOrPause(),
               icon: Icon(
                 controller.playing.value
-                    ? const IconData(0xe638, fontFamily: 'iconfont')
+                    ? TablerIcons.playerPlay
                     : const IconData(0xe634, fontFamily: 'iconfont'),
                 size: 40.w,
                 color: controller.getLightTextColor(),
