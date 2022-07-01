@@ -31,23 +31,21 @@ class DetailsController extends GetxController {
   }
 
   queryAudiosFrom() async {
-    songs.value = await HomeController.to.audioQuery.queryAudiosFrom(
-        AudiosFromType.ALBUM_ID, detailsArguments?.albumModel.id ?? 0);
+    songs.value = await HomeController.to.audioQuery.queryAudiosFrom(AudiosFromType.ALBUM_ID, detailsArguments?.albumModel.id ?? 0);
     for (var songModel in songs) {
       print('object========${songModel.getMap.toString()}');
       Directory directory = await getTemporaryDirectory();
       String path = '${directory.path}${songModel.id}';
       File file = File(path);
       if (!await file.exists()) {
-        Uint8List? a = await HomeController.to.audioQuery
-            .queryArtwork(songModel.id, ArtworkType.AUDIO, size: 800);
+        Uint8List? a = await HomeController.to.audioQuery.queryArtwork(songModel.id, ArtworkType.AUDIO, size: 800);
         await file.writeAsBytes(a!);
       }
       MediaItem mediaItem = MediaItem(
           id: '${songModel.id}',
           duration: Duration(milliseconds: songModel.duration ?? 0),
           artUri: Uri.file(path),
-          extras: {'url': songModel.uri, 'data': songModel.data,'type':songModel.fileExtension},
+          extras: {'url': songModel.uri, 'data': songModel.data, 'type': songModel.fileExtension, 'albumId': songModel.albumId},
           title: songModel.title,
           artist: songModel.artist);
       mediaItems.add(mediaItem);

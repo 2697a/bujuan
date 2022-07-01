@@ -35,6 +35,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   get: ^4.6.5
+  shared_preferences: ^2.0.13
   path: ^1.8.0
   pedantic: ^1.11.1
   encrypt: ^5.0.0
@@ -53,12 +54,14 @@ dependencies:
   just_waveform: ^0.0.3
   font_awesome_flutter: ^10.1.0
   wheel_slider: ^1.0.0
-#  jaudiotagger:
-#    path: ../jaudiotagger
+  jaudiotagger:
+    path: ../jaudiotagger
   flutter_lyric: ^2.0.4
   tuna_flutter_range_slider: ^1.0.0
   flutter_svg: ^1.1.0
   modal_bottom_sheet: ^2.1.0
+  tabler_icons:
+    path: plugins/tabler-icons
 
 dev_dependencies:
   flutter_test:
@@ -104,7 +107,7 @@ flutter:
         - asset: assets/font/iconfont.ttf
     - family: tabler-icons
       fonts:
-        - asset: assets/fonts/v1.68.0.ttf
+        - asset: assets/font/tabler.ttf
           style: normal
           weight: 400
   #       - asset: fonts/Schyler-Italic.ttf

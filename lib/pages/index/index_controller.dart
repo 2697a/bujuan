@@ -6,7 +6,6 @@ import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:on_audio_query/on_audio_query.dart';
-import 'package:path_provider/path_provider.dart';
 
 class IndexController extends GetxController {
   RxList<SongModel> songs = <SongModel>[].obs;
@@ -22,7 +21,6 @@ class IndexController extends GetxController {
     super.onReady();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       querySong();
-      queryAlbum();
     });
   }
 
@@ -40,7 +38,7 @@ class IndexController extends GetxController {
     }
     albums.value = albumList;
     List<SongModel> songList = await HomeController.to.audioQuery.querySongs();
-    for (var songModel in songs) {
+    for (var songModel in songList) {
       String path = '${HomeController.to.directoryPath}${songModel.albumId}';
       MediaItem mediaItem = MediaItem(
           id: '${songModel.id}',
@@ -50,7 +48,8 @@ class IndexController extends GetxController {
           extras: {
             'url': songModel.uri,
             'data': songModel.data,
-            'type': songModel.fileExtension
+            'type': songModel.fileExtension,
+            'albumId': songModel.albumId,
           },
           title: songModel.title,
           artist: songModel.artist);

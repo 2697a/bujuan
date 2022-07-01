@@ -166,9 +166,10 @@ class _FlashyNavbarItem extends StatelessWidget {
                     duration: animationDuration,
                     child: DefaultTextStyle.merge(
                       style: TextStyle(
-                        color: Theme.of(context).primaryColor,
+                        color: Theme.of(context).primaryColor.withOpacity(.9),
                         fontWeight: FontWeight.w600,
                         fontSize: 28.sp
+
                       ),
                       child: item.title,
                     ))),
@@ -190,10 +191,10 @@ class _FlashyNavbarItem extends StatelessWidget {
                     width: 5,
                     height: 5,
                     alignment: Alignment.bottomCenter,
-                    margin: const EdgeInsets.all(5),
+                    margin: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor,
-                      borderRadius: BorderRadius.circular(2.5),
+                      color: Theme.of(context).primaryColor.withOpacity(.9),
+                      borderRadius: BorderRadius.circular(2),
                     ),
                   )),
             )

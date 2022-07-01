@@ -7,9 +7,9 @@ import 'package:bujuan/widget/weslide/weslide.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:tabler_icons/tabler_icons.dart';
 
 import '../../../widget/mobile/flashy_navbar.dart';
-import '../second/second_view.dart';
 
 class FirstView extends GetView<HomeController> {
   const FirstView({Key? key}) : super(key: key);
@@ -24,28 +24,22 @@ class FirstView extends GetView<HomeController> {
               GetBuilder(
                 builder: (c) => AnimatedPositioned(
                   duration: const Duration(milliseconds: 200),
-                  bottom:
-                      controller.isRoot.value ? 0 : -controller.bottomBarHeight,
+                  bottom: controller.isRoot.value ? 0 : -controller.bottomBarHeight,
                   child: WeSlide(
                     controller: controller.weSlideController,
                     panelWidth: Get.width,
                     bodyWidth: Get.width,
-                    panelMaxSize: Get.height +
-                        (controller.isRoot1 ? 0 : controller.bottomBarHeight),
+                    panelMaxSize: Get.height + (controller.isRoot1 ? 0 : controller.bottomBarHeight),
                     parallax: true,
                     body: const HomeMobileView(),
                     panel: const SecondBodyView(),
                     panelHeader: _buildPanelHeader(),
                     footer: _buildFooter(),
                     hidePanelHeader: false,
-                    height: Get.height +
-                        (controller.isRoot1 ? 0 : controller.bottomBarHeight),
-                    footerHeight: controller.bottomBarHeight +
-                        MediaQuery.of(context).padding.bottom,
-                    panelMinSize: controller.panelMobileMinSize +
-                        MediaQuery.of(context).padding.bottom,
-                    onPosition: (value) =>
-                        controller.changeSlidePosition(value),
+                    height: Get.height + (controller.isRoot1 ? 0 : controller.bottomBarHeight),
+                    footerHeight: controller.bottomBarHeight + MediaQuery.of(context).padding.bottom,
+                    panelMinSize: controller.panelMobileMinSize + MediaQuery.of(context).padding.bottom,
+                    onPosition: (value) => controller.changeSlidePosition(value),
                   ),
                 ),
                 id: controller.weSlideUpdate,
@@ -60,11 +54,10 @@ class FirstView extends GetView<HomeController> {
   Widget _buildPanelHeader() {
     return InkWell(
       child: Obx(() => AnimatedContainer(
-            decoration: BoxDecoration(color: controller.getHeaderColor()),
+            decoration: BoxDecoration(color: controller.getHeaderColor(), border: Border(bottom: BorderSide(color: controller.getHeaderColor(), width: 1.w))),
             padding: controller.getHeaderPadding(),
             width: Get.width,
-            height: controller.getPanelMinSize() +
-                controller.getHeaderPadding().top,
+            height: controller.getPanelMinSize() + controller.getHeaderPadding().top,
             duration: const Duration(milliseconds: 0),
             child: _buildPlayBar(),
           )),
@@ -110,19 +103,13 @@ class FirstView extends GetView<HomeController> {
                 left: controller.getImageLeft(),
                 duration: const Duration(milliseconds: 0),
                 child: AnimatedScale(
-                  scale: 1 + (controller.slidePosition1.value/5.2),
-                  duration:  Duration.zero,
+                  scale: 1 + (controller.slidePosition.value / 7) + (controller.slidePosition1.value / 8),
+                  duration: Duration.zero,
                   child: SimpleExtendedImage(
                     controller.mediaItem.value.artUri?.path ?? '',
                     height: controller.getImageSize(),
                     width: controller.getImageSize(),
-                    borderRadius: BorderRadius.circular(
-                        controller.getImageSize() /
-                            2 *
-                            (1 -
-                                (controller.slidePosition.value >= .8
-                                    ? .92
-                                    : controller.slidePosition.value))),
+                    borderRadius: BorderRadius.circular(controller.getImageSize() / 2 * (1 - (controller.slidePosition.value >= .8 ? .92 : controller.slidePosition.value))),
                   ),
                 )),
             AnimatedOpacity(
@@ -136,17 +123,12 @@ class FirstView extends GetView<HomeController> {
                   children: [
                     Text(
                       controller.mediaItem.value.title,
-                      style: TextStyle(
-                          fontSize: 28.sp,
-                          color: controller.getLightTextColor()),
+                      style: TextStyle(fontSize: 28.sp, color: controller.getLightTextColor()),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    Padding(padding: EdgeInsets.symmetric(vertical: 4.w)),
-                    Text(controller.mediaItem.value.artist ?? '',
-                        style: TextStyle(
-                            fontSize: 22.sp,
-                            color: controller.getLightTextColor()))
+                    Padding(padding: EdgeInsets.symmetric(vertical: 1.w)),
+                    Text(controller.mediaItem.value.artist ?? '', style: TextStyle(fontSize: 22.sp, color: controller.getLightTextColor()))
                   ],
                 ),
               ),
@@ -158,10 +140,8 @@ class FirstView extends GetView<HomeController> {
           child: IconButton(
               onPressed: () => controller.playOrPause(),
               icon: Icon(
-                controller.playing.value
-                    ? TablerIcons.playerPlay
-                    : const IconData(0xe634, fontFamily: 'iconfont'),
-                size: 40.w,
+                controller.playing.value ? TablerIcons.playerPause : TablerIcons.playerPlay,
+                size: controller.playing.value ? 46.w : 42.w,
                 color: controller.getLightTextColor(),
               )),
         ),
@@ -170,8 +150,8 @@ class FirstView extends GetView<HomeController> {
           child: IconButton(
               onPressed: () => controller.audioServeHandler.skipToNext(),
               icon: Icon(
-                const IconData(0xe637, fontFamily: 'iconfont'),
-                size: 38.w,
+                TablerIcons.playerSkipForward,
+                size: 40.w,
                 color: controller.getLightTextColor(),
               )),
         )
@@ -182,7 +162,7 @@ class FirstView extends GetView<HomeController> {
   Widget _buildFooter() {
     return Obx(() => controller.isRoot.value
         ? FlashyNavbar(
-            iconSize: 54.w,
+            iconSize: 46.w,
             height: controller.bottomBarHeight,
             selectedIndex: controller.selectIndex.value,
             showElevation: false,
@@ -191,19 +171,19 @@ class FirstView extends GetView<HomeController> {
             },
             items: [
               FlashyNavbarItem(
-                icon: const Icon(IconData(0xe6a1, fontFamily: 'iconfont')),
+                icon: const Icon(TablerIcons.smartHome),
                 title: const Text('首页'),
               ),
               FlashyNavbarItem(
-                icon: const Icon(IconData(0xe6b5, fontFamily: 'iconfont')),
+                icon: const Icon(TablerIcons.disc),
                 title: const Text('专辑'),
               ),
               FlashyNavbarItem(
-                icon: const Icon(IconData(0xe692, fontFamily: 'iconfont')),
+                icon: const Icon(TablerIcons.brandTiktok),
                 title: const Text('单曲'),
               ),
               FlashyNavbarItem(
-                icon: const Icon(IconData(0xe683, fontFamily: 'iconfont')),
+                icon: const Icon(TablerIcons.user),
                 title: const Text('歌手'),
               ),
             ],

@@ -1,11 +1,10 @@
 import 'package:bujuan/pages/home/home_controller.dart';
-import 'package:bujuan/pages/index/main_view.dart';
 import 'package:bujuan/routes/app_pages.dart';
 import 'package:bujuan/widget/bottom_bar_page_transition.dart';
-import 'package:bujuan/widget/simple_extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:tabler_icons/tabler_icons.dart';
 
 import '../../common/constants/colors.dart';
 
@@ -31,7 +30,7 @@ class HomeMobileView extends GetView<HomeController> {
           actions: [
             IconButton(
               onPressed: () => Get.toNamed(Routes.setting),
-              icon: const Icon(IconData(0xe69e, fontFamily: 'iconfont')),
+              icon: const Icon(TablerIcons.settings),
             )
           ],
         ),
@@ -49,7 +48,7 @@ class HomeMobileView extends GetView<HomeController> {
       themeMode: ThemeMode.system,
       getPages: AppPages.routes,
       defaultTransition: Transition.fadeIn,
-      // transitionDuration: const Duration(milliseconds: 200),
+      // transitionDuration: const Duration(milliseconds: 400),
       routingCallback: (Routing? r) {
         HomeController.to.changeRoute(r?.current);
       },

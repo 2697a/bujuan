@@ -1,8 +1,9 @@
 import 'package:audio_service/audio_service.dart';
+import 'package:bujuan/common/storage.dart';
+import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:just_audio/just_audio.dart';
 
-class AudioServeHandler extends BaseAudioHandler
-    with QueueHandler, SeekHandler {
+class AudioServeHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
   final AudioPlayer _player = AudioPlayer(); //真正去播放的实例
   final _playlist = ConcatenatingAudioSource(children: []);
 
@@ -27,10 +28,7 @@ class AudioServeHandler extends BaseAudioHandler
       final playing = _player.playing;
       playbackState.add(playbackState.value.copyWith(
         controls: [
-          const MediaControl(
-              label: 'rating',
-              action: MediaAction.setRating,
-              androidIcon: 'drawable/audio_service_unlike'),
+          const MediaControl(label: 'rating', action: MediaAction.setRating, androidIcon: 'drawable/audio_service_unlike'),
           MediaControl.skipToPrevious,
           if (playing) MediaControl.pause else MediaControl.play,
           MediaControl.skipToNext,
@@ -52,9 +50,7 @@ class AudioServeHandler extends BaseAudioHandler
           LoopMode.one: AudioServiceRepeatMode.one,
           LoopMode.all: AudioServiceRepeatMode.all,
         }[_player.loopMode]!,
-        shuffleMode: (_player.shuffleModeEnabled)
-            ? AudioServiceShuffleMode.all
-            : AudioServiceShuffleMode.none,
+        shuffleMode: (_player.shuffleModeEnabled) ? AudioServiceShuffleMode.all : AudioServiceShuffleMode.none,
         playing: playing,
         updatePosition: _player.position,
         bufferedPosition: _player.bufferedPosition,
@@ -120,8 +116,7 @@ class AudioServeHandler extends BaseAudioHandler
     queue.add(newQueue);
   }
 
-  Future<void> replaceQueueItems(
-      List<MediaItem> mediaItems, String title) async {
+  Future<void> replaceQueueItems(List<MediaItem> mediaItems, String title) async {
     // 管理 Just Audio
     final audioSource = mediaItems.map(_createAudioSource);
     _playlist
@@ -169,7 +164,7 @@ class AudioServeHandler extends BaseAudioHandler
     if (_player.shuffleModeEnabled) {
       index = _player.shuffleIndices![index];
     }
-    _player.seek(Duration.zero, index: index);
+    await _player.seek(Duration.zero, index: index);
   }
 
   @override
@@ -201,6 +196,15 @@ class AudioServeHandler extends BaseAudioHandler
 
   @override
   Future<void> onTaskRemoved() async {
+    // TODO 把当前播放列表和播放index存起来包括播放进度
+    int index = playbackState.value.queueIndex ?? 0;
+    int position = playbackState.value.position.inMilliseconds;
+    await StorageUtil().setString('queueTitle', queueTitle.value);
+    await StorageUtil().setInt('index', index);
+    await StorageUtil().setInt('position', position);
+    print('object========${queueTitle.value}=====$index========$position');
+    await _player.stop();
+    await stop();
     await _player.dispose();
   }
 }

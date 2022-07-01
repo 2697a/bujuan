@@ -31,7 +31,7 @@ class IndexView extends GetView<IndexController> {
         padding: EdgeInsets.symmetric(vertical: 15.w),
         child: Row(
           children: [
-            SimpleExtendedImage('${HomeController.to.directoryPath}${data.albumId}',cacheWidth: 100,width: 90.w,height: 90.w,),
+            SimpleExtendedImage('${HomeController.to.directoryPath}${data.albumId}',cacheWidth: 200,width: 90.w,height: 90.w,),
             Expanded(
                 child:Padding(padding: EdgeInsets.symmetric(horizontal: 20.w),child:  Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

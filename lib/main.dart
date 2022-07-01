@@ -12,9 +12,11 @@ import 'package:get_it/get_it.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'common/api/netease_cloud_music.dart';
 import 'common/constants/colors.dart';
+import 'common/storage.dart';
 
 main() async {
   bool isMobile = Platform.isAndroid || Platform.isIOS || Platform.isFuchsia;
+  WidgetsFlutterBinding.ensureInitialized();
   await _initAudioServer();
   HomeBinding().dependencies();
   runApp(ScreenUtilInit(
@@ -34,7 +36,8 @@ main() async {
 Future<void> _initAudioServer() async {
   final getIt = GetIt.instance;
   getIt.registerSingleton<OnAudioQuery>(OnAudioQuery());
-
+  // 工具初始
+  await StorageUtil.init();
   print('=============onReady');
   getIt.registerSingleton<AudioServeHandler>(
       await AudioService.init<AudioServeHandler>(
