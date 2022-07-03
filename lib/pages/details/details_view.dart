@@ -19,12 +19,6 @@ class DetailsView extends GetView<DetailsController> {
           children: [
            Stack(
              children: [
-               SimpleExtendedImage(
-                 '${HomeController.to.directoryPath}${controller.detailsArguments?.albumModel.id}',
-                 width: 750.w,
-                 height: 750.w,
-                 cacheWidth: 400,
-               ),
                AppBar(backgroundColor: Colors.transparent,)
              ],
            ),

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:audio_service/audio_service.dart';
+import 'package:bujuan/common/constants/other.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -13,6 +14,7 @@ class IndexController extends GetxController {
   final List<MediaItem> mediaItems = [];
   late BuildContext buildContext;
   final String queueTitle = Get.routing.current;
+  final RxList<PaletteColorData> colors = <PaletteColorData>[].obs;
 
   // List<Audio> audios = [];
 
@@ -30,11 +32,17 @@ class IndexController extends GetxController {
     for (var element in albumList) {
       String path = '${HomeController.to.directoryPath}${element.id}';
       File file = File(path);
-      if (!await file.exists()) {
+      // if (!await file.exists()) {
         Uint8List? a = await HomeController.to.audioQuery
             .queryArtwork(element.id, ArtworkType.ALBUM, size: 800);
-        await file.writeAsBytes(a!);
-      }
+        if(a!=null) {
+          await file.writeAsBytes(a);
+        }else{
+          path = '';
+        }
+      // }
+      PaletteColorData data =  await ImageUtils.getImageColor2(path);
+      colors.add(data);
     }
     albums.value = albumList;
     List<SongModel> songList = await HomeController.to.audioQuery.querySongs();

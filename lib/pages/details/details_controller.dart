@@ -39,7 +39,9 @@ class DetailsController extends GetxController {
       File file = File(path);
       if (!await file.exists()) {
         Uint8List? a = await HomeController.to.audioQuery.queryArtwork(songModel.id, ArtworkType.AUDIO, size: 800);
-        await file.writeAsBytes(a!);
+        if(a!=null){
+          await file.writeAsBytes(a);
+        }
       }
       MediaItem mediaItem = MediaItem(
           id: '${songModel.id}',
@@ -55,8 +57,8 @@ class DetailsController extends GetxController {
   play(index) async {
     String title = HomeController.to.audioServeHandler.queueTitle.value;
     if (title.isEmpty || title != queueTitle) {
-      await HomeController.to.audioServeHandler.addQueueItems(mediaItems);
       HomeController.to.audioServeHandler.queueTitle.value = queueTitle;
+      await HomeController.to.audioServeHandler.addQueueItems(mediaItems);
     }
     HomeController.to.audioServeHandler
       ..skipToQueueItem(index)

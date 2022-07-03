@@ -24,22 +24,28 @@ class FirstView extends GetView<HomeController> {
               GetBuilder(
                 builder: (c) => AnimatedPositioned(
                   duration: const Duration(milliseconds: 200),
-                  bottom: controller.isRoot.value ? 0 : -controller.bottomBarHeight,
+                  bottom:
+                      controller.isRoot.value ? 0 : -controller.bottomBarHeight,
                   child: WeSlide(
                     controller: controller.weSlideController,
                     panelWidth: Get.width,
                     bodyWidth: Get.width,
-                    panelMaxSize: Get.height + (controller.isRoot1 ? 0 : controller.bottomBarHeight),
+                    panelMaxSize: Get.height +
+                        (controller.isRoot1 ? 0 : controller.bottomBarHeight),
                     parallax: true,
                     body: const HomeMobileView(),
                     panel: const SecondBodyView(),
                     panelHeader: _buildPanelHeader(),
                     footer: _buildFooter(),
                     hidePanelHeader: false,
-                    height: Get.height + (controller.isRoot1 ? 0 : controller.bottomBarHeight),
-                    footerHeight: controller.bottomBarHeight + MediaQuery.of(context).padding.bottom,
-                    panelMinSize: controller.panelMobileMinSize + MediaQuery.of(context).padding.bottom,
-                    onPosition: (value) => controller.changeSlidePosition(value),
+                    height: Get.height +
+                        (controller.isRoot1 ? 0 : controller.bottomBarHeight),
+                    footerHeight: controller.bottomBarHeight +
+                        MediaQuery.of(context).padding.bottom,
+                    panelMinSize: controller.panelMobileMinSize +
+                        MediaQuery.of(context).padding.bottom,
+                    onPosition: (value) =>
+                        controller.changeSlidePosition(value),
                   ),
                 ),
                 id: controller.weSlideUpdate,
@@ -54,10 +60,15 @@ class FirstView extends GetView<HomeController> {
   Widget _buildPanelHeader() {
     return InkWell(
       child: Obx(() => AnimatedContainer(
-            decoration: BoxDecoration(color: controller.getHeaderColor(), border: Border(bottom: BorderSide(color: controller.getHeaderColor(), width: 1.w))),
+            decoration: BoxDecoration(
+                color: controller.getHeaderColor(),
+                border: Border(
+                    bottom: BorderSide(
+                        color: controller.getHeaderColor(), width: 1.w))),
             padding: controller.getHeaderPadding(),
             width: Get.width,
-            height: controller.getPanelMinSize() + controller.getHeaderPadding().top,
+            height: controller.getPanelMinSize() +
+                controller.getHeaderPadding().top,
             duration: const Duration(milliseconds: 0),
             child: _buildPlayBar(),
           )),
@@ -76,13 +87,12 @@ class FirstView extends GetView<HomeController> {
       child: Visibility(
         visible: controller.slidePosition.value > .5,
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Container(
-              child: InkWell(
-                child: const Icon(Icons.keyboard_arrow_down),
-                onTap: () => controller.weSlideController.hide(),
-              ),
+            InkWell(
+              child: const Icon(Icons.keyboard_arrow_down),
+              onTap: () => controller.weSlideController.hide(),
             ),
             const Icon(Icons.more_horiz)
           ],
@@ -97,50 +107,65 @@ class FirstView extends GetView<HomeController> {
       children: [
         Expanded(
             child: Stack(
-          alignment: Alignment.centerLeft,
-          children: [
-            AnimatedPositioned(
-                left: controller.getImageLeft(),
-                duration: const Duration(milliseconds: 0),
-                child: AnimatedScale(
-                  scale: 1 + (controller.slidePosition.value / 7) + (controller.slidePosition1.value / 8),
-                  duration: Duration.zero,
-                  child: SimpleExtendedImage(
-                    controller.mediaItem.value.artUri?.path ?? '',
-                    height: controller.getImageSize(),
-                    width: controller.getImageSize(),
-                    borderRadius: BorderRadius.circular(controller.getImageSize() / 2 * (1 - (controller.slidePosition.value >= .8 ? .92 : controller.slidePosition.value))),
-                  ),
-                )),
-            AnimatedOpacity(
-              opacity: controller.slidePosition.value > 0 ? 0 : 1,
-              duration: const Duration(milliseconds: 10),
-              child: Padding(
-                padding: EdgeInsets.only(left: controller.panelHeaderSize),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      controller.mediaItem.value.title,
-                      style: TextStyle(fontSize: 28.sp, color: controller.getLightTextColor()),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+              alignment: Alignment.centerLeft,
+              children: [
+                AnimatedPositioned(
+                    left: controller.getImageLeft(),
+                    duration: const Duration(milliseconds: 0),
+                    child: AnimatedScale(
+                      scale: 1 +
+                          (controller.slidePosition.value / 8) +
+                          (controller.slidePosition1.value / 10),
+                      duration: Duration.zero,
+                      child: SimpleExtendedImage(
+                        controller.mediaItem.value.artUri?.path ?? '',
+                        height: controller.getImageSize(),
+                        width: controller.getImageSize(),
+                        borderRadius: BorderRadius.circular(
+                            controller.getImageSize() /
+                                2 *
+                                (1 -
+                                    (controller.slidePosition.value >= .8
+                                        ? .92
+                                        : controller.slidePosition.value))),
+                      ),
+                    )),
+                AnimatedOpacity(
+                  opacity: controller.slidePosition.value > 0 ? 0 : 1,
+                  duration: const Duration(milliseconds: 10),
+                  child: Padding(
+                    padding: EdgeInsets.only(left: controller.panelHeaderSize),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          controller.mediaItem.value.title,
+                          style: TextStyle(
+                              fontSize: 28.sp,
+                              color: controller.getLightTextColor()),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Padding(padding: EdgeInsets.symmetric(vertical: 1.w)),
+                        Text(controller.mediaItem.value.artist ?? '',
+                            style: TextStyle(
+                                fontSize: 22.sp,
+                                color: controller.getLightTextColor()))
+                      ],
                     ),
-                    Padding(padding: EdgeInsets.symmetric(vertical: 1.w)),
-                    Text(controller.mediaItem.value.artist ?? '', style: TextStyle(fontSize: 22.sp, color: controller.getLightTextColor()))
-                  ],
+                  ),
                 ),
-              ),
-            ),
-          ],
-        )),
+              ],
+            )),
         Visibility(
           visible: controller.slidePosition.value == 0,
           child: IconButton(
               onPressed: () => controller.playOrPause(),
               icon: Icon(
-                controller.playing.value ? TablerIcons.playerPause : TablerIcons.playerPlay,
+                controller.playing.value
+                    ? TablerIcons.playerPause
+                    : TablerIcons.playerPlay,
                 size: controller.playing.value ? 46.w : 42.w,
                 color: controller.getLightTextColor(),
               )),

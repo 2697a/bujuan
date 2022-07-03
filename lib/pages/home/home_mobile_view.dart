@@ -34,10 +34,11 @@ class HomeMobileView extends GetView<HomeController> {
             )
           ],
         ),
-        body: Obx(() => BottomBarPageTransition(
-            builder: (context, index) => controller.pages[index],
-            currentIndex: controller.selectIndex.value,
-            totalLength: controller.pages.length)),
+        body: PageView.builder(
+          controller: controller.pageController,
+          itemBuilder: (context, index) => controller.pages[index],
+          itemCount: controller.pages.length,
+        ),
       ),
       title: "Application",
       theme: AppTheme.light,
@@ -48,7 +49,6 @@ class HomeMobileView extends GetView<HomeController> {
       themeMode: ThemeMode.system,
       getPages: AppPages.routes,
       defaultTransition: Transition.fadeIn,
-      // transitionDuration: const Duration(milliseconds: 400),
       routingCallback: (Routing? r) {
         HomeController.to.changeRoute(r?.current);
       },

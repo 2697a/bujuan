@@ -28,47 +28,60 @@ class SecondBodyView extends GetView<HomeController> {
         Obx(() => Container(
               decoration: BoxDecoration(
                   gradient: LinearGradient(colors: [
-                controller.rx.value.light?.color.withOpacity(controller.slidePosition.value) ?? Colors.transparent,
-                controller.rx.value.dark?.color.withOpacity(controller.slidePosition.value) ?? Colors.transparent
+                controller.rx.value.light?.color
+                        .withOpacity(controller.slidePosition.value) ??
+                    Colors.transparent,
+                controller.rx.value.dark?.color
+                        .withOpacity(controller.slidePosition.value) ??
+                    Colors.transparent
               ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
             )),
-        Column(
-          children: [
-            Obx(
-              () => SizedBox(height: controller.getPanelMinSize() + MediaQuery.of(context).padding.top)
-            ),
-            //歌曲信息
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 30.w),
-              child: Obx(() => SizedBox(
-                    height: 110.h,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          controller.mediaItem.value.title,
-                          style: TextStyle(fontSize: 36.sp, fontWeight: FontWeight.bold, color: controller.rx.value.dark?.bodyTextColor),
-                          maxLines: 1,
-                        ),
-                        Padding(padding: EdgeInsets.symmetric(vertical: 5.w)),
-                        Text(
-                          controller.mediaItem.value.artist ?? '',
-                          style: TextStyle(fontSize: 28.sp, color: controller.rx.value.dark?.bodyTextColor),
-                          maxLines: 1,
-                        )
-                      ],
-                    ),
-                  )),
-            ),
-            //操控区域
-            _buildPlayController(),
-            //进度条
-            _buildSlide(),
-            //功能按钮
-            _buildBottom(),
-          ],
-        ),
+        Obx(() => AnimatedScale(
+          scale: 1 + (controller.slidePosition1.value / 8),
+          duration:  Duration.zero,
+          child: Column(
+            children: [
+              Obx(() => SizedBox(
+                  height: controller.getPanelMinSize() +
+                      MediaQuery.of(context).padding.top)),
+              //歌曲信息
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 30.w),
+                child: Obx(() => SizedBox(
+                  height: 110.h,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        controller.mediaItem.value.title,
+                        style: TextStyle(
+                            fontSize: 36.sp,
+                            fontWeight: FontWeight.bold,
+                            color: controller.rx.value.dark?.bodyTextColor),
+                        maxLines: 1,
+                      ),
+                      Padding(padding: EdgeInsets.symmetric(vertical: 5.w)),
+                      Text(
+                        controller.mediaItem.value.artist ?? '',
+                        style: TextStyle(
+                            fontSize: 28.sp,
+                            color: controller.rx.value.dark?.bodyTextColor),
+                        maxLines: 1,
+                      )
+                    ],
+                  ),
+                )),
+              ),
+              //操控区域
+              _buildPlayController(),
+              //进度条
+              _buildSlide(),
+              //功能按钮
+              _buildBottom(),
+            ],
+          ),
+        )),
       ],
     );
   }
@@ -86,45 +99,80 @@ class SecondBodyView extends GetView<HomeController> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      ImageUtils.getTimeStamp(controller.duration.value.inMilliseconds),
-                      style: TextStyle(color: controller.rx.value.dark?.bodyTextColor, fontSize: 30.sp),
+                      ImageUtils.getTimeStamp(
+                          controller.duration.value.inMilliseconds),
+                      style: TextStyle(
+                          color: controller.rx.value.dark?.bodyTextColor,
+                          fontSize: 30.sp),
                     ),
                     Container(
-                      padding: EdgeInsets.symmetric(vertical: 5.w, horizontal: 10.w),
-                      decoration: BoxDecoration(color: controller.rx.value.dark?.color.withOpacity(.1)),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 5.w, horizontal: 10.w),
+                      decoration: BoxDecoration(
+                          color:
+                              controller.rx.value.dark?.color.withOpacity(.1)),
                       child: Text(
                         '${controller.mediaItem.value.extras?['type'].toString().toUpperCase()}',
-                        style: TextStyle(color: controller.rx.value.dark?.bodyTextColor, fontSize: 28.sp),
+                        style: TextStyle(
+                            color: controller.rx.value.dark?.bodyTextColor,
+                            fontSize: 28.sp),
                       ),
                     ),
                     Text(
-                      ImageUtils.getTimeStamp(controller.mediaItem.value.duration?.inMilliseconds ?? 0),
-                      style: TextStyle(color: controller.rx.value.dark?.bodyTextColor, fontSize: 30.sp),
+                      ImageUtils.getTimeStamp(
+                          controller.mediaItem.value.duration?.inMilliseconds ??
+                              0),
+                      style: TextStyle(
+                          color: controller.rx.value.dark?.bodyTextColor,
+                          fontSize: 30.sp),
                     ),
                   ],
                 )),
           ),
-          Padding(padding: EdgeInsets.symmetric(vertical: 15.h)),
+          Padding(padding: EdgeInsets.symmetric(vertical: 18.h)),
           Obx(() {
             return SizedBox(
               width: Get.width,
               child: FlutterRangeSlider(
                 min: 0,
                 max: controller.effects.length.toDouble(),
-                values: [controller.duration.value.inMilliseconds / (controller.mediaItem.value.duration?.inMilliseconds ?? 0) * 100],
+                values: [
+                  controller.duration.value.inMilliseconds /
+                      (controller.mediaItem.value.duration?.inMilliseconds ??
+                          0) *
+                      100
+                ],
                 handler: FlutterSliderHandler(
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
-                        color: controller.rx.value.light?.color.withOpacity(.7) ?? Colors.black12,
-                        border: Border.all(color: controller.rx.value.dark?.color.withOpacity(.6) ?? Colors.transparent, width: 4.w)),
+                        color:
+                            controller.rx.value.light?.color.withOpacity(.7) ??
+                                Colors.black12,
+                        border: Border.all(
+                            color: controller.rx.value.dark?.color
+                                    .withOpacity(.6) ??
+                                Colors.transparent,
+                            width: 4.w)),
                     child: const SizedBox.shrink()),
                 handlerWidth: 22,
                 handlerHeight: 22,
                 touchSize: 18,
                 tooltip: FlutterSliderTooltip(disabled: true),
-                hatchMark: FlutterSliderHatchMark(labels: controller.effects, linesAlignment: FlutterSliderHatchMarkAlignment.right, density: 0.5),
-                trackBar: const FlutterSliderTrackBar(activeTrackBarHeight: .1, inactiveTrackBarHeight: .1, activeTrackBar: BoxDecoration(color: Colors.transparent)),
-                onDragCompleted: (a, b, c) => controller.audioServeHandler.seek(Duration(milliseconds: (controller.mediaItem.value.duration?.inMilliseconds ?? 0) * b ~/ 100)),
+                hatchMark: FlutterSliderHatchMark(
+                    labels: controller.effects,
+                    linesAlignment: FlutterSliderHatchMarkAlignment.right,
+                    density: 0.5),
+                trackBar: const FlutterSliderTrackBar(
+                    activeTrackBarHeight: .1,
+                    inactiveTrackBarHeight: .1,
+                    activeTrackBar: BoxDecoration(color: Colors.transparent)),
+                onDragCompleted: (a, b, c) => controller.audioServeHandler.seek(
+                    Duration(
+                        milliseconds: (controller
+                                    .mediaItem.value.duration?.inMilliseconds ??
+                                0) *
+                            b ~/
+                            100)),
               ),
             );
           }),
@@ -141,13 +189,18 @@ class SecondBodyView extends GetView<HomeController> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  IconButton(onPressed: () => controller.changeRepeatMode(), icon: Icon(controller.getRepeatIcon(), size: 46.w, color: controller.rx.value.dark?.bodyTextColor)),
+                  IconButton(
+                      onPressed: () => controller.changeRepeatMode(),
+                      icon: Icon(controller.getRepeatIcon(),
+                          size: 46.w,
+                          color: controller.rx.value.dark?.bodyTextColor)),
                   Expanded(
                       child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       IconButton(
-                          onPressed: () => controller.audioServeHandler.skipToPrevious(),
+                          onPressed: () =>
+                              controller.audioServeHandler.skipToPrevious(),
                           icon: Icon(
                             TablerIcons.playerSkipBack,
                             size: 46.w,
@@ -163,19 +216,28 @@ class SecondBodyView extends GetView<HomeController> {
                             width: 100.h,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(80.w),
-                                color: controller.rx.value.light?.color.withOpacity(.5),
-                                border: Border.all(color: controller.rx.value.dark?.color.withOpacity(.2) ?? Colors.transparent, width: 6.w)),
+                                color: controller.rx.value.light?.color
+                                    .withOpacity(.5),
+                                border: Border.all(
+                                    color: controller.rx.value.dark?.color
+                                            .withOpacity(.2) ??
+                                        Colors.transparent,
+                                    width: 6.w)),
                             child: Icon(
-                              controller.playing.value ? TablerIcons.playerPause : TablerIcons.playerPlay,
+                              controller.playing.value
+                                  ? TablerIcons.playerPause
+                                  : TablerIcons.playerPlay,
                               size: 52.w,
-                              color: controller.rx.value.dark?.bodyTextColor.withOpacity(.6),
+                              color: controller.rx.value.dark?.bodyTextColor
+                                  .withOpacity(.6),
                             ),
                           ),
                           onTap: () => controller.playOrPause(),
                         ),
                       ),
                       IconButton(
-                          onPressed: () => controller.audioServeHandler.skipToNext(),
+                          onPressed: () =>
+                              controller.audioServeHandler.skipToNext(),
                           icon: Icon(
                             TablerIcons.playerSkipForward,
                             size: 46.w,
@@ -183,7 +245,11 @@ class SecondBodyView extends GetView<HomeController> {
                           )),
                     ],
                   )),
-                  IconButton(onPressed: () => controller.changeShuffleMode(), icon: Icon(controller.getShuffleIcon(), size: 42.w, color: controller.rx.value.dark?.bodyTextColor)),
+                  IconButton(
+                      onPressed: () => controller.changeShuffleMode(),
+                      icon: Icon(controller.getShuffleIcon(),
+                          size: 42.w,
+                          color: controller.rx.value.dark?.bodyTextColor)),
                 ],
               ),
             )));
@@ -193,8 +259,11 @@ class SecondBodyView extends GetView<HomeController> {
     return Obx(() => SafeArea(
           top: false,
           child: Container(
+            margin: EdgeInsets.only(bottom: 10.h),
             padding: EdgeInsets.symmetric(horizontal: 20.w),
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(35.w), color: controller.rx.value.dark?.color.withOpacity(.05)),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(35.w),
+                color: controller.rx.value.dark?.color.withOpacity(.05)),
             height: 120.h,
             width: 670.w,
             child: Row(
@@ -211,7 +280,7 @@ class SecondBodyView extends GetView<HomeController> {
                       showCupertinoModalBottomSheet(
                           context: controller.buildContext,
                           builder: (_) => _buildPlayList(),
-                          duration: const Duration(milliseconds: 300),
+                          duration: const Duration(milliseconds: 200),
                           secondAnimation: controller.animationController,
                           topRadius: Radius.circular(35.w));
                     },
@@ -256,10 +325,10 @@ class SecondBodyView extends GetView<HomeController> {
       child: Obx(() => Container(
             height: Get.height * .8,
             decoration: BoxDecoration(
-                gradient: LinearGradient(
-                    colors: [controller.rx.value.light?.color ?? Colors.transparent, controller.rx.value.dark?.color ?? Colors.transparent],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter)),
+                gradient: LinearGradient(colors: [
+              controller.rx.value.light?.color ?? Colors.transparent,
+              controller.rx.value.dark?.color ?? Colors.transparent
+            ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -270,7 +339,8 @@ class SecondBodyView extends GetView<HomeController> {
                 ),
                 Expanded(
                     child: SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 20.w),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 30.w, vertical: 20.w),
                   child: Text(controller.lyricList.value),
                 ))
               ],
@@ -285,19 +355,27 @@ class SecondBodyView extends GetView<HomeController> {
           child: Container(
             height: Get.height * .85,
             decoration: BoxDecoration(
-                gradient: LinearGradient(
-                    colors: [controller.rx.value.light?.color ?? Colors.transparent, controller.rx.value.light?.color ?? Colors.transparent],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter)),
+                gradient: LinearGradient(colors: [
+              controller.rx.value.light?.color ?? Colors.transparent,
+              controller.rx.value.light?.color ?? Colors.transparent
+            ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
             child: Column(
               children: [
                 Row(
-                  children: [IconButton(onPressed: () {
-                    Navigator.pop(controller.buildContext);
-                  }, icon: Icon(Icons.keyboard_arrow_down_sharp,color: controller.rx.value.light?.bodyTextColor,))],
+                  children: [
+                    IconButton(
+                        onPressed: () {
+                          Navigator.pop(controller.buildContext);
+                        },
+                        icon: Icon(
+                          Icons.keyboard_arrow_down_sharp,
+                          color: controller.rx.value.light?.bodyTextColor,
+                        ))
+                  ],
                 ),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 40.w, vertical: 20.w),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 40.w, vertical: 20.w),
                   child: Row(
                     children: [
                       Expanded(
@@ -306,15 +384,22 @@ class SecondBodyView extends GetView<HomeController> {
                         children: [
                           Text(
                             controller.mediaItem.value.title,
-                            style: TextStyle(fontSize: 28.sp, color: controller.rx.value.dark?.color ),
+                            style: TextStyle(
+                                fontSize: 28.sp,
+                                color: controller.rx.value.dark?.color),
                           ),
                           Text(
                             controller.mediaItem.value.artist ?? '',
-                            style: TextStyle(fontSize: 28.sp, color: controller.rx.value.dark?.color ),
+                            style: TextStyle(
+                                fontSize: 28.sp,
+                                color: controller.rx.value.dark?.color),
                           )
                         ],
                       )),
-                      LoadingAnimationWidget.staggeredDotsWave(color: controller.rx.value.dark?.color ?? Colors.black12, size: 38.w),
+                      LoadingAnimationWidget.staggeredDotsWave(
+                          color:
+                              controller.rx.value.dark?.color ?? Colors.black12,
+                          size: 38.w),
                     ],
                   ),
                 ),
@@ -324,7 +409,8 @@ class SecondBodyView extends GetView<HomeController> {
                   itemBuilder: (context, index) => Container(
                     margin: EdgeInsets.symmetric(horizontal: 10.w),
                     alignment: Alignment.center,
-                    child: _buildPlayListItem(controller.audioServeHandler.queue.value[index], index),
+                    child: _buildPlayListItem(
+                        controller.audioServeHandler.queue.value[index], index),
                   ),
                   itemCount: controller.audioServeHandler.queue.value.length,
                 ))
@@ -358,11 +444,19 @@ class SecondBodyView extends GetView<HomeController> {
               children: [
                 Text(
                   mediaItem.title,
-                  style: TextStyle(fontSize: 28.sp, color: playing ? controller.rx.value.dark?.color : controller.rx.value.light?.bodyTextColor),
+                  style: TextStyle(
+                      fontSize: 28.sp,
+                      color: playing
+                          ? controller.rx.value.dark?.color
+                          : controller.rx.value.light?.bodyTextColor),
                 ),
                 Text(
                   mediaItem.artist ?? '',
-                  style: TextStyle(fontSize: 24.sp, color: playing ? controller.rx.value.dark?.color : controller.rx.value.light?.bodyTextColor),
+                  style: TextStyle(
+                      fontSize: 24.sp,
+                      color: playing
+                          ? controller.rx.value.dark?.color
+                          : controller.rx.value.light?.bodyTextColor),
                 )
               ],
             )),
@@ -379,17 +473,19 @@ class SecondBodyView extends GetView<HomeController> {
       child: Obx(() => Container(
             height: Get.height * .4,
             decoration: BoxDecoration(
-                gradient: LinearGradient(
-                    colors: [controller.rx.value.light?.color ?? Colors.transparent, controller.rx.value.dark?.color ?? Colors.transparent],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter)),
+                gradient: LinearGradient(colors: [
+              controller.rx.value.light?.color ?? Colors.transparent,
+              controller.rx.value.dark?.color ?? Colors.transparent
+            ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
             child: Column(
               children: [
                 Expanded(
                     child: Center(
                   child: Text(
                     '${controller.sleep.value}分钟',
-                    style: TextStyle(fontSize: 100.w, color: controller.rx.value.dark?.color.withOpacity(.6)),
+                    style: TextStyle(
+                        fontSize: 100.w,
+                        color: controller.rx.value.dark?.color.withOpacity(.6)),
                   ),
                 )),
                 SafeArea(
@@ -401,7 +497,8 @@ class SecondBodyView extends GetView<HomeController> {
                       perspective: 0.01,
                       initValue: controller.sleep.value,
                       lineColor: controller.rx.value.light?.color,
-                      pointerColor: controller.rx.value.dark?.titleTextColor ?? Colors.black,
+                      pointerColor: controller.rx.value.dark?.titleTextColor ??
+                          Colors.black,
                       onValueChanged: (val) {
                         print('object========$val');
                         controller.sleep.value = val;

@@ -19,7 +19,7 @@ main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await _initAudioServer();
   HomeBinding().dependencies();
-  runApp(ScreenUtilInit(
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge).then((value) => runApp(ScreenUtilInit(
     designSize: isMobile ? const Size(750, 1334) : const Size(2160, 1406),
     builder: (BuildContext context, Widget? child) => MaterialApp(
       title: "Application",
@@ -30,7 +30,7 @@ main() async {
       debugShowCheckedModeBanner: false,
       home: const SplashPage(),
     ),
-  ));
+  )));
 }
 
 Future<void> _initAudioServer() async {
@@ -50,7 +50,6 @@ Future<void> _initAudioServer() async {
   ));
   // android 状态栏为透明的沉浸
   WidgetsBinding.instance.addPostFrameCallback((_) {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     if (Platform.isAndroid) {
       SystemUiOverlayStyle systemUiOverlayStyle = const SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,

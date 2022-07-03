@@ -54,14 +54,15 @@ dependencies:
   just_waveform: ^0.0.3
   font_awesome_flutter: ^10.1.0
   wheel_slider: ^1.0.0
-  jaudiotagger:
-    path: ../jaudiotagger
+#  jaudiotagger:
+#    path: ../jaudiotagger
   flutter_lyric: ^2.0.4
   tuna_flutter_range_slider: ^1.0.0
   flutter_svg: ^1.1.0
   modal_bottom_sheet: ^2.1.0
   tabler_icons:
     path: plugins/tabler-icons
+  carousel_slider: ^4.1.1
 
 dev_dependencies:
   flutter_test:

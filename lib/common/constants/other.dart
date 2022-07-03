@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:bujuan/common/constants/icon.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -18,6 +19,27 @@ class ImageUtils {
     _getImageColorByProvider(imageProvider).then((value) {
       imageCallBack.call(value);
     });
+    // _imageStream = imageProvider.resolve(ImageConfiguration.empty);
+    // _imageStreamListener = ImageStreamListener((ImageInfo image, bool synchronousCall) async {
+    //   ImageProvider _imageProvider = imageProvider;
+    //   _imageStream?.removeListener(_imageStreamListener!);
+    //   _getImageColorByProvider(_imageProvider).then((value) {
+    //     imageCallBack.call(value);
+    //   });
+    // }, onError: (Object exception, StackTrace? stackTrace) {
+    //   ImageProvider imageProvider =  AssetImage('');
+    //   _getImageColorByProvider(imageProvider).then((value) {
+    //     imageCallBack.call(value);
+    //   });
+    // });
+    // _imageStream?.addListener(_imageStreamListener!);
+  }
+  static Future<PaletteColorData> getImageColor2(String url) async{
+    ImageProvider imageProvider = ExtendedFileImageProvider(File(url));
+    if(url.isEmpty){
+      imageProvider = ExtendedAssetImageProvider('assets/images/placeholder.png');
+    }
+    return await _getImageColorByProvider(imageProvider);
     // _imageStream = imageProvider.resolve(ImageConfiguration.empty);
     // _imageStreamListener = ImageStreamListener((ImageInfo image, bool synchronousCall) async {
     //   ImageProvider _imageProvider = imageProvider;
