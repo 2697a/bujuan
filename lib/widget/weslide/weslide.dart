@@ -509,8 +509,8 @@ class _WeSlideState extends State<WeSlide> with SingleTickerProviderStateMixin {
                     duration: const Duration(milliseconds: 300),
                     child: ClipRRect(
                       borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(45.w),
-                        topRight: Radius.circular(45.w),
+                        topLeft: Radius.circular(35.w),
+                        topRight: Radius.circular(35.w),
                       ),
                       child: child,
                     ),

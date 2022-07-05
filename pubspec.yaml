@@ -62,7 +62,7 @@ dependencies:
   modal_bottom_sheet: ^2.1.0
   tabler_icons:
     path: plugins/tabler-icons
-  carousel_slider: ^4.1.1
+  sliding_up_panel: ^2.0.0+1
 
 dev_dependencies:
   flutter_test:

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:on_audio_query/on_audio_query.dart';
-import '../../widget/query_artwork_widget.dart' as custom;
 
 import '../../common/constants/other.dart';
 import '../../widget/simple_extended_image.dart';

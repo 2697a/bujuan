@@ -38,6 +38,7 @@ class FirstView extends GetView<HomeController> {
                     panelHeader: _buildPanelHeader(),
                     footer: _buildFooter(),
                     hidePanelHeader: false,
+                    isDownSlide: controller.isDownSlide,
                     height: Get.height +
                         (controller.isRoot1 ? 0 : controller.bottomBarHeight),
                     footerHeight: controller.bottomBarHeight +
@@ -126,7 +127,7 @@ class FirstView extends GetView<HomeController> {
                                 2 *
                                 (1 -
                                     (controller.slidePosition.value >= .8
-                                        ? .92
+                                        ? .95
                                         : controller.slidePosition.value))),
                       ),
                     )),
@@ -196,16 +197,16 @@ class FirstView extends GetView<HomeController> {
             },
             items: [
               FlashyNavbarItem(
-                icon: const Icon(TablerIcons.smartHome),
-                title: const Text('首页'),
-              ),
-              FlashyNavbarItem(
                 icon: const Icon(TablerIcons.disc),
                 title: const Text('专辑'),
               ),
               FlashyNavbarItem(
                 icon: const Icon(TablerIcons.brandTiktok),
                 title: const Text('单曲'),
+              ),
+              FlashyNavbarItem(
+                icon: const Icon(TablerIcons.smartHome),
+                title: const Text('首页'),
               ),
               FlashyNavbarItem(
                 icon: const Icon(TablerIcons.user),

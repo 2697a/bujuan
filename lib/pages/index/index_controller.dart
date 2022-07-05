@@ -27,22 +27,18 @@ class IndexController extends GetxController {
   }
 
   querySong() async {
-    List<AlbumModel> albumList =
-        await HomeController.to.audioQuery.queryAlbums();
+    List<AlbumModel> albumList = await HomeController.to.audioQuery.queryAlbums();
     for (var element in albumList) {
       String path = '${HomeController.to.directoryPath}${element.id}';
       File file = File(path);
-      // if (!await file.exists()) {
-        Uint8List? a = await HomeController.to.audioQuery
-            .queryArtwork(element.id, ArtworkType.ALBUM, size: 800);
-        if(a!=null) {
+      if (!await file.exists()) {
+        Uint8List? a = await HomeController.to.audioQuery.queryArtwork(element.id, ArtworkType.ALBUM, size: 800);
+        if (a != null) {
           await file.writeAsBytes(a);
-        }else{
+        } else {
           path = '';
         }
-      // }
-      PaletteColorData data =  await ImageUtils.getImageColor2(path);
-      colors.add(data);
+      }
     }
     albums.value = albumList;
     List<SongModel> songList = await HomeController.to.audioQuery.querySongs();

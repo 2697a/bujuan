@@ -10,7 +10,6 @@ import 'package:bujuan/pages/index/index_view.dart';
 import 'package:bujuan/pages/index/main_view.dart';
 import 'package:bujuan/pages/user/user_view.dart';
 import 'package:bujuan/widget/keep_alive.dart';
-import 'package:dio/dio.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_lyric/lyrics_reader_model.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -19,13 +18,13 @@ import 'package:get_it/get_it.dart';
 
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:tabler_icons/tabler_icons.dart';
 import 'package:tuna_flutter_range_slider/tuna_flutter_range_slider.dart';
 
 import '../../widget/weslide/weslide_controller.dart';
 
-class HomeController extends SuperController
-    with GetSingleTickerProviderStateMixin {
+class HomeController extends SuperController with GetSingleTickerProviderStateMixin {
   final String weSlideUpdate = 'weSlide';
   double panelHeaderSize = 90.h;
   double secondPanelHeaderSize = 120.w;
@@ -43,25 +42,23 @@ class HomeController extends SuperController
   RxDouble slidePosition1 = 0.0.obs;
   Rx<PaletteColorData> rx = PaletteColorData().obs;
   RxBool isRoot = true.obs;
+  RxBool second = false.obs;
   bool isRoot1 = true;
   bool first = true;
-  Rx<MediaItem> mediaItem =
-      const MediaItem(id: 'no', title: '暂无', duration: Duration(seconds: 10))
-          .obs;
+  Rx<MediaItem> mediaItem = const MediaItem(id: 'no', title: '暂无', duration: Duration(seconds: 10)).obs;
   RxBool playing = false.obs;
   final OnAudioQuery audioQuery = GetIt.instance<OnAudioQuery>();
   late BuildContext buildContext;
-  final AudioServeHandler audioServeHandler =
-      GetIt.instance<AudioServeHandler>();
+  final AudioServeHandler audioServeHandler = GetIt.instance<AudioServeHandler>();
   Rx<Duration> duration = Duration.zero.obs;
+  PanelController panelController = PanelController();
+  bool isDownSlide = true;
 
   // Jaudiotagger audioTagger = Jaudiotagger();
   RxString lyricList = ''.obs;
 
-  Rx<AudioServiceRepeatMode> audioServiceRepeatMode =
-      AudioServiceRepeatMode.all.obs;
-  Rx<AudioServiceShuffleMode> audioServiceShuffleMode =
-      AudioServiceShuffleMode.none.obs;
+  Rx<AudioServiceRepeatMode> audioServiceRepeatMode = AudioServiceRepeatMode.all.obs;
+  Rx<AudioServiceShuffleMode> audioServiceShuffleMode = AudioServiceShuffleMode.none.obs;
 
   List<FlutterSliderHatchMarkLabel> effects = [];
   List<Map<dynamic, dynamic>> mEffects = [];
@@ -69,11 +66,12 @@ class HomeController extends SuperController
   double euuv = 60;
   AnimationController? animationController;
   List<Widget> pages = [
-    const KeepAliveWrapper(child: MainView()),
     const KeepAliveWrapper(child: AlbumView()),
     const KeepAliveWrapper(child: IndexView()),
+    const KeepAliveWrapper(child: MainView()),
     const KeepAliveWrapper(child: UserView()),
   ];
+  TabController? tabController;
   PageController pageController = PageController();
   RxInt sleep = 0.obs;
   String directoryPath = '';
@@ -86,21 +84,18 @@ class HomeController extends SuperController
     Directory directory = await getTemporaryDirectory();
     directoryPath = directory.path;
     setHeaderHeight();
-    animationController = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 100));
+    animationController = AnimationController(vsync: this, duration: const Duration(milliseconds: 100));
     var rng = Random();
     for (double i = 0; i < 100; i++) {
       mEffects.add({"percent": i, "size": 5 + rng.nextInt(30 - 5).toDouble()});
     }
-    effects = updateEffects(
-        ellv * 100 / mEffects.length, euuv * 100 / mEffects.length);
+    effects = updateEffects(ellv * 100 / mEffects.length, euuv * 100 / mEffects.length);
     super.onInit();
   }
 
   @override
   void onReady() async {
     super.onReady();
-
     animationController?.addListener(() {
       slidePosition1.value = animationController?.value ?? 0;
     });
@@ -115,17 +110,15 @@ class HomeController extends SuperController
       //   // lyricModel?.value = LyricsModelBuilder.create().bindLyricToMain(value ?? '').getModel();
       // });
       mediaItem.value = value;
-      ImageUtils.getImageColor(mediaItem.value.artUri?.path ?? '',
-          (paletteColorData) {
+      ImageUtils.getImageColor(mediaItem.value.artUri?.path ?? '', (paletteColorData) {
         rx.value = paletteColorData;
       });
     });
     //监听实时进度变化
     AudioService.position.listen((event) {
-      if (first) duration.value = event;
+      // if (first) duration.value = event;
       if (!weSlideController.isOpened) return;
-      if (event.inMilliseconds >
-          (mediaItem.value.duration?.inMilliseconds ?? 0)) {
+      if (event.inMilliseconds > (mediaItem.value.duration?.inMilliseconds ?? 0)) {
         duration.value = Duration.zero;
         return;
       }
@@ -138,7 +131,7 @@ class HomeController extends SuperController
 
   static HomeController get to => Get.find();
 
-  //动态设置Header高度
+  //动态设置Header高度 工单
   setHeaderHeight() {
     if (mediaItem.value.id == 'no' && panelHeaderSize > 0) {
       panelHeaderSize = 0;
@@ -227,10 +220,15 @@ class HomeController extends SuperController
   //改变panel位置
   void changeSlidePosition(value) {
     slidePosition.value = value;
+    // if (second.value) second.value = false;
   }
 
   //当按下返回键
   Future<bool> onWillPop() async {
+    if (panelController.isPanelOpen) {
+      panelController.close();
+      return false;
+    }
     if (weSlideController.isOpened) {
       weSlideController.hide();
       return false;
@@ -255,9 +253,7 @@ class HomeController extends SuperController
 
   //动态设置获取Header颜色
   Color getHeaderColor() {
-    return Theme.of(buildContext)
-        .bottomAppBarColor
-        .withOpacity(slidePosition.value > 0 ? 0 : 1);
+    return Theme.of(buildContext).bottomAppBarColor.withOpacity(second.value?0:slidePosition.value > 0 ? 0 : 1);
   }
 
   //获取图片亮色背景下文字显示的颜色
@@ -276,10 +272,7 @@ class HomeController extends SuperController
 
   //获取Header的padding
   EdgeInsets getHeaderPadding() {
-    return EdgeInsets.only(
-        left: 30.w,
-        right: 30.w,
-        top: MediaQuery.of(buildContext).padding.top * slidePosition.value);
+    return EdgeInsets.only(left: 30.w, right: 30.w, top: MediaQuery.of(buildContext).padding.top * (second.value ? (1 - slidePosition.value) : slidePosition.value));
   }
 
   //获取歌词和列表Header的高度
@@ -305,14 +298,10 @@ class HomeController extends SuperController
   }
 
   getHomeBottomPadding() {
-    return (mediaItem.value.id == 'no'
-            ? bottomBarHeight
-            : bottomBarHeight + panelHeaderSize) +
-        20.w;
+    return (mediaItem.value.id == 'no' ? bottomBarHeight : bottomBarHeight + panelHeaderSize) + 20.w;
   }
 
-  List<FlutterSliderHatchMarkLabel> updateEffects(
-      double leftPercent, double rightPercent) {
+  List<FlutterSliderHatchMarkLabel> updateEffects(double leftPercent, double rightPercent) {
     List<FlutterSliderHatchMarkLabel> newLabels = [];
     for (Map<dynamic, dynamic> label in mEffects) {
       newLabels.add(FlutterSliderHatchMarkLabel(
@@ -326,9 +315,7 @@ class HomeController extends SuperController
     return newLabels;
   }
 
-  getAlbums(){
-
-  }
+  getAlbums() {}
 
   @override
   void onDetached() {
@@ -346,6 +333,5 @@ class HomeController extends SuperController
   }
 
   @override
-  void onResumed() {
-  }
+  void onResumed() {}
 }

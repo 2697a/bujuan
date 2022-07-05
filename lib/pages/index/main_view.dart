@@ -5,6 +5,8 @@ import 'package:get/get.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import '../../common/constants/other.dart';
 import '../../widget/query_artwork_widget.dart' as custom;
+import '../../widget/simple_extended_image.dart';
+import '../home/home_controller.dart';
 
 class MainView extends GetView<IndexController> {
   const MainView({Key? key}) : super(key: key);
@@ -14,74 +16,55 @@ class MainView extends GetView<IndexController> {
     controller.buildContext = context;
     return Scaffold(
       body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 15.w),
+        padding: EdgeInsets.only(bottom: HomeController.to.getHomeBottomPadding()),
         child: Column(
-          children: [ _buildTopSong()],
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 40.w, horizontal: 15.w),
+              child: Text(
+                '热门专辑',
+                style: TextStyle(fontSize: 32.sp, fontWeight: FontWeight.bold),
+              ),
+            ),
+            _buildTopSong(),
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 40.w, horizontal: 15.w),
+              child: Text(
+                '热门单曲',
+                style: TextStyle(fontSize: 32.sp, fontWeight: FontWeight.bold),
+              ),
+            ),
+            _buildTopCard(),
+          ],
         ),
       ),
     );
   }
 
   Widget _buildTopCard() {
-    return Container(
-      height: 330.w,
-      margin: EdgeInsets.only(top: 20.w),
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(35.w), color: Theme.of(controller.buildContext).bottomAppBarColor),
-      child: ListView.builder(itemBuilder: (context,index) => _buildAlbumItem(controller.albums[index]),itemCount: controller.albums.length,scrollDirection: Axis.horizontal,),
+    return ListView.builder(
+      padding: EdgeInsets.symmetric(horizontal: 15.w),
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemBuilder: (context, index) => _buildSongItem(controller.songs[index], index),
+      itemCount: controller.songs.length > 10 ? 10 : controller.songs.length,
     );
   }
 
-  Widget _buildAlbumItem(AlbumModel data){
-    return Container(
-      alignment: Alignment.center,
-     margin: EdgeInsets.symmetric(horizontal: 20.w),
-     child: custom.QueryArtworkWidget(
-       id: data.id,
-       type: ArtworkType.ALBUM,
-       artworkBorder: BorderRadius.circular(5.w),
-       artworkWidth: 260.w,
-       artworkHeight: 260.w,
-     ),
-    );
-  }
-
-  Widget _buildTopSong() {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 20.w),
-      padding: EdgeInsets.symmetric(horizontal: 20.w,vertical: 20.w),
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(35.w), color: Theme.of(controller.buildContext).bottomAppBarColor),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-               Text('Song',style: TextStyle(fontSize: 36.sp),),
-              IconButton(onPressed: (){}, icon: const Icon(Icons.arrow_forward_ios,size: 18,))
-            ],
-          ),
-          ListView.builder(
-            padding: const EdgeInsets.all(0),
-            itemBuilder: (context, index) => _buildItem(controller.songs[index], index),
-            itemCount: controller.songs.length>3?3:0,
-            shrinkWrap: true,
-          )
-        ],
-      ),
-    );
-  }
-
-  Widget _buildItem(SongModel data, int index) {
+  Widget _buildSongItem(SongModel data, int index) {
     return InkWell(
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 15.w),
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 10.w),
+        padding: EdgeInsets.symmetric(vertical: 5.w),
         child: Row(
           children: [
-            custom.QueryArtworkWidget(
-              id: data.id,
-              type: ArtworkType.AUDIO,
-              artworkBorder: BorderRadius.circular(5.w),
-              artworkWidth: 90.w,
-              artworkHeight: 90.w,
+            SimpleExtendedImage(
+              '${HomeController.to.directoryPath}${data.albumId}',
+              cacheWidth: 200,
+              width: 90.w,
+              height: 90.w,
+              borderRadius: BorderRadius.circular(10.w),
             ),
             Expanded(
                 child: Padding(
@@ -100,11 +83,37 @@ class MainView extends GetView<IndexController> {
                 ],
               ),
             )),
-            IconButton(onPressed: () {}, icon: const Icon(Icons.more_vert))
           ],
         ),
       ),
       onTap: () => controller.play(index),
+    );
+  }
+
+  Widget _buildTopSong() {
+    return SizedBox(
+      height: Get.width / 3,
+      child: ListView.builder(
+        shrinkWrap: true,
+        scrollDirection: Axis.horizontal,
+        itemBuilder: (context, index) => _buildItem(controller.albums[index], index),
+        itemCount: controller.albums.length,
+      ),
+    );
+  }
+
+  Widget _buildItem(AlbumModel albumModel, index) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 10.w),
+      child: InkWell(
+        child: SimpleExtendedImage(
+          '${HomeController.to.directoryPath}${albumModel.id}',
+          cacheWidth: 400,
+          width: Get.width / 3,
+          height: Get.width / 3,
+          borderRadius: BorderRadius.all(Radius.circular(20.w)),
+        ),
+      ),
     );
   }
 }

@@ -1,6 +1,5 @@
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/routes/app_pages.dart';
-import 'package:bujuan/widget/bottom_bar_page_transition.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -24,7 +23,7 @@ class HomeMobileView extends GetView<HomeController> {
                 width: 68.w,
                 height: 68.w,
               ),
-              const Expanded(child: Text('  Tireless')),
+              const Expanded(child: Text('  Juan')),
             ],
           ),
           actions: [
@@ -35,6 +34,7 @@ class HomeMobileView extends GetView<HomeController> {
           ],
         ),
         body: PageView.builder(
+          physics: const NeverScrollableScrollPhysics(),
           controller: controller.pageController,
           itemBuilder: (context, index) => controller.pages[index],
           itemCount: controller.pages.length,
