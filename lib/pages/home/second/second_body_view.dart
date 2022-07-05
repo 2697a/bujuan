@@ -88,7 +88,7 @@ class SecondBodyView extends GetView<HomeController> {
               )),
           header: _buildBottom(),
           minHeight: 100.h,
-          maxHeight: Get.height - controller.panelHeaderSize - MediaQuery.of(context).padding.top - 40.w,
+          maxHeight: Get.height - controller.getPanelMinSize() - MediaQuery.of(context).padding.top - 40.w,
         )),
         Obx(() => Container(
               decoration:
