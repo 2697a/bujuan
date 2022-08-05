@@ -2,6 +2,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/widget/simple_extended_image.dart';
 import 'package:bujuan/widget/wheel_slider.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -34,6 +35,10 @@ class SecondBodyView extends GetView<HomeController> {
             }
           },
           color: Colors.transparent,
+         panel: Obx(() => Container(
+           decoration: BoxDecoration(color: controller.rx.value.dark?.color, borderRadius: BorderRadius.only(topLeft: Radius.circular(35.w), topRight: Radius.circular(35.w))),
+           child: _buildPlayList(),
+         )),
           body: Stack(
             children: [
               Obx(() => Container(
@@ -76,18 +81,14 @@ class SecondBodyView extends GetView<HomeController> {
                   _buildSlide(),
                   //功能按钮
                   SizedBox(
-                    height: 100.h + MediaQuery.of(controller.buildContext).padding.bottom,
+                    height: 90.h + MediaQuery.of(controller.buildContext).padding.bottom,
                   )
                 ],
               ),
             ],
           ),
-          panel: Obx(() => Container(
-                decoration: BoxDecoration(color: controller.rx.value.dark?.color, borderRadius: BorderRadius.only(topLeft: Radius.circular(35.w), topRight: Radius.circular(35.w))),
-                child: _buildPlayList(),
-              )),
           header: _buildBottom(),
-          minHeight: 100.h,
+          minHeight: 90.h,
           maxHeight: Get.height - controller.getPanelMinSize() - MediaQuery.of(context).padding.top - 40.w,
         )),
         Obx(() => Container(
@@ -218,7 +219,7 @@ class SecondBodyView extends GetView<HomeController> {
   Widget _buildBottom() {
     return Obx(() => Container(
           padding: EdgeInsets.symmetric(horizontal: 30.w),
-          height: 100.h,
+          height: 90.h,
           width: 750.w,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -320,14 +321,35 @@ class SecondBodyView extends GetView<HomeController> {
             ),
           ),
           Expanded(
-              child: ListView.builder(
-            padding: EdgeInsets.symmetric(horizontal: 30.w),
-            itemBuilder: (context, index) => Container(
-              margin: EdgeInsets.symmetric(horizontal: 10.w),
-              alignment: Alignment.center,
-              child: _buildPlayListItem(controller.audioServeHandler.queue.value[index], index),
+              child: NotificationListener<ScrollStartNotification>(
+            child: NotificationListener<OverscrollNotification>(
+              child: Listener(
+                onPointerDown: (event) {
+                  controller.myVerticalDragGestureRecognizer.addPointer(event);
+                },
+                child: ListView.builder(
+                  padding: EdgeInsets.symmetric(horizontal: 30.w),
+                  itemBuilder: (context, index) => Container(
+                    margin: EdgeInsets.symmetric(horizontal: 10.w),
+                    alignment: Alignment.center,
+                    child: _buildPlayListItem(controller.audioServeHandler.queue.value[index], index),
+                  ),
+                  itemCount: controller.audioServeHandler.queue.value.length,
+                ),
+              ),
+              onNotification: (OverscrollNotification notification) {
+                if (notification.metrics.axis == Axis.vertical) {
+                  controller.needDrag.value = true; // 内部滑动到边界并且是纵向滑动时打开
+                  print('OverscrollNotification======');
+                }
+                return false;
+              },
             ),
-            itemCount: controller.audioServeHandler.queue.value.length,
+            onNotification: (ScrollStartNotification notification) {
+              controller.needDrag.value = false; // 内部开始滑动时关闭开关
+              print('ScrollStartNotification======');
+              return false;
+            },
           ))
         ],
       ),
@@ -413,5 +435,14 @@ class SecondBodyView extends GetView<HomeController> {
             ),
           )),
     );
+  }
+}
+
+class MyVerticalDragGestureRecognizer extends VerticalDragGestureRecognizer {
+  bool needDrag = false;
+
+  @override
+  void rejectGesture(int pointer) {
+    acceptGesture(pointer);
   }
 }

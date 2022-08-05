@@ -115,8 +115,7 @@ class FirstView extends GetView<HomeController> {
                     duration: const Duration(milliseconds: 0),
                     child: AnimatedScale(
                       scale: 1 +
-                          (controller.slidePosition.value / 8) +
-                          (controller.slidePosition1.value / 10),
+                          (controller.slidePosition.value / 10),
                       duration: Duration.zero,
                       child: SimpleExtendedImage(
                         controller.mediaItem.value.artUri?.path ?? '',

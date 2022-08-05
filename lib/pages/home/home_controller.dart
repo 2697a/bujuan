@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:audio_service/audio_service.dart';
 import 'package:bujuan/common/audio_handler.dart';
 import 'package:bujuan/common/constants/other.dart';
+import 'package:bujuan/pages/home/second/second_body_view.dart';
 import 'package:bujuan/pages/index/album_view.dart';
 import 'package:bujuan/pages/index/index_view.dart';
 import 'package:bujuan/pages/index/main_view.dart';
@@ -77,7 +78,9 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   String directoryPath = '';
 
   Rx<LyricsReaderModel>? lyricModel;
+  MyVerticalDragGestureRecognizer myVerticalDragGestureRecognizer = MyVerticalDragGestureRecognizer();
 
+  RxBool needDrag = false.obs;
   //进度
   @override
   void onInit() async {

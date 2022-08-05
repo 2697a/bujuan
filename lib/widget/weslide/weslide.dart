@@ -431,8 +431,8 @@ class _WeSlideState extends State<WeSlide> with SingleTickerProviderStateMixin {
                   alignment: Alignment.bottomCenter,
                   child: ClipRRect(
                     borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(_bodyBorderRadius.value),
-                      topRight: Radius.circular(_bodyBorderRadius.value),
+                      topLeft: Radius.circular(35.w),
+                      topRight: Radius.circular(35.w),
                     ),
                     child: child,
                   ),
