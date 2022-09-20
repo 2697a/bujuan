@@ -3,9 +3,9 @@ part of '../module.dart';
 const _keys = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
 // 歌曲详情
-Handler songDetail = (query, cookie) {
+Handler song_detail = (query, cookie) {
   assert(query != null && query.isNotEmpty);
-  final ids = query!['ids'];
+  final ids = query!['ids'].toString().split(RegExp(r'\s*,\s*'));
   assert(ids.isNotEmpty);
   return request(
       'POST',
@@ -18,7 +18,7 @@ Handler songDetail = (query, cookie) {
 };
 
 // 歌曲链接
-Handler songUrl = (query, cookie) {
+Handler song_url = (query, cookie) {
   if (!cookie.any((cookie) => cookie.name == 'MUSIC_U')) {
     String _createdSecretKey({int size = 16}) {
       StringBuffer buffer = StringBuffer();

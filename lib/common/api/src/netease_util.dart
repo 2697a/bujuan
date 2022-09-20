@@ -22,19 +22,19 @@ class NetUtils {
 
   ///统一请求'msg' -> 'data inconstant when unbooked playlist, pid:2427280345 userId:302618605'
   doHandler<T>(
-    String url, {
-    Map param = const {},
-    Success<T>? onSuccess,
-    Error? onError,
-  }) async {
+      String url, {
+        Map param = const {},
+        Success<T>? onSuccess,
+        Error? onError,
+      }) async {
     var answer = await cloudMusicApi(url, parameter: param, cookie: await _getCookie());
     if (answer.status == 200) {
       if (answer.cookie.isNotEmpty) {
         // await _saveCookie(answer.cookie);
       }
-      if(url == '/lyric') {
+      // if(url == '/lyric') {
         log('==================${jsonEncode(answer.body)}');
-      }
+      // }
       var data = JsonConvert.fromJsonAsT<T>(answer.body);
       if (data != null) onSuccess?.call(data);
     } else {

@@ -67,7 +67,7 @@ class SecondBodyView extends GetView<HomeController> {
                               ),
                               Padding(padding: EdgeInsets.symmetric(vertical: 5.w)),
                               Text(
-                                controller.mediaItem.value.artist ?? '',
+                                '小李播放器',
                                 style: TextStyle(fontSize: 28.sp, color: controller.rx.value.dark?.bodyTextColor),
                                 maxLines: 1,
                               )
@@ -94,7 +94,7 @@ class SecondBodyView extends GetView<HomeController> {
         Obx(() => Container(
               decoration:
                   BoxDecoration(color: controller.rx.value.dark?.color, border: Border(top: BorderSide(color: controller.rx.value.dark?.color ?? Colors.transparent, width: 0))),
-              height: MediaQuery.of(context).padding.bottom,
+              height: MediaQuery.of(context).padding.bottom/2,
             ))
       ],
     );
@@ -120,7 +120,8 @@ class SecondBodyView extends GetView<HomeController> {
                       padding: EdgeInsets.symmetric(vertical: 5.w, horizontal: 10.w),
                       decoration: BoxDecoration(color: controller.rx.value.dark?.color.withOpacity(.1)),
                       child: Text(
-                        '${controller.mediaItem.value.extras?['type'].toString().toUpperCase()}',
+                        // '${controller.mediaItem.value.extras?['type'].toString().toUpperCase()}',
+                        'fuck off',
                         style: TextStyle(color: controller.rx.value.dark?.bodyTextColor, fontSize: 28.sp),
                       ),
                     ),
@@ -328,6 +329,7 @@ class SecondBodyView extends GetView<HomeController> {
                   controller.myVerticalDragGestureRecognizer.addPointer(event);
                 },
                 child: ListView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
                   padding: EdgeInsets.symmetric(horizontal: 30.w),
                   itemBuilder: (context, index) => Container(
                     margin: EdgeInsets.symmetric(horizontal: 10.w),
@@ -366,7 +368,7 @@ class SecondBodyView extends GetView<HomeController> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SimpleExtendedImage(
-              mediaItem.artUri?.path ?? '',
+              '${mediaItem.artUri?.scheme ?? ''}://${mediaItem.artUri?.host ?? ''}/${mediaItem.artUri?.path ?? ''}',
               width: 75.w,
               height: 75.w,
               cacheWidth: 200,

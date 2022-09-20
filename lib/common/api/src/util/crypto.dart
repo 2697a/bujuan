@@ -25,7 +25,7 @@ final IV _iv = IV.fromUtf8('0102030405060708');
 Map<String, String> weApi(Map obj) {
   final text = json.encode(obj);
   final secKey = _createdSecretKey();
-  const mode = AESMode.cbc;
+  final mode = AESMode.cbc;
   return {
     "params": _aesEncrypt(
             _aesEncrypt(text, mode, _presetKey, _iv).base64, mode, secKey, _iv)
@@ -49,7 +49,7 @@ Map eapi(String url, Map obj) {
   final text = json.encode(obj);
   final message = 'nobody${url}use${text}md5forencrypt';
   final digest = md5.convert(utf8.encode(message));
-  final data = '${url}-36cd479b6b5-${text}-36cd479b6b5-${digest}';
+  final data = '$url-36cd479b6b5-$text-36cd479b6b5-$digest';
   return {
     'params': _aesEncrypt(data, AESMode.ecb, _eapiKey, IV.fromUtf8(''))
         .base16
@@ -89,7 +89,7 @@ Encrypted rsaEncrypt(String text, String key) {
 }
 
 String _reverse(String content) {
-  StringBuffer buffer = new StringBuffer();
+  StringBuffer buffer = StringBuffer();
   for (int i = content.length - 1; i >= 0; i--) {
     buffer.write(content[i]);
   }

@@ -15,7 +15,7 @@ class ImageUtils {
 
 
   static getImageColor(String url, ImageColorCallBack imageCallBack) {
-    ExtendedFileImageProvider imageProvider = ExtendedFileImageProvider(File(url));
+    ExtendedNetworkImageProvider imageProvider = ExtendedNetworkImageProvider(url);
     _getImageColorByProvider(imageProvider).then((value) {
       imageCallBack.call(value);
     });

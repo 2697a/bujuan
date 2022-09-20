@@ -1,4 +1,8 @@
+import 'package:bujuan/common/bean/personalized_entity.dart';
 import 'package:bujuan/pages/index/index_controller.dart';
+import 'package:bujuan/routes/app_pages.dart';
+import 'package:bujuan/widget/request_widget.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -16,26 +20,42 @@ class MainView extends GetView<IndexController> {
     controller.buildContext = context;
     return Scaffold(
       body: SingleChildScrollView(
-        padding: EdgeInsets.only(bottom: HomeController.to.getHomeBottomPadding()),
+        padding: EdgeInsets.only(bottom: HomeController.to.getHomeBottomPadding(),top: 40.w),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 40.w, horizontal: 15.w),
-              child: Text(
-                '热门专辑',
-                style: TextStyle(fontSize: 32.sp, fontWeight: FontWeight.bold),
+            RequestBox<PersonalizedEntity>(
+              url: '/personalized',
+              childBuilder: (data) => CarouselSlider.builder(
+                itemCount: (data.result ?? []).length,
+                itemBuilder: (BuildContext context, int itemIndex, int pageViewIndex) => GestureDetector(
+                  child: Container(
+                    decoration: BoxDecoration(),
+                    child: SimpleExtendedImage(
+                      (data.result ?? [])[itemIndex].picUrl ?? '',
+                      borderRadius: BorderRadius.circular(30.w),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  onTap: () => Get.toNamed(Routes.playlist,arguments: (data.result ?? [])[itemIndex].id),
+                ),
+                options: CarouselOptions(
+                  height: 450.w,
+                  aspectRatio: 1,
+                  viewportFraction: 0.6,
+                  initialPage: 0,
+                  enableInfiniteScroll: true,
+                  reverse: false,
+                  autoPlay: true,
+                  autoPlayInterval: const Duration(seconds: 3),
+                  autoPlayAnimationDuration: const Duration(milliseconds: 800),
+                  autoPlayCurve: Curves.fastOutSlowIn,
+                  enlargeCenterPage: true,
+                  scrollDirection: Axis.horizontal,
+                ),
               ),
             ),
-            _buildTopSong(),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 40.w, horizontal: 15.w),
-              child: Text(
-                '热门单曲',
-                style: TextStyle(fontSize: 32.sp, fontWeight: FontWeight.bold),
-              ),
-            ),
-            _buildTopCard(),
+            Padding(padding: EdgeInsets.only(top: 40.w)),
+            const Text('I am your uncle',style: TextStyle(fontSize: 42,color: Colors.red),)
           ],
         ),
       ),

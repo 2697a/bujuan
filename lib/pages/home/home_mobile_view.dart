@@ -14,30 +14,32 @@ class HomeMobileView extends GetView<HomeController> {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       home: Scaffold(
-        appBar: AppBar(
-          leadingWidth: 0,
-          title: Row(
-            children: [
-              Image.asset(
-                'assets/images/logo.png',
-                width: 68.w,
-                height: 68.w,
-              ),
-              const Expanded(child: Text('  Juan')),
-            ],
+        // appBar: AppBar(
+        //   leadingWidth: 0,
+        //   title: Row(
+        //     children: [
+        //       Image.asset(
+        //         'assets/images/logo.png',
+        //         width: 68.w,
+        //         height: 68.w,
+        //       ),
+        //       const Expanded(child: Text('  Juan')),
+        //     ],
+        //   ),
+        //   actions: [
+        //     IconButton(
+        //       onPressed: () => Get.toNamed(Routes.setting),
+        //       icon: const Icon(TablerIcons.settings),
+        //     )
+        //   ],
+        // ),
+        body:  SafeArea(
+          child: PageView.builder(
+            physics: const NeverScrollableScrollPhysics(),
+            controller: controller.pageController,
+            itemBuilder: (context, index) => controller.pages[index],
+            itemCount: controller.pages.length,
           ),
-          actions: [
-            IconButton(
-              onPressed: () => Get.toNamed(Routes.setting),
-              icon: const Icon(TablerIcons.settings),
-            )
-          ],
-        ),
-        body: PageView.builder(
-          physics: const NeverScrollableScrollPhysics(),
-          controller: controller.pageController,
-          itemBuilder: (context, index) => controller.pages[index],
-          itemCount: controller.pages.length,
         ),
       ),
       title: "Application",

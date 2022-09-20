@@ -46,7 +46,7 @@ dependencies:
   extended_image: ^6.0.1
   palette_generator: ^0.3.3
   on_audio_query: ^2.6.1
-  just_audio: ^0.9.28
+  just_audio: ^0.9.29
   audio_service: ^0.18.7
   get_it: ^7.2.0
   loading_animation_widget: ^1.2.0+2
@@ -63,8 +63,8 @@ dependencies:
   tabler_icons:
     path: plugins/tabler-icons
   sliding_up_panel: ^2.0.0+1
-  lastfm: ^0.0.5
-  url_launcher: ^6.1.5
+#  url_launcher: ^6.1.5
+  carousel_slider: ^4.1.1
 
 dev_dependencies:
   flutter_test:

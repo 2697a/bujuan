@@ -22,7 +22,7 @@ Handler mv_sub = (query, cookie) {
   query!['t'] = (query['t'] == 1 ? 'sub' : 'unsub');
   final data = {
     'mvId': query['mvid'],
-    'mvIds': '["' + query['mvid'] + '"]',
+    'mvIds': '["${query['mvid']}"]',
   };
   return request('POST', 'https://music.163.com/weapi/mv/${query['t']}', data,
       crypto: Crypto.weapi, cookies: cookie);

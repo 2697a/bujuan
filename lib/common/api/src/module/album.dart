@@ -1,11 +1,11 @@
 part of '../module.dart';
 
-Handler albumNewest = (Map? query, List<Cookie> cookie) {
+Handler album_newest = (Map? query, List<Cookie> cookie) {
   return request('POST', "https://music.163.com/api/discovery/newAlbum", {},
       cookies: cookie, crypto: Crypto.weapi);
 };
 
-Handler albumSublist = (query, cookie) => request(
+Handler album_sublist = (query, cookie) => request(
     'POST',
     'https://music.163.com/weapi/album/sublist',
     {

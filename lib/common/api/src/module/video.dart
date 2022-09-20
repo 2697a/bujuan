@@ -49,7 +49,7 @@ Handler video_url = (query, cookie) {
     'POST',
     'https://music.163.com/weapi/cloudvideo/playurl',
     {
-      'ids': '["' + query!['id'] + '"]',
+      'ids': '["${query!['id']}"]',
       'resolution': query['res'] ?? 1080,
     },
     crypto: Crypto.weapi,

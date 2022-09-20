@@ -22,7 +22,7 @@ Handler playlist_create = (query, cookie) {
 };
 
 // 歌单详情
-Handler playlistDetail = (query, cookie) {
+Handler playlist_detail = (query, cookie) {
   return request(
       'POST',
       'https://music.163.com/weapi/v3/playlist/detail',
@@ -34,9 +34,6 @@ Handler playlistDetail = (query, cookie) {
       crypto: Crypto.linuxapi,
       cookies: cookie);
 };
-
-
-
 
 // 热门歌单分类
 Handler playlist_hot = (query, cookie) {
@@ -75,11 +72,11 @@ Handler playlist_subscribers = (query, cookie) {
 Handler playlist_tracks = (query, cookie) {
   return request(
       'POST',
-      'https://music.163.com/weapi/playlist/subscribers',
+      'https://music.163.com/weapi/playlist/manipulate/tracks',
       {
         'op': query!['op'], // del,add
         'pid': query['pid'], // 歌单id
-        'trackIds': '[' + query['tracks'] + ']' // 歌曲id
+        'trackIds': '[${query['tracks']}]' // 歌曲id
       },
       crypto: Crypto.weapi,
       cookies: cookie);

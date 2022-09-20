@@ -1,7 +1,7 @@
 part of '../module.dart';
 
 //注册账号
-Handler captchRegister = (query, cookie) {
+Handler captch_register = (query, cookie) {
   final data = {
     'captcha': query!['captcha'],
     'phone': query['phone'],
@@ -15,7 +15,7 @@ Handler captchRegister = (query, cookie) {
 };
 
 // 发送验证码
-Handler captchSend = (query, cookie) {
+Handler captch_send = (query, cookie) {
   final data = {
     'ctcode': query!['ctcode'] ?? '86',
     'cellphone': query['phone'],
@@ -25,7 +25,7 @@ Handler captchSend = (query, cookie) {
 };
 
 //校验验证码
-Handler captchVerify = (query, cookie) {
+Handler captch_verify = (query, cookie) {
   final data = {
     'ctcode': query!['ctcode'] ?? '86',
     'cellphone': query['phone'],

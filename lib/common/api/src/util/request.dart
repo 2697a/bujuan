@@ -5,7 +5,7 @@ import 'dart:math';
 
 import 'package:collection/collection.dart' show IterableExtension;
 
-import '../../netease_cloud_music.dart';
+import '../answer.dart';
 import 'crypto.dart';
 
 enum Crypto { linuxapi, weapi, eapi }
@@ -63,7 +63,7 @@ Future<Answer> eapiRequest(
 }) {
   final headers = _buildHeader(url, ua, method, cookies);
 
-  final cookie = { for (var item in cookies) item.name : item.value };
+  final cookie = {for (var item in cookies) item.name: item.value};
   final csrfToken = cookie['__csrf'] ?? '';
   final header = {
     //系统版本
@@ -123,8 +123,8 @@ Future<Answer> eapiRequest(
         status: ans.status > 100 && ans.status < 600 ? ans.status : 400);
     return ans;
   }).catchError((e, s) {
-    debugPrint("request error " + e.toString());
-    debugPrint(s.toString());
+    // debugPrint("request error $e");
+    // debugPrint(s.toString());
     return Answer(status: 502, body: {'code': 502, 'msg': e.toString()});
   });
 }
@@ -138,6 +138,7 @@ Future<Answer> request(
   String? ua,
   Crypto crypto = Crypto.weapi,
 }) async {
+  data = Map.from(data);
   final headers = _buildHeader(url, ua, method, cookies);
   if (crypto == Crypto.weapi) {
     var csrfToken = cookies.firstWhereOrNull((c) => c.name == "__csrf");
@@ -154,18 +155,24 @@ Future<Answer> request(
         'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36';
     url = 'https://music.163.com/api/linux/forward';
   }
-  HttpClientResponse response = await _doRequest(url, headers, data, method);
-  var ans = Answer(cookie: response.cookies);
-  final content =
-  await response.cast<List<int>>().transform(utf8.decoder).join();
-  final body = json.decode(content);
-  ans = ans.copy(
-      status: int.tryParse(body['code'].toString()) ?? response.statusCode,
-      body: body);
+  return _doRequest(url, headers, data, method).then((response) async {
+    var ans = Answer(cookie: response.cookies);
 
-  ans = ans.copy(
-      status: ans.status > 100 && ans.status < 600 ? ans.status : 400);
-  return ans;
+    final content =
+        await response.cast<List<int>>().transform(utf8.decoder).join();
+    final body = json.decode(content);
+    ans = ans.copy(
+        status: int.tryParse(body['code'].toString()) ?? response.statusCode,
+        body: body);
+
+    ans = ans.copy(
+        status: ans.status > 100 && ans.status < 600 ? ans.status : 400);
+    return ans;
+  }).catchError((e, s) {
+    // debugPrint(e.toString());
+    // debugPrint(s.toString());
+    return Answer(status: 502, body: {'code': 502, 'msg': e.toString()});
+  });
 }
 
 Future<HttpClientResponse> _doRequest(

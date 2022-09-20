@@ -9,6 +9,7 @@ abstract class Routes {
   static const details = _Paths.details;
   static const splash = _Paths.splash;
   static const setting = _Paths.setting;
+  static const playlist = _Paths.playlist;
 }
 
 abstract class _Paths {
@@ -16,6 +17,7 @@ abstract class _Paths {
   static const home = '/home';
   static const index = '/index';
   static const user = '/user';
+  static const playlist = '/playlist';
   static const details = '/details';
   static const setting = '/setting';
   static const splash = '/';

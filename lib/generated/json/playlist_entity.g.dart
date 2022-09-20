@@ -176,6 +176,10 @@ PlaylistPlaylist $PlaylistPlaylistFromJson(Map<String, dynamic> json) {
 	if (officialPlaylistType != null) {
 		playlistPlaylist.officialPlaylistType = officialPlaylistType;
 	}
+	final bool? copied = jsonConvert.convert<bool>(json['copied']);
+	if (copied != null) {
+		playlistPlaylist.copied = copied;
+	}
 	final List<PlaylistPlaylistSubscribers>? subscribers = jsonConvert.convertListNotNull<PlaylistPlaylistSubscribers>(json['subscribers']);
 	if (subscribers != null) {
 		playlistPlaylist.subscribers = subscribers;
@@ -204,6 +208,10 @@ PlaylistPlaylist $PlaylistPlaylistFromJson(Map<String, dynamic> json) {
 	if (trackIds != null) {
 		playlistPlaylist.trackIds = trackIds;
 	}
+	final dynamic? bannedTrackIds = jsonConvert.convert<dynamic>(json['bannedTrackIds']);
+	if (bannedTrackIds != null) {
+		playlistPlaylist.bannedTrackIds = bannedTrackIds;
+	}
 	final int? shareCount = jsonConvert.convert<int>(json['shareCount']);
 	if (shareCount != null) {
 		playlistPlaylist.shareCount = shareCount;
@@ -223,6 +231,18 @@ PlaylistPlaylist $PlaylistPlaylistFromJson(Map<String, dynamic> json) {
 	final dynamic? historySharedUsers = jsonConvert.convert<dynamic>(json['historySharedUsers']);
 	if (historySharedUsers != null) {
 		playlistPlaylist.historySharedUsers = historySharedUsers;
+	}
+	final String? gradeStatus = jsonConvert.convert<String>(json['gradeStatus']);
+	if (gradeStatus != null) {
+		playlistPlaylist.gradeStatus = gradeStatus;
+	}
+	final dynamic? score = jsonConvert.convert<dynamic>(json['score']);
+	if (score != null) {
+		playlistPlaylist.score = score;
+	}
+	final List<String>? algTags = jsonConvert.convertListNotNull<String>(json['algTags']);
+	if (algTags != null) {
+		playlistPlaylist.algTags = algTags;
 	}
 	return playlistPlaylist;
 }
@@ -261,6 +281,7 @@ Map<String, dynamic> $PlaylistPlaylistToJson(PlaylistPlaylist entity) {
 	data['titleImageUrl'] = entity.titleImageUrl;
 	data['englishTitle'] = entity.englishTitle;
 	data['officialPlaylistType'] = entity.officialPlaylistType;
+	data['copied'] = entity.copied;
 	data['subscribers'] =  entity.subscribers?.map((v) => v.toJson()).toList();
 	data['subscribed'] = entity.subscribed;
 	data['creator'] = entity.creator?.toJson();
@@ -268,11 +289,15 @@ Map<String, dynamic> $PlaylistPlaylistToJson(PlaylistPlaylist entity) {
 	data['videoIds'] = entity.videoIds;
 	data['videos'] = entity.videos;
 	data['trackIds'] =  entity.trackIds?.map((v) => v.toJson()).toList();
+	data['bannedTrackIds'] = entity.bannedTrackIds;
 	data['shareCount'] = entity.shareCount;
 	data['commentCount'] = entity.commentCount;
 	data['remixVideo'] = entity.remixVideo;
 	data['sharedUsers'] = entity.sharedUsers;
 	data['historySharedUsers'] = entity.historySharedUsers;
+	data['gradeStatus'] = entity.gradeStatus;
+	data['score'] = entity.score;
+	data['algTags'] =  entity.algTags;
 	return data;
 }
 
@@ -382,17 +407,17 @@ PlaylistPlaylistSubscribers $PlaylistPlaylistSubscribersFromJson(Map<String, dyn
 	if (authenticationTypes != null) {
 		playlistPlaylistSubscribers.authenticationTypes = authenticationTypes;
 	}
-	final dynamic? avatarDetail = jsonConvert.convert<dynamic>(json['avatarDetail']);
+	final PlaylistPlaylistSubscribersAvatarDetail? avatarDetail = jsonConvert.convert<PlaylistPlaylistSubscribersAvatarDetail>(json['avatarDetail']);
 	if (avatarDetail != null) {
 		playlistPlaylistSubscribers.avatarDetail = avatarDetail;
-	}
-	final String? avatarImgIdStr = jsonConvert.convert<String>(json['avatarImgIdStr']);
-	if (avatarImgIdStr != null) {
-		playlistPlaylistSubscribers.avatarImgIdStr = avatarImgIdStr;
 	}
 	final bool? anchor = jsonConvert.convert<bool>(json['anchor']);
 	if (anchor != null) {
 		playlistPlaylistSubscribers.anchor = anchor;
+	}
+	final String? avatarImgIdStr = jsonConvert.convert<String>(json['avatarImgIdStr']);
+	if (avatarImgIdStr != null) {
+		playlistPlaylistSubscribers.avatarImgIdStr = avatarImgIdStr;
 	}
 	final String? backgroundImgIdStr = jsonConvert.convert<String>(json['backgroundImgIdStr']);
 	if (backgroundImgIdStr != null) {
@@ -433,11 +458,36 @@ Map<String, dynamic> $PlaylistPlaylistSubscribersToJson(PlaylistPlaylistSubscrib
 	data['vipType'] = entity.vipType;
 	data['remarkName'] = entity.remarkName;
 	data['authenticationTypes'] = entity.authenticationTypes;
-	data['avatarDetail'] = entity.avatarDetail;
-	data['avatarImgIdStr'] = entity.avatarImgIdStr;
+	data['avatarDetail'] = entity.avatarDetail?.toJson();
 	data['anchor'] = entity.anchor;
+	data['avatarImgIdStr'] = entity.avatarImgIdStr;
 	data['backgroundImgIdStr'] = entity.backgroundImgIdStr;
 	data['avatarImgId_str'] = entity.avatarimgidStr;
+	return data;
+}
+
+PlaylistPlaylistSubscribersAvatarDetail $PlaylistPlaylistSubscribersAvatarDetailFromJson(Map<String, dynamic> json) {
+	final PlaylistPlaylistSubscribersAvatarDetail playlistPlaylistSubscribersAvatarDetail = PlaylistPlaylistSubscribersAvatarDetail();
+	final int? userType = jsonConvert.convert<int>(json['userType']);
+	if (userType != null) {
+		playlistPlaylistSubscribersAvatarDetail.userType = userType;
+	}
+	final int? identityLevel = jsonConvert.convert<int>(json['identityLevel']);
+	if (identityLevel != null) {
+		playlistPlaylistSubscribersAvatarDetail.identityLevel = identityLevel;
+	}
+	final String? identityIconUrl = jsonConvert.convert<String>(json['identityIconUrl']);
+	if (identityIconUrl != null) {
+		playlistPlaylistSubscribersAvatarDetail.identityIconUrl = identityIconUrl;
+	}
+	return playlistPlaylistSubscribersAvatarDetail;
+}
+
+Map<String, dynamic> $PlaylistPlaylistSubscribersAvatarDetailToJson(PlaylistPlaylistSubscribersAvatarDetail entity) {
+	final Map<String, dynamic> data = <String, dynamic>{};
+	data['userType'] = entity.userType;
+	data['identityLevel'] = entity.identityLevel;
+	data['identityIconUrl'] = entity.identityIconUrl;
 	return data;
 }
 
@@ -551,21 +601,17 @@ PlaylistPlaylistCreator $PlaylistPlaylistCreatorFromJson(Map<String, dynamic> js
 	if (avatarDetail != null) {
 		playlistPlaylistCreator.avatarDetail = avatarDetail;
 	}
-	final String? avatarImgIdStr = jsonConvert.convert<String>(json['avatarImgIdStr']);
-	if (avatarImgIdStr != null) {
-		playlistPlaylistCreator.avatarImgIdStr = avatarImgIdStr;
-	}
 	final bool? anchor = jsonConvert.convert<bool>(json['anchor']);
 	if (anchor != null) {
 		playlistPlaylistCreator.anchor = anchor;
 	}
+	final String? avatarImgIdStr = jsonConvert.convert<String>(json['avatarImgIdStr']);
+	if (avatarImgIdStr != null) {
+		playlistPlaylistCreator.avatarImgIdStr = avatarImgIdStr;
+	}
 	final String? backgroundImgIdStr = jsonConvert.convert<String>(json['backgroundImgIdStr']);
 	if (backgroundImgIdStr != null) {
 		playlistPlaylistCreator.backgroundImgIdStr = backgroundImgIdStr;
-	}
-	final String? avatarimgidStr = jsonConvert.convert<String>(json['avatarImgId_str']);
-	if (avatarimgidStr != null) {
-		playlistPlaylistCreator.avatarimgidStr = avatarimgidStr;
 	}
 	return playlistPlaylistCreator;
 }
@@ -599,10 +645,9 @@ Map<String, dynamic> $PlaylistPlaylistCreatorToJson(PlaylistPlaylistCreator enti
 	data['remarkName'] = entity.remarkName;
 	data['authenticationTypes'] = entity.authenticationTypes;
 	data['avatarDetail'] = entity.avatarDetail?.toJson();
-	data['avatarImgIdStr'] = entity.avatarImgIdStr;
 	data['anchor'] = entity.anchor;
+	data['avatarImgIdStr'] = entity.avatarImgIdStr;
 	data['backgroundImgIdStr'] = entity.backgroundImgIdStr;
-	data['avatarImgId_str'] = entity.avatarimgidStr;
 	return data;
 }
 
@@ -813,6 +858,10 @@ PlaylistPlaylistTracks $PlaylistPlaylistTracksFromJson(Map<String, dynamic> json
 	if (publishTime != null) {
 		playlistPlaylistTracks.publishTime = publishTime;
 	}
+	final List<String>? tns = jsonConvert.convertListNotNull<String>(json['tns']);
+	if (tns != null) {
+		playlistPlaylistTracks.tns = tns;
+	}
 	return playlistPlaylistTracks;
 }
 
@@ -863,6 +912,7 @@ Map<String, dynamic> $PlaylistPlaylistTracksToJson(PlaylistPlaylistTracks entity
 	data['cp'] = entity.cp;
 	data['mv'] = entity.mv;
 	data['publishTime'] = entity.publishTime;
+	data['tns'] =  entity.tns;
 	return data;
 }
 
@@ -914,6 +964,10 @@ PlaylistPlaylistTracksAl $PlaylistPlaylistTracksAlFromJson(Map<String, dynamic> 
 	if (tns != null) {
 		playlistPlaylistTracksAl.tns = tns;
 	}
+	final String? picStr = jsonConvert.convert<String>(json['pic_str']);
+	if (picStr != null) {
+		playlistPlaylistTracksAl.picStr = picStr;
+	}
 	final int? pic = jsonConvert.convert<int>(json['pic']);
 	if (pic != null) {
 		playlistPlaylistTracksAl.pic = pic;
@@ -927,6 +981,7 @@ Map<String, dynamic> $PlaylistPlaylistTracksAlToJson(PlaylistPlaylistTracksAl en
 	data['name'] = entity.name;
 	data['picUrl'] = entity.picUrl;
 	data['tns'] =  entity.tns;
+	data['pic_str'] = entity.picStr;
 	data['pic'] = entity.pic;
 	return data;
 }
@@ -949,10 +1004,6 @@ PlaylistPlaylistTracksH $PlaylistPlaylistTracksHFromJson(Map<String, dynamic> js
 	if (vd != null) {
 		playlistPlaylistTracksH.vd = vd;
 	}
-	final int? sr = jsonConvert.convert<int>(json['sr']);
-	if (sr != null) {
-		playlistPlaylistTracksH.sr = sr;
-	}
 	return playlistPlaylistTracksH;
 }
 
@@ -962,7 +1013,6 @@ Map<String, dynamic> $PlaylistPlaylistTracksHToJson(PlaylistPlaylistTracksH enti
 	data['fid'] = entity.fid;
 	data['size'] = entity.size;
 	data['vd'] = entity.vd;
-	data['sr'] = entity.sr;
 	return data;
 }
 
@@ -984,10 +1034,6 @@ PlaylistPlaylistTracksM $PlaylistPlaylistTracksMFromJson(Map<String, dynamic> js
 	if (vd != null) {
 		playlistPlaylistTracksM.vd = vd;
 	}
-	final int? sr = jsonConvert.convert<int>(json['sr']);
-	if (sr != null) {
-		playlistPlaylistTracksM.sr = sr;
-	}
 	return playlistPlaylistTracksM;
 }
 
@@ -997,7 +1043,6 @@ Map<String, dynamic> $PlaylistPlaylistTracksMToJson(PlaylistPlaylistTracksM enti
 	data['fid'] = entity.fid;
 	data['size'] = entity.size;
 	data['vd'] = entity.vd;
-	data['sr'] = entity.sr;
 	return data;
 }
 
@@ -1019,10 +1064,6 @@ PlaylistPlaylistTracksL $PlaylistPlaylistTracksLFromJson(Map<String, dynamic> js
 	if (vd != null) {
 		playlistPlaylistTracksL.vd = vd;
 	}
-	final int? sr = jsonConvert.convert<int>(json['sr']);
-	if (sr != null) {
-		playlistPlaylistTracksL.sr = sr;
-	}
 	return playlistPlaylistTracksL;
 }
 
@@ -1032,7 +1073,6 @@ Map<String, dynamic> $PlaylistPlaylistTracksLToJson(PlaylistPlaylistTracksL enti
 	data['fid'] = entity.fid;
 	data['size'] = entity.size;
 	data['vd'] = entity.vd;
-	data['sr'] = entity.sr;
 	return data;
 }
 
@@ -1054,10 +1094,6 @@ PlaylistPlaylistTracksSq $PlaylistPlaylistTracksSqFromJson(Map<String, dynamic> 
 	if (vd != null) {
 		playlistPlaylistTracksSq.vd = vd;
 	}
-	final int? sr = jsonConvert.convert<int>(json['sr']);
-	if (sr != null) {
-		playlistPlaylistTracksSq.sr = sr;
-	}
 	return playlistPlaylistTracksSq;
 }
 
@@ -1067,7 +1103,6 @@ Map<String, dynamic> $PlaylistPlaylistTracksSqToJson(PlaylistPlaylistTracksSq en
 	data['fid'] = entity.fid;
 	data['size'] = entity.size;
 	data['vd'] = entity.vd;
-	data['sr'] = entity.sr;
 	return data;
 }
 
@@ -1077,12 +1112,47 @@ PlaylistPlaylistTrackIds $PlaylistPlaylistTrackIdsFromJson(Map<String, dynamic> 
 	if (id != null) {
 		playlistPlaylistTrackIds.id = id;
 	}
+	final int? v = jsonConvert.convert<int>(json['v']);
+	if (v != null) {
+		playlistPlaylistTrackIds.v = v;
+	}
+	final int? t = jsonConvert.convert<int>(json['t']);
+	if (t != null) {
+		playlistPlaylistTrackIds.t = t;
+	}
+	final int? at = jsonConvert.convert<int>(json['at']);
+	if (at != null) {
+		playlistPlaylistTrackIds.at = at;
+	}
+	final dynamic? alg = jsonConvert.convert<dynamic>(json['alg']);
+	if (alg != null) {
+		playlistPlaylistTrackIds.alg = alg;
+	}
+	final int? uid = jsonConvert.convert<int>(json['uid']);
+	if (uid != null) {
+		playlistPlaylistTrackIds.uid = uid;
+	}
+	final String? rcmdReason = jsonConvert.convert<String>(json['rcmdReason']);
+	if (rcmdReason != null) {
+		playlistPlaylistTrackIds.rcmdReason = rcmdReason;
+	}
+	final dynamic? sc = jsonConvert.convert<dynamic>(json['sc']);
+	if (sc != null) {
+		playlistPlaylistTrackIds.sc = sc;
+	}
 	return playlistPlaylistTrackIds;
 }
 
 Map<String, dynamic> $PlaylistPlaylistTrackIdsToJson(PlaylistPlaylistTrackIds entity) {
 	final Map<String, dynamic> data = <String, dynamic>{};
 	data['id'] = entity.id;
+	data['v'] = entity.v;
+	data['t'] = entity.t;
+	data['at'] = entity.at;
+	data['alg'] = entity.alg;
+	data['uid'] = entity.uid;
+	data['rcmdReason'] = entity.rcmdReason;
+	data['sc'] = entity.sc;
 	return data;
 }
 

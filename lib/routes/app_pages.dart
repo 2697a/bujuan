@@ -2,6 +2,8 @@ import 'package:bujuan/pages/details/details_bindings.dart';
 import 'package:bujuan/pages/details/details_view.dart';
 import 'package:bujuan/pages/home/setting/setting_view.dart';
 import 'package:bujuan/pages/home/setting/settingbindings.dart';
+import 'package:bujuan/pages/play_list/bindings.dart';
+import 'package:bujuan/pages/play_list/playlist.dart';
 import 'package:bujuan/pages/user/user_binding.dart';
 import 'package:bujuan/pages/user/user_view.dart';
 import 'package:get/get.dart';
@@ -29,6 +31,11 @@ class AppPages {
       name: _Paths.user,
       page: () => const UserView(),
       binding: UserBinding(),
+    ),
+    GetPage(
+      name: _Paths.playlist,
+      page: () => const PlayList(),
+      binding: PlayListBindings(),
     ),
   ];
 }

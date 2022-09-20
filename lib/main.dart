@@ -9,10 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
-import 'package:lastfm/lastfm.dart';
 import 'package:on_audio_query/on_audio_query.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 import 'common/api/netease_cloud_music.dart';
 import 'common/constants/colors.dart';
 import 'common/storage.dart';
@@ -44,7 +41,7 @@ Future<void> _initAudioServer() async {
   // 工具初始
   await StorageUtil.init();
   print('=============onReady');
-
+  _startServer();
   getIt.registerSingleton<AudioServeHandler>(await AudioService.init<AudioServeHandler>(
     builder: () => AudioServeHandler(),
     config: const AudioServiceConfig(
@@ -53,8 +50,6 @@ Future<void> _initAudioServer() async {
       androidNotificationIcon: 'drawable/audio_service_icon',
     ),
   ));
-  // LastFMUnauthorized lastfm = LastFMUnauthorized('1231b5c3f86fa221536abc43cba6a5ab', 'ab7bb13271fda8de8e53992974d168cc');
-  // launchUrlString(await lastfm.authorizeDesktop());
   // android 状态栏为透明的沉浸
   WidgetsBinding.instance.addPostFrameCallback((_) {
     if (Platform.isAndroid) {

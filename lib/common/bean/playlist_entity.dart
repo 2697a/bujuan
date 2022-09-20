@@ -1,6 +1,6 @@
-import 'dart:convert';
 import 'package:bujuan/generated/json/base/json_field.dart';
 import 'package:bujuan/generated/json/playlist_entity.g.dart';
+import 'dart:convert';
 
 @JsonSerializable()
 class PlaylistEntity {
@@ -61,6 +61,7 @@ class PlaylistPlaylist {
 	dynamic titleImageUrl;
 	dynamic englishTitle;
 	dynamic officialPlaylistType;
+	bool? copied;
 	List<PlaylistPlaylistSubscribers>? subscribers;
 	dynamic subscribed;
 	PlaylistPlaylistCreator? creator;
@@ -68,11 +69,15 @@ class PlaylistPlaylist {
 	dynamic videoIds;
 	dynamic videos;
 	List<PlaylistPlaylistTrackIds>? trackIds;
+	dynamic bannedTrackIds;
 	int? shareCount;
 	int? commentCount;
 	dynamic remixVideo;
 	dynamic sharedUsers;
 	dynamic historySharedUsers;
+	String? gradeStatus;
+	dynamic score;
+	List<String>? algTags;
   
   PlaylistPlaylist();
 
@@ -115,9 +120,9 @@ class PlaylistPlaylistSubscribers {
 	int? vipType;
 	dynamic remarkName;
 	int? authenticationTypes;
-	dynamic avatarDetail;
-	String? avatarImgIdStr;
+	PlaylistPlaylistSubscribersAvatarDetail? avatarDetail;
 	bool? anchor;
+	String? avatarImgIdStr;
 	String? backgroundImgIdStr;
 	@JSONField(name: "avatarImgId_str")
 	String? avatarimgidStr;
@@ -127,6 +132,25 @@ class PlaylistPlaylistSubscribers {
   factory PlaylistPlaylistSubscribers.fromJson(Map<String, dynamic> json) => $PlaylistPlaylistSubscribersFromJson(json);
 
   Map<String, dynamic> toJson() => $PlaylistPlaylistSubscribersToJson(this);
+
+  @override
+  String toString() {
+    return jsonEncode(this);
+  }
+}
+
+@JsonSerializable()
+class PlaylistPlaylistSubscribersAvatarDetail {
+
+	int? userType;
+	int? identityLevel;
+	String? identityIconUrl;
+  
+  PlaylistPlaylistSubscribersAvatarDetail();
+
+  factory PlaylistPlaylistSubscribersAvatarDetail.fromJson(Map<String, dynamic> json) => $PlaylistPlaylistSubscribersAvatarDetailFromJson(json);
+
+  Map<String, dynamic> toJson() => $PlaylistPlaylistSubscribersAvatarDetailToJson(this);
 
   @override
   String toString() {
@@ -164,11 +188,9 @@ class PlaylistPlaylistCreator {
 	dynamic remarkName;
 	int? authenticationTypes;
 	PlaylistPlaylistCreatorAvatarDetail? avatarDetail;
-	String? avatarImgIdStr;
 	bool? anchor;
+	String? avatarImgIdStr;
 	String? backgroundImgIdStr;
-	@JSONField(name: "avatarImgId_str")
-	String? avatarimgidStr;
   
   PlaylistPlaylistCreator();
 
@@ -250,6 +272,7 @@ class PlaylistPlaylistTracks {
 	int? cp;
 	int? mv;
 	int? publishTime;
+	List<String>? tns;
   
   PlaylistPlaylistTracks();
 
@@ -290,6 +313,8 @@ class PlaylistPlaylistTracksAl {
 	String? name;
 	String? picUrl;
 	List<dynamic>? tns;
+	@JSONField(name: "pic_str")
+	String? picStr;
 	int? pic;
   
   PlaylistPlaylistTracksAl();
@@ -311,7 +336,6 @@ class PlaylistPlaylistTracksH {
 	int? fid;
 	int? size;
 	double? vd;
-	int? sr;
   
   PlaylistPlaylistTracksH();
 
@@ -332,7 +356,6 @@ class PlaylistPlaylistTracksM {
 	int? fid;
 	int? size;
 	double? vd;
-	int? sr;
   
   PlaylistPlaylistTracksM();
 
@@ -353,7 +376,6 @@ class PlaylistPlaylistTracksL {
 	int? fid;
 	int? size;
 	double? vd;
-	int? sr;
   
   PlaylistPlaylistTracksL();
 
@@ -374,7 +396,6 @@ class PlaylistPlaylistTracksSq {
 	int? fid;
 	int? size;
 	double? vd;
-	int? sr;
   
   PlaylistPlaylistTracksSq();
 
@@ -392,7 +413,14 @@ class PlaylistPlaylistTracksSq {
 class PlaylistPlaylistTrackIds {
 
 	int? id;
-
+	int? v;
+	int? t;
+	int? at;
+	dynamic alg;
+	int? uid;
+	String? rcmdReason;
+	dynamic sc;
+  
   PlaylistPlaylistTrackIds();
 
   factory PlaylistPlaylistTrackIds.fromJson(Map<String, dynamic> json) => $PlaylistPlaylistTrackIdsFromJson(json);

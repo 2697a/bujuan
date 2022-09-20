@@ -67,9 +67,9 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   double euuv = 60;
   AnimationController? animationController;
   List<Widget> pages = [
+    const KeepAliveWrapper(child: MainView()),
     const KeepAliveWrapper(child: AlbumView()),
     const KeepAliveWrapper(child: IndexView()),
-    const KeepAliveWrapper(child: MainView()),
     const KeepAliveWrapper(child: UserView()),
   ];
   TabController? tabController;
@@ -81,6 +81,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   MyVerticalDragGestureRecognizer myVerticalDragGestureRecognizer = MyVerticalDragGestureRecognizer();
 
   RxBool needDrag = false.obs;
+
   //进度
   @override
   void onInit() async {
@@ -113,7 +114,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
       //   // lyricModel?.value = LyricsModelBuilder.create().bindLyricToMain(value ?? '').getModel();
       // });
       mediaItem.value = value;
-      ImageUtils.getImageColor(mediaItem.value.artUri?.path ?? '', (paletteColorData) {
+      ImageUtils.getImageColor('${mediaItem.value.artUri?.scheme ?? ''}://${mediaItem.value.artUri?.host ?? ''}/${mediaItem.value.artUri?.path ?? ''}', (paletteColorData) {
         rx.value = paletteColorData;
       });
     });
@@ -256,7 +257,11 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
 
   //动态设置获取Header颜色
   Color getHeaderColor() {
-    return Theme.of(buildContext).bottomAppBarColor.withOpacity(second.value?0:slidePosition.value > 0 ? 0 : 1);
+    return Theme.of(buildContext).bottomAppBarColor.withOpacity(second.value
+        ? 0
+        : slidePosition.value > 0
+            ? 0
+            : 1);
   }
 
   //获取图片亮色背景下文字显示的颜色

@@ -1,7 +1,7 @@
 part of '../module.dart';
 
 //专辑评论
-Handler commentAlbum = (query, cookies) {
+Handler comment_album = (query, cookies) {
   final data = {
     'rid': query!['id'],
     'limit': query['limit'] ?? 20,
@@ -16,7 +16,7 @@ Handler commentAlbum = (query, cookies) {
 };
 
 //电台评论
-Handler commentDj = (query, cookies) {
+Handler comment_dj = (query, cookies) {
   final data = {
     'rid': query!['id'],
     'limit': query['limit'] ?? 20,
@@ -31,7 +31,7 @@ Handler commentDj = (query, cookies) {
 };
 
 //动态评论
-Handler commentEvents = (query, cookies) {
+Handler comment_events = (query, cookies) {
   final data = {'limit': query!['limit'] ?? 20, 'offst': query['offset'] ?? 0};
   return request(
       'POST',
@@ -42,7 +42,7 @@ Handler commentEvents = (query, cookies) {
 };
 
 //热门评论
-Handler commentHot = (query, cookies) {
+Handler comment_hot = (query, cookies) {
   query!['type'] = const {
     0: 'R_SO_4_', //  歌曲
     1: 'R_MV_5_', //  MV
@@ -66,7 +66,7 @@ Handler commentHot = (query, cookies) {
 };
 
 // 点赞与取消点赞评论
-Handler commentLike = (query, cookies) {
+Handler comment_like = (query, cookies) {
   query!['type'] = const {
     0: 'R_SO_4_', //  歌曲
     1: 'R_MV_5_', //  MV
@@ -89,7 +89,7 @@ Handler commentLike = (query, cookies) {
 };
 
 //歌曲评论
-Handler commentMusic = (query, cookies) {
+Handler comment_music = (query, cookies) {
   final data = {
     'rid': query!['id'],
     'limit': query['limit'] ?? 20,
@@ -168,9 +168,11 @@ Handler comment = (query, cookies) {
     data['threadId'] = query['threadId'];
   }
 
-  if (query['t'] == 'add')
+  if (query['t'] == 'add') {
     data['content'] = query['content'];
-  else if (query['t'] == 'delete') data['commentId'] = query['commentId'];
+  } else if (query['t'] == 'delete') {
+    data['commentId'] = query['commentId'];
+  }
   return request('POST',
       'https://music.163.com/weapi/resource/comments/${query['t']}', data,
       crypto: Crypto.weapi, cookies: cookies);

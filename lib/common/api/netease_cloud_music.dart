@@ -2,7 +2,8 @@ import 'dart:async';
 import 'dart:io';
 
 
-import 'netease_cloud_music.dart';
+import 'package:bujuan/common/api/src/answer.dart';
+
 import 'src/module.dart';
 
 export 'src/answer.dart';
@@ -24,7 +25,7 @@ Future<Answer> cloudMusicApi(
   final handle = handles[path];
 
   if (handle == null) {
-    throw const HttpException('404 not found');
+    throw HttpException('404 not found');
   }
 
   try {

@@ -1,7 +1,7 @@
 part of '../module.dart';
 
 //歌曲可用性
-Handler checkMusic = (query, cookie) {
+Handler check_music = (query, cookie) {
   final data = {
     'ids': '[${query!['id']}]',
     'br': int.parse(query['br'] ?? 999000 as String),

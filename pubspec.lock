@@ -21,7 +21,7 @@ packages:
       name: async
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "2.8.2"
+    version: "2.9.0"
   audio_service:
     dependency: "direct main"
     description:
@@ -49,7 +49,7 @@ packages:
       name: audio_session
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.1.7"
+    version: "0.1.10"
   boolean_selector:
     dependency: transitive
     description:
@@ -57,27 +57,27 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.1.0"
+  carousel_slider:
+    dependency: "direct main"
+    description:
+      name: carousel_slider
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "4.1.1"
   characters:
     dependency: transitive
     description:
       name: characters
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.2.0"
-  charcode:
-    dependency: transitive
-    description:
-      name: charcode
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "1.3.1"
+    version: "1.2.1"
   clock:
     dependency: transitive
     description:
       name: clock
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.1.0"
+    version: "1.1.1"
   collection:
     dependency: "direct main"
     description:
@@ -147,7 +147,7 @@ packages:
       name: fake_async
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.3.0"
+    version: "1.3.1"
   ffi:
     dependency: transitive
     description:
@@ -274,7 +274,7 @@ packages:
       name: just_audio
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.9.28"
+    version: "0.9.29"
   just_audio_platform_interface:
     dependency: transitive
     description:
@@ -296,13 +296,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.0.3"
-  lastfm:
-    dependency: "direct main"
-    description:
-      name: lastfm
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "0.0.5"
   lints:
     dependency: transitive
     description:
@@ -323,21 +316,21 @@ packages:
       name: matcher
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.12.11"
+    version: "0.12.12"
   material_color_utilities:
     dependency: transitive
     description:
       name: material_color_utilities
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.1.4"
+    version: "0.1.5"
   meta:
     dependency: transitive
     description:
       name: meta
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.7.0"
+    version: "1.8.0"
   modal_bottom_sheet:
     dependency: "direct main"
     description:
@@ -379,7 +372,7 @@ packages:
       name: path
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.8.1"
+    version: "1.8.2"
   path_drawing:
     dependency: transitive
     description:
@@ -566,7 +559,7 @@ packages:
       name: source_span
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.8.2"
+    version: "1.9.0"
   sqflite:
     dependency: transitive
     description:
@@ -601,7 +594,7 @@ packages:
       name: string_scanner
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.1.0"
+    version: "1.1.1"
   synchronized:
     dependency: transitive
     description:
@@ -622,14 +615,14 @@ packages:
       name: term_glyph
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.2.0"
+    version: "1.2.1"
   test_api:
     dependency: transitive
     description:
       name: test_api
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.4.9"
+    version: "0.4.12"
   tuna_flutter_range_slider:
     dependency: "direct main"
     description:
@@ -644,62 +637,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.3.1"
-  url_launcher:
-    dependency: "direct main"
-    description:
-      name: url_launcher
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "6.1.5"
-  url_launcher_android:
-    dependency: transitive
-    description:
-      name: url_launcher_android
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "6.0.17"
-  url_launcher_ios:
-    dependency: transitive
-    description:
-      name: url_launcher_ios
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "6.0.17"
-  url_launcher_linux:
-    dependency: transitive
-    description:
-      name: url_launcher_linux
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "3.0.1"
-  url_launcher_macos:
-    dependency: transitive
-    description:
-      name: url_launcher_macos
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "3.0.1"
-  url_launcher_platform_interface:
-    dependency: transitive
-    description:
-      name: url_launcher_platform_interface
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "2.1.0"
-  url_launcher_web:
-    dependency: transitive
-    description:
-      name: url_launcher_web
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "2.0.12"
-  url_launcher_windows:
-    dependency: transitive
-    description:
-      name: url_launcher_windows
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "3.0.1"
   uuid:
     dependency: transitive
     description:

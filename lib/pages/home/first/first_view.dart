@@ -118,7 +118,7 @@ class FirstView extends GetView<HomeController> {
                           (controller.slidePosition.value / 10),
                       duration: Duration.zero,
                       child: SimpleExtendedImage(
-                        controller.mediaItem.value.artUri?.path ?? '',
+                        '${controller.mediaItem.value.artUri?.scheme??''}://${controller.mediaItem.value.artUri?.host??''}/${controller.mediaItem.value.artUri?.path??''}',
                         height: controller.getImageSize(),
                         width: controller.getImageSize(),
                         borderRadius: BorderRadius.circular(
@@ -140,11 +140,11 @@ class FirstView extends GetView<HomeController> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          controller.mediaItem.value.title,
+                          controller.mediaItem.value.title??'',
                           style: TextStyle(
                               fontSize: 28.sp,
                               color: controller.getLightTextColor()),
-                          maxLines: 1,
+                          maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
                         Padding(padding: EdgeInsets.symmetric(vertical: 1.w)),
@@ -196,16 +196,16 @@ class FirstView extends GetView<HomeController> {
             },
             items: [
               FlashyNavbarItem(
+                icon: const Icon(TablerIcons.smartHome),
+                title: const Text('首页'),
+              ),
+              FlashyNavbarItem(
                 icon: const Icon(TablerIcons.disc),
                 title: const Text('专辑'),
               ),
               FlashyNavbarItem(
                 icon: const Icon(TablerIcons.brandTiktok),
                 title: const Text('单曲'),
-              ),
-              FlashyNavbarItem(
-                icon: const Icon(TablerIcons.smartHome),
-                title: const Text('首页'),
               ),
               FlashyNavbarItem(
                 icon: const Icon(TablerIcons.user),

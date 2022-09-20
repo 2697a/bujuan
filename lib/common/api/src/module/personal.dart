@@ -20,13 +20,13 @@ Handler personalized_mv = (query, cookie) {
 };
 
 // 推荐新歌
-Handler personalizedNewSong = (query, cookie) {
+Handler personalized_newsong = (query, cookie) {
   return request('POST', 'https://music.163.com/weapi/personalized/newsong', {},
       crypto: Crypto.weapi, cookies: cookie);
 };
 
 // 独家放送
-Handler personalizedPrivateContent = (query, cookie) {
+Handler personalized_privatecontent = (query, cookie) {
   return request(
       'POST', 'https://music.163.com/weapi/personalized/privatecontent', {},
       crypto: Crypto.weapi, cookies: cookie);
