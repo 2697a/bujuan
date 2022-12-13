@@ -11,6 +11,7 @@ class AppTheme {
             surface: surface,
             onSurface: onSurface,
           ),
+      cardColor: Color(0xFF1C1B1B),
       iconTheme: const IconThemeData(color: Color(0xFF494949)),
       primaryColor: const Color(0xffe56260),
       bottomAppBarColor: onPrimaryDark,
@@ -25,11 +26,12 @@ class AppTheme {
       colorScheme: ThemeData.dark().colorScheme.copyWith(
             primary: primaryDark,
             onPrimary: onPrimaryDark,
-            secondary: secondary,
+            secondary: onSecondary,
             onSecondary: onSecondary,
             surface: surfaceDark,
             onSurface: onSurfaceDark,
           ),
+      cardColor: Color(0xFFFFFFFF),
       primaryColor:  const Color(0xffe56260),
       bottomAppBarColor: onSurfaceDark,
       scaffoldBackgroundColor: const Color(0xFF2C2B2B),
@@ -53,7 +55,7 @@ class AppTheme {
 
   //accent color
   //TODO change blue
-  static const secondary = Colors.white;
+  static const secondary = Color(0xFF1C1B1B);
   static const onSecondary = Colors.white;
 
   //charge colors

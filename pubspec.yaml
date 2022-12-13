@@ -54,6 +54,17 @@ dependencies:
   just_waveform: ^0.0.3
   font_awesome_flutter: ^10.1.0
   wheel_slider: ^1.0.0
+  we_slide: ^2.4.0
+
+  # ext
+  # app path
+  # http
+  pretty_dio_logger: ^1.1.1
+  dio_cookie_manager: ^2.0.0
+  # encrypt
+  pointycastle: ^3.1.2
+  # x json
+  json_annotation: ^4.0.1
 #  jaudiotagger:
 #    path: ../jaudiotagger
   flutter_lyric: ^2.0.4
@@ -65,10 +76,16 @@ dependencies:
   sliding_up_panel: ^2.0.0+1
 #  url_launcher: ^6.1.5
   carousel_slider: ^4.1.1
+  flutter_zoom_drawer: ^3.0.3
+  auto_route: ^5.0.4
+  mobx: ^2.1.3
+
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  auto_route_generator: 5.0.3
+  build_runner:
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

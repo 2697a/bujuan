@@ -1,6 +1,8 @@
-import 'package:bujuan/common/bean/playlist_entity.dart';
+import 'package:audio_service/audio_service.dart';
+import 'package:auto_route/auto_route.dart';
+import 'package:bujuan/common/netease_api/netease_music_api.dart';
 import 'package:bujuan/pages/play_list/playlist_controller.dart';
-import 'package:bujuan/widget/request_widget.dart';
+import 'package:bujuan/widget/data_widget.dart';
 import 'package:bujuan/widget/simple_extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -12,34 +14,34 @@ class PlayList extends GetView<PlayListController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: RequestBox<PlaylistEntity>(
-          url: '/playlist/detail',
-          data: {'id': Get.arguments},
-          onSuccess: (data) {
-            controller.setPlayList(data.playlist?.tracks ?? []);
-          },
-          childBuilder: (data) => ListView.builder(
-                itemBuilder: (context, index) => _buildItem((data.playlist?.tracks ?? [])[index],index),
-                itemCount: (data.playlist?.tracks ?? []).length,
-              )),
+      appBar: AppBar(title: const Text('Song Sheet'),),
+      body: FutureBuilder<List<MediaItem>>(
+          future: controller.getData((context.routeData.args as Play).id),
+          builder: (c, s) => DataView<List<MediaItem>>(
+              snapshot: s,
+              childBuilder: ListView.builder(
+                itemBuilder: (context, index) => _buildItem((s.data ?? [])[index], index),
+                itemCount: (s.data ?? []).length,
+              ))),
     );
   }
 
-  Widget _buildItem(PlaylistPlaylistTracks data,int index) {
-    return Padding(padding: EdgeInsets.symmetric(vertical: 10.w),child: ListTile(
-      leading: SimpleExtendedImage(data.al?.picUrl??''),
-      title: Text(data.name ?? ''),
-      onTap: (){
-        controller.playIndex(index);
-      },
-    ),);
-    return InkWell(
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 20.w),
-        child: Text(data.name ?? ''),
+  Widget _buildItem(MediaItem data, int index) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 10.w),
+      child: ListTile(
+        dense: true,
+        leading: SimpleExtendedImage(
+          '${data.extras?['image'] ?? ''}?param=200y200',
+          width: 80.w,
+          height: 80.w,
+        ),
+        title: Text(data.title),
+        subtitle: Text(data.artist??''),
+        onTap: () {
+          controller.playIndex(index);
+        },
       ),
-      onTap: () => controller.playIndex(index),
     );
   }
 }

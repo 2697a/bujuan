@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:bujuan/pages/home/first/first_controller.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -167,6 +168,7 @@ class WeSlide extends StatefulWidget {
   WeSlideController? controller;
 
   final OnPosition? onPosition;
+
 
   /// Weslide Contructor
   WeSlide({
@@ -440,7 +442,7 @@ class _WeSlideState extends State<WeSlide> with SingleTickerProviderStateMixin {
               );
             },
             child: SizedBox(
-              height: height - (HomeController.to.isRoot.value ? 0 : HomeController.to.bottomBarHeight)-25.w,
+              height: height - (HomeController.to.isRoot.value ? 0 : FirstController.to.bottomBarHeight)-25.w,
               width: widget.bodyWidth ?? width,
               child: widget.body,
             ),

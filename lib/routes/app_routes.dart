@@ -10,15 +10,18 @@ abstract class Routes {
   static const splash = _Paths.splash;
   static const setting = _Paths.setting;
   static const playlist = _Paths.playlist;
+  static const login = _Paths.login;
 }
 
 abstract class _Paths {
   _Paths._();
-  static const home = '/home';
+
+  static const home = 'home';
   static const index = '/index';
   static const user = '/user';
   static const playlist = '/playlist';
   static const details = '/details';
   static const setting = '/setting';
   static const splash = '/';
+  static const login = '/login';
 }

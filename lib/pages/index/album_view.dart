@@ -1,3 +1,4 @@
+import 'package:bujuan/pages/home/first/first_controller.dart';
 import 'package:bujuan/pages/index/index_controller.dart';
 import 'package:bujuan/routes/app_pages.dart';
 import 'package:bujuan/widget/simple_extended_image.dart';
@@ -15,13 +16,30 @@ class AlbumView extends GetView<IndexController> {
   Widget build(BuildContext context) {
     controller.buildContext = context;
     return Scaffold(
+      appBar: AppBar(
+        centerTitle: false,
+        leading: IconButton(
+            onPressed: () {
+              if (controller.login.value) {
+                controller.myDrawerController.open!();
+                return;
+              }
+            },
+            icon: Obx(() => SimpleExtendedImage.avatar('${HomeController.to.login.value ? controller.userData.value.profile?.avatarUrl : ''}'))),
+        title: RichText(
+            text: TextSpan(style: TextStyle(fontSize: 42.sp, color: Colors.grey, fontWeight: FontWeight.bold), text: 'Here  ', children: [
+              TextSpan(
+                  text: '云盘～',
+                  style: TextStyle(color: Theme.of(context).primaryColor.withOpacity(.9))),
+            ])),
+      ),
       body: Obx(() => _buildAlbumView()),
     );
   }
 
   Widget _buildAlbumView() {
     return GridView.builder(
-      padding: EdgeInsets.only(left: 20.w,right: 20.w,bottom: HomeController.to.getHomeBottomPadding()),
+      padding: EdgeInsets.only(left: 20.w,right: 20.w,bottom: FirstController.to.getHomeBottomPadding()),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: .73, crossAxisSpacing: 20.w),
       itemBuilder: (context, index) => _buildItem(controller.albums[index], index),
       itemCount: controller.albums.length,

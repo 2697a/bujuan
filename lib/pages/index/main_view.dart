@@ -1,14 +1,14 @@
-import 'package:bujuan/common/bean/personalized_entity.dart';
+import 'package:auto_route/auto_route.dart';
+import 'package:bujuan/common/netease_api/netease_music_api.dart';
+import 'package:bujuan/pages/home/first/first_controller.dart';
 import 'package:bujuan/pages/index/index_controller.dart';
-import 'package:bujuan/routes/app_pages.dart';
-import 'package:bujuan/widget/request_widget.dart';
-import 'package:carousel_slider/carousel_slider.dart';
+import 'package:bujuan/widget/data_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import '../../common/constants/other.dart';
-import '../../widget/query_artwork_widget.dart' as custom;
+import '../../routes/router.gr.dart';
 import '../../widget/simple_extended_image.dart';
 import '../home/home_controller.dart';
 
@@ -19,45 +19,84 @@ class MainView extends GetView<IndexController> {
   Widget build(BuildContext context) {
     controller.buildContext = context;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+        centerTitle: false,
+        leading: IconButton(
+            onPressed: () {
+              if (controller.login.value) {
+                controller.myDrawerController.open!();
+                return;
+              }
+            },
+            icon: Obx(() => SimpleExtendedImage.avatar('${HomeController.to.login.value ? controller.userData.value.profile?.avatarUrl : ''}'))),
+        title: RichText(
+            text: TextSpan(style: TextStyle(fontSize: 42.sp, color: Colors.grey, fontWeight: FontWeight.bold), text: 'Here  ', children: [
+              TextSpan(
+                  text: '推荐歌单～',
+                  style: TextStyle(color: Theme.of(context).primaryColor.withOpacity(.9))),
+            ])),
+      ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.only(bottom: HomeController.to.getHomeBottomPadding(),top: 40.w),
+        padding: EdgeInsets.only(bottom: FirstController.to.getHomeBottomPadding(), top: 20.w),
         child: Column(
           children: [
-            RequestBox<PersonalizedEntity>(
-              url: '/personalized',
-              childBuilder: (data) => CarouselSlider.builder(
-                itemCount: (data.result ?? []).length,
-                itemBuilder: (BuildContext context, int itemIndex, int pageViewIndex) => GestureDetector(
-                  child: Container(
-                    decoration: BoxDecoration(),
-                    child: SimpleExtendedImage(
-                      (data.result ?? [])[itemIndex].picUrl ?? '',
-                      borderRadius: BorderRadius.circular(30.w),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  onTap: () => Get.toNamed(Routes.playlist,arguments: (data.result ?? [])[itemIndex].id),
-                ),
-                options: CarouselOptions(
-                  height: 450.w,
-                  aspectRatio: 1,
-                  viewportFraction: 0.6,
-                  initialPage: 0,
-                  enableInfiniteScroll: true,
-                  reverse: false,
-                  autoPlay: true,
-                  autoPlayInterval: const Duration(seconds: 3),
-                  autoPlayAnimationDuration: const Duration(milliseconds: 800),
-                  autoPlayCurve: Curves.fastOutSlowIn,
-                  enlargeCenterPage: true,
-                  scrollDirection: Axis.horizontal,
-                ),
-              ),
-            ),
-            Padding(padding: EdgeInsets.only(top: 40.w)),
-            const Text('I am your uncle',style: TextStyle(fontSize: 42,color: Colors.red),)
+            FutureBuilder<List<Play>>(
+              future: controller.getData(),
+                builder: (c, s) => DataView<List<Play>>(
+                      childBuilder: GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        padding: EdgeInsets.only(left: 20.w, right: 20.w, bottom: FirstController.to.getHomeBottomPadding()),
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          childAspectRatio: .73,
+                          crossAxisSpacing: 20.w,
+                        ),
+                        itemBuilder: (context, index) => _buildItem((s.data??[])[index], c),
+                        itemCount: (s.data??[]).length,
+                      ),
+                      snapshot: s,
+                    ))
           ],
         ),
+      ),
+    );
+  }
+
+
+  Widget _buildItem(Play albumModel, BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 0.w),
+      child: InkWell(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SimpleExtendedImage(
+              '${albumModel.picUrl??''}?param=400y400',
+              cacheWidth: 400,
+              width: (Get.width-90.w) / 3,
+              height: (Get.width-90.w) / 3,
+              borderRadius: BorderRadius.all(Radius.circular(20.w)),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 2.w),
+                  child: Text(
+                    albumModel.name??'',
+                    style: TextStyle(fontSize: 28.sp),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        onTap: () => context.router.push(const PlayList().copyWith(args: albumModel)),
       ),
     );
   }
@@ -110,30 +149,5 @@ class MainView extends GetView<IndexController> {
     );
   }
 
-  Widget _buildTopSong() {
-    return SizedBox(
-      height: Get.width / 3,
-      child: ListView.builder(
-        shrinkWrap: true,
-        scrollDirection: Axis.horizontal,
-        itemBuilder: (context, index) => _buildItem(controller.albums[index], index),
-        itemCount: controller.albums.length,
-      ),
-    );
-  }
 
-  Widget _buildItem(AlbumModel albumModel, index) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 10.w),
-      child: InkWell(
-        child: SimpleExtendedImage(
-          '${HomeController.to.directoryPath}${albumModel.id}',
-          cacheWidth: 400,
-          width: Get.width / 3,
-          height: Get.width / 3,
-          borderRadius: BorderRadius.all(Radius.circular(20.w)),
-        ),
-      ),
-    );
-  }
 }

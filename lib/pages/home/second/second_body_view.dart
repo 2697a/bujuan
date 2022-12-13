@@ -13,8 +13,9 @@ import 'package:tabler_icons/tabler_icons.dart';
 import 'package:tuna_flutter_range_slider/tuna_flutter_range_slider.dart';
 
 import '../../../common/constants/other.dart';
+import '../first/first_controller.dart';
 
-class SecondBodyView extends GetView<HomeController> {
+class SecondBodyView extends GetView<FirstController> {
   const SecondBodyView({Key? key}) : super(key: key);
 
   //进度
@@ -50,7 +51,7 @@ class SecondBodyView extends GetView<HomeController> {
                   )),
               Column(
                 children: [
-                  Obx(() => SizedBox(height: controller.getPanelMinSize() + MediaQuery.of(context).padding.top)),
+                  Obx(() => SizedBox(height: FirstController.to.getPanelMinSize() + MediaQuery.of(context).padding.top)),
                   //歌曲信息
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 30.w),
@@ -67,7 +68,7 @@ class SecondBodyView extends GetView<HomeController> {
                               ),
                               Padding(padding: EdgeInsets.symmetric(vertical: 5.w)),
                               Text(
-                                '小李播放器',
+                                controller.mediaItem.value.artist??'',
                                 style: TextStyle(fontSize: 28.sp, color: controller.rx.value.dark?.bodyTextColor),
                                 maxLines: 1,
                               )
@@ -81,7 +82,7 @@ class SecondBodyView extends GetView<HomeController> {
                   _buildSlide(),
                   //功能按钮
                   SizedBox(
-                    height: 90.h + MediaQuery.of(controller.buildContext).padding.bottom,
+                    height: 90.h +MediaQuery.of(context).padding.bottom,
                   )
                 ],
               ),
@@ -136,7 +137,7 @@ class SecondBodyView extends GetView<HomeController> {
           Obx(() {
             return SizedBox(
               width: Get.width,
-              child: FlutterRangeSlider(
+              child: Visibility(visible: controller.mediaItem.value.id.isNotEmpty,child: FlutterRangeSlider(
                 min: 0,
                 max: controller.effects.length.toDouble(),
                 values: [controller.duration.value.inMilliseconds / (controller.mediaItem.value.duration?.inMilliseconds ?? 0) * 100],
@@ -153,7 +154,7 @@ class SecondBodyView extends GetView<HomeController> {
                 hatchMark: FlutterSliderHatchMark(labels: controller.effects, linesAlignment: FlutterSliderHatchMarkAlignment.right, density: 0.5),
                 trackBar: const FlutterSliderTrackBar(activeTrackBarHeight: .1, inactiveTrackBarHeight: .1, activeTrackBar: BoxDecoration(color: Colors.transparent)),
                 onDragCompleted: (a, b, c) => controller.audioServeHandler.seek(Duration(milliseconds: (controller.mediaItem.value.duration?.inMilliseconds ?? 0) * b ~/ 100)),
-              ),
+              ),),
             );
           }),
         ],
@@ -249,11 +250,11 @@ class SecondBodyView extends GetView<HomeController> {
                   )),
               IconButton(
                   onPressed: () {
-                    showCupertinoModalBottomSheet(
-                      context: controller.buildContext,
-                      builder: (_) => _buildSleep(),
-                      duration: const Duration(milliseconds: 320),
-                    );
+                    // showCupertinoModalBottomSheet(
+                    //   context: controller.buildContext,
+                    //   builder: (_) => _buildSleep(),
+                    //   duration: const Duration(milliseconds: 320),
+                    // );
                   },
                   icon: Icon(
                     TablerIcons.alarm,

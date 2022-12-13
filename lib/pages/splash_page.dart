@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/pages/home/first/first_view.dart';
+import 'package:bujuan/routes/app_pages.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
@@ -31,7 +33,9 @@ class SplashPageState extends State<SplashPage> {
     });
 
     Future.delayed(durationFinish, () {
-      requestPermission().then((value) => {if (value) Navigator.pushReplacement(context, MaterialPageRoute(builder: (c) => const FirstView()))});
+      requestPermission().then((value) => {if (value) {
+        AutoRouter.of(context).pushNamed(Routes.home)
+      }});
     });
   }
 
@@ -72,7 +76,11 @@ class SplashPageState extends State<SplashPage> {
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  SvgPicture.asset('assets/images/splash.svg',width: Get.width/1.8,fit: BoxFit.fitWidth,),
+                  SvgPicture.asset(
+                    'assets/images/splash.svg',
+                    width: Get.width / 1.8,
+                    fit: BoxFit.fitWidth,
+                  ),
                   // Container(
                   //   alignment: Alignment.bottomCenter,
                   //   padding: EdgeInsets.only(bottom: 100.w),

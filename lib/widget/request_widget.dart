@@ -1,14 +1,15 @@
 import 'package:bujuan/widget/refresh_controller.dart';
 import 'package:flutter/material.dart';
-import '../common/api/src/netease_util.dart';
+import 'package:get_it/get_it.dart';
+
+import '../common/netease_api/src/netease_api.dart';
 
 typedef RequestChildBuilder<T> = Widget Function(T data);
 
 class RequestBox<T> extends StatefulWidget {
   final RequestChildBuilder<T> childBuilder;
   final Error? onError;
-  final Success<T>? onSuccess;
-  final String url;
+  final ApiType url;
   final Map? data; //FormData示例：FormData.from({'start': '0', 'count': '10'})
   final bool wantKeepAlive;
   final bool showError;
@@ -23,7 +24,6 @@ class RequestBox<T> extends StatefulWidget {
       this.controller,
       this.data,
       this.onError,
-      this.onSuccess,
       this.wantKeepAlive = false,
       this.baseUrl,
       this.replacement,
@@ -38,8 +38,9 @@ class RequestBox<T> extends StatefulWidget {
 
 class RequestBoxState<T> extends State<RequestBox<T>> with RefreshState {
   late T _entity;
-  bool _isLoaded = false;
-  bool _isError = false;
+   bool _isLoaded = false;
+  final bool _isError = false;
+  NeteaseMusicApi neteaseMusicApi = GetIt.instance<NeteaseMusicApi>();
 
   @override
   void initState() {
@@ -72,19 +73,16 @@ class RequestBoxState<T> extends State<RequestBox<T>> with RefreshState {
   }
 
   @override
-  callRefresh() {
-    NetUtils().doHandler<T>(widget.url,
-        param: widget.data ?? {},
-        onSuccess: (data) {
-          widget.onSuccess?.call(data);
-          if (mounted) {
-            setState(() {
-              _entity = data;
-              _isLoaded = true;
-            });
-          }
-        },
-        onError: () => setState(() => _isError = true));
+  callRefresh() async{
+    try {
+      switch (widget.url) {
+        case ApiType.userPlayList:
+          _entity = (await neteaseMusicApi.userPlayList(widget.data!['id'])) as T;
+          break;
+      }
+    } catch (error) {
+      print('object');
+    }
   }
 
   @override
@@ -92,3 +90,5 @@ class RequestBoxState<T> extends State<RequestBox<T>> with RefreshState {
     widget.data?.addEntries(params.entries);
   }
 }
+
+enum ApiType { userPlayList }

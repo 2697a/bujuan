@@ -3,16 +3,16 @@ import 'dart:typed_data';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:bujuan/common/constants/other.dart';
+import 'package:bujuan/common/netease_api/netease_music_api.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
-class IndexController extends GetxController {
+class IndexController extends HomeController {
   RxList<SongModel> songs = <SongModel>[].obs;
   RxList<AlbumModel> albums = <AlbumModel>[].obs;
   final List<MediaItem> mediaItems = [];
-  late BuildContext buildContext;
   final String queueTitle = Get.routing.current;
   final RxList<PaletteColorData> colors = <PaletteColorData>[].obs;
 
@@ -21,9 +21,12 @@ class IndexController extends GetxController {
   @override
   void onReady() async {
     super.onReady();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      querySong();
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {});
+  }
+
+  Future<List<Play>> getData() async {
+    PersonalizedPlayListWrap personalizedPlayListWrap = await NeteaseMusicApi().personalizedPlaylist();
+    return personalizedPlayListWrap.result??[];
   }
 
   querySong() async {
