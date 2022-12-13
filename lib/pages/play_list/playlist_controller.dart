@@ -19,7 +19,7 @@ class PlayListController extends HomeController {
   Future<List<MediaItem>> getData(String id) async {
     SinglePlayListWrap singlePlayListWrap = await NeteaseMusicApi().playListDetail(id);
     SongDetailWrap songDetailWrap = await NeteaseMusicApi().songDetail((singlePlayListWrap.playlist?.trackIds ?? []).map((e) => e.id).toList());
-    SongUrlListWrap songUrlListWrap = await NeteaseMusicApi().songUrl((singlePlayListWrap.playlist?.trackIds ?? []).map((e) => e.id).toList());
+    // SongUrlListWrap songUrlListWrap = await NeteaseMusicApi().songUrl((singlePlayListWrap.playlist?.trackIds ?? []).map((e) => e.id).toList());
     songs
       ..clear()
       ..addAll(songDetailWrap.songs ?? []);
@@ -29,7 +29,7 @@ class PlayListController extends HomeController {
           id: songs[i].id,
           duration: Duration(milliseconds: songs[i].dt ?? 0),
           artUri: Uri.parse(songs[i].al.picUrl ?? ''),
-          extras: {'url': songUrlListWrap.data?.firstWhere((element) => element.id == songs[i].id).url ?? '', 'image': songs[i].al.picUrl ?? '', 'type': ''},
+          extras: {'url': '', 'image': songs[i].al.picUrl ?? '', 'type': ''},
           title: songs[i].name ?? "",
           artist: (songs[i].ar ?? []).map((e) => e.name).toList().join(' / '));
       mediaItems.add(mediaItem);

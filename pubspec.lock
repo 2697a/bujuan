@@ -300,13 +300,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.0.1"
-  flutter_lyric:
-    dependency: "direct main"
-    description:
-      name: flutter_lyric
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "2.0.4"
   flutter_screenutil:
     dependency: "direct main"
     description:
@@ -439,23 +432,23 @@ packages:
   just_audio:
     dependency: "direct main"
     description:
-      name: just_audio
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "0.9.29"
+      path: "plugins/just_audio"
+      relative: true
+    source: path
+    version: "0.9.28"
   just_audio_platform_interface:
     dependency: transitive
     description:
-      name: just_audio_platform_interface
-      url: "https://pub.flutter-io.cn"
-    source: hosted
+      path: "plugins/just_audio_platform_interface"
+      relative: true
+    source: path
     version: "4.2.0"
   just_audio_web:
     dependency: transitive
     description:
-      name: just_audio_web
-      url: "https://pub.flutter-io.cn"
-    source: hosted
+      path: "plugins/just_audio_web"
+      relative: true
+    source: path
     version: "0.4.7"
   just_waveform:
     dependency: "direct main"

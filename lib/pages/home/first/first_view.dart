@@ -168,9 +168,9 @@ class FirstView extends GetView<FirstController> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      controller.mediaItem.value.title ?? '',
+                      controller.mediaItem.value.title,
                       style: TextStyle(fontSize: 28.sp, color: controller.getLightTextColor(), fontWeight: FontWeight.bold),
-                      maxLines: 1,
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                     Padding(padding: EdgeInsets.symmetric(vertical: 1.w)),

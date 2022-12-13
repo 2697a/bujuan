@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:bujuan/common/constants/key.dart';
+import 'package:bujuan/common/netease_api/netease_music_api.dart';
 import 'package:bujuan/common/storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:just_audio/just_audio.dart';
@@ -133,9 +134,9 @@ class AudioServeHandler extends BaseAudioHandler
 
   void _listenForCurrentSongIndexChanges() {
     _player.currentIndexStream.listen((index) async {
-      print('_listenForCurrentSongIndexChanges========$index');
       final playlist = queue.value;
       if (index == null || playlist.isEmpty) return;
+      // print('_listenForCurrentSongIndexChanges========${playlist[index].}');
       if (_player.shuffleModeEnabled) {
         index = _player.shuffleIndices![index];
       }
@@ -164,9 +165,21 @@ class AudioServeHandler extends BaseAudioHandler
   @override
   Future<void> addQueueItems(List<MediaItem> mediaItems) async {
     // 管理 Just Audio
-    final audioSource = mediaItems.map(_createAudioSource);
     await _playlist.clear();
-    await _playlist.addAll(audioSource.toList());
+    // final audioSource = mediaItems.map();
+    // await _playlist.addAll(audioSource.toList());
+
+    final mappingAudioSources = [
+      for (final queueItem in mediaItems)
+        MappingAudioSource(
+          queueItem,
+          ((MediaItem queueItem) async {
+            SongUrlListWrap queueSong = await NeteaseMusicApi().songUrl([queueItem.id]);
+            return AudioSource.uri(Uri.parse(queueSong.data![0].url??''), tag: queueItem);
+          }),
+        )
+    ];
+    _playlist.addAll(mappingAudioSources);
     // 通知系统
     queue.value.clear();
     final newQueue = queue.value..addAll(mediaItems);
@@ -174,11 +187,18 @@ class AudioServeHandler extends BaseAudioHandler
     await StorageUtil().setString(playQueueTitle, queueTitle.value);
   }
 
-  UriAudioSource _createAudioSource(MediaItem mediaItem) {
-    return AudioSource.uri(
-      Uri.parse(mediaItem.extras!['url']),
-      tag: mediaItem,
-    );
+  // Future<UriAudioSource> _createAudioSource(MediaItem mediaItem) async{
+  //    // MappingAudioSource(mediaItem, (item)async => ((await NeteaseMusicApi().songUrl([mediaItem.id])).data??[])[0].url??'')
+  //   return AudioSource.uri(
+  //     Uri.parse(),
+  //     tag: mediaItem,
+  //   );
+  // }
+
+  @override
+  Future<void> updateMediaItem(MediaItem mediaItem) async {
+
+    super.updateMediaItem(mediaItem);
   }
 
   @override

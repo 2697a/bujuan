@@ -46,7 +46,9 @@ dependencies:
   extended_image: ^6.0.1
   palette_generator: ^0.3.3
   on_audio_query: ^2.6.1
-  just_audio: ^0.9.29
+#  临时解决延迟加载音乐url的问题
+  just_audio:
+    path: plugins/just_audio
   audio_service: ^0.18.7
   get_it: ^7.2.0
   loading_animation_widget: ^1.2.0+2
@@ -67,7 +69,6 @@ dependencies:
   json_annotation: ^4.0.1
 #  jaudiotagger:
 #    path: ../jaudiotagger
-  flutter_lyric: ^2.0.4
   tuna_flutter_range_slider: ^1.0.0
   flutter_svg: ^1.1.0
   modal_bottom_sheet: ^2.1.0

@@ -6,6 +6,7 @@ import 'dart:math';
 import 'package:audio_service/audio_service.dart';
 import 'package:bujuan/common/audio_handler.dart';
 import 'package:bujuan/common/constants/other.dart';
+import 'package:bujuan/common/netease_api/src/netease_api.dart';
 import 'package:bujuan/common/storage.dart';
 import 'package:bujuan/pages/home/second/second_body_view.dart';
 import 'package:bujuan/pages/index/main_view.dart';
@@ -13,7 +14,6 @@ import 'package:bujuan/pages/user/user_view.dart';
 import 'package:bujuan/widget/keep_alive.dart';
 import 'package:bujuan/widget/weslide/weslide_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_lyric/lyrics_reader_model.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_zoom_drawer/config.dart';
 import 'package:get/get.dart';
@@ -26,6 +26,7 @@ import 'package:tabler_icons/tabler_icons.dart';
 import 'package:tuna_flutter_range_slider/tuna_flutter_range_slider.dart';
 
 import '../../common/netease_api/src/api/login/bean.dart';
+import '../../common/netease_api/src/api/play/bean.dart';
 
 class HomeController extends SuperController with GetSingleTickerProviderStateMixin {
 
@@ -74,7 +75,6 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   RxInt sleep = 0.obs;
   String directoryPath = '';
 
-  Rx<LyricsReaderModel>? lyricModel;
   MyVerticalDragGestureRecognizer myVerticalDragGestureRecognizer = MyVerticalDragGestureRecognizer();
 
   RxBool needDrag = false.obs;
@@ -107,8 +107,19 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
       slidePosition1.value = animationController?.value ?? 0;
     });
     audioServeHandler.setRepeatMode(audioServiceRepeatMode.value);
+    audioServeHandler.playbackState.listen((value) {
+      int index = value.queueIndex??-1;
+      List<MediaItem> list = audioServeHandler.queue.value;
+      if(index<list.length){
+
+      }
+    });
     audioServeHandler.mediaItem.listen((value) async {
       if (value == null) return;
+      // SongUrlListWrap songUrlListWrap = await NeteaseMusicApi().songUrl([value.id]);
+      //
+      // print('object=========${songUrlListWrap.data![0].url}}');
+      // audioServeHandler.updateMediaItem(value.copyWith(extras: {'url':songUrlListWrap.data![0].url}));
       setHeaderHeight();
       //获取歌词
       // audioTagger.getPlatformVersion(value.extras?['data'] ?? '').then((value) {
