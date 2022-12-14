@@ -16,6 +16,9 @@ onReday(){
   print('object');
 }
   loginCallPhone(context) {
+    if(phone.text.isEmpty || pass.text.isEmpty){
+      return;
+    }
     NeteaseMusicApi().loginCellPhone(phone.text, pass.text).then((NeteaseAccountInfoWrap neteaseAccountInfoWrap)  {
       UserController.to.saveUser(neteaseAccountInfoWrap);
       AutoRouter.of(context).pop();

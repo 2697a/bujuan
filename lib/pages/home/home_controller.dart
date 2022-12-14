@@ -74,6 +74,12 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   //进度
   @override
   void onInit() async {
+    super.onInit();
+  }
+
+  @override
+  void onReady() async {
+    super.onReady();
     animationController = AnimationController(vsync: this, duration: const Duration(milliseconds: 100));
     var rng = Random();
     for (double i = 0; i < 100; i++) {
@@ -114,12 +120,6 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
     audioServeHandler.playbackState.listen((value) {
       playing.value = value.playing;
     });
-    super.onInit();
-  }
-
-  @override
-  void onReady() async {
-    super.onReady();
   }
 
   static HomeController get to => Get.find();

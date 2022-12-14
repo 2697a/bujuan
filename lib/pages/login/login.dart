@@ -12,7 +12,11 @@ class LoginView extends GetView<LoginController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(leading: IconButton(onPressed: () => AutoRouter.of(context).pop(), icon: Icon(Icons.close)),),
+      appBar: AppBar(
+        leading: IconButton(
+            onPressed: () => AutoRouter.of(context).pop(),
+            icon: Icon(Icons.close)),
+      ),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 30.w),
         child: Container(
@@ -21,10 +25,29 @@ class LoginView extends GetView<LoginController> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('Hello Again!',style: TextStyle(fontSize: 56.sp),),
+              Text(
+                '欢迎回来!',
+                style: TextStyle(fontSize: 56.sp),
+              ),
               Padding(padding: EdgeInsets.symmetric(vertical: 8.w)),
-              Text('Welcome back',style: TextStyle(fontSize: 36.sp,color: Colors.grey),),
-              _buildEdit(controller.phone, 'hint')
+              Text(
+                '请登录',
+                style: TextStyle(fontSize: 36.sp, color: Colors.grey),
+              ),
+              _buildEdit(controller.phone, 'Enter Phone',context),
+              _buildEdit(controller.pass, 'Enter Password',context),
+              GestureDetector(
+                child: Container(
+                  height: 88.w,
+                  padding: EdgeInsets.symmetric(horizontal: 45.w,vertical: 30.w),
+                  decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColor,
+                      borderRadius: BorderRadius.circular(20.w)
+                  ),
+                  child: Text('立即登录',style: TextStyle(fontSize: 32.sp,color: Colors.white,fontWeight: FontWeight.bold),),
+                ),
+                onTap: () => controller.loginCallPhone(context),
+              )
             ],
           ),
         ),
@@ -32,15 +55,22 @@ class LoginView extends GetView<LoginController> {
     );
   }
 
-  Widget _buildEdit(TextEditingController textEditingController,String hint){
+  Widget _buildEdit(TextEditingController textEditingController, String hint,context) {
     return Container(
-      decoration: BoxDecoration(
-        color: Colors.white
-      ),
+      margin: EdgeInsets.symmetric(vertical: 35.w),
+      decoration:  BoxDecoration(color: Theme.of(context).bottomAppBarColor,borderRadius: BorderRadius.circular(30.w)),
       child: Row(
-        children: [TextField(controller: textEditingController,decoration: InputDecoration(
-          hintText: hint
-        ),)],
+        children: [
+          Expanded(
+              child: TextField(
+            controller: textEditingController,
+            decoration: InputDecoration(
+                hintText: hint,
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 30.w, horizontal: 15.w),
+                border: const UnderlineInputBorder(borderSide: BorderSide.none)),
+          ))
+        ],
       ),
     );
   }
@@ -51,7 +81,8 @@ class LoginView extends GetView<LoginController> {
       children: [
         Container(
           margin: EdgeInsets.only(top: 60.w),
-          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24.w)),
+          decoration: BoxDecoration(
+              color: Colors.white, borderRadius: BorderRadius.circular(24.w)),
           child: Padding(
             padding: EdgeInsets.only(left: 30.w, right: 30.w, top: 100.w),
             child: Column(
@@ -66,7 +97,8 @@ class LoginView extends GetView<LoginController> {
                 RemovableTextField(
                   controller: controller.phone,
                   showDeleteIcon: false,
-                  contentPadding: EdgeInsets.symmetric(vertical: 20.w, horizontal: 10.w),
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 20.w, horizontal: 10.w),
                 ),
                 Padding(
                     padding: EdgeInsets.symmetric(vertical: 15.w),
@@ -76,7 +108,8 @@ class LoginView extends GetView<LoginController> {
                     )),
                 RemovableTextField(
                   controller: controller.pass,
-                  contentPadding: EdgeInsets.symmetric(vertical: 20.w, horizontal: 10.w),
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 20.w, horizontal: 10.w),
                   showDeleteIcon: false,
                 ),
                 GestureDetector(
@@ -90,9 +123,11 @@ class LoginView extends GetView<LoginController> {
                         margin: EdgeInsets.symmetric(vertical: 60.w),
                         decoration: BoxDecoration(
                             color: Colors.red,
-                          borderRadius: BorderRadius.circular(40.w)
+                            borderRadius: BorderRadius.circular(40.w)),
+                        child: const Text(
+                          '登录',
+                          style: TextStyle(color: Colors.white),
                         ),
-                        child: const Text('登录',style: TextStyle(color: Colors.white),),
                       )
                     ],
                   ),
