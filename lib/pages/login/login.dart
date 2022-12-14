@@ -38,13 +38,15 @@ class LoginView extends GetView<LoginController> {
               _buildEdit(controller.pass, 'Enter Password',context),
               GestureDetector(
                 child: Container(
-                  height: 88.w,
-                  padding: EdgeInsets.symmetric(horizontal: 45.w,vertical: 30.w),
+                  height: 98.w,
+                  alignment: Alignment.center,
+                  width: Get.width,
+                  margin: EdgeInsets.symmetric(vertical: 30.w),
                   decoration: BoxDecoration(
                       color: Theme.of(context).primaryColor,
                       borderRadius: BorderRadius.circular(20.w)
                   ),
-                  child: Text('立即登录',style: TextStyle(fontSize: 32.sp,color: Colors.white,fontWeight: FontWeight.bold),),
+                  child: Text('立即登录',style: TextStyle(fontSize: 32.sp,color: Colors.white),),
                 ),
                 onTap: () => controller.loginCallPhone(context),
               )

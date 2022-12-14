@@ -56,9 +56,9 @@ class UserController extends HomeController {
 
   saveUser(NeteaseAccountInfoWrap neteaseAccountInfoWrap)  {
     loginStatus.value = true;
-    getUserPlayList();
     userData.value = neteaseAccountInfoWrap;
     StorageUtil().setJSON('STORAGE_USER_PROFILE_KEY', jsonEncode(neteaseAccountInfoWrap.toJson()));
+    getUserPlayList();
   }
   getUserPlayList() {
     NeteaseMusicApi()
