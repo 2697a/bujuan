@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
 import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
@@ -8,7 +6,6 @@ import 'package:bujuan/common/audio_handler.dart';
 import 'package:bujuan/common/constants/other.dart';
 import 'package:bujuan/common/lyric_parser/parser_lrc.dart';
 import 'package:bujuan/common/netease_api/netease_music_api.dart';
-import 'package:bujuan/common/storage.dart';
 import 'package:bujuan/pages/home/second/second_body_view.dart';
 import 'package:bujuan/widget/weslide/weslide_controller.dart';
 import 'package:flutter/material.dart';
@@ -18,14 +15,14 @@ import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 
 import 'package:on_audio_query/on_audio_query.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:tabler_icons/tabler_icons.dart';
 import 'package:tuna_flutter_range_slider/tuna_flutter_range_slider.dart';
 
 import '../../common/lyric_parser/lyrics_reader_model.dart';
 
-class HomeController extends SuperController with GetSingleTickerProviderStateMixin {
+class HomeController extends SuperController
+    with GetSingleTickerProviderStateMixin {
   final String weSlideUpdate = 'weSlide';
 
   //是否折叠
@@ -40,17 +37,21 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   RxBool isRoot = true.obs;
   RxBool second = false.obs;
   bool first = true;
-  Rx<MediaItem> mediaItem = const MediaItem(id: '', title: '暂无', duration: Duration(seconds: 10)).obs;
+  Rx<MediaItem> mediaItem =
+      const MediaItem(id: '', title: '暂无', duration: Duration(seconds: 10)).obs;
   RxBool playing = false.obs;
   final OnAudioQuery audioQuery = GetIt.instance<OnAudioQuery>();
   late BuildContext buildContext;
-  final AudioServeHandler audioServeHandler = GetIt.instance<AudioServeHandler>();
+  final AudioServeHandler audioServeHandler =
+      GetIt.instance<AudioServeHandler>();
   Rx<Duration> duration = Duration.zero.obs;
   PanelController panelController = PanelController();
   bool isDownSlide = true;
 
-  Rx<AudioServiceRepeatMode> audioServiceRepeatMode = AudioServiceRepeatMode.all.obs;
-  Rx<AudioServiceShuffleMode> audioServiceShuffleMode = AudioServiceShuffleMode.none.obs;
+  Rx<AudioServiceRepeatMode> audioServiceRepeatMode =
+      AudioServiceRepeatMode.all.obs;
+  Rx<AudioServiceShuffleMode> audioServiceShuffleMode =
+      AudioServiceShuffleMode.none.obs;
 
   List<Map<dynamic, dynamic>> mEffects = [];
   double ellv = 30;
@@ -60,13 +61,15 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   String directoryPath = '';
   FixedExtentScrollController scrollController = FixedExtentScrollController();
 
-  MyVerticalDragGestureRecognizer myVerticalDragGestureRecognizer = MyVerticalDragGestureRecognizer();
+  MyVerticalDragGestureRecognizer myVerticalDragGestureRecognizer =
+      MyVerticalDragGestureRecognizer();
 
   RxBool needDrag = false.obs;
 
   //用户登录状态
   RxBool login = false.obs;
-  ZoomDrawerController myDrawerController = GetIt.instance<ZoomDrawerController>();
+  ZoomDrawerController myDrawerController =
+      GetIt.instance<ZoomDrawerController>();
   List<String> lyricList = <String>[].obs;
   List<LyricsLineModel> lyricsLineModels = <LyricsLineModel>[].obs;
   RxBool showPlayList = true.obs;
@@ -80,7 +83,8 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   @override
   void onReady() async {
     super.onReady();
-    animationController = AnimationController(vsync: this, duration: const Duration(milliseconds: 100));
+    animationController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 100));
     var rng = Random();
     for (double i = 0; i < 100; i++) {
       mEffects.add({"percent": i, "size": 5 + rng.nextInt(30 - 5).toDouble()});
@@ -92,29 +96,35 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
     audioServeHandler.mediaItem.listen((value) async {
       if (value == null) return;
       //获取歌词
-      SongLyricWrap songLyricWrap = await NeteaseMusicApi().songLyric(value.id ?? '');
+      SongLyricWrap songLyricWrap =
+          await NeteaseMusicApi().songLyric(value.id ?? '');
       String lyric = songLyricWrap.lrc.lyric ?? "";
       lyricsLineModels
         ..clear()
         ..addAll(ParserLrc(lyric).parseLines());
       mediaItem.value = value;
-      ImageUtils.getImageColor('${mediaItem.value.artUri?.scheme ?? ''}://${mediaItem.value.artUri?.host ?? ''}/${mediaItem.value.artUri?.path ?? ''}?param=50y50',
-              (paletteColorData) {
-            rx.value = paletteColorData;
-          });
+      ImageUtils.getImageColor(
+          '${mediaItem.value.artUri?.scheme ?? ''}://${mediaItem.value.artUri?.host ?? ''}/${mediaItem.value.artUri?.path ?? ''}?param=50y50',
+          (paletteColorData) {
+        rx.value = paletteColorData;
+      });
     });
     //监听实时进度变化
     AudioService.position.listen((event) {
       // if (first) duration.value = event;
       if (!weSlideController.isOpened) return;
-      if (event.inMilliseconds > (mediaItem.value.duration?.inMilliseconds ?? 0)) {
+      if (event.inMilliseconds >
+          (mediaItem.value.duration?.inMilliseconds ?? 0)) {
         duration.value = Duration.zero;
         return;
       }
       duration.value = event;
-      int index = lyricsLineModels.indexWhere((element) => (element.startTime ?? 0) >= event.inMilliseconds && (element.endTime ?? 0) <= event.inMilliseconds);
+      int index = lyricsLineModels.indexWhere((element) =>
+          (element.startTime ?? 0) >= event.inMilliseconds &&
+          (element.endTime ?? 0) <= event.inMilliseconds);
       if (index != -1) {
-        scrollController.animateToItem(index > 0 ? index - 1 : index, duration: const Duration(milliseconds: 300), curve: Curves.linear);
+        scrollController.animateToItem(index > 0 ? index - 1 : index,
+            duration: const Duration(milliseconds: 300), curve: Curves.linear);
       }
     });
     audioServeHandler.playbackState.listen((value) {
@@ -239,24 +249,22 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
     return EdgeInsets.only(
       left: 30.w,
       right: 30.w,
-      top: MediaQuery.of(buildContext).padding.top * (second.value ? (1 - slidePosition.value) : slidePosition.value),
-      bottom: slidePosition.value == 0 ? MediaQuery.of(buildContext).padding.bottom * .5 : 0,
+      top: MediaQuery.of(buildContext).padding.top *
+          (second.value ? (1 - slidePosition.value) : slidePosition.value),
     );
   }
 
   //当路由发生变化时调用
   void changeRoute(String? route) async {}
 
-  List<FlutterSliderHatchMarkLabel> updateEffects(double leftPercent, double rightPercent) {
+  List<FlutterSliderHatchMarkLabel> updateEffects(
+      double leftPercent, double rightPercent) {
     List<FlutterSliderHatchMarkLabel> newLabels = [];
     for (Map<dynamic, dynamic> label in mEffects) {
       newLabels.add(FlutterSliderHatchMarkLabel());
     }
     return newLabels;
   }
-
-
-
 
   @override
   void onDetached() {

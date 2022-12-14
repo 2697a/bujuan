@@ -121,6 +121,10 @@ class SecondBodyView extends GetView<FirstController> {
             ],
           ),
           header: _buildBottom(),
+              footer: Container(
+                color: Colors.red,
+                height: MediaQuery.of(context).padding.bottom,
+              ),
           minHeight: 90.h,
           maxHeight: Get.height - controller.getPanelMinSize() - MediaQuery.of(context).padding.top - 40.w,
         )),

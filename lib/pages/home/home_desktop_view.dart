@@ -14,15 +14,15 @@ class HomeDesktopView extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body:  _buildDesktop(),
+      body: _buildDesktop(),
     );
   }
 
   //桌面端布局之后横屏也采用该布局
   Widget _buildDesktop() {
     return Row(
-      children: [
-        const LeftMenu(),
+      children: const [
+        LeftMenu(),
         // Expanded(
         //     child: Obx(() => WeSlide(
         //           controller: controller.weSlideController,

@@ -47,8 +47,13 @@ class FirstView extends GetView<FirstController> {
                 panelHeader: _buildPanelHeader(),
                 hidePanelHeader: false,
                 isDownSlide: controller.isDownSlide,
-                height: Get.height,
-                panelMinSize: controller.panelMobileMinSize + MediaQuery.of(controller.buildContext).padding.bottom * .5,
+                footer: Container(
+                  color: Theme.of(context).bottomAppBarColor,
+                  height: MediaQuery.of(controller.buildContext).padding.bottom,
+                ),
+                footerHeight: MediaQuery.of(controller.buildContext).padding.bottom,
+                height: Get.height+MediaQuery.of(controller.buildContext).padding.bottom,
+                panelMinSize: controller.panelMobileMinSize +MediaQuery.of(controller.buildContext).padding.bottom,
                 onPosition: (value) => controller.changeSlidePosition(value),
               ),
               controller: controller.myDrawerController,
@@ -67,8 +72,7 @@ class FirstView extends GetView<FirstController> {
             padding: controller.getHeaderPadding(),
             width: Get.width,
             height: controller.getPanelMinSize() +
-                controller.getHeaderPadding().top +
-                (controller.slidePosition.value == 0 ? MediaQuery.of(controller.buildContext).padding.bottom * .5 : 0),
+                controller.getHeaderPadding().top,
             duration: const Duration(milliseconds: 0),
             child: _buildPlayBar(),
           )),
