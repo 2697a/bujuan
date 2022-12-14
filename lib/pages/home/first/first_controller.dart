@@ -20,8 +20,15 @@ class FirstController extends HomeController{
   ];
 
   double pointerDy = 0;
+  //进度
+  @override
+  void onInit() async {
+  }
 
+  @override
+  void onReady() {
 
+  }
   static FirstController get to => Get.find();
 
   //获取panel页面顶部的高度

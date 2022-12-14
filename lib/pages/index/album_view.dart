@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import '../../common/netease_api/src/api/play/cloud_entity.dart';
 import '../../widget/data_widget.dart';
 import '../home/home_controller.dart';
+import '../user/user_controller.dart';
 
 class AlbumView extends GetView<IndexController> {
   const AlbumView({Key? key}) : super(key: key);
@@ -24,7 +25,7 @@ class AlbumView extends GetView<IndexController> {
                 return;
               }
             },
-            icon: Obx(() => SimpleExtendedImage.avatar('${HomeController.to.login.value ? controller.userData.value.profile?.avatarUrl : ''}'))),
+            icon: Obx(() => SimpleExtendedImage.avatar('${HomeController.to.login.value ? UserController.to.userData.value.profile?.avatarUrl : ''}'))),
         title: RichText(
             text: TextSpan(style: TextStyle(fontSize: 42.sp, color: Colors.grey, fontWeight: FontWeight.bold), text: 'Here  ', children: [
               TextSpan(

@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/common/netease_api/netease_music_api.dart';
 import 'package:bujuan/pages/home/first/first_controller.dart';
 import 'package:bujuan/pages/index/index_controller.dart';
+import 'package:bujuan/pages/user/user_controller.dart';
 import 'package:bujuan/widget/data_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -29,7 +30,7 @@ class MainView extends GetView<IndexController> {
                 return;
               }
             },
-            icon: Obx(() => SimpleExtendedImage.avatar('${HomeController.to.login.value ? controller.userData.value.profile?.avatarUrl : ''}'))),
+            icon: Obx(() => SimpleExtendedImage.avatar('${HomeController.to.login.value ? UserController.to.userData.value.profile?.avatarUrl : ''}'))),
         title: RichText(
             text: TextSpan(style: TextStyle(fontSize: 42.sp, color: Colors.grey, fontWeight: FontWeight.bold), text: 'Here  ', children: [
               TextSpan(

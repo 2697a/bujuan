@@ -66,7 +66,6 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
 
   //用户登录状态
   RxBool login = false.obs;
-  Rx<NeteaseAccountInfoWrap> userData = NeteaseAccountInfoWrap().obs;
   ZoomDrawerController myDrawerController = GetIt.instance<ZoomDrawerController>();
   List<String> lyricList = <String>[].obs;
   List<LyricsLineModel> lyricsLineModels = <LyricsLineModel>[].obs;
@@ -75,48 +74,28 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   //进度
   @override
   void onInit() async {
-    _getUserState();
-    Directory directory = await getTemporaryDirectory();
-    directoryPath = directory.path;
-    setHeaderHeight();
     animationController = AnimationController(vsync: this, duration: const Duration(milliseconds: 100));
     var rng = Random();
     for (double i = 0; i < 100; i++) {
       mEffects.add({"percent": i, "size": 5 + rng.nextInt(30 - 5).toDouble()});
     }
-    super.onInit();
-  }
-
-  @override
-  void onReady() async {
-    super.onReady();
     animationController?.addListener(() {
       slidePosition1.value = animationController?.value ?? 0;
     });
     audioServeHandler.setRepeatMode(audioServiceRepeatMode.value);
     audioServeHandler.mediaItem.listen((value) async {
       if (value == null) return;
-      setHeaderHeight();
       //获取歌词
       SongLyricWrap songLyricWrap = await NeteaseMusicApi().songLyric(value.id ?? '');
       String lyric = songLyricWrap.lrc.lyric ?? "";
-      lyricList
-        ..clear()
-        ..addAll(lyric.split('\n'));
       lyricsLineModels
         ..clear()
         ..addAll(ParserLrc(lyric).parseLines());
-      print('============${lyric.split('\n').length}');
-      // audioTagger.getPlatformVersion(value.extras?['data'] ?? '').then((value) {
-      //   print('object===========$value');
-      //   lyricList.value = value ?? '';
-      //   // lyricModel?.value = LyricsModelBuilder.create().bindLyricToMain(value ?? '').getModel();
-      // });
       mediaItem.value = value;
       ImageUtils.getImageColor('${mediaItem.value.artUri?.scheme ?? ''}://${mediaItem.value.artUri?.host ?? ''}/${mediaItem.value.artUri?.path ?? ''}?param=50y50',
-          (paletteColorData) {
-        rx.value = paletteColorData;
-      });
+              (paletteColorData) {
+            rx.value = paletteColorData;
+          });
     });
     //监听实时进度变化
     AudioService.position.listen((event) {
@@ -135,22 +114,15 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
     audioServeHandler.playbackState.listen((value) {
       playing.value = value.playing;
     });
+    super.onInit();
+  }
+
+  @override
+  void onReady() async {
+    super.onReady();
   }
 
   static HomeController get to => Get.find();
-
-  //动态设置Header高度 工单
-  setHeaderHeight() {
-    // if (mediaItem.value.id == 'no' && panelHeaderSize > 0) {
-    //   panelHeaderSize = 0;
-    //   panelMobileMinSize = panelHeaderSize + bottomBarHeight;
-    // } else {
-    //   if (panelHeaderSize == 90.h) return;
-    //   panelHeaderSize = 90.h;
-    //   panelMobileMinSize = panelHeaderSize + bottomBarHeight;
-    //   update([weSlideUpdate]);
-    // }
-  }
 
   //改变循环模式
   changeRepeatMode() {
@@ -283,19 +255,8 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
     return newLabels;
   }
 
-  _getUserState() {
-    var data = StorageUtil().getJSON('USER_DATA');
-    if (data != null) {
-      login.value = true;
-      userData.value = NeteaseAccountInfoWrap.fromJson(jsonDecode(data));
-    }
-  }
 
-  saveUser(NeteaseAccountInfoWrap neteaseAccountInfoWrap) async {
-    login.value = true;
-    userData.value = neteaseAccountInfoWrap;
-    await StorageUtil().setJSON('USER_DATA', jsonEncode(neteaseAccountInfoWrap.toJson()));
-  }
+
 
   @override
   void onDetached() {

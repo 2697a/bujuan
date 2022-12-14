@@ -20,15 +20,15 @@ class UserView extends GetView<UserController> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
-        leading: IconButton(
+        leading: Obx(() => IconButton(
             onPressed: () {
-              if (controller.login.value) {
+              if (controller.loginStatus.value) {
                 controller.myDrawerController.open!();
                 return;
               }
               AutoRouter.of(context).pushNamed(Routes.login);
             },
-            icon: Obx(() => SimpleExtendedImage.avatar('${HomeController.to.login.value ? controller.userData.value.profile?.avatarUrl : ''}'))),
+            icon: SimpleExtendedImage.avatar('${controller.loginStatus.value ? controller.userData.value.profile?.avatarUrl : ''}'))),
         title: Obx(
           () => AnimatedOpacity(
             opacity: controller.op.value,
@@ -36,7 +36,7 @@ class UserView extends GetView<UserController> {
             child: RichText(
                 text: TextSpan(style: TextStyle(fontSize: 42.sp, color: Colors.grey, fontWeight: FontWeight.bold), text: 'Hi  ', children: [
               TextSpan(
-                  text: '${controller.login.value ? controller.userData.value.profile?.nickname : '请登录'}～',
+                  text: '${controller.loginStatus.value ? controller.userData.value.profile?.nickname : '请登录'}～',
                   style: TextStyle(color: Theme.of(context).primaryColor.withOpacity(.9))),
             ])),
           ),
@@ -109,8 +109,8 @@ Widget _buildHeader(String title,context){
             children: [
               Text('Hi', style: TextStyle(fontSize: 52.sp, color: Colors.grey, fontWeight: FontWeight.bold)),
               Padding(padding: EdgeInsets.symmetric(vertical: 8.w)),
-              Text('${controller.login.value ? controller.userData.value.profile?.nickname : '请登录'}～',
-                  style: TextStyle(fontSize: 52.sp, color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold)),
+              Obx(() => Text('${controller.loginStatus.value ? controller.userData.value.profile?.nickname : '请登录'}～',
+                  style: TextStyle(fontSize: 52.sp, color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold))),
             ],
           )),
           Container(

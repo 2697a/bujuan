@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/pages/login/login_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -11,16 +12,35 @@ class LoginView extends GetView<LoginController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('登录'),
-      ),
+      appBar: AppBar(leading: IconButton(onPressed: () => AutoRouter.of(context).pop(), icon: Icon(Icons.close)),),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 30.w),
-        child: Column(
-          children: [
-            _buildLoginView(context),
-          ],
+        child: Container(
+          margin: EdgeInsets.only(top: 60.w),
+          width: Get.width,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('Hello Again!',style: TextStyle(fontSize: 56.sp),),
+              Padding(padding: EdgeInsets.symmetric(vertical: 8.w)),
+              Text('Welcome back',style: TextStyle(fontSize: 36.sp,color: Colors.grey),),
+              _buildEdit(controller.phone, 'hint')
+            ],
+          ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildEdit(TextEditingController textEditingController,String hint){
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white
+      ),
+      child: Row(
+        children: [TextField(controller: textEditingController,decoration: InputDecoration(
+          hintText: hint
+        ),)],
       ),
     );
   }
@@ -78,7 +98,7 @@ class LoginView extends GetView<LoginController> {
                   ),
                   onTap: () {
                     print('object');
-                    controller.login(context);
+                    controller.loginCallPhone(context);
                   },
                 )
               ],

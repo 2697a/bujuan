@@ -10,10 +10,10 @@ import '../play_list/playlist_controller.dart';
 class HomeBinding extends Bindings{
   @override
   void dependencies() {
-    Get.lazyPut(() => FirstController());
-    Get.lazyPut(() => HomeController());
-    Get.lazyPut(() => IndexController());
     Get.lazyPut(() => UserController());
+    Get.lazyPut(() => HomeController());
+    Get.lazyPut(() => FirstController());
+    Get.lazyPut(() => IndexController());
     Get.lazyPut(() => PlayListController());
     Get.lazyPut(() => LoginController());
   }
