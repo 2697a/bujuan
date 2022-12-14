@@ -40,10 +40,10 @@ abstract class _Paths {
   replaceInRouteName: 'Page,Route',
   routes: <AutoRoute>[
     AutoRoute(path: Routes.home, page: FirstView, deferredLoading: true, initial: true, children: [
-      AutoRoute(path: Routes.user, page: UserView),
+      AutoRoute(path: Routes.user, page: UserView, initial: true, deferredLoading: true),
       AutoRoute(path: Routes.search, page: AlbumView),
       AutoRoute(path: Routes.playlist, page: PlayList),
-      AutoRoute(path: Routes.index, page: MainView, initial: true, deferredLoading: true)
+      AutoRoute(path: Routes.index, page: MainView)
     ]),
     AutoRoute(path: Routes.login, page: LoginView),
   ],

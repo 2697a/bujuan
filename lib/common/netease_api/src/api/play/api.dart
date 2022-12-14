@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:bujuan/common/netease_api/src/api/play/cloud_entity.dart';
 import 'package:dio/dio.dart';
 import '../../../netease_music_api.dart';
 import '../../../src/api/bean.dart';
@@ -515,11 +516,11 @@ mixin ApiPlay {
 
   /// 获取云盘?音乐?
   /// !需要登录
-  Future<CloudSongListWrap> cloudSong({int offset = 0, int limit = 30}) {
+  Future<CloudEntity> cloudSong({int offset = 0, int limit = 30}) {
     return Https.dioProxy
         .postUri(cloudSongDioMetaData(offset: offset, limit: limit))
         .then((Response value) {
-      return CloudSongListWrap.fromJson(value.data);
+      return CloudEntity.fromJson(value.data);
     });
   }
 

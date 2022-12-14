@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/pages/home/first/first_controller.dart';
+import 'package:bujuan/pages/home/first/menu_view.dart';
 import 'package:bujuan/pages/home/home_mobile_view.dart';
 import 'package:bujuan/pages/home/second/second_body_view.dart';
 import 'package:bujuan/widget/simple_extended_image.dart';
@@ -26,50 +27,13 @@ class FirstView extends GetView<FirstController> {
             builder: (c) => ZoomDrawer(
               // mainScreenScale:.1,
               dragOffset: Get.width / 4,
-              duration: const Duration(milliseconds: 300),
+              // openCurve: Curves.fastOutSlowIn,
+              openCurve: Curves.fastLinearToSlowEaseIn,
+              duration: const Duration(milliseconds: 200),
               menuScreenTapClose: true,
               showShadow: true,
               mainScreenTapClose: true,
-              menuScreen: SafeArea(
-                  child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    SimpleExtendedImage.avatar(
-                      controller.userData.value.profile?.avatarUrl ?? '',
-                      width: 200.w,
-                    ),
-                    ListView.builder(
-                      padding: EdgeInsets.symmetric(vertical: 140.w),
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) => InkWell(
-                        child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 30.w),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Icon(controller.leftMenus[index].icon, color: Colors.white.withOpacity(.9)),
-                              Expanded(
-                                  child: Padding(
-                                padding: EdgeInsets.only(left: 30.w, top: 8.w),
-                                child: Text(
-                                  controller.leftMenus[index].title,
-                                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                                ),
-                              )),
-                            ],
-                          ),
-                        ),
-                        onTap: () {
-                          controller.myDrawerController.close!();
-                          Future.delayed(const Duration(milliseconds: 500), () => context.router.replaceNamed(controller.leftMenus[index].path));
-                        },
-                      ),
-                      itemCount: controller.leftMenus.length,
-                    )
-                  ],
-                ),
-              )),
+              menuScreen: const MenuView(),
               moveMenuScreen: true,
               menuBackgroundColor: Theme.of(context).primaryColor.withOpacity(.9),
               mainScreen: WeSlide(
@@ -111,6 +75,8 @@ class FirstView extends GetView<FirstController> {
       onTap: () {
         if (!controller.weSlideController.isOpened) {
           controller.weSlideController.show();
+        } else {
+          if (controller.panelController.isPanelOpen) controller.panelController.close();
         }
       },
     );
@@ -205,39 +171,39 @@ class FirstView extends GetView<FirstController> {
     );
   }
 
-  Widget _buildFooter() {
-    return Obx(() => controller.isRoot.value
-        ? FlashyNavbar(
-            iconSize: 46.w,
-            height: controller.bottomBarHeight,
-            selectedIndex: controller.selectIndex.value,
-            showElevation: false,
-            onItemSelected: (index) {
-              controller.changeSelectIndex(index);
-            },
-            items: [
-              FlashyNavbarItem(
-                icon: const Icon(TablerIcons.smartHome),
-                title: const Text('首页'),
-              ),
-              FlashyNavbarItem(
-                icon: const Icon(TablerIcons.disc),
-                title: const Text('专辑'),
-              ),
-              FlashyNavbarItem(
-                icon: const Icon(TablerIcons.brandTiktok),
-                title: const Text('单曲'),
-              ),
-              FlashyNavbarItem(
-                icon: const Icon(TablerIcons.user),
-                title: const Text('歌手'),
-              ),
-            ],
-          )
-        : Container(
-            color: Theme.of(controller.buildContext).bottomAppBarColor,
-          ));
-  }
+// Widget _buildFooter() {
+//   return Obx(() => controller.isRoot.value
+//       ? FlashyNavbar(
+//           iconSize: 46.w,
+//           height: controller.bottomBarHeight,
+//           selectedIndex: controller.selectIndex.value,
+//           showElevation: false,
+//           onItemSelected: (index) {
+//             controller.changeSelectIndex(index);
+//           },
+//           items: [
+//             FlashyNavbarItem(
+//               icon: const Icon(TablerIcons.smartHome),
+//               title: const Text('首页'),
+//             ),
+//             FlashyNavbarItem(
+//               icon: const Icon(TablerIcons.disc),
+//               title: const Text('专辑'),
+//             ),
+//             FlashyNavbarItem(
+//               icon: const Icon(TablerIcons.brandTiktok),
+//               title: const Text('单曲'),
+//             ),
+//             FlashyNavbarItem(
+//               icon: const Icon(TablerIcons.user),
+//               title: const Text('歌手'),
+//             ),
+//           ],
+//         )
+//       : Container(
+//           color: Theme.of(controller.buildContext).bottomAppBarColor,
+//         ));
+// }
 }
 
 class LeftMenu {

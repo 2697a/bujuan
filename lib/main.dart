@@ -13,7 +13,6 @@ import 'package:flutter_zoom_drawer/config.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:on_audio_query/on_audio_query.dart';
-import 'package:path_provider/path_provider.dart';
 import 'common/constants/colors.dart';
 import 'common/netease_api/src/netease_api.dart';
 import 'common/storage.dart';

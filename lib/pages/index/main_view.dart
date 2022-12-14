@@ -42,7 +42,7 @@ class MainView extends GetView<IndexController> {
         child: Column(
           children: [
             FutureBuilder<List<Play>>(
-              future: controller.getData(),
+              future: controller.getSheetData(),
                 builder: (c, s) => DataView<List<Play>>(
                       childBuilder: GridView.builder(
                         shrinkWrap: true,

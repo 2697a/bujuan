@@ -16,10 +16,10 @@ import 'package:flutter/material.dart' as _i8;
 
 import '../pages/home/first/first_view.dart' deferred as _i1;
 import '../pages/index/album_view.dart' as _i4;
-import '../pages/index/main_view.dart' deferred as _i6;
+import '../pages/index/main_view.dart' as _i6;
 import '../pages/login/login.dart' as _i2;
 import '../pages/play_list/playlist.dart' as _i5;
-import '../pages/user/user_view.dart' as _i3;
+import '../pages/user/user_view.dart' deferred as _i3;
 
 class RootRouter extends _i7.RootStackRouter {
   RootRouter([_i8.GlobalKey<_i8.NavigatorState>? navigatorKey])
@@ -45,7 +45,10 @@ class RootRouter extends _i7.RootStackRouter {
     UserView.name: (routeData) {
       return _i7.MaterialPageX<dynamic>(
         routeData: routeData,
-        child: const _i3.UserView(),
+        child: _i7.DeferredWidget(
+          _i3.loadLibrary,
+          () => _i3.UserView(),
+        ),
       );
     },
     AlbumView.name: (routeData) {
@@ -63,10 +66,7 @@ class RootRouter extends _i7.RootStackRouter {
     MainView.name: (routeData) {
       return _i7.MaterialPageX<dynamic>(
         routeData: routeData,
-        child: _i7.DeferredWidget(
-          _i6.loadLibrary,
-          () => _i6.MainView(),
-        ),
+        child: const _i6.MainView(),
       );
     },
   };
@@ -88,13 +88,14 @@ class RootRouter extends _i7.RootStackRouter {
               '#redirect',
               path: '',
               parent: FirstView.name,
-              redirectTo: 'index',
+              redirectTo: 'user',
               fullMatch: true,
             ),
             _i7.RouteConfig(
               UserView.name,
               path: 'user',
               parent: FirstView.name,
+              deferredLoading: true,
             ),
             _i7.RouteConfig(
               AlbumView.name,
@@ -110,7 +111,6 @@ class RootRouter extends _i7.RootStackRouter {
               MainView.name,
               path: 'index',
               parent: FirstView.name,
-              deferredLoading: true,
             ),
           ],
         ),

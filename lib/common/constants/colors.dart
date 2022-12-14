@@ -39,7 +39,7 @@ class AppTheme {
           systemOverlayStyle: SystemUiOverlayStyle(statusBarBrightness: Brightness.dark, statusBarIconBrightness: Brightness.light),
           backgroundColor:  Color(0xFF2C2B2B),
           foregroundColor: primary,
-          elevation: .5));
+          elevation: 0));
 
   //right background
   static const primaryDark = Color(0xFF1c1d1f);

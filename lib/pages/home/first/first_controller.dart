@@ -14,11 +14,12 @@ class FirstController extends HomeController{
   double panelMobileMinSize = 90.h;
   double topBarHeight = 70.h;
   final List<LeftMenu> leftMenus = [
-    LeftMenu('推荐歌单',TablerIcons.smartHome,Routes.index),
     LeftMenu('个人中心',TablerIcons.user,Routes.user),
+    LeftMenu('推荐歌单',TablerIcons.smartHome,Routes.index),
     LeftMenu('个人云盘',TablerIcons.cloud,Routes.search),
   ];
 
+  double pointerDy = 0;
 
 
   static FirstController get to => Get.find();

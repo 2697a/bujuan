@@ -432,23 +432,23 @@ packages:
   just_audio:
     dependency: "direct main"
     description:
-      path: "plugins/just_audio"
-      relative: true
-    source: path
-    version: "0.9.28"
+      name: just_audio
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.9.30"
   just_audio_platform_interface:
     dependency: transitive
     description:
-      path: "plugins/just_audio_platform_interface"
-      relative: true
-    source: path
+      name: just_audio_platform_interface
+      url: "https://pub.flutter-io.cn"
+    source: hosted
     version: "4.2.0"
   just_audio_web:
     dependency: transitive
     description:
-      path: "plugins/just_audio_web"
-      relative: true
-    source: path
+      name: just_audio_web
+      url: "https://pub.flutter-io.cn"
+    source: hosted
     version: "0.4.7"
   just_waveform:
     dependency: "direct main"
@@ -819,6 +819,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.10.0"
+  sticky_headers:
+    dependency: "direct main"
+    description:
+      name: sticky_headers
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.3.0+2"
   stream_channel:
     dependency: transitive
     description:
@@ -910,13 +917,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.0.2"
-  we_slide:
-    dependency: "direct main"
-    description:
-      name: we_slide
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "2.4.0"
   web_socket_channel:
     dependency: transitive
     description:

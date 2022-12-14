@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:audio_service/audio_service.dart';
 import 'package:bujuan/common/constants/other.dart';
 import 'package:bujuan/common/netease_api/netease_music_api.dart';
+import 'package:bujuan/common/netease_api/src/api/play/cloud_entity.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -24,9 +25,15 @@ class IndexController extends HomeController {
     WidgetsBinding.instance.addPostFrameCallback((_) {});
   }
 
-  Future<List<Play>> getData() async {
+  Future<List<Play>> getSheetData() async {
     PersonalizedPlayListWrap personalizedPlayListWrap = await NeteaseMusicApi().personalizedPlaylist();
     return personalizedPlayListWrap.result??[];
+  }
+
+  Future<List<CloudData>> getCloudData() async{
+    CloudEntity cloudSongListWrap = await NeteaseMusicApi().cloudSong();
+    print('object============-${(cloudSongListWrap.data??[]).length}');
+    return cloudSongListWrap.data??[];
   }
 
   querySong() async {

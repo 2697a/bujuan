@@ -47,8 +47,7 @@ dependencies:
   palette_generator: ^0.3.3
   on_audio_query: ^2.6.1
 #  临时解决延迟加载音乐url的问题
-  just_audio:
-    path: plugins/just_audio
+  just_audio: ^0.9.30
   audio_service: ^0.18.7
   get_it: ^7.2.0
   loading_animation_widget: ^1.2.0+2
@@ -56,7 +55,6 @@ dependencies:
   just_waveform: ^0.0.3
   font_awesome_flutter: ^10.1.0
   wheel_slider: ^1.0.0
-  we_slide: ^2.4.0
 
   # ext
   # app path
@@ -80,6 +78,7 @@ dependencies:
   flutter_zoom_drawer: ^3.0.3
   auto_route: ^5.0.4
   mobx: ^2.1.3
+  sticky_headers: ^0.3.0+2
 
 
 dev_dependencies:

@@ -27,21 +27,19 @@ class PlayList extends GetView<PlayListController> {
   }
 
   Widget _buildItem(MediaItem data, int index) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 10.w),
-      child: ListTile(
-        dense: true,
-        leading: SimpleExtendedImage(
-          '${data.extras?['image'] ?? ''}?param=200y200',
-          width: 80.w,
-          height: 80.w,
-        ),
-        title: Text(data.title),
-        subtitle: Text(data.artist??''),
-        onTap: () {
-          controller.playIndex(index);
-        },
+    return ListTile(
+      dense: true,
+      contentPadding: EdgeInsets.symmetric(horizontal: 20.w),
+      leading: SimpleExtendedImage(
+        '${data.extras?['image'] ?? ''}?param=200y200',
+        width: 80.w,
+        height: 80.w,
       ),
+      title: Text(data.title),
+      subtitle: Text(data.artist??''),
+      onTap: () {
+        controller.playIndex(index);
+      },
     );
   }
 }

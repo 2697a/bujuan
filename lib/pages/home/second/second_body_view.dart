@@ -1,5 +1,4 @@
 import 'package:audio_service/audio_service.dart';
-import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/widget/simple_extended_image.dart';
 import 'package:bujuan/widget/wheel_slider.dart';
 import 'package:flutter/gestures.dart';
@@ -7,12 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:tabler_icons/tabler_icons.dart';
 import 'package:tuna_flutter_range_slider/tuna_flutter_range_slider.dart';
 
 import '../../../common/constants/other.dart';
+import '../../../widget/list_wheel/clickable_list_wheel_widget.dart';
 import '../first/first_controller.dart';
 
 class SecondBodyView extends GetView<FirstController> {
@@ -36,10 +35,43 @@ class SecondBodyView extends GetView<FirstController> {
             }
           },
           color: Colors.transparent,
-         panel: Obx(() => Container(
-           decoration: BoxDecoration(color: controller.rx.value.dark?.color, borderRadius: BorderRadius.only(topLeft: Radius.circular(35.w), topRight: Radius.circular(35.w))),
-           child: _buildPlayList(),
-         )),
+          panel: Obx(() => Container(
+                padding: EdgeInsets.only(top: 110.w),
+                decoration: BoxDecoration(color: controller.rx.value.dark?.color, borderRadius: BorderRadius.only(topLeft: Radius.circular(35.w), topRight: Radius.circular(35.w))),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 40.w, vertical: 20.w),
+                      child: Row(
+                        children: [
+                          Expanded(
+                              child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                controller.mediaItem.value.title,
+                                style: TextStyle(fontSize: 28.sp, color: controller.rx.value.light?.color),
+                              ),
+                              Text(
+                                controller.mediaItem.value.artist ?? '',
+                                style: TextStyle(fontSize: 28.sp, color: controller.rx.value.light?.color),
+                              )
+                            ],
+                          )),
+                          LoadingAnimationWidget.staggeredDotsWave(color: controller.rx.value.light?.color ?? Colors.black12, size: 38.w),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                        child: Stack(
+                      children: [
+                        Offstage(offstage: !controller.showPlayList.value, child: _buildPlayList()),
+                        Offstage(offstage: controller.showPlayList.value, child: _buildLyric()),
+                      ],
+                    ))
+                  ],
+                ),
+              )),
           body: Stack(
             children: [
               Obx(() => Container(
@@ -68,7 +100,7 @@ class SecondBodyView extends GetView<FirstController> {
                               ),
                               Padding(padding: EdgeInsets.symmetric(vertical: 5.w)),
                               Text(
-                                controller.mediaItem.value.artist??'',
+                                controller.mediaItem.value.artist ?? '',
                                 style: TextStyle(fontSize: 28.sp, color: controller.rx.value.dark?.bodyTextColor),
                                 maxLines: 1,
                               )
@@ -82,7 +114,7 @@ class SecondBodyView extends GetView<FirstController> {
                   _buildSlide(),
                   //功能按钮
                   SizedBox(
-                    height: 90.h +MediaQuery.of(context).padding.bottom,
+                    height: 90.h + MediaQuery.of(context).padding.bottom,
                   )
                 ],
               ),
@@ -95,7 +127,7 @@ class SecondBodyView extends GetView<FirstController> {
         Obx(() => Container(
               decoration:
                   BoxDecoration(color: controller.rx.value.dark?.color, border: Border(top: BorderSide(color: controller.rx.value.dark?.color ?? Colors.transparent, width: 0))),
-              height: MediaQuery.of(context).padding.bottom/2,
+              height: MediaQuery.of(context).padding.bottom / 2,
             ))
       ],
     );
@@ -137,24 +169,38 @@ class SecondBodyView extends GetView<FirstController> {
           Obx(() {
             return SizedBox(
               width: Get.width,
-              child: Visibility(visible: controller.mediaItem.value.id.isNotEmpty,child: FlutterRangeSlider(
-                min: 0,
-                max: controller.effects.length.toDouble(),
-                values: [controller.duration.value.inMilliseconds / (controller.mediaItem.value.duration?.inMilliseconds ?? 0) * 100],
-                handler: FlutterSliderHandler(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: controller.rx.value.light?.color.withOpacity(.7) ?? Colors.black12,
-                        border: Border.all(color: controller.rx.value.dark?.color.withOpacity(.6) ?? Colors.transparent, width: 4.w)),
-                    child: const SizedBox.shrink()),
-                handlerWidth: 22,
-                handlerHeight: 22,
-                touchSize: 18,
-                tooltip: FlutterSliderTooltip(disabled: true),
-                hatchMark: FlutterSliderHatchMark(labels: controller.effects, linesAlignment: FlutterSliderHatchMarkAlignment.right, density: 0.5),
-                trackBar: const FlutterSliderTrackBar(activeTrackBarHeight: .1, inactiveTrackBarHeight: .1, activeTrackBar: BoxDecoration(color: Colors.transparent)),
-                onDragCompleted: (a, b, c) => controller.audioServeHandler.seek(Duration(milliseconds: (controller.mediaItem.value.duration?.inMilliseconds ?? 0) * b ~/ 100)),
-              ),),
+              child: Visibility(
+                visible: controller.mediaItem.value.id.isNotEmpty,
+                child: FlutterRangeSlider(
+                  min: 0,
+                  max: controller.mEffects.length.toDouble(),
+                  values: [controller.duration.value.inMilliseconds / (controller.mediaItem.value.duration?.inMilliseconds ?? 0) * 100],
+                  handler: FlutterSliderHandler(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          color: controller.rx.value.light?.color.withOpacity(.7) ?? Colors.black12,
+                          border: Border.all(color: controller.rx.value.dark?.color.withOpacity(.6) ?? Colors.transparent, width: 4.w)),
+                      child: const SizedBox.shrink()),
+                  handlerWidth: 22,
+                  handlerHeight: 22,
+                  touchSize: 18,
+                  tooltip: FlutterSliderTooltip(disabled: true),
+                  hatchMark: FlutterSliderHatchMark(
+                      labels: controller.mEffects
+                          .map((e) => FlutterSliderHatchMarkLabel(
+                              percent: e['percent'],
+                              label: Container(
+                                height: e['size'],
+                                width: 1,
+                                color: controller.rx.value.dark?.bodyTextColor ?? Colors.white.withOpacity(.3),
+                              )))
+                          .toList(),
+                      linesAlignment: FlutterSliderHatchMarkAlignment.right,
+                      density: 0.5),
+                  trackBar: const FlutterSliderTrackBar(activeTrackBarHeight: .1, inactiveTrackBarHeight: .1, activeTrackBar: BoxDecoration(color: Colors.transparent)),
+                  onDragCompleted: (a, b, c) => controller.audioServeHandler.seek(Duration(milliseconds: (controller.mediaItem.value.duration?.inMilliseconds ?? 0) * b ~/ 100)),
+                ),
+              ),
             );
           }),
         ],
@@ -234,6 +280,7 @@ class SecondBodyView extends GetView<FirstController> {
                   )),
               IconButton(
                   onPressed: () {
+                    controller.showPlayList.value = true;
                     controller.panelController.open();
                   },
                   icon: Icon(
@@ -242,6 +289,7 @@ class SecondBodyView extends GetView<FirstController> {
                   )),
               IconButton(
                   onPressed: () {
+                    controller.showPlayList.value = false;
                     controller.panelController.open();
                   },
                   icon: Icon(
@@ -267,95 +315,50 @@ class SecondBodyView extends GetView<FirstController> {
 
   //歌词
   Widget _buildLyric() {
-    return Material(
-      child: Obx(() => Container(
-            height: Get.height * .8,
-            decoration: BoxDecoration(
-                gradient: LinearGradient(
-                    colors: [controller.rx.value.light?.color ?? Colors.transparent, controller.rx.value.dark?.color ?? Colors.transparent],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter)),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    IconButton(onPressed: () {}, icon: Icon(Icons.add)),
-                  ],
-                ),
-                Expanded(
-                    child: SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 20.w),
-                  child: Text(controller.lyricList.value),
-                ))
-              ],
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 20.w),
+      child: Visibility(visible: controller.lyricsLineModels.isNotEmpty,replacement:  Center(
+        child: Text('暂无歌词～', style: TextStyle(fontSize: 34.sp, color: controller.rx.value.light?.color)),
+      ),child: ClickableListWheelScrollView(
+        itemHeight: 90.w,
+        itemCount: controller.lyricList.length,
+        onItemTapCallback: (index) {
+          print("onItemTapCallback index: $index");
+          controller.audioServeHandler.seek(Duration(milliseconds: controller.lyricsLineModels[index].startTime ?? 0));
+        },
+        scrollController: controller.scrollController,
+        child: ListWheelScrollView.useDelegate(
+          itemExtent: 90.w,
+          controller: controller.scrollController,
+          physics: const FixedExtentScrollPhysics(),
+          overAndUnderCenterOpacity: 0.5,
+          perspective: 0.00001,
+          onSelectedItemChanged: (index) {
+            print("onSelectedItemChanged index: $index");
+          },
+          childDelegate: ListWheelChildBuilderDelegate(
+            builder: (context, index) => Container(
+              alignment: Alignment.centerLeft,
+              child: Text(controller.lyricsLineModels[index].mainText ?? '', style: TextStyle(fontSize: 34.sp, color: controller.rx.value.light?.color)),
             ),
-          )),
+            childCount: controller.lyricsLineModels.length,
+          ),
+        ),
+      ),),
     );
   }
 
   //播放列表
   Widget _buildPlayList() {
-    return Container(
-      padding: EdgeInsets.only(top: 100.w),
-      child: Column(
-        children: [
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 40.w, vertical: 20.w),
-            child: Row(
-              children: [
-                Expanded(
-                    child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      controller.mediaItem.value.title,
-                      style: TextStyle(fontSize: 28.sp, color: controller.rx.value.light?.color),
-                    ),
-                    Text(
-                      controller.mediaItem.value.artist ?? '',
-                      style: TextStyle(fontSize: 28.sp, color: controller.rx.value.light?.color),
-                    )
-                  ],
-                )),
-                LoadingAnimationWidget.staggeredDotsWave(color: controller.rx.value.light?.color ?? Colors.black12, size: 38.w),
-              ],
-            ),
-          ),
-          Expanded(
-              child: NotificationListener<ScrollStartNotification>(
-            child: NotificationListener<OverscrollNotification>(
-              child: Listener(
-                onPointerDown: (event) {
-                  controller.myVerticalDragGestureRecognizer.addPointer(event);
-                },
-                child: ListView.builder(
-                  physics: const NeverScrollableScrollPhysics(),
-                  padding: EdgeInsets.symmetric(horizontal: 30.w),
-                  itemBuilder: (context, index) => Container(
-                    margin: EdgeInsets.symmetric(horizontal: 10.w),
-                    alignment: Alignment.center,
-                    child: _buildPlayListItem(controller.audioServeHandler.queue.value[index], index),
-                  ),
-                  itemCount: controller.audioServeHandler.queue.value.length,
-                ),
-              ),
-              onNotification: (OverscrollNotification notification) {
-                if (notification.metrics.axis == Axis.vertical) {
-                  controller.needDrag.value = true; // 内部滑动到边界并且是纵向滑动时打开
-                  print('OverscrollNotification======');
-                }
-                return false;
-              },
-            ),
-            onNotification: (ScrollStartNotification notification) {
-              controller.needDrag.value = false; // 内部开始滑动时关闭开关
-              print('ScrollStartNotification======');
-              return false;
-            },
-          ))
-        ],
+    return ListView.builder(
+      padding: EdgeInsets.symmetric(horizontal: 30.w),
+      itemExtent: 110.w,
+      itemBuilder: (context, index) => Container(
+        margin: EdgeInsets.symmetric(horizontal: 10.w),
+        alignment: Alignment.center,
+        child: _buildPlayListItem(controller.audioServeHandler.queue.value[index], index),
       ),
+      itemCount: controller.audioServeHandler.queue.value.length,
     );
   }
 
@@ -369,11 +372,10 @@ class SecondBodyView extends GetView<FirstController> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SimpleExtendedImage(
-              '${mediaItem.artUri?.scheme ?? ''}://${mediaItem.artUri?.host ?? ''}/${mediaItem.artUri?.path ?? ''}',
+              '${mediaItem.extras!['image'] ?? ''}?param=150y150',
               width: 75.w,
               height: 75.w,
               cacheWidth: 200,
-              borderRadius: BorderRadius.circular(10.w),
             ),
             Padding(padding: EdgeInsets.symmetric(horizontal: 12.w)),
             Expanded(
