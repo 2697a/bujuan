@@ -1,4 +1,3 @@
-import 'package:bujuan/pages/home/first/first_controller.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/pages/index/index_controller.dart';
 import 'package:flutter/material.dart';
@@ -14,11 +13,10 @@ class IndexView extends GetView<IndexController> {
 
   @override
   Widget build(BuildContext context) {
-    controller.buildContext = context;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Obx(() => ListView.builder(
-            padding: EdgeInsets.only(left: 20.w,right: 20.w,bottom: FirstController.to.getHomeBottomPadding()),
+            padding: EdgeInsets.only(left: 20.w,right: 20.w,bottom: HomeController.to.getHomeBottomPadding()),
             itemBuilder: (context, index) => _buildItem(controller.songs[index], index),
             itemCount: controller.songs.length,
           )),

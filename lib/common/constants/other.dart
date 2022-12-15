@@ -1,10 +1,9 @@
 import 'dart:io';
-import 'dart:typed_data';
 
-import 'package:bujuan/common/constants/icon.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:palette_generator/palette_generator.dart';
 
 typedef ImageColorCallBack = void Function(PaletteColorData paletteColorData);
@@ -103,4 +102,18 @@ class PaletteColorData {
   PaletteColor? main;
 
   PaletteColorData({this.light, this.dark, this.main});
+}
+
+class WidgetUtil{
+  static showToast(String message){
+    Fluttertoast.showToast(
+        msg: message,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0
+    );
+  }
 }

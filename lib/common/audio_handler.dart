@@ -104,7 +104,6 @@ class AudioServeHandler extends BaseAudioHandler with QueueHandler, SeekHandler 
 
   void _listenForDurationChanges() {
     _player.durationStream.listen((duration) {
-
       var index = _player.currentIndex;
       final newQueue = queue.value;
       if (index == null || newQueue.isEmpty) return;
@@ -150,16 +149,20 @@ class AudioServeHandler extends BaseAudioHandler with QueueHandler, SeekHandler 
   }
 
   @override
-  Future<void> addQueueItems(List<MediaItem> mediaItems) async {
-    // 通知系统
-    queue.value..clear()..addAll(mediaItems);
+  Future<void> addQueueItems(List<MediaItem> mediaItems, {int index = 0}) async {
     // 管理 Just Audio
     final audioSource = mediaItems.map(_createAudioSource);
     _playlist
       ..clear()
       ..addAll(audioSource.toList());
     await _player.setAudioSource(_playlist);
-    await StorageUtil().setString(playQueueTitle, queueTitle.value);
+    _player
+      ..seek(Duration.zero, index: index)
+      ..play();
+    // 通知系统
+    queue.value
+      ..clear()
+      ..addAll(mediaItems);
   }
 
   UriAudioSource _createAudioSource(MediaItem mediaItem) {

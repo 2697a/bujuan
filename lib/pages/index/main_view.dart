@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/common/netease_api/netease_music_api.dart';
-import 'package:bujuan/pages/home/first/first_controller.dart';
+import 'package:bujuan/common/netease_api/src/api/bean.dart';
+import 'package:bujuan/pages/base_view.dart';
 import 'package:bujuan/pages/index/index_controller.dart';
 import 'package:bujuan/pages/user/user_controller.dart';
 import 'package:bujuan/widget/data_widget.dart';
@@ -18,53 +19,49 @@ class MainView extends GetView<IndexController> {
 
   @override
   Widget build(BuildContext context) {
-    controller.buildContext = context;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         centerTitle: false,
         leading: IconButton(
             onPressed: () {
-              if (controller.login.value) {
-                controller.myDrawerController.open!();
+              if (UserController.to.loginStatus.value) {
+                HomeController.to.myDrawerController.open!();
                 return;
               }
             },
-            icon: Obx(() => SimpleExtendedImage.avatar('${HomeController.to.login.value ? UserController.to.userData.value.profile?.avatarUrl : ''}'))),
+            icon: Obx(() => SimpleExtendedImage.avatar('${UserController.to.loginStatus.value ? UserController.to.userData.value.profile?.avatarUrl : ''}'))),
         title: RichText(
             text: TextSpan(style: TextStyle(fontSize: 42.sp, color: Colors.grey, fontWeight: FontWeight.bold), text: 'Here  ', children: [
-              TextSpan(
-                  text: '推荐歌单～',
-                  style: TextStyle(color: Theme.of(context).primaryColor.withOpacity(.9))),
-            ])),
+          TextSpan(text: '推荐歌单～', style: TextStyle(color: Theme.of(context).primaryColor.withOpacity(.9))),
+        ])),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.only(bottom: FirstController.to.getHomeBottomPadding(), top: 20.w),
+        padding: EdgeInsets.only(bottom: HomeController.to.getHomeBottomPadding(), top: 20.w),
         child: Column(
           children: [
-            FutureBuilder<List<Play>>(
-              future: controller.getSheetData(),
-                builder: (c, s) => DataView<List<Play>>(
-                      childBuilder: GridView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        padding: EdgeInsets.only(left: 20.w, right: 20.w, bottom: FirstController.to.getHomeBottomPadding()),
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,
-                          childAspectRatio: .73,
-                          crossAxisSpacing: 20.w,
-                        ),
-                        itemBuilder: (context, index) => _buildItem((s.data??[])[index], c),
-                        itemCount: (s.data??[]).length,
-                      ),
-                      snapshot: s,
-                    ))
+            BaseWidget<PersonalizedPlayListWrap>(
+                future: controller.getSheetData(),
+                childBuilder: (ServerStatusBean p ) {
+                  p as PersonalizedPlayListWrap;
+                  return GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    padding: EdgeInsets.only(left: 20.w, right: 20.w, bottom: HomeController.to.getHomeBottomPadding()),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      childAspectRatio: .73,
+                      crossAxisSpacing: 20.w,
+                    ),
+                    itemBuilder: (context, index) => _buildItem((p.result ?? [])[index], context),
+                    itemCount: (p.result ?? []).length,
+                  );
+                })
           ],
         ),
       ),
     );
   }
-
 
   Widget _buildItem(Play albumModel, BuildContext context) {
     return Padding(
@@ -74,10 +71,10 @@ class MainView extends GetView<IndexController> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SimpleExtendedImage(
-              '${albumModel.picUrl??''}?param=400y400',
+              '${albumModel.picUrl ?? ''}?param=400y400',
               cacheWidth: 400,
-              width: (Get.width-90.w) / 3,
-              height: (Get.width-90.w) / 3,
+              width: (Get.width - 90.w) / 3,
+              height: (Get.width - 90.w) / 3,
               borderRadius: BorderRadius.all(Radius.circular(20.w)),
             ),
             Column(
@@ -87,7 +84,7 @@ class MainView extends GetView<IndexController> {
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 2.w),
                   child: Text(
-                    albumModel.name??'',
+                    albumModel.name ?? '',
                     style: TextStyle(fontSize: 28.sp),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -149,6 +146,4 @@ class MainView extends GetView<IndexController> {
       onTap: () => controller.play(index),
     );
   }
-
-
 }

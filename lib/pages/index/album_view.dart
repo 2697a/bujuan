@@ -14,18 +14,17 @@ class AlbumView extends GetView<IndexController> {
 
   @override
   Widget build(BuildContext context) {
-    controller.buildContext = context;
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
         leading: IconButton(
             onPressed: () {
-              if (controller.login.value) {
-                controller.myDrawerController.open!();
+              if (UserController.to.loginStatus.value) {
+                HomeController.to.myDrawerController.open!();
                 return;
               }
             },
-            icon: Obx(() => SimpleExtendedImage.avatar('${HomeController.to.login.value ? UserController.to.userData.value.profile?.avatarUrl : ''}'))),
+            icon: Obx(() => SimpleExtendedImage.avatar('${UserController.to.loginStatus.value ? UserController.to.userData.value.profile?.avatarUrl : ''}'))),
         title: RichText(
             text: TextSpan(style: TextStyle(fontSize: 42.sp, color: Colors.grey, fontWeight: FontWeight.bold), text: 'Here  ', children: [
               TextSpan(

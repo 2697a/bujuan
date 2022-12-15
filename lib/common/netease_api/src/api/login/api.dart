@@ -183,9 +183,7 @@ mixin ApiLogin {
   /// !需要登录
   /// [ServerStatusBean] code [RetCode]
   Future<ServerStatusBean> loginRefresh({Dio? dio}) {
-    if (dio == null) {
-      dio = Https.dio;
-    }
+    dio ??= Https.dio;
     return dio
         .postUri(joinUri('/weapi/login/token/refresh'),
             data: {}, options: joinOptions(userAgent: UserAgent.Pc))

@@ -10,21 +10,24 @@ import '../../common/netease_api/src/api/play/bean.dart';
 import '../../common/netease_api/src/netease_api.dart';
 import '../../common/storage.dart';
 
-class UserController extends HomeController {
+class UserController extends GetxController {
   List<Play> playlist = <Play>[].obs;
   ScrollController userScrollController = ScrollController();
   RxDouble op = 0.0.obs;
+  final List<double> colors = [1, .9, .8, .7, .6, .5, .4, .3, .2, .1, 0];
+
   //用户登录状态
   RxBool loginStatus = false.obs;
   Rx<NeteaseAccountInfoWrap> userData = NeteaseAccountInfoWrap().obs;
 
   //进度
   @override
-  void onInit()  {
+  void onInit() {
+    super.onInit();
+    getUserPlayList();
     getUserState();
     userScrollController.addListener(() {
-      print('userScrollController');
-      if (userScrollController.position.pixels <= 30.w && op.value != 0) {
+      if (userScrollController.position.pixels <= 130.w && op.value != 0) {
         op.value = 0;
       }
       if (userScrollController.position.pixels >= 240.w && op.value < 1) {
@@ -32,15 +35,15 @@ class UserController extends HomeController {
       }
     });
   }
+
   @override
-  void onReady() {
-  }
+  void onReady() {}
 
   static UserController get to => Get.find();
 
   getUserState() {
     var data = StorageUtil().getJSON('STORAGE_USER_PROFILE_KEY');
-    if (data!=null) {
+    if (data != null) {
       print('objectaaaaa=========$data');
       loginStatus.value = true;
       userData.value = NeteaseAccountInfoWrap.fromJson(jsonDecode(data));
@@ -48,24 +51,28 @@ class UserController extends HomeController {
     }
   }
 
-
   clearUser() {
-    loginStatus.value = false;
-     StorageUtil().remove('STORAGE_USER_PROFILE_KEY');
+    NeteaseMusicApi().logout().then((value) {
+      loginStatus.value = false;
+      StorageUtil().remove('STORAGE_USER_PROFILE_KEY');
+    });
   }
 
-  saveUser(NeteaseAccountInfoWrap neteaseAccountInfoWrap)  {
+  saveUser(NeteaseAccountInfoWrap neteaseAccountInfoWrap) {
     loginStatus.value = true;
     userData.value = neteaseAccountInfoWrap;
     StorageUtil().setJSON('STORAGE_USER_PROFILE_KEY', jsonEncode(neteaseAccountInfoWrap.toJson()));
     getUserPlayList();
   }
+
   getUserPlayList() {
-    NeteaseMusicApi()
-        .userPlayList(userData.value.profile?.userId ?? '-1')
-        .then((MultiPlayListWrap2 multiPlayListWrap2) => playlist
-          ..clear()
-          ..addAll(multiPlayListWrap2.playlist ?? []))
-        .catchError((error) {});
+    NeteaseMusicApi().userPlayList(userData.value.profile?.userId ?? '-1').then((MultiPlayListWrap2 multiPlayListWrap2) {
+        print('发生错误了========${jsonEncode(multiPlayListWrap2.toJson())}');
+      playlist
+        ..clear()
+        ..addAll(multiPlayListWrap2.playlist ?? []);
+    }).catchError((error) {
+      print('发生错误了========${error}');
+    });
   }
 }

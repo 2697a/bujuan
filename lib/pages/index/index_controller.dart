@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -10,12 +11,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
-class IndexController extends HomeController {
+class IndexController extends GetxController {
   RxList<SongModel> songs = <SongModel>[].obs;
   RxList<AlbumModel> albums = <AlbumModel>[].obs;
   final List<MediaItem> mediaItems = [];
   final String queueTitle = Get.routing.current;
   final RxList<PaletteColorData> colors = <PaletteColorData>[].obs;
+
 
   // List<Audio> audios = [];
 
@@ -25,13 +27,13 @@ class IndexController extends HomeController {
     WidgetsBinding.instance.addPostFrameCallback((_) {});
   }
 
-  Future<List<Play>> getSheetData() async {
-    PersonalizedPlayListWrap personalizedPlayListWrap = await NeteaseMusicApi().personalizedPlaylist();
-    return personalizedPlayListWrap.result??[];
+  Future<PersonalizedPlayListWrap> getSheetData() async {
+    return await NeteaseMusicApi().personalizedPlaylist();
   }
 
   Future<List<CloudData>> getCloudData() async{
     CloudEntity cloudSongListWrap = await NeteaseMusicApi().cloudSong();
+    print('发生错误了========${jsonEncode(cloudSongListWrap.toJson())}');
     print('object============-${(cloudSongListWrap.data??[]).length}');
     return cloudSongListWrap.data??[];
   }

@@ -1,4 +1,5 @@
 import 'package:audio_service/audio_service.dart';
+import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/widget/simple_extended_image.dart';
 import 'package:bujuan/widget/wheel_slider.dart';
 import 'package:flutter/gestures.dart';
@@ -12,9 +13,8 @@ import 'package:tuna_flutter_range_slider/tuna_flutter_range_slider.dart';
 
 import '../../../common/constants/other.dart';
 import '../../../widget/list_wheel/clickable_list_wheel_widget.dart';
-import '../first/first_controller.dart';
 
-class SecondBodyView extends GetView<FirstController> {
+class SecondBodyView extends GetView<HomeController> {
   const SecondBodyView({Key? key}) : super(key: key);
 
   //进度
@@ -83,8 +83,8 @@ class SecondBodyView extends GetView<FirstController> {
                   )),
               Column(
                 children: [
-                  Obx(() => SizedBox(height: FirstController.to.getPanelMinSize() + MediaQuery.of(context).padding.top)),
-                  //歌曲信息
+                  Obx(() => SizedBox(height: controller.getPanelMinSize() + MediaQuery.of(context).padding.top)),
+                  // 歌曲信息
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 30.w),
                     child: Obx(() => SizedBox(
@@ -121,12 +121,11 @@ class SecondBodyView extends GetView<FirstController> {
             ],
           ),
           header: _buildBottom(),
-              footer: Container(
-                color: Colors.red,
-                height: MediaQuery.of(context).padding.bottom,
-              ),
+          footer: Container(
+            height: MediaQuery.of(context).padding.bottom,
+          ),
           minHeight: 90.h,
-          maxHeight: Get.height - controller.getPanelMinSize() - MediaQuery.of(context).padding.top - 40.w,
+          maxHeight: Get.height - controller.panelHeaderSize - MediaQuery.of(context).padding.top - 30.w,
         )),
         Obx(() => Container(
               decoration:
@@ -321,34 +320,38 @@ class SecondBodyView extends GetView<FirstController> {
   Widget _buildLyric() {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 20.w),
-      child: Visibility(visible: controller.lyricsLineModels.isNotEmpty,replacement:  Center(
-        child: Text('暂无歌词～', style: TextStyle(fontSize: 34.sp, color: controller.rx.value.light?.color)),
-      ),child: ClickableListWheelScrollView(
-        itemHeight: 90.w,
-        itemCount: controller.lyricList.length,
-        onItemTapCallback: (index) {
-          print("onItemTapCallback index: $index");
-          controller.audioServeHandler.seek(Duration(milliseconds: controller.lyricsLineModels[index].startTime ?? 0));
-        },
-        scrollController: controller.scrollController,
-        child: ListWheelScrollView.useDelegate(
-          itemExtent: 90.w,
-          controller: controller.scrollController,
-          physics: const FixedExtentScrollPhysics(),
-          overAndUnderCenterOpacity: 0.5,
-          perspective: 0.00001,
-          onSelectedItemChanged: (index) {
-            print("onSelectedItemChanged index: $index");
+      child: Visibility(
+        visible: controller.lyricsLineModels.isNotEmpty,
+        replacement: Center(
+          child: Text('暂无歌词～', style: TextStyle(fontSize: 34.sp, color: controller.rx.value.light?.color)),
+        ),
+        child: ClickableListWheelScrollView(
+          itemHeight: 90.w,
+          itemCount: controller.lyricList.length,
+          onItemTapCallback: (index) {
+            print("onItemTapCallback index: $index");
+            controller.audioServeHandler.seek(Duration(milliseconds: controller.lyricsLineModels[index].startTime ?? 0));
           },
-          childDelegate: ListWheelChildBuilderDelegate(
-            builder: (context, index) => Container(
-              alignment: Alignment.centerLeft,
-              child: Text(controller.lyricsLineModels[index].mainText ?? '', style: TextStyle(fontSize: 34.sp, color: controller.rx.value.light?.color)),
+          scrollController: controller.scrollController,
+          child: ListWheelScrollView.useDelegate(
+            itemExtent: 90.w,
+            controller: controller.scrollController,
+            physics: const FixedExtentScrollPhysics(),
+            overAndUnderCenterOpacity: 0.5,
+            perspective: 0.00001,
+            onSelectedItemChanged: (index) {
+              print("onSelectedItemChanged index: $index");
+            },
+            childDelegate: ListWheelChildBuilderDelegate(
+              builder: (context, index) => Container(
+                alignment: Alignment.centerLeft,
+                child: Text(controller.lyricsLineModels[index].mainText ?? '', style: TextStyle(fontSize: 34.sp, color: controller.rx.value.light?.color)),
+              ),
+              childCount: controller.lyricsLineModels.length,
             ),
-            childCount: controller.lyricsLineModels.length,
           ),
         ),
-      ),),
+      ),
     );
   }
 

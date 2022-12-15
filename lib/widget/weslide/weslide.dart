@@ -1,10 +1,7 @@
 import 'dart:ui';
 
-import 'package:bujuan/pages/home/first/first_controller.dart';
-import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get.dart';
 import 'weslide_controller.dart';
 
 /// A backdrop widget that displaying contextual and actionable content. =]
@@ -442,7 +439,7 @@ class _WeSlideState extends State<WeSlide> with SingleTickerProviderStateMixin {
               );
             },
             child: SizedBox(
-              height: height - (HomeController.to.isRoot.value ? 0 : FirstController.to.bottomBarHeight)-25.w,
+              height: height,
               width: widget.bodyWidth ?? width,
               child: widget.body,
             ),

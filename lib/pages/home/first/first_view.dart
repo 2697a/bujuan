@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:bujuan/pages/home/first/first_controller.dart';
+import 'package:bujuan/common/constants/platform_utils.dart';
 import 'package:bujuan/pages/home/first/menu_view.dart';
+import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/pages/home/home_mobile_view.dart';
 import 'package:bujuan/pages/home/second/second_body_view.dart';
 import 'package:bujuan/widget/simple_extended_image.dart';
@@ -9,57 +10,54 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
 import 'package:tabler_icons/tabler_icons.dart';
 
-import '../../../routes/router.dart';
-import '../../../widget/mobile/flashy_navbar.dart';
-
-class FirstView extends GetView<FirstController> {
+class FirstView extends GetView<HomeController> {
   const FirstView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     controller.buildContext = context;
+    double bottomHeight = PlatformUtils.isIOS ? 0 : MediaQuery.of(controller.buildContext).padding.bottom;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: WillPopScope(
-          child: GetBuilder(
-            builder: (c) => ZoomDrawer(
-              // mainScreenScale:.1,
-              dragOffset: Get.width / 4,
-              // openCurve: Curves.fastOutSlowIn,
-              openCurve: Curves.fastLinearToSlowEaseIn,
-              duration: const Duration(milliseconds: 200),
-              menuScreenTapClose: true,
-              showShadow: true,
-              mainScreenTapClose: true,
-              menuScreen: const MenuView(),
-              moveMenuScreen: true,
-              menuBackgroundColor: Theme.of(context).primaryColor.withOpacity(.9),
-              mainScreen: WeSlide(
-                controller: controller.weSlideController,
-                panelWidth: Get.width,
-                bodyWidth: Get.width,
-                panelMaxSize: Get.height,
-                parallax: true,
-                body: const HomeMobileView(),
-                panel: const SecondBodyView(),
-                panelHeader: _buildPanelHeader(),
-                hidePanelHeader: false,
-                isDownSlide: controller.isDownSlide,
-                footer: Container(
-                  color: Theme.of(context).bottomAppBarColor,
-                  height: MediaQuery.of(controller.buildContext).padding.bottom,
-                ),
-                footerHeight: MediaQuery.of(controller.buildContext).padding.bottom,
-                height: Get.height+MediaQuery.of(controller.buildContext).padding.bottom,
-                panelMinSize: controller.panelMobileMinSize +MediaQuery.of(controller.buildContext).padding.bottom,
-                onPosition: (value) => controller.changeSlidePosition(value),
+          child: ZoomDrawer(
+            dragOffset: Get.width,
+            openCurve: Curves.fastOutSlowIn,
+            // openCurve: Curves.fastLinearToSlowEaseIn,
+            duration: const Duration(milliseconds: 200),
+            menuScreenTapClose: true,
+            showShadow: true,
+            mainScreenTapClose: true,
+            menuScreen: const MenuView(),
+            moveMenuScreen: true,
+            drawerShadowsBackgroundColor: Theme.of(context).scaffoldBackgroundColor.withOpacity(.6),
+            menuBackgroundColor: Theme.of(context).cardColor,
+            clipMainScreen: true,
+            mainScreen: WeSlide(
+              controller: controller.weSlideController,
+              panelWidth: Get.width,
+              bodyWidth: Get.width,
+              panelMaxSize: Get.height,
+              parallax: true,
+              body: const HomeMobileView(),
+              panel: const SecondBodyView(),
+              panelHeader: _buildPanelHeader(),
+              hidePanelHeader: false,
+              isDownSlide: controller.isDownSlide,
+              footer: Container(
+                color: Theme.of(context).bottomAppBarColor,
+                height: bottomHeight,
               ),
-              controller: controller.myDrawerController,
+              footerHeight: bottomHeight,
+              height: Get.height,
+              panelMinSize: controller.panelMobileMinSize +
+                  (PlatformUtils.isIOS ? MediaQuery.of(controller.buildContext).padding.bottom * .5 : MediaQuery.of(controller.buildContext).padding.bottom),
+              onPosition: (value) => controller.changeSlidePosition(value),
             ),
-            id: controller.weSlideUpdate,
-            init: controller,
+            controller: controller.myDrawerController,
           ),
           onWillPop: () => controller.onWillPop()),
     );
@@ -69,10 +67,9 @@ class FirstView extends GetView<FirstController> {
     return InkWell(
       child: Obx(() => AnimatedContainer(
             decoration: BoxDecoration(color: controller.getHeaderColor(), border: Border(bottom: BorderSide(color: controller.getHeaderColor(), width: 1.w))),
-            padding: controller.getHeaderPadding(),
+            padding: controller.getHeaderPadding().copyWith(bottom: PlatformUtils.isIOS ? MediaQuery.of(controller.buildContext).padding.bottom * .5 : 0),
             width: Get.width,
-            height: controller.getPanelMinSize() +
-                controller.getHeaderPadding().top,
+            height: controller.getPanelMinSize() + controller.getHeaderPadding().top + (PlatformUtils.isIOS ? MediaQuery.of(controller.buildContext).padding.bottom * .5 : 0),
             duration: const Duration(milliseconds: 0),
             child: _buildPlayBar(),
           )),
@@ -88,7 +85,7 @@ class FirstView extends GetView<FirstController> {
 
   Widget _buildTopHeader() {
     return Container(
-      padding: EdgeInsets.only(top: 20.w),
+      color: Colors.red,
       height: controller.getTopHeight(),
       child: Visibility(
         visible: controller.slidePosition.value > .5,
@@ -117,12 +114,14 @@ class FirstView extends GetView<FirstController> {
           children: [
             AnimatedPositioned(
                 left: controller.getImageLeft(),
+                // top: controller.getTopHeight(),
                 duration: const Duration(milliseconds: 0),
                 child: AnimatedScale(
-                  scale: 1 + (controller.slidePosition.value / 10),
+                  scale: 1 + (controller.slidePosition.value / 8),
                   duration: Duration.zero,
                   child: SimpleExtendedImage(
                     '${controller.mediaItem.value.extras?['image']}?param=500y500',
+                    fit: BoxFit.cover,
                     height: controller.getImageSize(),
                     width: controller.getImageSize(),
                     borderRadius: BorderRadius.circular(controller.getImageSize() / 2 * (1 - (controller.slidePosition.value >= .8 ? .95 : controller.slidePosition.value))),
@@ -139,12 +138,12 @@ class FirstView extends GetView<FirstController> {
                   children: [
                     Text(
                       controller.mediaItem.value.title,
-                      style: TextStyle(fontSize: 28.sp, color: controller.getLightTextColor(), fontWeight: FontWeight.bold),
-                      maxLines: 2,
+                      style: TextStyle(fontSize: 28.sp, color: controller.getLightTextColor(), fontWeight: FontWeight.w600),
+                      maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    Padding(padding: EdgeInsets.symmetric(vertical: 1.w)),
-                    Text(controller.mediaItem.value.artist ?? '', style: TextStyle(fontSize: 22.sp, color: controller.getLightTextColor(), fontWeight: FontWeight.bold))
+                    Padding(padding: EdgeInsets.symmetric(vertical: 3.w)),
+                    Text(controller.mediaItem.value.artist ?? '', style: TextStyle(fontSize: 22.sp, color: controller.getLightTextColor(), fontWeight: FontWeight.w500))
                   ],
                 ),
               ),
@@ -214,6 +213,7 @@ class LeftMenu {
   String title;
   IconData icon;
   String path;
+  String pathUrl;
 
-  LeftMenu(this.title, this.icon, this.path);
+  LeftMenu(this.title, this.icon, this.path,this.pathUrl);
 }

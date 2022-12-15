@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:audio_service/audio_service.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/common/audio_handler.dart';
+import 'package:bujuan/common/constants/other.dart';
 import 'package:bujuan/pages/home/home_binding.dart';
 import 'package:bujuan/pages/splash_page.dart';
 import 'package:bujuan/routes/router.gr.dart';
@@ -20,49 +21,47 @@ import 'common/storage.dart';
 main() async {
   bool isMobile = Platform.isAndroid || Platform.isIOS || Platform.isFuchsia;
   WidgetsFlutterBinding.ensureInitialized();
-  final rootRouter = RootRouter(
-      // authGuard: AuthGuard(),
-      );
+  final rootRouter = RootRouter();
   await _initAudioServer();
   HomeBinding().dependencies();
   runApp(ScreenUtilInit(
     designSize: isMobile ? const Size(750, 1334) : const Size(2160, 1406),
-    builder: (BuildContext context, Widget? child) => GetMaterialApp.router(
-      title: "Application",
-      theme: AppTheme.light.copyWith(
-          pageTransitionsTheme: const PageTransitionsTheme(builders: {
-        TargetPlatform.iOS: NoShadowCupertinoPageTransitionsBuilder(),
-        TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
-      })),
-      darkTheme: AppTheme.dark,
-      showPerformanceOverlay: false,
-      themeMode: ThemeMode.system,
-      routerDelegate: rootRouter.delegate(
-        navigatorObservers: () => [AutoRouteObserver()],
-      ),
-      // routeInformationProvider: _rootRouter.routeInfoProvider(),
-      routeInformationParser: rootRouter.defaultRouteParser(),
-      debugShowCheckedModeBanner: false,
-      builder: (_, router) {
-        return router!;
-      },
-      // home: const SplashPage(),
-    ),
+    builder: (BuildContext context, Widget? child){
+      return GetMaterialApp.router(
+        title: "Application",
+        theme: AppTheme.light.copyWith(
+            pageTransitionsTheme: const PageTransitionsTheme(builders: {
+              TargetPlatform.iOS: NoShadowCupertinoPageTransitionsBuilder(),
+              TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+            })),
+        darkTheme: AppTheme.dark,
+        showPerformanceOverlay: false,
+        themeMode: ThemeMode.system,
+        routerDelegate: rootRouter.delegate(
+          navigatorObservers: () => [AutoRouteObserver()],
+        ),
+        routeInformationParser: rootRouter.defaultRouteParser(),
+        debugShowCheckedModeBanner: false,
+        builder: (_, router) {
+          return router!;
+        },
+        // home: const SplashPage(),
+      );
+    },
   ));
   // SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge).then((value) => );
 }
 
 Future<void> _initAudioServer() async {
-  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   final getIt = GetIt.instance;
+  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   getIt.registerSingleton<OnAudioQuery>(OnAudioQuery());
   getIt.registerSingleton<WeSlideController>(WeSlideController());
   getIt.registerSingleton<ZoomDrawerController>(ZoomDrawerController());
   // 工具初始
   await StorageUtil.init();
-  print('=============onReady');
   // _startServer();
-  await NeteaseMusicApi.init(debug: true);
+  await NeteaseMusicApi.init(debug: false);
   getIt.registerSingleton<AudioServeHandler>(await AudioService.init<AudioServeHandler>(
     builder: () => AudioServeHandler(),
     config: const AudioServiceConfig(

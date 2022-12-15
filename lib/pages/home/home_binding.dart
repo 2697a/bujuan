@@ -1,4 +1,3 @@
-import 'package:bujuan/pages/home/first/first_controller.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/pages/index/index_controller.dart';
 import 'package:bujuan/pages/login/login_controller.dart';
@@ -12,7 +11,6 @@ class HomeBinding extends Bindings{
   void dependencies() {
     Get.lazyPut(() => UserController());
     Get.lazyPut(() => HomeController());
-    Get.lazyPut(() => FirstController());
     Get.lazyPut(() => IndexController());
     Get.lazyPut(() => PlayListController());
     Get.lazyPut(() => LoginController());
