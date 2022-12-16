@@ -24,12 +24,12 @@ class UserView extends GetView<UserController> {
         children: [
           SafeArea(
               child: Padding(
-                padding: EdgeInsets.only(right: 30.w),
-                child: SvgPicture.asset(
-                  AppIcons.meTop,
-                  width: Get.width / 1.9,
-                ),
-              )),
+            padding: EdgeInsets.only(right: 30.w),
+            child: SvgPicture.asset(
+              AppIcons.meTop,
+              width: Get.width / 1.9,
+            ),
+          )),
           Scaffold(
             backgroundColor: Colors.transparent,
             appBar: AppBar(
@@ -45,49 +45,48 @@ class UserView extends GetView<UserController> {
                   },
                   icon: SimpleExtendedImage.avatar('${controller.loginStatus.value ? controller.userData.value.profile?.avatarUrl : ''}'))),
               title: Obx(
-                    () => AnimatedOpacity(
+                () => AnimatedOpacity(
                   opacity: controller.op.value,
                   duration: const Duration(milliseconds: 100),
                   child: RichText(
                       text: TextSpan(style: TextStyle(fontSize: 42.sp, color: Colors.grey, fontWeight: FontWeight.bold), text: 'Hi  ', children: [
-                        TextSpan(
-                            text: '${controller.loginStatus.value ? controller.userData.value.profile?.nickname : '请登录'}～',
-                            style: TextStyle(color: Theme.of(context).primaryColor.withOpacity(.9))),
-                      ])),
+                    TextSpan(
+                        text: '${controller.loginStatus.value ? controller.userData.value.profile?.nickname : '请登录'}～',
+                        style: TextStyle(color: Theme.of(context).primaryColor.withOpacity(.9))),
+                  ])),
                 ),
               ),
-              actions: [
-                IconButton(onPressed: () {}, icon: const Icon(TablerIcons.search))
-              ],
+              actions: [IconButton(onPressed: () {}, icon: const Icon(TablerIcons.search))],
             ),
             body: SingleChildScrollView(
               controller: controller.userScrollController,
               physics: const BouncingScrollPhysics(),
-              padding: EdgeInsets.only(bottom: HomeController.to.getHomeBottomPadding()),
               child: Column(
                 children: [
                   _buildMeInfo(context),
                   StickyHeader(
                     header: _buildHeader('创建的歌单', context),
                     content: Obx(() => ListView.builder(
-                      shrinkWrap: true,
-                      padding: const EdgeInsets.all(0),
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: (c, i) =>
-                          _buildItem((controller.playlist.where((element) => element.creator?.userId == controller.userData.value.profile?.userId)).toList()[i], c),
-                      itemCount: (controller.playlist.where((element) => element.creator?.userId == controller.userData.value.profile?.userId)).length,
-                    )),
+                          shrinkWrap: true,
+                          itemExtent: 120.w,
+                          padding: EdgeInsets.symmetric(horizontal: 20.w),
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemBuilder: (c, i) =>
+                              _buildItem((controller.playlist.where((element) => element.creator?.userId == controller.userData.value.profile?.userId)).toList()[i], c),
+                          itemCount: (controller.playlist.where((element) => element.creator?.userId == controller.userData.value.profile?.userId)).length,
+                        )),
                   ),
                   StickyHeader(
                     header: _buildHeader('收藏的歌单', context),
                     content: Obx(() => ListView.builder(
-                      shrinkWrap: true,
-                      padding: const EdgeInsets.all(0),
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: (c, i) =>
-                          _buildItem((controller.playlist.where((element) => element.creator?.userId != controller.userData.value.profile?.userId)).toList()[i], c),
-                      itemCount: (controller.playlist.where((element) => element.creator?.userId != controller.userData.value.profile?.userId)).length,
-                    )),
+                          shrinkWrap: true,
+                          itemExtent: 120.w,
+                          padding: EdgeInsets.symmetric(horizontal: 20.w),
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemBuilder: (c, i) =>
+                              _buildItem((controller.playlist.where((element) => element.creator?.userId != controller.userData.value.profile?.userId)).toList()[i], c),
+                          itemCount: (controller.playlist.where((element) => element.creator?.userId != controller.userData.value.profile?.userId)).length,
+                        )),
                   ),
                 ],
               ),
@@ -139,34 +138,60 @@ class UserView extends GetView<UserController> {
                   style: TextStyle(fontSize: 52.sp, color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold))),
             ],
           )),
-          // Container(
-          //   decoration: BoxDecoration(color: Theme.of(context).primaryColor.withOpacity(.8), borderRadius: BorderRadius.circular(25.w)),
-          //   height: 180.w,
-          //   width: 80.w,
-          //   child: const Icon(
-          //     TablerIcons.search,
-          //     color: Colors.white,
-          //   ),
-          // )
         ],
       ),
     );
   }
 
   Widget _buildItem(Play play, BuildContext context) {
-    return ListTile(
-      dense: true,
-      contentPadding: EdgeInsets.symmetric(horizontal: 20.w),
-      leading: SimpleExtendedImage(
-        '${play.coverImgUrl ?? ''}?param=200y200',
-        width: 80.w,
-        height: 80.w,
+    return InkWell(
+      child: SizedBox(
+        height: 120.w,
+        child: Row(
+          children: [
+            SimpleExtendedImage(
+              '${play.coverImgUrl ?? ''}?param=200y200',
+              width: 85.w,
+              height: 85.w,
+            ),
+            Expanded(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 15.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        play.name ?? '',
+                        maxLines: 1,
+                        style: TextStyle(fontSize: 28.sp),
+                      ),
+                      Padding(padding: EdgeInsets.symmetric(vertical: 3.w)),
+                      Text(
+                        '${play.trackCount ?? 0} 首',
+                        style: TextStyle(fontSize: 26.sp, color: Colors.grey),
+                      )
+                    ],
+                  ),
+                ))
+          ],
+        ),
       ),
-      title: Text(play.name ?? ''),
-      subtitle: Text('${play.trackCount ?? 0} 首'),
-      onTap: () {
-        context.router.push(const PlayList().copyWith(args: play));
-      },
+      onTap: () => context.router.push(const PlayList().copyWith(args: play)),
     );
+    // return ListTile(
+    //   dense: true,
+    //   contentPadding: EdgeInsets.symmetric(horizontal: 20.w),
+    //   leading: SimpleExtendedImage(
+    //     '${play.coverImgUrl ?? ''}?param=200y200',
+    //     width: 80.w,
+    //     height: 80.w,
+    //   ),
+    //   title: Text(play.name ?? ''),
+    //   subtitle: Text('${play.trackCount ?? 0} 首'),
+    //   onTap: () {
+    //     context.router.push(const PlayList().copyWith(args: play));
+    //   },
+    // );
   }
 }

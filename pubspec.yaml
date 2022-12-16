@@ -48,7 +48,7 @@ dependencies:
   on_audio_query: ^2.6.1
 #  临时解决延迟加载音乐url的问题
   just_audio: ^0.9.30
-  audio_service: ^0.18.7
+  audio_service: ^0.18.8
   get_it: ^7.2.0
   loading_animation_widget: ^1.2.0+2
   dio: ^4.0.6

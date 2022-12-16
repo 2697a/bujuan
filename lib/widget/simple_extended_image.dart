@@ -20,7 +20,7 @@ class SimpleExtendedImage extends StatefulWidget {
       : super(key: key);
 
   const SimpleExtendedImage.avatar(this.url,
-      {Key? key, this.width, this.height, this.placeholder = placeholderImage, this.replacement, this.fit, this.shape = BoxShape.circle, this.borderRadius, this.cacheWidth = 300})
+      {Key? key, this.width, this.height, this.placeholder = avatarPlaceholderImage, this.replacement, this.fit, this.shape = BoxShape.circle, this.borderRadius, this.cacheWidth = 300})
       : super(key: key);
 
   @override

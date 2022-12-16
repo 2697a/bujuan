@@ -7,6 +7,7 @@ import 'package:bujuan/common/audio_handler.dart';
 import 'package:bujuan/common/constants/other.dart';
 import 'package:bujuan/common/lyric_parser/parser_lrc.dart';
 import 'package:bujuan/common/netease_api/netease_music_api.dart';
+import 'package:bujuan/pages/home/second/second_body_view.dart';
 import 'package:bujuan/widget/weslide/weslide_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -31,16 +32,21 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   double panelMobileMinSize = 90.h;
   double topBarHeight = 110.h;
   final List<LeftMenu> leftMenus = [
-    LeftMenu('个人中心', TablerIcons.user, Routes.user,'/home/user'),
-    LeftMenu('推荐歌单', TablerIcons.smartHome, Routes.index,'/home/index'),
-    LeftMenu('个人云盘', TablerIcons.cloud, Routes.search,'/home/search'),
+    LeftMenu('个人中心', TablerIcons.user, Routes.user, '/home/user'),
+    LeftMenu('推荐歌单', TablerIcons.smartHome, Routes.index, '/home/index'),
+    LeftMenu('个人云盘', TablerIcons.cloud, Routes.search, '/home/search'),
+  ];
+
+  final List<BottomItem> bottomItems = [
+    BottomItem(TablerIcons.playlist, 0),
+    BottomItem(TablerIcons.quote, 1),
   ];
 
   RxString currPathUrl = '/home/user'.obs;
 
   //是否折叠
   RxBool isCollapsed = true.obs;
-  WeSlideController weSlideController = GetIt.instance<WeSlideController>();
+  WeSlideController weSlideController = WeSlideController();
   RxBool isCollapsedAfterSec = true.obs;
   RxInt selectIndex = 0.obs;
 
@@ -49,6 +55,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   Rx<PaletteColorData> rx = PaletteColorData().obs;
   RxBool isRoot = true.obs;
   RxBool second = false.obs;
+  PageController pageController = PageController(viewportFraction: .99);
 
   //是否第一次进入首页
   bool first = true;
@@ -59,28 +66,30 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   final AudioServeHandler audioServeHandler = GetIt.instance<AudioServeHandler>();
   Rx<Duration> duration = Duration.zero.obs;
   PanelController panelController = PanelController();
-  bool isDownSlide = true;
+  RxBool isDownSlide = true.obs;
 
   Rx<AudioServiceRepeatMode> audioServiceRepeatMode = AudioServiceRepeatMode.all.obs;
   Rx<AudioServiceShuffleMode> audioServiceShuffleMode = AudioServiceShuffleMode.none.obs;
 
   List<Map<dynamic, dynamic>> mEffects = [];
-  double ellv = 30;
-  double euuv = 60;
   AnimationController? animationController;
-  RxInt sleep = 0.obs;
   String directoryPath = '';
   FixedExtentScrollController scrollController = FixedExtentScrollController();
-  RxBool needDrag = false.obs;
 
   ZoomDrawerController myDrawerController = GetIt.instance<ZoomDrawerController>();
+  RxBool disableDragGesture = false.obs; //是否可以侧滑
+
   List<String> lyricList = <String>[].obs;
   List<LyricsLineModel> lyricsLineModels = <LyricsLineModel>[].obs;
-  RxBool showPlayList = true.obs;
+  List<LyricsLineModel> lyricsLineModelsTran = <LyricsLineModel>[].obs;
+  RxBool onMove = false.obs;
 
   //路由相关
   AutoRouterDelegate? autoRouterDelegate;
 
+  RxString currLyric = ''.obs;
+
+  RxDouble playListOffest = 10.0.obs;
   //进度
   @override
   void onInit() async {
@@ -105,27 +114,48 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
       //获取歌词
       SongLyricWrap songLyricWrap = await NeteaseMusicApi().songLyric(value.id ?? '');
       String lyric = songLyricWrap.lrc.lyric ?? "";
-      lyricsLineModels
-        ..clear()
-        ..addAll(ParserLrc(lyric).parseLines());
+      String lyricTran = songLyricWrap.tlyric.lyric ?? "";
+      // lyricsLineModelsTran.clear();
+      // if (lyricTran.isNotEmpty) {
+      //   lyricsLineModelsTran.addAll(ParserLrc(lyricTran).parseLines());
+      // }
+      if (lyric.isNotEmpty) {
+        lyricsLineModels.clear();
+        var list = ParserLrc(lyric).parseLines();
+        if (lyricTran.isNotEmpty) {
+          lyricsLineModels.addAll(list.map((e) {
+            int index = lyricsLineModelsTran.indexWhere((element) => element.startTime == e.startTime);
+            if (index != -1) e.extText = lyricsLineModelsTran[index].mainText;
+            return e;
+          }).toList());
+        } else {
+          lyricsLineModels.addAll(list);
+        }
+      }
+
       mediaItem.value = value;
-      ImageUtils.getImageColor('${mediaItem.value.artUri?.scheme ?? ''}://${mediaItem.value.artUri?.host ?? ''}/${mediaItem.value.artUri?.path ?? ''}?param=50y50',
-          (paletteColorData) {
+      ImageUtils.getImageColor('${mediaItem.value.extras?['image'] ?? ''}?param=50y50', (paletteColorData) {
         rx.value = paletteColorData;
       });
     });
     //监听实时进度变化
     AudioService.position.listen((event) {
-      // if (first) duration.value = event;
-      if (!weSlideController.isOpened) return;
+      //如果没有展示播放页面就先不监听（节省资源）
+      if (!second.value && slidePosition.value < 1) return;
+      //如果监听到的毫秒大于歌曲的总时长 置0并stop
       if (event.inMilliseconds > (mediaItem.value.duration?.inMilliseconds ?? 0)) {
         duration.value = Duration.zero;
         return;
       }
+      //赋值
       duration.value = event;
-      int index = lyricsLineModels.indexWhere((element) => (element.startTime ?? 0) >= event.inMilliseconds && (element.endTime ?? 0) <= event.inMilliseconds);
-      if (index != -1) {
-        scrollController.animateToItem(index > 0 ? index - 1 : index, duration: const Duration(milliseconds: 300), curve: Curves.linear);
+      //如果歌词列表没有滑动，根据歌词的开始时间自动滚动歌词列表
+      if (!onMove.value) {
+        int index = lyricsLineModels.indexWhere((element) => (element.startTime ?? 0) >= event.inMilliseconds && (element.endTime ?? 0) <= event.inMilliseconds);
+        if (index != -1) {
+          currLyric.value = lyricsLineModels[index > 0 ? index - 1 : index].mainText ?? '';
+          scrollController.animateToItem(index > 0 ? index - 1 : index, duration: const Duration(milliseconds: 300), curve: Curves.linear);
+        }
       }
     });
     audioServeHandler.playbackState.listen((value) {
@@ -144,7 +174,12 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   }
 
   listenRouter() {
-    currPathUrl.value = autoRouterDelegate?.urlState.url??'';
+    currPathUrl.value = autoRouterDelegate?.urlState.url ?? '';
+    if (currPathUrl.value == '/home/index' || currPathUrl.value == '/home/user' || currPathUrl.value == '/home/search') {
+      if (!disableDragGesture.value) disableDragGesture.value = true;
+    } else {
+      if (disableDragGesture.value) disableDragGesture.value = false;
+    }
   }
 
   static HomeController get to => Get.find();
@@ -260,7 +295,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
 
   //获取图片亮色背景下文字显示的颜色
   Color getLightTextColor() {
-    if (slidePosition.value == 1) {
+    if (slidePosition.value == 1|| slidePosition1.value == 0) {
       return rx.value.light?.bodyTextColor ?? Colors.transparent;
     } else {
       return Theme.of(buildContext).iconTheme.color ?? Colors.transparent;
@@ -292,7 +327,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
 
   //获取图片的宽高
   double getImageSize() {
-    return (panelHeaderSize * .8) * (1 + slidePosition.value * 5.25);
+    return (panelHeaderSize * .8) * (1 + slidePosition.value * 5.4);
   }
 
   //获取图片离左侧的间距
@@ -320,8 +355,9 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   @override
   void onClose() {
     super.onClose();
-    // weSlideController.dispose();
-    // scrollController.dispose();
+    weSlideController.dispose();
+    print('object=====Close');
+    scrollController.dispose();
     autoRouterDelegate?.removeListener(listenRouter);
   }
 

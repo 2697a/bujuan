@@ -13,3 +13,5 @@ String assetIconApp = 'assets/icons/ic_app.png';
 String assetIconGoogle = 'assets/icons/ic_google.png';
 
 const String placeholderImage = 'assets/images/placeholder.png';
+
+const String avatarPlaceholderImage = 'assets/images/logo.png';

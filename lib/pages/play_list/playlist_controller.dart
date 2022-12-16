@@ -1,4 +1,5 @@
 import 'package:audio_service/audio_service.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../common/netease_api/src/api/play/bean.dart';
@@ -8,6 +9,17 @@ import '../home/home_controller.dart';
 class PlayListController extends GetxController {
   List<MediaItem> mediaItems = <MediaItem>[];
   String queueTitle = '';
+  ScrollController scrollController = ScrollController();
+  RxDouble aa = 0.0.obs;
+
+
+  @override
+  void onInit() {
+    scrollController.addListener(() {
+      aa.value = scrollController.position.pixels;
+    });
+    super.onInit();
+  }
 
   Future<SongDetailWrap> getData(String id) async {
     queueTitle = id;
@@ -35,10 +47,15 @@ class PlayListController extends GetxController {
   playIndex(int index) async {
     String title = HomeController.to.audioServeHandler.queueTitle.value;
     if (title.isEmpty || title != queueTitle) {
-      await HomeController.to.audioServeHandler.addQueueItems(mediaItems, index: index);
-      HomeController.to.audioServeHandler.queueTitle.value = queueTitle;
+      HomeController.to.audioServeHandler.addQueueItems(mediaItems, playlistId: queueTitle, index: index);
     } else {
       HomeController.to.audioServeHandler.skipToQueueItem(index);
     }
+  }
+
+  @override
+  void onClose() {
+    scrollController.dispose();
+    super.onClose();
   }
 }

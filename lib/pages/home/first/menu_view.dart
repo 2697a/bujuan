@@ -26,13 +26,13 @@ class MenuView extends GetView<HomeController> {
           padding: EdgeInsets.symmetric(vertical: 140.w),
           itemBuilder: (context, index) => InkWell(
             child: Obx(() => Container(
-                  padding: EdgeInsets.symmetric(horizontal: 0.w, vertical: 30.w),
+                  padding: EdgeInsets.symmetric(horizontal: 0.w, vertical: 32.w),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Container(
                         width: 8.w,
-                        height: 70.w,
+                        height: 50.w,
                         color: controller.currPathUrl.value == controller.leftMenus[index].pathUrl ? Theme.of(context).primaryColor : Colors.transparent,
                       ),
                       Padding(padding: EdgeInsets.symmetric(horizontal: 10.w)),
@@ -59,13 +59,14 @@ class MenuView extends GetView<HomeController> {
           itemCount: controller.leftMenus.length,
         )),
         ListTile(
-          leading: Icon(TablerIcons.golfOff,color: controller.getLeftMenuColor()),
+          leading: Icon(TablerIcons.login,color: controller.getLeftMenuColor()),
           title: Text(
             '注销登陆',
             style: TextStyle(color: controller.getLeftMenuColor()),
           ),
           onTap: () {
-            UserController.to.clearUser();
+            controller.myDrawerController.close!();
+            Future.delayed(const Duration(milliseconds: 400), () => UserController.to.clearUser());
           },
         )
       ],

@@ -41,7 +41,7 @@ class ParserLrc extends LyricsParse {
         realLyrics = "";
       }
       if (isMain) {
-        lineModel.mainText = realLyrics;
+        lineModel.mainText = realLyrics..replaceAll('\n', '');
       } else {
         lineModel.extText = realLyrics;
       }

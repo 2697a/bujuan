@@ -24,7 +24,6 @@ class UserController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    getUserPlayList();
     getUserState();
     userScrollController.addListener(() {
       if (userScrollController.position.pixels <= 130.w && op.value != 0) {
@@ -55,6 +54,7 @@ class UserController extends GetxController {
     NeteaseMusicApi().logout().then((value) {
       loginStatus.value = false;
       StorageUtil().remove('STORAGE_USER_PROFILE_KEY');
+      getUserPlayList();
     });
   }
 
@@ -67,7 +67,7 @@ class UserController extends GetxController {
 
   getUserPlayList() {
     NeteaseMusicApi().userPlayList(userData.value.profile?.userId ?? '-1').then((MultiPlayListWrap2 multiPlayListWrap2) {
-        print('发生错误了========${jsonEncode(multiPlayListWrap2.toJson())}');
+      print('发生错误了========${jsonEncode(multiPlayListWrap2.toJson())}');
       playlist
         ..clear()
         ..addAll(multiPlayListWrap2.playlist ?? []);

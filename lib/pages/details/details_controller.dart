@@ -58,7 +58,7 @@ class DetailsController extends GetxController {
     String title = HomeController.to.audioServeHandler.queueTitle.value;
     if (title.isEmpty || title != queueTitle) {
       HomeController.to.audioServeHandler.queueTitle.value = queueTitle;
-      await HomeController.to.audioServeHandler.addQueueItems(mediaItems);
+      // await HomeController.to.audioServeHandler.addQueueItems(mediaItems);
     }
     HomeController.to.audioServeHandler
       ..skipToQueueItem(index)

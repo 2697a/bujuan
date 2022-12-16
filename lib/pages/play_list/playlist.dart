@@ -2,7 +2,6 @@ import 'package:audio_service/audio_service.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/common/netease_api/netease_music_api.dart';
 import 'package:bujuan/pages/play_list/playlist_controller.dart';
-import 'package:bujuan/widget/data_widget.dart';
 import 'package:bujuan/widget/simple_extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -17,43 +16,87 @@ class PlayList extends GetView<PlayListController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Song Sheet'),),
-      body: BaseWidget<SongDetailWrap>(
-          future: controller.getData((context.routeData.args as Play).id),
-          childBuilder: (ServerStatusBean p ) {
-            p as SongDetailWrap;
-            return ListView.builder(
-              padding: EdgeInsets.only(left: 20.w, right: 20.w, bottom: HomeController.to.getHomeBottomPadding()),
-              itemBuilder: (context, index) => _buildItem(controller.setData(p)[index], index),
-              itemCount: controller.setData(p).length,
-            );
-          }),
-      // body: FutureBuilder<List<MediaItem>>(
-      //     future: controller.getData((context.routeData.args as Play).id),
-      //     builder: (c, s) => DataView<List<MediaItem>>(
-      //         snapshot: s,
-      //         childBuilder: ListView.builder(
-      //           itemBuilder: (context, index) => _buildItem((s.data ?? [])[index], index),
-      //           itemCount: (s.data ?? []).length,
-      //         ))),
+    return Stack(
+      children: [
+        SimpleExtendedImage((context.routeData.args as Play).coverImgUrl ?? '',width: Get.width,),
+        Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(title: const Text('Song Sheet'),backgroundColor: Colors.transparent,),
+          body: AnimatedContainer(
+            duration: const Duration(milliseconds: 0),
+            decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                borderRadius: BorderRadius.circular(50.w)
+            ),
+            padding: EdgeInsets.only(top: 30.w),
+            margin: EdgeInsets.only(top: Get.width / 5),
+            child: BaseWidget<SongDetailWrap>(
+                future: controller.getData((context.routeData.args as Play).id),
+                childBuilder: (ServerStatusBean p) {
+                  p as SongDetailWrap;
+                  return ListView.builder(
+                    itemExtent: 120.w,
+                    physics: const BouncingScrollPhysics(),
+                    padding: EdgeInsets.symmetric(horizontal: 20.w),
+                    itemBuilder: (context, index) => _buildItem(controller.setData(p)[index], index),
+                    itemCount: controller.setData(p).length,
+                  );
+                }),
+          ),
+        )
+      ],
     );
   }
 
   Widget _buildItem(MediaItem data, int index) {
-    return ListTile(
-      dense: true,
-      contentPadding: EdgeInsets.symmetric(horizontal: 10.w),
-      leading: SimpleExtendedImage(
-        '${data.extras?['image'] ?? ''}?param=200y200',
-        width: 80.w,
-        height: 80.w,
+    return InkWell(
+      child: SizedBox(
+        height: 120.w,
+        child: Row(
+          children: [
+            SimpleExtendedImage(
+              '${data.extras?['image'] ?? ''}?param=200y200',
+              width: 85.w,
+              height: 85.w,
+            ),
+            Expanded(
+                child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 15.w),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    data.title,
+                    maxLines: 1,
+                    style: TextStyle(fontSize: 28.sp),
+                  ),
+                  Padding(padding: EdgeInsets.symmetric(vertical: 3.w)),
+                  Text(
+                    data.artist ?? '',
+                    style: TextStyle(fontSize: 26.sp, color: Colors.grey),
+                  )
+                ],
+              ),
+            ))
+          ],
+        ),
       ),
-      title: Text(data.title),
-      subtitle: Text(data.artist??''),
-      onTap: () {
-        controller.playIndex(index);
-      },
+      onTap: () => controller.playIndex(index),
     );
+    // return ListTile(
+    //   dense: true,
+    //   contentPadding: EdgeInsets.symmetric(horizontal: 10.w),
+    //   leading: SimpleExtendedImage(
+    //     '${data.extras?['image'] ?? ''}?param=200y200',
+    //     width: 80.w,
+    //     height: 80.w,
+    //   ),
+    //   title: Text(data.title),
+    //   subtitle: Text(data.artist??''),
+    //   onTap: () {
+    //     controller.playIndex(index);
+    //   },
+    // );
   }
 }

@@ -1,14 +1,16 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:bujuan/common/constants/key.dart';
-import 'package:bujuan/common/netease_api/netease_music_api.dart';
 import 'package:bujuan/common/storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:on_audio_query/on_audio_query.dart';
-import 'package:path_provider/path_provider.dart';
+
+import 'netease_api/src/api/play/bean.dart';
+import 'netease_api/src/netease_api.dart';
 
 class AudioServeHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
   final AudioPlayer _player = AudioPlayer(); //真正去播放的实例
@@ -17,52 +19,41 @@ class AudioServeHandler extends BaseAudioHandler with QueueHandler, SeekHandler 
   String directoryPath = '';
 
   AudioServeHandler() {
+    _loadPlaylist();
     _notifyAudioHandlerAboutPlaybackEvents();
-    // _listenForDurationChanges();
     _listenForCurrentSongIndexChanges();
     _listenForSequenceStateChanges();
   }
 
   Future<void> _loadPlaylist() async {
-    try {
-      await _player.setAudioSource(_playlist);
-      Directory directory = await getTemporaryDirectory();
-      directoryPath = directory.path;
-      String albumId = StorageUtil().getString(playQueueTitle);
-      var index = StorageUtil().getInt(playIndex);
-      var position = StorageUtil().getInt(playPosition);
-      print('object========$albumId=====$index========$position');
-      if (albumId.isNotEmpty) {
-        List<SongModel> songs = await audioQuery.queryAudiosFrom(AudiosFromType.ALBUM_ID, albumId);
-        final List<MediaItem> mediaItems = [];
-        for (var songModel in songs) {
-          String path = '$directoryPath/${songModel.id}';
-          File file = File(path);
-          if (!await file.exists()) {
-            Uint8List? a = await audioQuery.queryArtwork(songModel.id, ArtworkType.AUDIO, size: 800);
-            await file.writeAsBytes(a!);
-          }
-          MediaItem mediaItem = MediaItem(
-              id: '${songModel.id}',
-              duration: Duration(milliseconds: songModel.duration ?? 0),
-              artUri: Uri.file(path),
-              extras: {'url': songModel.uri, 'data': songModel.data, 'type': songModel.fileExtension, 'albumId': songModel.albumId},
-              title: songModel.title,
-              artist: songModel.artist);
-          mediaItems.add(mediaItem);
-        }
-
-        String title1 = queueTitle.value;
-        if (albumId.isEmpty || title1 != albumId) {
-          await addQueueItems(mediaItems);
-          queueTitle.value = albumId;
-        }
-        skipToQueueItem(index);
-        seek(Duration(milliseconds: position));
+    String playTitle = StorageUtil().getString(playQueueTitle);
+    int index = StorageUtil().getInt(playIndex);
+    print('object======获取歌单数据=====$playTitle=========$index');
+    if (playTitle.isNotEmpty) {
+      List<MediaItem> items = _setData(await _getData(playTitle));
+      if (index < items.length) {
+        addQueueItems(items, playlistId: playTitle, index: index, isPlay: false);
       }
-    } catch (e) {
-      print("Error: $e");
     }
+  }
+
+  Future<SongDetailWrap> _getData(String id) async {
+    SinglePlayListWrap singlePlayListWrap = await NeteaseMusicApi().playListDetail(id);
+    return await NeteaseMusicApi().songDetail((singlePlayListWrap.playlist?.trackIds ?? []).map((e) => e.id).toList());
+  }
+
+  List<MediaItem> _setData(SongDetailWrap songDetailWrap) {
+    //获取歌单数据
+    final songs = songDetailWrap.songs ?? [];
+    return songs
+        .map((e) => MediaItem(
+            id: e.id,
+            duration: Duration(milliseconds: e.dt ?? 0),
+            artUri: Uri.parse(e.al.picUrl ?? ''),
+            extras: {'url': 'http://music.163.com/song/media/outer/url?id=${e.id}', 'image': e.al.picUrl ?? '', 'type': ''},
+            title: e.name ?? "",
+            artist: (e.ar ?? []).map((e) => e.name).toList().join(' / ')))
+        .toList();
   }
 
   void _notifyAudioHandlerAboutPlaybackEvents() {
@@ -120,9 +111,9 @@ class AudioServeHandler extends BaseAudioHandler with QueueHandler, SeekHandler 
 
   void _listenForCurrentSongIndexChanges() {
     _player.currentIndexStream.listen((index) async {
-      print('_listenForCurrentSongIndexChanges========$index');
       final playlist = queue.value;
       if (index == null || playlist.isEmpty) return;
+      StorageUtil().setInt(playIndex, index ?? 0);
       if (_player.shuffleModeEnabled) {
         index = _player.shuffleIndices![index];
       }
@@ -149,20 +140,25 @@ class AudioServeHandler extends BaseAudioHandler with QueueHandler, SeekHandler 
   }
 
   @override
-  Future<void> addQueueItems(List<MediaItem> mediaItems, {int index = 0}) async {
+  Future<void> addQueueItems(List<MediaItem> mediaItems, {String playlistId = '', int index = 0, bool isPlay = true}) async {
     // 管理 Just Audio
+    print('object==========${playlistId}');
+    mediaItem.value = mediaItems[index];
     final audioSource = mediaItems.map(_createAudioSource);
     _playlist
       ..clear()
       ..addAll(audioSource.toList());
     await _player.setAudioSource(_playlist);
-    _player
-      ..seek(Duration.zero, index: index)
-      ..play();
+    _player.seek(Duration.zero, index: index);
+    if (isPlay) _player.play();
     // 通知系统
-    queue.value
-      ..clear()
-      ..addAll(mediaItems);
+    queue.value.clear();
+    final newQueue = queue.value..addAll(mediaItems);
+    queue.add(newQueue);
+    if (playlistId.isNotEmpty) {
+      StorageUtil().setString(playQueueTitle, playlistId);
+      queueTitle.value = playlistId;
+    }
   }
 
   UriAudioSource _createAudioSource(MediaItem mediaItem) {
@@ -195,10 +191,10 @@ class AudioServeHandler extends BaseAudioHandler with QueueHandler, SeekHandler 
 
   @override
   Future<void> skipToQueueItem(int index) async {
-    if (index < 0 || index >= queue.value.length) return;
-    if (_player.shuffleModeEnabled) {
-      index = _player.shuffleIndices![index];
-    }
+    // if (index < 0 || index >= queue.value.length) return;
+    // if (_player.shuffleModeEnabled) {
+    //   index = _player.shuffleIndices![index];
+    // }
     print('object============${queue.value.length}=============$index========${mediaItem.value?.title ?? '啥也没有'}');
     _player
       ..seek(Duration.zero, index: index)
@@ -240,8 +236,6 @@ class AudioServeHandler extends BaseAudioHandler with QueueHandler, SeekHandler 
     //  把当前播放列表和播放index存起来包括播放进度
     int index = playbackState.value.queueIndex ?? 0;
     int position = playbackState.value.position.inMilliseconds;
-    await StorageUtil().setString(playQueueTitle, queueTitle.value);
-    await StorageUtil().setInt(playIndex, index);
     await StorageUtil().setInt(playPosition, position);
     await _player.stop();
     await stop();

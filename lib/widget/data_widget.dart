@@ -1,4 +1,9 @@
+import 'package:bujuan/common/constants/icon.dart';
+import 'package:bujuan/widget/typewritertext.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 
 typedef RequestChildBuilder<T> = Widget Function(T data);
 
@@ -54,8 +59,22 @@ class LoadingView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text('加载中'),
+    return  SizedBox(
+      height: Get.height,
+      width: Get.width,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SvgPicture.asset(AppIcons.loading,width: Get.width/2.6,),
+          Padding(padding: EdgeInsets.symmetric(vertical: 15.w)),
+           TypeWriterText(
+            text: Text('拼命加载中...',style: TextStyle(fontSize: 32.sp),),
+            duration: const Duration(milliseconds: 120),
+            repeat: true,
+          )
+        ],
+      ),
     );
   }
 }
