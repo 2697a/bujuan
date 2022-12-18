@@ -239,10 +239,8 @@ class PathProvider {
   var _dataPath;
 
   init() async {
-    _cookiePath = (await getApplicationSupportDirectory()).absolute.path +
-        "/zmusic/.cookies/";
-    _dataPath = (await getApplicationSupportDirectory()).absolute.path +
-        "/zmusic/.data/";
+    _cookiePath = "${(await getApplicationSupportDirectory()).absolute.path}/zmusic/.cookies/";
+    _dataPath = "${(await getApplicationSupportDirectory()).absolute.path}/zmusic/.data/";
   }
 
   String getCookieSavedPath() {

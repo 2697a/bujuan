@@ -9,11 +9,13 @@ import 'package:bujuan/routes/router.gr.dart';
 import 'package:bujuan/widget/weslide/weslide_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_zoom_drawer/config.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
-import 'package:on_audio_query/on_audio_query.dart';
+
+// import 'package:on_audio_query/on_audio_query.dart';
 import 'common/constants/colors.dart';
 import 'common/netease_api/src/netease_api.dart';
 import 'common/storage.dart';
@@ -26,14 +28,14 @@ main() async {
   HomeBinding().dependencies();
   runApp(ScreenUtilInit(
     designSize: isMobile ? const Size(750, 1334) : const Size(2160, 1406),
-    builder: (BuildContext context, Widget? child){
+    builder: (BuildContext context, Widget? child) {
       return GetMaterialApp.router(
         title: "Application",
         theme: AppTheme.light.copyWith(
             pageTransitionsTheme: const PageTransitionsTheme(builders: {
-              TargetPlatform.iOS: NoShadowCupertinoPageTransitionsBuilder(),
-              TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
-            })),
+          TargetPlatform.iOS: NoShadowCupertinoPageTransitionsBuilder(),
+          TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+        })),
         darkTheme: AppTheme.dark,
         showPerformanceOverlay: false,
         themeMode: ThemeMode.system,
@@ -55,7 +57,7 @@ main() async {
 Future<void> _initAudioServer() async {
   final getIt = GetIt.instance;
   await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-  getIt.registerSingleton<OnAudioQuery>(OnAudioQuery());
+  // getIt.registerSingleton<OnAudioQuery>(OnAudioQuery());
   getIt.registerSingleton<WeSlideController>(WeSlideController());
   getIt.registerSingleton<ZoomDrawerController>(ZoomDrawerController());
   // 工具初始

@@ -265,7 +265,6 @@ class _WeSlideState extends State<WeSlide> with TickerProviderStateMixin {
 
   @override
   void initState() {
-    print('initStateobject==============${_effectiveController}');
     // Subscribe to animated when value change
     _effectiveController.addListener(_animatedPanel);
     _effectiveFooterController.addListener(_animatedFooter);
@@ -318,7 +317,6 @@ class _WeSlideState extends State<WeSlide> with TickerProviderStateMixin {
     ///Animation Controller
     _ac.dispose();
     _acFooter.dispose();
-    print('object==========控制器没了');
     /// ValueNotifier
     _effectiveController.dispose();
     super.dispose();

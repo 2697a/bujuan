@@ -38,7 +38,7 @@ void neteaseInterceptor(
 
     var cookies = await loadCookies(host: option.uri);
 
-    var cookiesSb = new StringBuffer(CookieManager.getCookies(cookies));
+    var cookiesSb = StringBuffer(CookieManager.getCookies(cookies));
     option.extra['cookies'].forEach((key, value) {
       cookiesSb
           .write(' ;${Uri.encodeComponent(key)}=${Uri.encodeComponent(value)}');
@@ -266,16 +266,12 @@ Uri joinUri(String path) {
 }
 
 Future<List<Cookie>> loadCookies({Uri? host}) async {
-  if (host == null) {
-    host = Uri.parse(HOST);
-  }
+  host ??= Uri.parse(HOST);
   return (NeteaseMusicApi.cookieManager.cookieJar).loadForRequest(host);
 }
 
 Future<int> loadCookiesHash({List<Cookie>? cookies}) async {
-  if (cookies == null) {
-    cookies = await loadCookies();
-  }
+  cookies ??= await loadCookies();
   int hash = hashList(cookies.map((e) => e.toString()));
   int loginRefreshVersion = NeteaseMusicApi().loginRefreshVersion;
   return hash + loginRefreshVersion;

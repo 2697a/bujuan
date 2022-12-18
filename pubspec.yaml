@@ -36,17 +36,11 @@ dependencies:
   cupertino_icons: ^1.0.2
   get: ^4.6.5
   shared_preferences: ^2.0.13
-  path: ^1.8.0
-  pedantic: ^1.11.1
   encrypt: ^5.0.0
-  collection: ^1.15.0-nullsafety.4
-  cookie_jar: ^3.0.1
   path_provider: ^2.0.11
   flutter_screenutil: ^5.5.3+2
   extended_image: ^6.0.1
   palette_generator: ^0.3.3
-  on_audio_query: ^2.6.1
-#  临时解决延迟加载音乐url的问题
   just_audio: ^0.9.30
   audio_service: ^0.18.8
   get_it: ^7.2.0
@@ -55,6 +49,9 @@ dependencies:
   just_waveform: ^0.0.3
   font_awesome_flutter: ^10.1.0
   wheel_slider: ^1.0.0
+  qr_flutter: ^4.0.0
+  flutter_riverpod: ^2.1.1
+  riverpod_annotation: ^1.0.4
 
   # ext
   # app path
@@ -68,18 +65,19 @@ dependencies:
 #  jaudiotagger:
 #    path: ../jaudiotagger
   tuna_flutter_range_slider: ^1.0.0
-  modal_bottom_sheet: ^2.1.0
+#  modal_bottom_sheet: ^2.1.0
   tabler_icons:
     path: plugins/tabler-icons
   sliding_up_panel: ^2.0.0+1
 #  url_launcher: ^6.1.5
-  carousel_slider: ^4.1.1
+#  carousel_slider: ^4.1.1
   flutter_zoom_drawer: ^3.0.3
   auto_route: ^5.0.4
-  mobx: ^2.1.3
+#  mobx: ^2.1.3
   sticky_headers: ^0.3.0+2
   flutter_svg: ^1.1.6
   fluttertoast: ^8.1.2
+  mobx: ^2.1.3
 
 
 dev_dependencies:
@@ -87,6 +85,8 @@ dev_dependencies:
     sdk: flutter
   auto_route_generator: 5.0.3
   build_runner:
+  riverpod_generator: ^1.0.4
+  mobx_codegen: ^2.1.1
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

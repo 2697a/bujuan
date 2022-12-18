@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
@@ -7,8 +8,11 @@ import 'package:bujuan/common/audio_handler.dart';
 import 'package:bujuan/common/constants/other.dart';
 import 'package:bujuan/common/lyric_parser/parser_lrc.dart';
 import 'package:bujuan/common/netease_api/netease_music_api.dart';
+import 'package:bujuan/common/storage.dart';
 import 'package:bujuan/pages/home/second/second_body_view.dart';
+import 'package:bujuan/pages/play_list/playlist_controller.dart';
 import 'package:bujuan/widget/weslide/weslide_controller.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -16,7 +20,7 @@ import 'package:flutter_zoom_drawer/config.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 
-import 'package:on_audio_query/on_audio_query.dart';
+// import 'package:on_audio_query/on_audio_query.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:tabler_icons/tabler_icons.dart';
 import 'package:tuna_flutter_range_slider/tuna_flutter_range_slider.dart';
@@ -61,7 +65,8 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   bool first = true;
   Rx<MediaItem> mediaItem = const MediaItem(id: '', title: '暂无', duration: Duration(seconds: 10)).obs;
   RxBool playing = false.obs;
-  final OnAudioQuery audioQuery = GetIt.instance<OnAudioQuery>();
+
+  // final OnAudioQuery audioQuery = GetIt.instance<OnAudioQuery>();
   late BuildContext buildContext;
   final AudioServeHandler audioServeHandler = GetIt.instance<AudioServeHandler>();
   Rx<Duration> duration = Duration.zero.obs;
@@ -83,6 +88,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   List<LyricsLineModel> lyricsLineModels = <LyricsLineModel>[].obs;
   List<LyricsLineModel> lyricsLineModelsTran = <LyricsLineModel>[].obs;
   RxBool onMove = false.obs;
+  Dio dio = Dio();
 
   //路由相关
   AutoRouterDelegate? autoRouterDelegate;
@@ -90,6 +96,23 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   RxString currLyric = ''.obs;
 
   RxDouble playListOffest = 10.0.obs;
+
+  var lastPopTime = DateTime.now();
+
+  bool intervalClick(int needTime) {
+    // 防重复提交
+    if (DateTime.now().difference(lastPopTime) > const Duration(milliseconds: 1000)) {
+      print(lastPopTime);
+      lastPopTime = DateTime.now();
+      print("允许点击");
+      return true;
+    } else {
+      // lastPopTime = DateTime.now(); //如果不注释这行,则强制用户一定要间隔2s后才能成功点击. 而不是以上一次点击成功的时间开始计算.
+      print("请勿重复点击！");
+      return false;
+    }
+  }
+
   //进度
   @override
   void onInit() async {
@@ -113,6 +136,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
       if (value == null) return;
       //获取歌词
       SongLyricWrap songLyricWrap = await NeteaseMusicApi().songLyric(value.id ?? '');
+      print('SongLyricWrap========${jsonEncode(songLyricWrap.toJson())}');
       String lyric = songLyricWrap.lrc.lyric ?? "";
       String lyricTran = songLyricWrap.tlyric.lyric ?? "";
       // lyricsLineModelsTran.clear();
@@ -295,8 +319,8 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
 
   //获取图片亮色背景下文字显示的颜色
   Color getLightTextColor() {
-    if (slidePosition.value == 1|| slidePosition1.value == 0) {
-      return rx.value.light?.bodyTextColor ?? Colors.transparent;
+    if (slidePosition.value == 0 && second.value) {
+      return rx.value.main?.bodyTextColor ?? Colors.transparent;
     } else {
       return Theme.of(buildContext).iconTheme.color ?? Colors.transparent;
     }

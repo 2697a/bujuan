@@ -6,7 +6,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:on_audio_query/on_audio_query.dart';
+// import 'package:on_audio_query/on_audio_query.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({Key? key}) : super(key: key);
@@ -23,7 +23,7 @@ class SplashPageState extends State<SplashPage> {
   Duration duration = const Duration(milliseconds: 2000);
   Duration durationFinish = const Duration(milliseconds: 2200);
   bool isFinish = false;
-  final OnAudioQuery onAudioQuery = GetIt.instance<OnAudioQuery>();
+  // final OnAudioQuery onAudioQuery = GetIt.instance<OnAudioQuery>();
 
   @override
   void initState() {
@@ -33,19 +33,19 @@ class SplashPageState extends State<SplashPage> {
     });
 
     Future.delayed(durationFinish, () {
-      requestPermission().then((value) => {if (value) {
-        AutoRouter.of(context).pushNamed(Routes.home)
-      }});
+      // requestPermission().then((value) => {if (value) {
+      //   AutoRouter.of(context).pushNamed(Routes.home)
+      // }});
     });
   }
 
-  Future<bool> requestPermission() async {
-    bool permissionStatus = await onAudioQuery.permissionsStatus();
-    if (!permissionStatus) {
-      permissionStatus = await onAudioQuery.permissionsRequest();
-    }
-    return permissionStatus;
-  }
+  // Future<bool> requestPermission() async {
+    // bool permissionStatus = await onAudioQuery.permissionsStatus();
+    // if (!permissionStatus) {
+    //   permissionStatus = await onAudioQuery.permissionsRequest();
+    // }
+    // return permissionStatus;
+  // }
 
   changeOpacity() {
     setState(() {

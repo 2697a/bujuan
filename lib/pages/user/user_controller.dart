@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:bujuan/common/constants/other.dart';
+import 'package:bujuan/common/netease_api/src/api/bean.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -40,29 +42,22 @@ class UserController extends GetxController {
 
   static UserController get to => Get.find();
 
-  getUserState() {
-    var data = StorageUtil().getJSON('STORAGE_USER_PROFILE_KEY');
-    if (data != null) {
-      print('objectaaaaa=========$data');
+  getUserState() async {
+    NeteaseAccountInfoWrap neteaseAccountInfoWrap = await NeteaseMusicApi().loginAccountInfo();
+    if (neteaseAccountInfoWrap.code == 200 && neteaseAccountInfoWrap.profile != null) {
       loginStatus.value = true;
-      userData.value = NeteaseAccountInfoWrap.fromJson(jsonDecode(data));
+      userData.value = neteaseAccountInfoWrap;
       getUserPlayList();
     }
   }
 
   clearUser() {
     NeteaseMusicApi().logout().then((value) {
+      if (value.code != 200) {
+        WidgetUtil.showToast(value.message ?? '');
+      }
       loginStatus.value = false;
-      StorageUtil().remove('STORAGE_USER_PROFILE_KEY');
-      getUserPlayList();
     });
-  }
-
-  saveUser(NeteaseAccountInfoWrap neteaseAccountInfoWrap) {
-    loginStatus.value = true;
-    userData.value = neteaseAccountInfoWrap;
-    StorageUtil().setJSON('STORAGE_USER_PROFILE_KEY', jsonEncode(neteaseAccountInfoWrap.toJson()));
-    getUserPlayList();
   }
 
   getUserPlayList() {

@@ -1,12 +1,11 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/pages/home/first/first_view.dart';
-import 'package:bujuan/pages/home/home_mobile_view.dart';
 import 'package:bujuan/pages/index/album_view.dart';
 import 'package:bujuan/pages/index/main_view.dart';
-import 'package:bujuan/pages/login/login.dart';
 import 'package:bujuan/pages/play_list/playlist.dart';
-import 'package:bujuan/pages/splash_page.dart';
 import 'package:bujuan/pages/user/user_view.dart';
+
+import '../pages/login/login.dart';
 
 abstract class Routes {
   Routes._();

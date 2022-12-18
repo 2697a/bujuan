@@ -35,25 +35,45 @@ class UserView extends GetView<UserController> {
             appBar: AppBar(
               backgroundColor: Colors.transparent,
               centerTitle: false,
-              leading: Obx(() => IconButton(
-                  onPressed: () {
-                    if (controller.loginStatus.value) {
-                      HomeController.to.myDrawerController.open!();
-                      return;
-                    }
-                    AutoRouter.of(context).pushNamed(Routes.login);
-                  },
-                  icon: SimpleExtendedImage.avatar('${controller.loginStatus.value ? controller.userData.value.profile?.avatarUrl : ''}'))),
+              leading: Obx(
+                () => IconButton(
+                    onPressed: () {
+                      if (controller.loginStatus.value) {
+                        HomeController.to.myDrawerController.open!();
+                        return;
+                      }
+                      AutoRouter.of(context).pushNamed(Routes.login);
+                    },
+                    icon: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(60.w),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Theme.of(context).primaryColor.withOpacity(.9),
+                              blurRadius: 6.0,
+                              offset: const Offset(0.0, 0.0),
+                            ),
+                          ]
+                        ),
+                        child: SimpleExtendedImage.avatar('${controller.loginStatus.value ? controller.userData.value.profile?.avatarUrl : ''}'))),
+              ),
               title: Obx(
-                () => AnimatedOpacity(
-                  opacity: controller.op.value,
-                  duration: const Duration(milliseconds: 100),
-                  child: RichText(
-                      text: TextSpan(style: TextStyle(fontSize: 42.sp, color: Colors.grey, fontWeight: FontWeight.bold), text: 'Hi  ', children: [
-                    TextSpan(
-                        text: '${controller.loginStatus.value ? controller.userData.value.profile?.nickname : '请登录'}～',
-                        style: TextStyle(color: Theme.of(context).primaryColor.withOpacity(.9))),
-                  ])),
+                () => InkWell(
+                  child: AnimatedOpacity(
+                    opacity: controller.op.value,
+                    duration: const Duration(milliseconds: 100),
+                    child: RichText(
+                        text: TextSpan(style: TextStyle(fontSize: 42.sp, color: Colors.grey, fontWeight: FontWeight.bold), text: 'Hi  ', children: [
+                      TextSpan(
+                          text: '${controller.loginStatus.value ? controller.userData.value.profile?.nickname : '请登录'}～',
+                          style: TextStyle(color: Theme.of(context).primaryColor.withOpacity(.9))),
+                    ])),
+                  ),
+                  onTap: () {
+                    if (!controller.loginStatus.value) {
+                      AutoRouter.of(context).pushNamed(Routes.login);
+                    }
+                  },
                 ),
               ),
               actions: [IconButton(onPressed: () {}, icon: const Icon(TablerIcons.search))],
@@ -64,30 +84,7 @@ class UserView extends GetView<UserController> {
               child: Column(
                 children: [
                   _buildMeInfo(context),
-                  StickyHeader(
-                    header: _buildHeader('创建的歌单', context),
-                    content: Obx(() => ListView.builder(
-                          shrinkWrap: true,
-                          itemExtent: 120.w,
-                          padding: EdgeInsets.symmetric(horizontal: 20.w),
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemBuilder: (c, i) =>
-                              _buildItem((controller.playlist.where((element) => element.creator?.userId == controller.userData.value.profile?.userId)).toList()[i], c),
-                          itemCount: (controller.playlist.where((element) => element.creator?.userId == controller.userData.value.profile?.userId)).length,
-                        )),
-                  ),
-                  StickyHeader(
-                    header: _buildHeader('收藏的歌单', context),
-                    content: Obx(() => ListView.builder(
-                          shrinkWrap: true,
-                          itemExtent: 120.w,
-                          padding: EdgeInsets.symmetric(horizontal: 20.w),
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemBuilder: (c, i) =>
-                              _buildItem((controller.playlist.where((element) => element.creator?.userId != controller.userData.value.profile?.userId)).toList()[i], c),
-                          itemCount: (controller.playlist.where((element) => element.creator?.userId != controller.userData.value.profile?.userId)).length,
-                        )),
-                  ),
+                  _buildSheet(context),
                 ],
               ),
             ),
@@ -95,6 +92,40 @@ class UserView extends GetView<UserController> {
         ],
       ),
     );
+  }
+
+  Widget _buildSheet(context) {
+    return Obx(() => Visibility(
+          visible: controller.loginStatus.value,
+          child: Column(
+            children: [
+              StickyHeader(
+                header: _buildHeader('创建的歌单', context),
+                content: Obx(() => ListView.builder(
+                      shrinkWrap: true,
+                      itemExtent: 120.w,
+                      padding: EdgeInsets.symmetric(horizontal: 20.w),
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (c, i) =>
+                          _buildItem((controller.playlist.where((element) => element.creator?.userId == controller.userData.value.profile?.userId)).toList()[i], c),
+                      itemCount: (controller.playlist.where((element) => element.creator?.userId == controller.userData.value.profile?.userId)).length,
+                    )),
+              ),
+              StickyHeader(
+                header: _buildHeader('收藏的歌单', context),
+                content: Obx(() => ListView.builder(
+                      shrinkWrap: true,
+                      itemExtent: 120.w,
+                      padding: EdgeInsets.symmetric(horizontal: 20.w),
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (c, i) =>
+                          _buildItem((controller.playlist.where((element) => element.creator?.userId != controller.userData.value.profile?.userId)).toList()[i], c),
+                      itemCount: (controller.playlist.where((element) => element.creator?.userId != controller.userData.value.profile?.userId)).length,
+                    )),
+              ),
+            ],
+          ),
+        ));
   }
 
   Widget _buildHeader(String title, context) {
@@ -123,23 +154,31 @@ class UserView extends GetView<UserController> {
   }
 
   Widget _buildMeInfo(context) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 30.w),
-      height: 240.w,
-      child: Row(
-        children: [
-          Expanded(
-              child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Hi', style: TextStyle(fontSize: 52.sp, color: Colors.grey, fontWeight: FontWeight.bold)),
-              Padding(padding: EdgeInsets.symmetric(vertical: 8.w)),
-              Obx(() => Text('${controller.loginStatus.value ? controller.userData.value.profile?.nickname : '请登录'}～',
-                  style: TextStyle(fontSize: 52.sp, color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold))),
-            ],
-          )),
-        ],
+    return GestureDetector(
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 30.w),
+        height: 240.w,
+        child: Row(
+          children: [
+            Expanded(
+                child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Hi', style: TextStyle(fontSize: 52.sp, color: Colors.grey, fontWeight: FontWeight.bold)),
+                Padding(padding: EdgeInsets.symmetric(vertical: 8.w)),
+                Obx(() => Text('${controller.loginStatus.value ? controller.userData.value.profile?.nickname : '请登录'}～',
+                    style: TextStyle(fontSize: 52.sp, color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold))),
+              ],
+            )),
+          ],
+        ),
       ),
+      onTap: () {
+        if (controller.loginStatus.value) {
+          return;
+        }
+        AutoRouter.of(context).pushNamed(Routes.login);
+      },
     );
   }
 
@@ -156,24 +195,24 @@ class UserView extends GetView<UserController> {
             ),
             Expanded(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 15.w),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        play.name ?? '',
-                        maxLines: 1,
-                        style: TextStyle(fontSize: 28.sp),
-                      ),
-                      Padding(padding: EdgeInsets.symmetric(vertical: 3.w)),
-                      Text(
-                        '${play.trackCount ?? 0} 首',
-                        style: TextStyle(fontSize: 26.sp, color: Colors.grey),
-                      )
-                    ],
+              padding: EdgeInsets.symmetric(horizontal: 15.w),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    play.name ?? '',
+                    maxLines: 1,
+                    style: TextStyle(fontSize: 28.sp),
                   ),
-                ))
+                  Padding(padding: EdgeInsets.symmetric(vertical: 3.w)),
+                  Text(
+                    '${play.trackCount ?? 0} 首',
+                    style: TextStyle(fontSize: 26.sp, color: Colors.grey),
+                  )
+                ],
+              ),
+            ))
           ],
         ),
       ),

@@ -9,13 +9,13 @@ import 'package:get/get.dart';
 
 import '../../common/netease_api/src/api/bean.dart';
 import '../base_view.dart';
-import '../home/home_controller.dart';
 
 class PlayList extends GetView<PlayListController> {
   const PlayList({super.key});
 
   @override
   Widget build(BuildContext context) {
+    controller.getData((context.routeData.args as Play).id);
     return Stack(
       children: [
         SimpleExtendedImage((context.routeData.args as Play).coverImgUrl ?? '',width: Get.width,),
@@ -30,18 +30,13 @@ class PlayList extends GetView<PlayListController> {
             ),
             padding: EdgeInsets.only(top: 30.w),
             margin: EdgeInsets.only(top: Get.width / 5),
-            child: BaseWidget<SongDetailWrap>(
-                future: controller.getData((context.routeData.args as Play).id),
-                childBuilder: (ServerStatusBean p) {
-                  p as SongDetailWrap;
-                  return ListView.builder(
-                    itemExtent: 120.w,
-                    physics: const BouncingScrollPhysics(),
-                    padding: EdgeInsets.symmetric(horizontal: 20.w),
-                    itemBuilder: (context, index) => _buildItem(controller.setData(p)[index], index),
-                    itemCount: controller.setData(p).length,
-                  );
-                }),
+            child: Obx(() => ListView.builder(
+              itemExtent: 120.w,
+              physics: const BouncingScrollPhysics(),
+              padding: EdgeInsets.symmetric(horizontal: 20.w),
+              itemBuilder: (context, index) => _buildItem(controller.mediaItems[index], index),
+              itemCount: controller.mediaItems.length,
+            )),
           ),
         )
       ],
@@ -69,7 +64,7 @@ class PlayList extends GetView<PlayListController> {
                   Text(
                     data.title,
                     maxLines: 1,
-                    style: TextStyle(fontSize: 28.sp),
+                    style: TextStyle(fontSize: 28.sp,color: data.extras!['available']?Colors.black:Colors.red),
                   ),
                   Padding(padding: EdgeInsets.symmetric(vertical: 3.w)),
                   Text(

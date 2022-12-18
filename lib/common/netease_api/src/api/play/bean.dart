@@ -200,6 +200,7 @@ class Song2 {
   String? reason;
 
   Privilege? privilege;
+  bool? available;
 
   Song2();
 

@@ -6,19 +6,19 @@ import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/routes/app_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:on_audio_query/on_audio_query.dart';
+// import 'package:on_audio_query/on_audio_query.dart';
 import 'package:path_provider/path_provider.dart';
 
 class DetailsController extends GetxController {
-  DetailsArguments? detailsArguments;
-  RxList<SongModel> songs = <SongModel>[].obs;
+  // DetailsArguments? detailsArguments;
+  // RxList<SongModel> songs = <SongModel>[].obs;
   String queueTitle = '';
   final List<MediaItem> mediaItems = [];
 
   @override
   void onInit() {
-    detailsArguments = Get.arguments;
-    queueTitle = '${detailsArguments?.albumModel.id}';
+    // detailsArguments = Get.arguments;
+    // queueTitle = '${detailsArguments?.albumModel.id}';
     super.onInit();
   }
 
@@ -26,33 +26,32 @@ class DetailsController extends GetxController {
   void onReady() {
     super.onReady();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      queryAudiosFrom();
+      // queryAudiosFrom();
     });
   }
 
-  queryAudiosFrom() async {
-    songs.value = await HomeController.to.audioQuery.queryAudiosFrom(AudiosFromType.ALBUM_ID, detailsArguments?.albumModel.id ?? 0);
-    for (var songModel in songs) {
-      print('object========${songModel.getMap.toString()}');
-      Directory directory = await getTemporaryDirectory();
-      String path = '${directory.path}${songModel.id}';
-      File file = File(path);
-      if (!await file.exists()) {
-        Uint8List? a = await HomeController.to.audioQuery.queryArtwork(songModel.id, ArtworkType.AUDIO, size: 800);
-        if(a!=null){
-          await file.writeAsBytes(a);
-        }
-      }
-      MediaItem mediaItem = MediaItem(
-          id: '${songModel.id}',
-          duration: Duration(milliseconds: songModel.duration ?? 0),
-          artUri: Uri.file(path),
-          extras: {'url': songModel.uri, 'data': songModel.data, 'type': songModel.fileExtension, 'albumId': songModel.albumId},
-          title: songModel.title,
-          artist: songModel.artist);
-      mediaItems.add(mediaItem);
-    }
-  }
+  // queryAudiosFrom() async {
+  //   songs.value = await HomeController.to.audioQuery.queryAudiosFrom(AudiosFromType.ALBUM_ID, detailsArguments?.albumModel.id ?? 0);
+  //   for (var songModel in songs) {
+  //     Directory directory = await getTemporaryDirectory();
+  //     String path = '${directory.path}${songModel.id}';
+  //     File file = File(path);
+  //     if (!await file.exists()) {
+  //       Uint8List? a = await HomeController.to.audioQuery.queryArtwork(songModel.id, ArtworkType.AUDIO, size: 800);
+  //       if(a!=null){
+  //         await file.writeAsBytes(a);
+  //       }
+  //     }
+  //     MediaItem mediaItem = MediaItem(
+  //         id: '${songModel.id}',
+  //         duration: Duration(milliseconds: songModel.duration ?? 0),
+  //         artUri: Uri.file(path),
+  //         extras: {'url': songModel.uri, 'data': songModel.data, 'type': songModel.fileExtension, 'albumId': songModel.albumId},
+  //         title: songModel.title,
+  //         artist: songModel.artist);
+  //     mediaItems.add(mediaItem);
+  //   }
+  // }
 
   play(index) async {
     String title = HomeController.to.audioServeHandler.queueTitle.value;
