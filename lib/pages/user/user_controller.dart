@@ -1,8 +1,6 @@
 import 'dart:convert';
 
 import 'package:bujuan/common/constants/other.dart';
-import 'package:bujuan/common/netease_api/src/api/bean.dart';
-import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -10,7 +8,6 @@ import 'package:get/get.dart';
 import '../../common/netease_api/src/api/login/bean.dart';
 import '../../common/netease_api/src/api/play/bean.dart';
 import '../../common/netease_api/src/netease_api.dart';
-import '../../common/storage.dart';
 
 class UserController extends GetxController {
   List<Play> playlist = <Play>[].obs;

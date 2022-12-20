@@ -1,95 +1,23 @@
-import 'dart:async';
-import 'dart:convert';
-
 import 'package:auto_route/auto_route.dart';
+import 'package:bujuan/common/constants/icon.dart';
+import 'package:bujuan/pages/login/login_controller.dart';
+import 'package:bujuan/widget/custom_filed.dart';
 import 'package:flutter/material.dart';
+
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:tabler_icons/tabler_icons.dart';
 
-import '../../common/constants/icon.dart';
-import '../../common/constants/other.dart';
-import '../../common/netease_api/src/api/bean.dart';
-import '../../common/netease_api/src/api/login/bean.dart';
-import '../../common/netease_api/src/netease_api.dart';
-import '../../widget/custom_filed.dart';
-import '../user/user_controller.dart';
 
-class LoginView extends StatefulWidget {
-  const LoginView({Key? key}) : super(key: key);
-
-  @override
-  State<LoginView> createState() => _LoginViewState();
-}
-
-class _LoginViewState extends State<LoginView> {
-  final TextEditingController phone = TextEditingController();
-  final TextEditingController pass = TextEditingController();
-  Timer? timer;
-  String qrCodeUrl = '';
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
-
-  loginCallPhone(context) {
-    if (phone.text.isEmpty || pass.text.isEmpty) {
-      WidgetUtil.showToast('账号密码为必填项，请检查');
-      return;
-    }
-    NeteaseMusicApi().loginCellPhone(phone.text, pass.text).then((NeteaseAccountInfoWrap neteaseAccountInfoWrap) {
-      if (neteaseAccountInfoWrap.code != 200) {
-        WidgetUtil.showToast(neteaseAccountInfoWrap.message ?? '未知错误');
-        return;
-      }
-      UserController.to.getUserState();
-      AutoRouter.of(context).pop();
-    });
-  }
-
-  getQrCode(context) async {
-    QrCodeLoginKey qrCodeLoginKey = await NeteaseMusicApi().loginQrCodeKey();
-    if (qrCodeLoginKey.code != 200) {
-      WidgetUtil.showToast(qrCodeLoginKey.message ?? '未知错误');
-      return;
-    }
-    String codeUrl = NeteaseMusicApi().loginQrCodeUrl(qrCodeLoginKey.unikey);
-    setState(() => qrCodeUrl = codeUrl);
-    print('object============$qrCodeUrl');
-    timer = Timer.periodic(const Duration(seconds: 5), (Timer t) async {
-      ServerStatusBean serverStatusBean = await NeteaseMusicApi().loginQrCodeCheck(qrCodeLoginKey.unikey);
-      print('loginQrCodeCheck=====${jsonEncode(serverStatusBean.toJson())}');
-      if (serverStatusBean.code == 800) {
-        WidgetUtil.showToast('二维码过期请重新获取');
-        timer?.cancel();
-        timer = null;
-        return;
-      }
-      if (serverStatusBean.code == 803) {
-        WidgetUtil.showToast('授权成功！');
-        UserController.to.getUserState();
-        AutoRouter.of(context).pop();
-        timer?.cancel();
-        timer = null;
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    phone.dispose();
-    timer?.cancel();
-    pass.dispose();
-  }
+class LoginView extends GetView<LoginController> {
+  const LoginView({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
           SingleChildScrollView(
@@ -112,8 +40,12 @@ class _LoginViewState extends State<LoginView> {
                               padding: const EdgeInsets.all(0),
                               onPressed: () {
                                 AutoRouter.of(context).pop();
+                                controller.onClose();
                               },
-                              icon: Icon(Icons.close, size: 52.sp)))
+                              icon: Icon(
+                                Icons.close,
+                                size: 52.sp,
+                              )))
                     ],
                   ),
                   Padding(
@@ -123,12 +55,12 @@ class _LoginViewState extends State<LoginView> {
                         Padding(padding: EdgeInsets.symmetric(vertical: 25.w)),
                         CustomFiled(
                           iconData: TablerIcons.phone,
-                          textEditingController: phone,
+                          textEditingController: controller.phone,
                           hitText: '输入邮箱/手机号',
                         ),
                         CustomFiled(
                           iconData: TablerIcons.lock,
-                          textEditingController: pass,
+                          textEditingController: controller.pass,
                           hitText: '输入密码',
                           pass: true,
                         ),
@@ -144,17 +76,17 @@ class _LoginViewState extends State<LoginView> {
                               style: TextStyle(fontSize: 28.sp, color: Colors.white),
                             ),
                           ),
-                          onTap: () => loginCallPhone(context),
+                          onTap: () => controller.loginCallPhone(context),
                         ),
                         Padding(
-                          padding: EdgeInsets.symmetric(vertical: 40.w,horizontal: 20.w),
+                          padding: EdgeInsets.symmetric(vertical: 20.w),
                           child: Row(
                             children: [
                               Expanded(
                                   child: Container(
-                                height: 1.w,
-                                color: Colors.grey.withOpacity(.6),
-                              )),
+                                    height: 1.w,
+                                    color: Colors.grey.withOpacity(.6),
+                                  )),
                               Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 15.w),
                                 child: Text(
@@ -164,35 +96,38 @@ class _LoginViewState extends State<LoginView> {
                               ),
                               Expanded(
                                   child: Container(
-                                height: 1.w,
-                                color: Colors.grey.withOpacity(.6),
-                              )),
+                                    height: 1.w,
+                                    color: Colors.grey.withOpacity(.6),
+                                  )),
                             ],
                           ),
                         ),
-                        InkWell(
-                          child: Padding(padding: EdgeInsets.symmetric(vertical: 45.w),child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(
-                                TablerIcons.qrcode,
-                                color: Colors.grey,
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(top: 5.w, left: 10.w),
-                                child:  const Text(
-                                  '二维码登录',
-                                  style: TextStyle(
-                                    color: Colors.grey,
-                                  ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 15.w),
+                          child: InkWell(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  TablerIcons.qrcode,
+                                  color: Colors.blue,
                                 ),
-                              )
-                            ],
-                          ),),
-                          onTap: () {
-                            getQrCode(context);
-                          },
-                        ),
+                                Padding(
+                                  padding: EdgeInsets.only(top: 5.w, left: 10.w),
+                                  child: const Text(
+                                    '二维码登录',
+                                    style: TextStyle(
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                            onTap: () {
+                              controller.getQrCode(context);
+                            },
+                          ),
+                        )
                       ],
                     ),
                   )
@@ -200,8 +135,8 @@ class _LoginViewState extends State<LoginView> {
               ),
             ),
           ),
-          Visibility(
-            visible: qrCodeUrl.isNotEmpty,
+          Obx(() => Visibility(
+            visible: controller.qrCodeUrl.value.isNotEmpty,
             child: GestureDetector(
               child: Container(
                 color: Theme.of(context).cardColor.withOpacity(.5),
@@ -213,7 +148,7 @@ class _LoginViewState extends State<LoginView> {
                   children: [
                     QrImage(
                       backgroundColor: Colors.white,
-                      data: qrCodeUrl,
+                      data: controller.qrCodeUrl.value,
                       version: QrVersions.auto,
                       size: 400.w,
                     ),
@@ -228,14 +163,11 @@ class _LoginViewState extends State<LoginView> {
                 ),
               ),
               onTap: () {
-                timer?.cancel();
-                timer = null;
-                setState(() {
-                  qrCodeUrl = '';
-                });
+                controller.timer?.cancel();
+                controller.timer = null;
               },
             ),
-          )
+          ))
         ],
       ),
     );

@@ -35,7 +35,7 @@ class LoginController extends GetxController {
         return;
       }
       UserController.to.getUserState();
-      AutoRouter.of(context).pop();
+      Get.back();
     });
   }
 
@@ -60,7 +60,7 @@ class LoginController extends GetxController {
       if (serverStatusBean.code == 803) {
         WidgetUtil.showToast('授权成功！');
         UserController.to.getUserState();
-        AutoRouter.of(context).pop();
+        Get.back();
         timer?.cancel();
         timer = null;
       }

@@ -1,5 +1,4 @@
 import 'package:bujuan/common/constants/platform_utils.dart';
-import 'package:bujuan/common/constants/text_styles.dart';
 import 'package:bujuan/pages/home/first/menu_view.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/pages/home/home_mobile_view.dart';
@@ -9,7 +8,6 @@ import 'package:bujuan/widget/simple_extended_image.dart';
 import 'package:bujuan/widget/weslide/weslide.dart';
 import 'package:bujuan/widget/weslide/weslide_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_zoom_drawer/config.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
@@ -242,7 +240,7 @@ class LeftMenu {
 //     return InkWell(
 //       child: AnimatedContainer(
 //         decoration: BoxDecoration(color: controller.getHeaderColor(), border: Border(bottom: BorderSide(color: controller.getHeaderColor(), width: 1.w))),
-//         padding: controller.getHeaderPadding().copyWith(bottom: PlatformUtils.isIOS ? MediaQuery.of(context!).padding.bottom * .5 : 0),
+//         padding: controller.getHeaderPadding().copyWith(bottom: PlatformUtils.isIOS ? MediaQuery.of(controller.buildContext).padding.bottom * .5 : 0),
 //         width: Get.width,
 //         height: controller.getPanelMinSize() + controller.getHeaderPadding().top + (PlatformUtils.isIOS ? MediaQuery.of(controller.buildContext).padding.bottom * .5 : 0),
 //         duration: const Duration(milliseconds: 0),

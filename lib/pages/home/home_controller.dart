@@ -1,16 +1,12 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:auto_route/auto_route.dart';
-import 'package:bujuan/common/audio_handler.dart';
 import 'package:bujuan/common/constants/other.dart';
 import 'package:bujuan/common/lyric_parser/parser_lrc.dart';
 import 'package:bujuan/common/netease_api/netease_music_api.dart';
-import 'package:bujuan/common/storage.dart';
 import 'package:bujuan/pages/home/second/second_body_view.dart';
-import 'package:bujuan/pages/play_list/playlist_controller.dart';
 import 'package:bujuan/widget/weslide/weslide_controller.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -20,12 +16,12 @@ import 'package:flutter_zoom_drawer/config.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 
-// import 'package:on_audio_query/on_audio_query.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:tabler_icons/tabler_icons.dart';
 import 'package:tuna_flutter_range_slider/tuna_flutter_range_slider.dart';
 
 import '../../common/lyric_parser/lyrics_reader_model.dart';
+import '../../common/test_audio_handler.dart';
 import '../../routes/router.dart';
 import 'first/first_view.dart';
 
@@ -68,7 +64,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
 
   // final OnAudioQuery audioQuery = GetIt.instance<OnAudioQuery>();
   late BuildContext buildContext;
-  final AudioServeHandler audioServeHandler = GetIt.instance<AudioServeHandler>();
+  final TextAudioHandler audioServeHandler = GetIt.instance<TextAudioHandler>();
   Rx<Duration> duration = Duration.zero.obs;
   PanelController panelController = PanelController();
   RxBool isDownSlide = true.obs;
@@ -120,8 +116,8 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   }
 
   @override
-  void onReady() async {
-    super.onReady();
+  void onReady() {
+    print('onReady========${this}');
     autoRouterDelegate = AutoRouterDelegate.of(buildContext);
     animationController = AnimationController(vsync: this, duration: const Duration(milliseconds: 100));
     animationController?.addListener(() {
@@ -134,9 +130,9 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
     audioServeHandler.setRepeatMode(audioServiceRepeatMode.value);
     audioServeHandler.mediaItem.listen((value) async {
       if (value == null) return;
+      mediaItem.value = value;
       //获取歌词
       SongLyricWrap songLyricWrap = await NeteaseMusicApi().songLyric(value.id ?? '');
-      print('SongLyricWrap========${jsonEncode(songLyricWrap.toJson())}');
       String lyric = songLyricWrap.lrc.lyric ?? "";
       String lyricTran = songLyricWrap.tlyric.lyric ?? "";
       // lyricsLineModelsTran.clear();
@@ -156,11 +152,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
           lyricsLineModels.addAll(list);
         }
       }
-
-      mediaItem.value = value;
-      ImageUtils.getImageColor('${mediaItem.value.extras?['image'] ?? ''}?param=50y50', (paletteColorData) {
-        rx.value = paletteColorData;
-      });
+      ImageUtils.getImageColor('${mediaItem.value.extras?['image'] ?? ''}?param=50y50', (paletteColorData) => rx.value = paletteColorData);
     });
     //监听实时进度变化
     AudioService.position.listen((event) {
@@ -195,6 +187,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
         ));
       }
     });
+    super.onReady();
   }
 
   listenRouter() {
@@ -215,8 +208,6 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
         audioServiceRepeatMode.value = AudioServiceRepeatMode.all;
         break;
       case AudioServiceRepeatMode.none:
-        audioServiceRepeatMode.value = AudioServiceRepeatMode.one;
-        break;
       case AudioServiceRepeatMode.all:
       case AudioServiceRepeatMode.group:
         audioServiceRepeatMode.value = AudioServiceRepeatMode.none;
@@ -243,12 +234,10 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   IconData getRepeatIcon() {
     IconData icon;
     switch (audioServiceRepeatMode.value) {
-      case AudioServiceRepeatMode.none:
-        icon = TablerIcons.repeatOff;
-        break;
       case AudioServiceRepeatMode.one:
         icon = TablerIcons.repeatOnce;
         break;
+      case AudioServiceRepeatMode.none:
       case AudioServiceRepeatMode.all:
       case AudioServiceRepeatMode.group:
         icon = TablerIcons.repeat;

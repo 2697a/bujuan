@@ -64,7 +64,7 @@ class PlayList extends GetView<PlayListController> {
                   Text(
                     data.title,
                     maxLines: 1,
-                    style: TextStyle(fontSize: 28.sp,color: data.extras!['available']?Colors.black:Colors.red),
+                    style: TextStyle(fontSize: 28.sp),
                   ),
                   Padding(padding: EdgeInsets.symmetric(vertical: 3.w)),
                   Text(

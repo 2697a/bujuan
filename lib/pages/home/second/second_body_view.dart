@@ -285,7 +285,6 @@ class SecondBodyView extends GetView<HomeController> {
                   color: controller.rx.value.dark?.bodyTextColor,
                 ),
                 onTap: () async {
-                  HomeController.to.audioServeHandler.updateQueue(await PlayListController.to.getData('419689962'));
                 },
               ),
               Stack(
@@ -388,7 +387,7 @@ class SecondBodyView extends GetView<HomeController> {
           ],
         ),
       ),
-      onTap: () => controller.audioServeHandler.skipToQueueItem(index),
+      // onTap: () => controller.audioServeHandler.playIndex(index),
     );
   }
 
