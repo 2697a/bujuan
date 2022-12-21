@@ -44,88 +44,89 @@ class SimpleExtendedImageState extends State<SimpleExtendedImage> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.url.startsWith('http')) {
-      return ExtendedImage.network(
-        widget.url,
-        width: widget.width,
-        height: widget.height,
-        shape: widget.shape,
-        fit: BoxFit.cover,
-        gaplessPlayback: true,
-        borderRadius: widget.borderRadius,
-        cache: true,
-        cacheWidth: widget.cacheWidth ?? 800,
-        //展厅
-        loadStateChanged: (ExtendedImageState state) {
-          Widget image;
-          switch (state.extendedImageLoadState) {
-            case LoadState.loading:
-              image = widget.replacement ??
-                  Image.asset(
-                    widget.placeholder,
-                    fit: BoxFit.cover,
-                  );
-              break;
-            case LoadState.completed:
-              image = ExtendedRawImage(
-                image: state.extendedImageInfo?.image,
-                width: widget.width,
-                height: widget.height,
-                fit: widget.fit ?? BoxFit.cover,
-              );
-              break;
-            case LoadState.failed:
-              image = Image.asset(
-                widget.placeholder,
-                fit: BoxFit.cover,
-              );
-              break;
-          }
-          return image;
-        },
-      );
-    } else {
-      return ExtendedImage.file(
-        File(widget.url),
-        width: widget.width,
-        height: widget.height,
-        shape: widget.shape,
-        cacheRawData: true,
-        gaplessPlayback: true,
-        fit: BoxFit.cover,
-        borderRadius: widget.borderRadius,
-        cacheWidth: widget.cacheWidth ?? 800,
-        //展厅
-        loadStateChanged: (ExtendedImageState state) {
-          Widget image;
-          switch (state.extendedImageLoadState) {
-            case LoadState.loading:
-              image = widget.replacement ??
-                  Container(
-                    color: Colors.grey,
-                    width: widget.width,
-                    height: widget.height,
-                    child: Icon(Icons.image,size:( widget.width??100/3).toDouble(),),
-                  );
-              break;
-            case LoadState.completed:
-              image = ExtendedRawImage(
-                image: state.extendedImageInfo?.image,
-                width: widget.width,
-                height: widget.height,
-                fit: widget.fit ?? BoxFit.cover,
-              );
-              break;
-            case LoadState.failed:
-              image = Image.asset(
-                widget.placeholder,
-                fit: BoxFit.cover,
-              );
-              break;
-          }
-          return image;
-        },
-      );
-    }
+    return ExtendedImage.network(
+      widget.url,
+      width: widget.width,
+      height: widget.height,
+      shape: widget.shape,
+      fit: BoxFit.cover,
+      gaplessPlayback: true,
+      borderRadius: widget.borderRadius,
+      cache: true,
+      cacheWidth: widget.cacheWidth ?? 800,
+      //展厅
+      loadStateChanged: (ExtendedImageState state) {
+        Widget image;
+        switch (state.extendedImageLoadState) {
+          case LoadState.loading:
+            image = widget.replacement ??
+                Image.asset(
+                  widget.placeholder,
+                  fit: BoxFit.cover,
+                );
+            break;
+          case LoadState.completed:
+            image = ExtendedRawImage(
+              image: state.extendedImageInfo?.image,
+              width: widget.width,
+              height: widget.height,
+              fit: widget.fit ?? BoxFit.cover,
+            );
+            break;
+          case LoadState.failed:
+            image = Image.asset(
+              widget.placeholder,
+              fit: BoxFit.cover,
+            );
+            break;
+        }
+        return image;
+      },
+    );
+    // if (widget.url.startsWith('http')) {
+    //
+    // } else {
+      // return ExtendedImage.file(
+      //   File(widget.url),
+      //   width: widget.width,
+      //   height: widget.height,
+      //   shape: widget.shape,
+      //   cacheRawData: true,
+      //   gaplessPlayback: true,
+      //   fit: BoxFit.cover,
+      //   borderRadius: widget.borderRadius,
+      //   cacheWidth: widget.cacheWidth ?? 800,
+      //   //展厅
+      //   loadStateChanged: (ExtendedImageState state) {
+      //     Widget image;
+      //     switch (state.extendedImageLoadState) {
+      //       case LoadState.loading:
+      //         image = widget.replacement ??
+      //             Container(
+      //               color: Colors.grey,
+      //               width: widget.width,
+      //               height: widget.height,
+      //               child: Icon(Icons.image,size:( widget.width??100/3).toDouble(),),
+      //             );
+      //         break;
+      //       case LoadState.completed:
+      //         image = ExtendedRawImage(
+      //           image: state.extendedImageInfo?.image,
+      //           width: widget.width,
+      //           height: widget.height,
+      //           fit: widget.fit ?? BoxFit.cover,
+      //         );
+      //         break;
+      //       case LoadState.failed:
+      //         image = Image.asset(
+      //           widget.placeholder,
+      //           fit: BoxFit.cover,
+      //         );
+      //         break;
+      //     }
+      //     return image;
+      //   },
+      // );
+    // }
   }
 }

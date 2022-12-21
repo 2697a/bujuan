@@ -1,12 +1,8 @@
-import 'dart:io';
 import 'package:audio_service/audio_service.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:auto_route/auto_route.dart';
-import 'package:bujuan/common/audio_handler.dart';
-import 'package:bujuan/common/constants/other.dart';
 import 'package:bujuan/common/constants/platform_utils.dart';
 import 'package:bujuan/pages/home/home_binding.dart';
-import 'package:bujuan/pages/splash_page.dart';
 import 'package:bujuan/routes/router.gr.dart';
 import 'package:bujuan/widget/weslide/weslide_controller.dart';
 import 'package:flutter/material.dart';
@@ -16,15 +12,13 @@ import 'package:flutter_zoom_drawer/config.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 
-// import 'package:on_audio_query/on_audio_query.dart';
 import 'common/constants/colors.dart';
-import 'common/my_audio_handler.dart';
 import 'common/netease_api/src/netease_api.dart';
 import 'common/storage.dart';
 import 'common/test_audio_handler.dart';
 
 main() async {
-  bool isMobile = Platform.isAndroid || Platform.isIOS || Platform.isFuchsia;
+  bool isMobile = PlatformUtils.isAndroid || PlatformUtils.isIOS || PlatformUtils.isFuchsia;
   WidgetsFlutterBinding.ensureInitialized();
   final rootRouter = RootRouter();
   await _initAudioServer();
@@ -60,7 +54,7 @@ main() async {
 Future<void> _initAudioServer() async {
   final getIt = GetIt.instance;
   await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-  getIt.registerSingleton<AudioPlayer>(AudioPlayer(playerId: 'bujuan'));
+  getIt.registerSingleton<AudioPlayer>(AudioPlayer());
   getIt.registerSingleton<WeSlideController>(WeSlideController());
   getIt.registerSingleton<ZoomDrawerController>(ZoomDrawerController());
   // 工具初始
@@ -70,6 +64,7 @@ Future<void> _initAudioServer() async {
   getIt.registerSingleton<TextAudioHandler>(await AudioService.init<TextAudioHandler>(
     builder: () => TextAudioHandler(),
     config: const AudioServiceConfig(
+      androidStopForegroundOnPause: false,
       androidNotificationChannelId: 'com.sixbugs.bujuan.channel.audio',
       androidNotificationChannelName: 'Music playback',
       androidNotificationIcon: 'drawable/audio_service_icon',

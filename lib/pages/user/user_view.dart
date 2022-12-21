@@ -216,7 +216,9 @@ class UserView extends GetView<UserController> {
           ],
         ),
       ),
-      onTap: () => context.router.push(const PlayList().copyWith(args: play)),
+      onTap: () => context.router.push(const PlayList().copyWith(args: play)).then((value) {
+
+      }),
     );
     // return ListTile(
     //   dense: true,

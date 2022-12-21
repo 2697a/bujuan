@@ -37,7 +37,7 @@ class MenuView extends GetView<HomeController> {
                       ),
                       Padding(padding: EdgeInsets.symmetric(horizontal: 10.w)),
                       Icon(controller.leftMenus[index].icon,
-                          color: controller.currPathUrl.value == controller.leftMenus[index].pathUrl ? Theme.of(context).primaryColor : controller.getLeftMenuColor()),
+                          color: controller.currPathUrl.value == controller.leftMenus[index].pathUrl ? Theme.of(context).primaryColor : Theme.of(context).bottomAppBarColor),
                       Expanded(
                           child: Padding(
                         padding: EdgeInsets.only(left: 30.w, top: 8.w),
@@ -45,7 +45,7 @@ class MenuView extends GetView<HomeController> {
                           controller.leftMenus[index].title,
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              color: controller.currPathUrl.value == controller.leftMenus[index].pathUrl ? Theme.of(context).primaryColor : controller.getLeftMenuColor()),
+                              color: controller.currPathUrl.value == controller.leftMenus[index].pathUrl ? Theme.of(context).primaryColor : Theme.of(context).bottomAppBarColor),
                         ),
                       )),
                     ],
@@ -59,10 +59,10 @@ class MenuView extends GetView<HomeController> {
           itemCount: controller.leftMenus.length,
         )),
         ListTile(
-          leading: Icon(TablerIcons.login,color: controller.getLeftMenuColor()),
+          leading: Icon(TablerIcons.login),
           title: Text(
             '注销登陆',
-            style: TextStyle(color: controller.getLeftMenuColor()),
+            style: TextStyle(color: Theme.of(context).bottomAppBarColor),
           ),
           onTap: () {
             controller.myDrawerController.close!();

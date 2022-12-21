@@ -60,6 +60,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   //是否第一次进入首页
   bool first = true;
   Rx<MediaItem> mediaItem = const MediaItem(id: '', title: '暂无', duration: Duration(seconds: 10)).obs;
+  RxList<MediaItem> mediaItems = <MediaItem>[].obs;
   RxBool playing = false.obs;
 
   // final OnAudioQuery audioQuery = GetIt.instance<OnAudioQuery>();
@@ -75,23 +76,25 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   List<Map<dynamic, dynamic>> mEffects = [];
   AnimationController? animationController;
   String directoryPath = '';
-  FixedExtentScrollController scrollController = FixedExtentScrollController();
 
+  //歌词滚动控制器
+  FixedExtentScrollController lyricScrollController = FixedExtentScrollController();
+
+  //播放列表滚动控制器
+  ScrollController playListScrollController = ScrollController();
+
+  //侧滑控制器
   ZoomDrawerController myDrawerController = GetIt.instance<ZoomDrawerController>();
   RxBool disableDragGesture = false.obs; //是否可以侧滑
 
-  List<String> lyricList = <String>[].obs;
   List<LyricsLineModel> lyricsLineModels = <LyricsLineModel>[].obs;
   List<LyricsLineModel> lyricsLineModelsTran = <LyricsLineModel>[].obs;
   RxBool onMove = false.obs;
-  Dio dio = Dio();
 
   //路由相关
   AutoRouterDelegate? autoRouterDelegate;
 
   RxString currLyric = ''.obs;
-
-  RxDouble playListOffest = 10.0.obs;
 
   var lastPopTime = DateTime.now();
 
@@ -152,7 +155,8 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
           lyricsLineModels.addAll(list);
         }
       }
-      ImageUtils.getImageColor('${mediaItem.value.extras?['image'] ?? ''}?param=50y50', (paletteColorData) => rx.value = paletteColorData);
+      ImageUtils.getImageColor('${mediaItem.value.extras?['image'] ?? ''}?param=100y100', (paletteColorData) => rx.value = paletteColorData);
+      setPlayListOffset();
     });
     //监听实时进度变化
     AudioService.position.listen((event) {
@@ -170,13 +174,17 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
         int index = lyricsLineModels.indexWhere((element) => (element.startTime ?? 0) >= event.inMilliseconds && (element.endTime ?? 0) <= event.inMilliseconds);
         if (index != -1) {
           currLyric.value = lyricsLineModels[index > 0 ? index - 1 : index].mainText ?? '';
-          scrollController.animateToItem(index > 0 ? index - 1 : index, duration: const Duration(milliseconds: 300), curve: Curves.linear);
+          lyricScrollController.animateToItem(index > 0 ? index - 1 : index, duration: const Duration(milliseconds: 300), curve: Curves.linear);
         }
       }
     });
     audioServeHandler.playbackState.listen((value) {
       playing.value = value.playing;
     });
+
+    audioServeHandler.queue.listen((value) => mediaItems
+      ..clear()
+      ..addAll(value));
 
     //监听路由变化
     autoRouterDelegate?.addListener(listenRouter);
@@ -193,9 +201,9 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   listenRouter() {
     currPathUrl.value = autoRouterDelegate?.urlState.url ?? '';
     if (currPathUrl.value == '/home/index' || currPathUrl.value == '/home/user' || currPathUrl.value == '/home/search') {
-      if (!disableDragGesture.value) disableDragGesture.value = true;
-    } else {
       if (disableDragGesture.value) disableDragGesture.value = false;
+    } else {
+        if (!disableDragGesture.value) disableDragGesture.value = true;
     }
   }
 
@@ -210,7 +218,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
       case AudioServiceRepeatMode.none:
       case AudioServiceRepeatMode.all:
       case AudioServiceRepeatMode.group:
-        audioServiceRepeatMode.value = AudioServiceRepeatMode.none;
+        audioServiceRepeatMode.value = AudioServiceRepeatMode.one;
         break;
     }
     audioServeHandler.setRepeatMode(audioServiceRepeatMode.value);
@@ -255,7 +263,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
         break;
       case AudioServiceShuffleMode.all:
       case AudioServiceShuffleMode.group:
-        icon = Icons.shuffle_on;
+        icon = Icons.shuffle;
         break;
     }
     return icon;
@@ -273,7 +281,16 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   //改变panel位置
   void changeSlidePosition(value) {
     slidePosition.value = value;
-    // if (second.value) second.value = false;
+    setPlayListOffset();
+  }
+
+  Future<void> setPlayListOffset() async {
+    if (slidePosition.value < 1 && !second.value) return;
+    int index = mediaItems.indexWhere((element) => element.id == mediaItem.value.id);
+    if (index != -1) {
+      double offset = 110.w * index;
+      await playListScrollController.animateTo(offset, duration: const Duration(milliseconds: 300), curve: Curves.linear);
+    }
   }
 
   //当按下返回键
@@ -370,25 +387,31 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
     super.onClose();
     weSlideController.dispose();
     print('object=====Close');
-    scrollController.dispose();
+    lyricScrollController.dispose();
     autoRouterDelegate?.removeListener(listenRouter);
   }
+
 
   @override
   void onDetached() {
     // TODO: implement onDetached
+    // WidgetUtil.showToast('onDetached');
   }
 
   @override
   void onInactive() {
     // TODO: implement onInactive
+    // WidgetUtil.showToast('onInactive');
   }
 
   @override
   void onPaused() {
     // TODO: implement onPaused
+    // WidgetUtil.showToast('onPaused');
   }
 
   @override
-  void onResumed() {}
+  void onResumed() {
+    // WidgetUtil.showToast('onResumed');
+  }
 }

@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:bujuan/common/constants/other.dart';
 import 'package:bujuan/common/storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:audio_session/audio_session.dart';
@@ -16,7 +18,10 @@ class TextAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler i
   AudioServiceShuffleMode _audioServiceShuffleMode = AudioServiceShuffleMode.none;
   final _playList = <MediaItem>[];
   final _playListShut = <MediaItem>[];
+  List<int> _playedIndexList = []; //播放过的index,循环播放时使用
   int _curIndex = 0; // 播放列表索引
+  bool playInterrupted = false;
+  AudioSession? session;
 
   TextAudioHandler() {
     // 初始化
@@ -50,32 +55,89 @@ class TextAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler i
   }
 
   void _initAudioSession() async {
-    final session = await AudioSession.instance;
-    await session.configure(const AudioSessionConfiguration(
-      avAudioSessionMode: AVAudioSessionMode.defaultMode,
+    session = await AudioSession.instance;
+    await session?.configure(const AudioSessionConfiguration(
+      // avAudioSessionCategory: AVAudioSessionCategory.playAndRecord,
+      avAudioSessionCategoryOptions: AVAudioSessionCategoryOptions.allowBluetooth,
+      avAudioSessionMode: AVAudioSessionMode.spokenAudio,
+      avAudioSessionRouteSharingPolicy: AVAudioSessionRouteSharingPolicy.defaultPolicy,
+      avAudioSessionSetActiveOptions: AVAudioSessionSetActiveOptions.none,
       androidAudioAttributes: AndroidAudioAttributes(
-        contentType: AndroidAudioContentType.music,
-        usage: AndroidAudioUsage.media,
+        contentType: AndroidAudioContentType.speech,
+        flags: AndroidAudioFlags.none,
+        usage: AndroidAudioUsage.voiceCommunication,
       ),
       androidAudioFocusGainType: AndroidAudioFocusGainType.gain,
+      androidWillPauseWhenDucked: true,
     ));
+    _handleInterruptions(session!);
+  }
+
+  //设置音频焦点
+  void _handleInterruptions(AudioSession audioSession) {
+    // just_audio can handle interruptions for us, but we have disabled that in
+    // order to demonstrate manual configuration.
+    audioSession.becomingNoisyEventStream.listen((_) {
+      print('PAUSE');
+      _player.pause();
+    });
+    audioSession.interruptionEventStream.listen((event) {
+      print('interruption begin: ${event.begin}');
+      print('interruption type: ${event.type}');
+      if (event.begin) {
+        switch (event.type) {
+          case AudioInterruptionType.duck:
+            if (audioSession.androidAudioAttributes!.usage == AndroidAudioUsage.game) {
+              _player.setVolume(1);
+            }
+            playInterrupted = false;
+            break;
+          case AudioInterruptionType.pause:
+          case AudioInterruptionType.unknown:
+            if (_player.state == PlayerState.playing) {
+              _player.pause();
+              playInterrupted = true;
+            }
+            break;
+        }
+      } else {
+        switch (event.type) {
+          case AudioInterruptionType.duck:
+            // _player.setVolume(min(1.0, _player.volume * 2));
+            playInterrupted = false;
+            break;
+          case AudioInterruptionType.pause:
+            if (playInterrupted) _player.resume();
+            playInterrupted = false;
+            break;
+          case AudioInterruptionType.unknown:
+            playInterrupted = false;
+            break;
+        }
+      }
+    });
+    audioSession.devicesChangedEventStream.listen((event) {
+      print('Devices added: ${event.devicesAdded}');
+      print('Devices removed: ${event.devicesRemoved}');
+    });
   }
 
   void _notifyAudioHandlerAboutPlayStateEvents() {
-    print('Current player state:=====${_player.state}');
     _player.onPlayerStateChanged.listen((PlayerState playerState) {
       print('Current player state: $playerState');
+      playInterrupted = false;
       final playing = playerState == PlayerState.playing;
+      if (playing) session?.setActive(true);
       playbackState.add(playbackState.value.copyWith(
         controls: [
-          const MediaControl(label: 'rating', action: MediaAction.setRating, androidIcon: 'drawable/audio_service_unlike'),
+          MediaControl(label: 'rating', action: MediaAction.setRating, androidIcon: 'drawable/audio_service_unlike'),
           MediaControl.skipToPrevious,
           if (playing) MediaControl.pause else MediaControl.play,
           MediaControl.skipToNext,
           MediaControl.stop
         ],
-        systemActions: const {MediaAction.seek},
-        androidCompactActionIndices: const [1, 2, 3],
+        systemActions: {MediaAction.playPause, MediaAction.seek, MediaAction.skipToPrevious, MediaAction.skipToNext},
+        androidCompactActionIndices: [1, 2, 3],
         processingState: AudioProcessingState.completed,
         playing: playing,
         queueIndex: _curIndex,
@@ -85,9 +147,8 @@ class TextAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler i
 
   void _notifyAudioHandlerAboutPositionEvents() {
     _player.onPositionChanged.listen((Duration duration) {
-      playbackState.add(playbackState.value.copyWith(
-        updatePosition: duration,
-      ));
+      // print('_notifyAudioHandlerAboutPositionEvents=========${duration.inSeconds}');
+      playbackState.add(playbackState.value.copyWith(updatePosition: duration, bufferedPosition: duration));
     });
   }
 
@@ -95,6 +156,21 @@ class TextAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler i
     _player.onPlayerComplete.listen((event) {
       skipToNext();
     });
+  }
+
+  @override
+  Future<void> removeQueueItem(MediaItem mediaItem) async {}
+
+  @override
+  Future<void> removeQueueItemAt(int index) async {
+    if (index == _curIndex) {
+      WidgetUtil.showToast('正在播放的歌曲无法移除');
+      return;
+    }
+    _playList.removeAt(index);
+    if (index < _curIndex) _curIndex--;
+    final newQueue = queue.value..removeAt(index);
+    queue.add(newQueue);
   }
 
   @override
@@ -108,7 +184,11 @@ class TextAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler i
     _playList
       ..clear()
       ..addAll(list);
-    _curIndex = index; // 更换了播放列表，将索引归0
+    _playedIndexList.clear();
+    for (int i = 0; i <= list.length; i++) {
+      _playedIndexList.add(i);
+    }
+    _playedIndexList.shuffle();
     // notify system
     queue.value.clear();
     final newQueue = queue.value..addAll(list);
@@ -134,14 +214,13 @@ class TextAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler i
     String url = (songUrl.data ?? [])[0].url ?? '';
     if (url.isNotEmpty) {
       // 加载音乐
-      url = url.replaceFirst('http', 'https');
+      // url = url.replaceFirst('http', 'https');
       try {
         playIt ? await _player.play(UrlSource(url), mode: PlayerMode.mediaPlayer) : await _player.setSourceUrl(url);
       } catch (e) {
         print('error======$e');
       }
       mediaItem.add(song);
-      // if (playIt) play(); // 播放
     } else {
       if (isNext) {
         skipToNext();
@@ -152,10 +231,10 @@ class TextAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler i
   }
 
   @override
-  Future<void> pause() => _player.pause();
+  Future<void> pause() async => await _player.pause();
 
   @override
-  Future<void> play() => _player.resume();
+  Future<void> play() async => await _player.resume();
 
   @override
   Future<void> seek(Duration position) => _player.seek(position);
@@ -169,13 +248,14 @@ class TextAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler i
   @override
   Future<void> skipToPrevious() async {
     _setCurrIndex();
-    readySongUrl(isNext: false);
+    await readySongUrl(isNext: false);
   }
 
   void _setCurrIndex({bool next = false}) {
     if (_audioServiceShuffleMode != AudioServiceShuffleMode.none) {
       //说明循环模式已经开启了,这里不管AudioServiceShuffleMode的具体值，只要不是none 就按照随机模式来
       // TODO 随机逻辑今天先不写
+      _curIndex = _playedIndexList[_curIndex];
     } else {
       switch (_audioServiceRepeatMode) {
         case AudioServiceRepeatMode.all:

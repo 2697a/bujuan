@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:bujuan/common/constants/platform_utils.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
@@ -235,10 +236,11 @@ enum LoginState {
 }
 
 class PathProvider {
-  var _cookiePath;
-  var _dataPath;
+  var _cookiePath = '';
+  var _dataPath = '';
 
   init() async {
+    if(PlatformUtils.isWeb) return;
     _cookiePath = "${(await getApplicationSupportDirectory()).absolute.path}/zmusic/.cookies/";
     _dataPath = "${(await getApplicationSupportDirectory()).absolute.path}/zmusic/.data/";
   }

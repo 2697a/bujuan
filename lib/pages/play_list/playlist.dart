@@ -16,30 +16,38 @@ class PlayList extends GetView<PlayListController> {
   @override
   Widget build(BuildContext context) {
     controller.getData((context.routeData.args as Play).id);
-    return Stack(
-      children: [
-        SimpleExtendedImage((context.routeData.args as Play).coverImgUrl ?? '',width: Get.width,),
-        Scaffold(
-          backgroundColor: Colors.transparent,
-          appBar: AppBar(title: const Text('Song Sheet'),backgroundColor: Colors.transparent,),
-          body: AnimatedContainer(
-            duration: const Duration(milliseconds: 0),
-            decoration: BoxDecoration(
-                color: Theme.of(context).scaffoldBackgroundColor,
-                borderRadius: BorderRadius.circular(50.w)
-            ),
-            padding: EdgeInsets.only(top: 30.w),
-            margin: EdgeInsets.only(top: Get.width / 5),
-            child: Obx(() => ListView.builder(
-              itemExtent: 120.w,
-              physics: const BouncingScrollPhysics(),
-              padding: EdgeInsets.symmetric(horizontal: 20.w),
-              itemBuilder: (context, index) => _buildItem(controller.mediaItems[index], index),
-              itemCount: controller.mediaItems.length,
-            )),
+    return GestureDetector(
+      child: Stack(
+        children: [
+          SimpleExtendedImage(
+            (context.routeData.args as Play).coverImgUrl ?? '',
+            width: Get.width,
           ),
-        )
-      ],
+          Scaffold(
+            backgroundColor: Colors.transparent,
+            appBar: AppBar(
+              title: const Text('Song Sheet'),
+              backgroundColor: Colors.transparent,
+            ),
+            body: AnimatedContainer(
+              duration: const Duration(milliseconds: 0),
+              decoration: BoxDecoration(color: Theme.of(context).scaffoldBackgroundColor, borderRadius: BorderRadius.circular(50.w)),
+              padding: EdgeInsets.only(top: 30.w),
+              margin: EdgeInsets.only(top: Get.width / 5),
+              child: Obx(() => ListView.builder(
+                    itemExtent: 120.w,
+                    physics: const BouncingScrollPhysics(),
+                    padding: EdgeInsets.symmetric(horizontal: 20.w),
+                    itemBuilder: (context, index) => _buildItem(controller.mediaItems[index], index),
+                    itemCount: controller.mediaItems.length,
+                  )),
+            ),
+          )
+        ],
+      ),
+      onHorizontalDragDown: (e) {
+        return;
+      },
     );
   }
 

@@ -6,6 +6,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:tabler_icons/tabler_icons.dart';
 import 'package:tuna_flutter_range_slider/tuna_flutter_range_slider.dart';
@@ -20,104 +21,106 @@ class SecondBodyView extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-            child: SlidingUpPanel(
-          controller: controller.panelController,
-          onPanelSlide: (value) {
-            // TODO 忘记是干啥的了..... 应该是解决一大堆华东冲突
-            // if (value<1) {
-            controller.playListOffest.value = 10;
-            // }
-            controller.slidePosition.value = 1 - value;
-            if (controller.second.value != value > 0.5) {
-              controller.second.value = value > 0.5;
-              controller.isDownSlide.value = !controller.second.value;
-            }
-          },
-          color: Colors.transparent,
-          panel: Obx(() => Container(
-                padding: EdgeInsets.only(top: 140.w),
-                decoration: BoxDecoration(color: controller.rx.value.dark?.color, borderRadius: BorderRadius.only(topLeft: Radius.circular(35.w), topRight: Radius.circular(35.w))),
-                child: Column(
+    return GestureDetector(
+      child: Column(
+        children: [
+          Expanded(
+              child: SlidingUpPanel(
+                controller: controller.panelController,
+                onPanelSlide: (value) {
+                  // TODO 忘记是干啥的了..... 应该是解决一大堆华东冲突
+                  controller.slidePosition.value = 1 - value;
+                  if (controller.second.value != value > 0.5) {
+                    controller.second.value = value > 0.5;
+                    controller.isDownSlide.value = !controller.second.value;
+                  }
+                },
+                color: Colors.transparent,
+                panel: Obx(() => Container(
+                  padding: EdgeInsets.only(top: 140.w),
+                  decoration: BoxDecoration(color: controller.rx.value.dark?.color, borderRadius: BorderRadius.only(topLeft: Radius.circular(35.w), topRight: Radius.circular(35.w))),
+                  child: Column(
+                    children: [
+                      _buildSlide(showTime: false, disabled: true),
+                      Expanded(
+                          child: PageView(
+                            controller: controller.pageController,
+                            onPageChanged: (index) => controller.selectIndex.value = index,
+                            children: [
+                              _buildPlayList(),
+                              _buildLyric(),
+                            ],
+                          ))
+                    ],
+                  ),
+                )),
+                body: Stack(
                   children: [
-                    _buildSlide(showTime: false, disabled: true),
-                    Expanded(
-                        child: PageView(
-                      controller: controller.pageController,
-                      onPageChanged: (index) => controller.selectIndex.value = index,
+                    Obx(() => Container(
+                      decoration: BoxDecoration(
+                          gradient: LinearGradient(colors: [
+                            controller.rx.value.main?.color.withOpacity(controller.second.value ? (1 - controller.slidePosition.value) : controller.slidePosition.value) ??
+                                Colors.transparent,
+                            controller.rx.value.dark?.color.withOpacity(controller.second.value ? (1 - controller.slidePosition.value) : controller.slidePosition.value) ??
+                                Colors.transparent
+                          ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
+                    )),
+                    Column(
                       children: [
-                        _buildPlayList(),
-                        _buildLyric(),
+                        Obx(() => SizedBox(height: controller.getPanelMinSize() + MediaQuery.of(context).padding.top)),
+                        // 歌曲信息
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 30.w),
+                          child: Obx(() => SizedBox(
+                            height: 110.h,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  controller.mediaItem.value.title,
+                                  style: TextStyle(fontSize: 36.sp, fontWeight: FontWeight.bold, color: controller.rx.value.dark?.bodyTextColor),
+                                  maxLines: 1,
+                                ),
+                                Padding(padding: EdgeInsets.symmetric(vertical: 5.w)),
+                                Text(
+                                  controller.mediaItem.value.artist ?? '',
+                                  style: TextStyle(fontSize: 28.sp, color: controller.rx.value.dark?.bodyTextColor),
+                                  maxLines: 1,
+                                )
+                              ],
+                            ),
+                          )),
+                        ),
+                        //操控区域
+                        _buildPlayController(),
+                        //进度条
+                        _buildSlide(),
+                        //功能按钮
+                        SizedBox(
+                          height: 100.h + MediaQuery.of(context).padding.bottom,
+                        )
                       ],
-                    ))
+                    ),
                   ],
                 ),
+                header: _buildBottom(),
+                footer: Container(
+                  height: MediaQuery.of(context).padding.bottom,
+                ),
+                minHeight: 100.h,
+                maxHeight: Get.height - controller.panelHeaderSize - MediaQuery.of(context).padding.top - 30.w,
               )),
-          body: Stack(
-            children: [
-              Obx(() => Container(
-                    decoration: BoxDecoration(
-                        gradient: LinearGradient(colors: [
-                      controller.rx.value.main?.color.withOpacity(controller.second.value ? (1 - controller.slidePosition.value) : controller.slidePosition.value) ??
-                          Colors.transparent,
-                      controller.rx.value.dark?.color.withOpacity(controller.second.value ? (1 - controller.slidePosition.value) : controller.slidePosition.value) ??
-                          Colors.transparent
-                    ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
-                  )),
-              Column(
-                children: [
-                  Obx(() => SizedBox(height: controller.getPanelMinSize() + MediaQuery.of(context).padding.top)),
-                  // 歌曲信息
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 30.w),
-                    child: Obx(() => SizedBox(
-                          height: 110.h,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text(
-                                controller.mediaItem.value.title,
-                                style: TextStyle(fontSize: 36.sp, fontWeight: FontWeight.bold, color: controller.rx.value.dark?.bodyTextColor),
-                                maxLines: 1,
-                              ),
-                              Padding(padding: EdgeInsets.symmetric(vertical: 5.w)),
-                              Text(
-                                controller.mediaItem.value.artist ?? '',
-                                style: TextStyle(fontSize: 28.sp, color: controller.rx.value.dark?.bodyTextColor),
-                                maxLines: 1,
-                              )
-                            ],
-                          ),
-                        )),
-                  ),
-                  //操控区域
-                  _buildPlayController(),
-                  //进度条
-                  _buildSlide(),
-                  //功能按钮
-                  SizedBox(
-                    height: 100.h + MediaQuery.of(context).padding.bottom,
-                  )
-                ],
-              ),
-            ],
-          ),
-          header: _buildBottom(),
-          footer: Container(
-            height: MediaQuery.of(context).padding.bottom,
-          ),
-          minHeight: 100.h,
-          maxHeight: Get.height - controller.panelHeaderSize - MediaQuery.of(context).padding.top - 30.w,
-        )),
-        Obx(() => Container(
-              decoration:
-                  BoxDecoration(color: controller.rx.value.dark?.color, border: Border(top: BorderSide(color: controller.rx.value.dark?.color ?? Colors.transparent, width: 0))),
-              height: MediaQuery.of(context).padding.bottom / 2,
-            ))
-      ],
+          Obx(() => Container(
+            decoration:
+            BoxDecoration(color: controller.rx.value.dark?.color, border: Border(top: BorderSide(color: controller.rx.value.dark?.color ?? Colors.transparent, width: 0))),
+            height: MediaQuery.of(context).padding.bottom / 2,
+          ))
+        ],
+      ),
+      onHorizontalDragDown: (e){
+        return;
+      },
     );
   }
 
@@ -284,8 +287,7 @@ class SecondBodyView extends GetView<HomeController> {
                   TablerIcons.thumbUp,
                   color: controller.rx.value.dark?.bodyTextColor,
                 ),
-                onTap: () async {
-                },
+                onTap: () async {},
               ),
               Stack(
                 alignment: Alignment.topCenter,
@@ -339,15 +341,16 @@ class SecondBodyView extends GetView<HomeController> {
   //播放列表
   Widget _buildPlayList() {
     return ListView.builder(
-      physics: controller.playListOffest.value <= 0 ? const NeverScrollableScrollPhysics() : const ClampingScrollPhysics(),
+      physics: const ClampingScrollPhysics(),
+      controller: controller.playListScrollController,
       padding: EdgeInsets.symmetric(horizontal: 30.w),
       itemExtent: 110.w,
       itemBuilder: (context, index) => Container(
         margin: EdgeInsets.symmetric(horizontal: 10.w),
         alignment: Alignment.centerLeft,
-        child: _buildPlayListItem(controller.audioServeHandler.queue.value[index], index),
+        child: _buildPlayListItem(controller.mediaItems[index], index),
       ),
-      itemCount: controller.audioServeHandler.queue.value.length,
+      itemCount: controller.mediaItems.length,
     );
   }
 
@@ -359,8 +362,6 @@ class SecondBodyView extends GetView<HomeController> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // SimpleExtendedImage('${mediaItem.extras?['image']??''}??param=100y100',width: 75.w,height: 75.w,),
-            // Padding(padding: EdgeInsets.symmetric(horizontal: 10.w)),
             Expanded(
                 child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -379,6 +380,14 @@ class SecondBodyView extends GetView<HomeController> {
                 )
               ],
             )),
+            Visibility(
+              visible: controller.mediaItem.value.id == mediaItem.id,
+              child: LoadingAnimationWidget.horizontalRotatingDots(
+                color: controller.rx.value.dark?.bodyTextColor ?? Colors.red,
+                size: 40.w,
+              ),
+            ),
+            Padding(padding: EdgeInsets.symmetric(horizontal: 10.w)),
             IconButton(
                 onPressed: () {
                   controller.audioServeHandler.removeQueueItemAt(index);
@@ -387,7 +396,7 @@ class SecondBodyView extends GetView<HomeController> {
           ],
         ),
       ),
-      // onTap: () => controller.audioServeHandler.playIndex(index),
+      onTap: () => controller.audioServeHandler.playIndex(index),
     );
   }
 
@@ -416,11 +425,11 @@ class SecondBodyView extends GetView<HomeController> {
               //点击歌词
               controller.audioServeHandler.seek(Duration(milliseconds: controller.lyricsLineModels[index].startTime ?? 0));
             },
-            scrollController: controller.scrollController,
+            scrollController: controller.lyricScrollController,
             child: ListWheelScrollView.useDelegate(
               itemExtent: controller.lyricsLineModelsTran.isNotEmpty ? 162.w : 90.w,
-              controller: controller.scrollController,
-              physics: controller.playListOffest.value <= 0 ? const NeverScrollableScrollPhysics() : const FixedExtentScrollPhysics(),
+              controller: controller.lyricScrollController,
+              physics: const FixedExtentScrollPhysics(),
               overAndUnderCenterOpacity: 0.5,
               perspective: 0.0001,
               onSelectedItemChanged: (index) {
@@ -443,54 +452,6 @@ class SecondBodyView extends GetView<HomeController> {
             ),
           ),
         ),
-        // child: Scrollbar(
-        //   child: NotificationListener<ScrollNotification>(
-        //     onNotification: (ScrollNotification notification) {
-        //       // 判断监听事件的类型
-        //       if (notification is ScrollStartNotification) {
-        //         controller.onMove.value = true;
-        //       } else if (notification is ScrollUpdateNotification) {
-        //         controller.onMove.value = true;
-        //       } else if (notification is ScrollEndNotification) {
-        //         Future.delayed(const Duration(milliseconds: 3000), () => controller.onMove.value = false);
-        //       }
-        //       return false;
-        //     },
-        //     child: ClickableListWheelScrollView(
-        //       itemHeight: controller.lyricsLineModelsTran.isNotEmpty ? 162.w : 90.w,
-        //       itemCount: controller.lyricsLineModels.length,
-        //       onItemTapCallback: (index) {
-        //         //点击歌词
-        //         controller.audioServeHandler.seek(Duration(milliseconds: controller.lyricsLineModels[index].startTime ?? 0));
-        //       },
-        //       scrollController: controller.scrollController,
-        //       child: ListWheelScrollView.useDelegate(
-        //         itemExtent: controller.lyricsLineModelsTran.isNotEmpty ? 162.w : 100.w,
-        //         controller: controller.scrollController,
-        //         physics: controller.playListOffest.value <= 0 ? const NeverScrollableScrollPhysics() : const FixedExtentScrollPhysics(),
-        //         overAndUnderCenterOpacity: 0.5,
-        //         perspective: 0.000001,
-        //         onSelectedItemChanged: (index) {
-        //           //TODO 此处可以获取实时歌词
-        //         },
-        //         childDelegate: ListWheelChildBuilderDelegate(
-        //           builder: (context, index) => Container(
-        //             width: Get.width,
-        //             height: controller.lyricsLineModelsTran.isNotEmpty ? 162.w : 100.w,
-        //             alignment: Alignment.center,
-        //             child: Text(
-        //               controller.lyricsLineModels[index].mainText ?? '',
-        //               style: TextStyle(fontSize: controller.lyricsLineModelsTran.isNotEmpty ? 28.sp : 32.sp, color: controller.rx.value.dark?.bodyTextColor),
-        //               textAlign: TextAlign.center,
-        //               maxLines: 4,
-        //             ),
-        //           ),
-        //           childCount: controller.lyricsLineModels.length,
-        //         ),
-        //       ),
-        //     ),
-        //   ),
-        // )
       ),
     );
   }

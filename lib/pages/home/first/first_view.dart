@@ -26,9 +26,10 @@ class FirstView extends GetView<HomeController> {
       body: WillPopScope(
           child: ZoomDrawer(
             dragOffset: Get.width / 2,
-            openCurve: Curves.fastOutSlowIn,
+            // openCurve: Curves.fastOutSlowIn,
+            // disableDragGesture: true,
             // openCurve: Curves.fastLinearToSlowEaseIn,
-            duration: const Duration(milliseconds: 200),
+            // duration: const Duration(milliseconds: 200),
             menuScreenTapClose: true,
             showShadow: true,
             mainScreenTapClose: true,
@@ -70,7 +71,7 @@ class FirstView extends GetView<HomeController> {
   }
 
   Widget _buildPanelHeader() {
-    return InkWell(
+    return GestureDetector(
       child: Obx(() => AnimatedContainer(
             decoration: BoxDecoration(color: controller.getHeaderColor(), border: Border(bottom: BorderSide(color: controller.getHeaderColor(), width: 1.w))),
             padding: controller.getHeaderPadding().copyWith(bottom: PlatformUtils.isIOS ? MediaQuery.of(controller.buildContext).padding.bottom * .5 : 0),
@@ -79,6 +80,9 @@ class FirstView extends GetView<HomeController> {
             duration: const Duration(milliseconds: 0),
             child: _buildPlayBar(),
           )),
+      onHorizontalDragDown: (e){
+        return;
+      },
       onTap: () {
         if (!controller.weSlideController.isOpened) {
           controller.weSlideController.show();
@@ -102,14 +106,13 @@ class FirstView extends GetView<HomeController> {
                 // top: controller.getTopHeight(),
                 duration: const Duration(milliseconds: 0),
                 child: AnimatedScale(
-                  scale: 1 + (controller.slidePosition.value / 8),
-                  duration: Duration.zero,
+                  scale: 1 + (controller.slidePosition.value / 6.5),
+                  duration: const Duration(milliseconds: 90),
                   child: SimpleExtendedImage(
                     '${controller.mediaItem.value.extras?['image']}?param=500y500',
                     fit: BoxFit.cover,
                     height: controller.getImageSize(),
-                    width: controller.getImageSize(),
-                    borderRadius: BorderRadius.circular(controller.getImageSize() / 2 * (1 - (controller.slidePosition.value >= .8 ? .95 : controller.slidePosition.value))),
+                    width: controller.getImageSize(),borderRadius: BorderRadius.circular(controller.getImageSize() / 2 * (1 - (controller.slidePosition.value >= .8 ? .95 : controller.slidePosition.value))),
                   ),
                 )),
             AnimatedOpacity(
