@@ -14,7 +14,7 @@
 import 'package:auto_route/auto_route.dart' as _i7;
 import 'package:flutter/material.dart' as _i8;
 
-import '../pages/home/first/first_view.dart' deferred as _i1;
+import '../pages/home/view/home_view.dart' deferred as _i1;
 import '../pages/index/album_view.dart' as _i4;
 import '../pages/index/main_view.dart' as _i6;
 import '../pages/login/login.dart' as _i2;
@@ -32,7 +32,7 @@ class RootRouter extends _i7.RootStackRouter {
         routeData: routeData,
         child: _i7.DeferredWidget(
           _i1.loadLibrary,
-          () => _i1.FirstView(),
+          () => _i1.HomeView(),
         ),
       );
     },
@@ -122,7 +122,7 @@ class RootRouter extends _i7.RootStackRouter {
 }
 
 /// generated route for
-/// [_i1.FirstView]
+/// [_i1.HomeView]
 class FirstView extends _i7.PageRouteInfo<void> {
   const FirstView({List<_i7.PageRouteInfo>? children})
       : super(

@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:tabler_icons/tabler_icons.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:sticky_headers/sticky_headers.dart';
 import '../../routes/router.dart';
 import '../home/home_controller.dart';

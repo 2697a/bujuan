@@ -1,4 +1,4 @@
-// import 'package:bujuan/pages/home/first/first_view.dart';
+// import 'package:bujuan/pages/home/first/home_view.dart';
 // import 'package:bujuan/pages/index/album_view.dart';
 // import 'package:bujuan/pages/index/index_binding.dart';
 // import 'package:bujuan/pages/index/main_view.dart';

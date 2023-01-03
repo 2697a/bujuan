@@ -1,4 +1,3 @@
-
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -11,12 +10,14 @@ class ImageUtils {
   // static ImageStreamListener? _imageStreamListener;
   // static ImageStream? _imageStream;
 
-
   static getImageColor(String url, ImageColorCallBack imageCallBack) {
-    ExtendedNetworkImageProvider imageProvider = ExtendedNetworkImageProvider(url);
-    _getImageColorByProvider(imageProvider).then((value) {
+    ExtendedNetworkImageProvider imageProvider = ExtendedNetworkImageProvider(url, cache: true);
+    getImageColorByProvider(imageProvider).then((value) {
       imageCallBack.call(value);
     });
+
+
+
     // _imageStream = imageProvider.resolve(ImageConfiguration.empty);
     // _imageStreamListener = ImageStreamListener((ImageInfo image, bool synchronousCall) async {
     //   ImageProvider _imageProvider = imageProvider;
@@ -32,6 +33,7 @@ class ImageUtils {
     // });
     // _imageStream?.addListener(_imageStreamListener!);
   }
+
   // static Future<PaletteColorData> getImageColor2(String url) async{
   //   ImageProvider imageProvider = ExtendedFileImageProvider(File(url));
   //   if(url.isEmpty){
@@ -54,7 +56,7 @@ class ImageUtils {
   //   // _imageStream?.addListener(_imageStreamListener!);
   // }
 
-  static Future<PaletteColorData> _getImageColorByProvider(ImageProvider imageProvider) async {
+  static Future<PaletteColorData> getImageColorByProvider(ImageProvider imageProvider) async {
     PaletteColorData paletteColorData = PaletteColorData();
     final PaletteGenerator paletteGenerator = await PaletteGenerator.fromImageProvider(imageProvider, size: Size(50.w, 50.w));
     paletteColorData.light = paletteGenerator.lightMutedColor ?? paletteGenerator.lightVibrantColor;
@@ -103,16 +105,9 @@ class PaletteColorData {
   PaletteColorData({this.light, this.dark, this.main});
 }
 
-class WidgetUtil{
-  static showToast(String message){
+class WidgetUtil {
+  static showToast(String message) {
     Fluttertoast.showToast(
-        msg: message,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0
-    );
+        msg: message, toastLength: Toast.LENGTH_SHORT, gravity: ToastGravity.CENTER, timeInSecForIosWeb: 1, backgroundColor: Colors.red, textColor: Colors.white, fontSize: 16.0);
   }
 }

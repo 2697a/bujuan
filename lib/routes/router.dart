@@ -1,10 +1,11 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:bujuan/pages/home/first/first_view.dart';
+import 'package:bujuan/pages/home/view/home_view.dart';
 import 'package:bujuan/pages/index/album_view.dart';
 import 'package:bujuan/pages/index/main_view.dart';
 import 'package:bujuan/pages/play_list/playlist.dart';
 import 'package:bujuan/pages/user/user_view.dart';
 
+import '../pages/home/body/body/view.dart';
 import '../pages/login/login.dart';
 
 abstract class Routes {
@@ -38,7 +39,7 @@ abstract class _Paths {
 @MaterialAutoRouter(
   replaceInRouteName: 'Page,Route',
   routes: <AutoRoute>[
-    AutoRoute(path: Routes.home, page: FirstView, deferredLoading: true, initial: true, children: [
+    AutoRoute(path: Routes.home, page: BodyPage, deferredLoading: true, initial: true, children: [
       AutoRoute(path: Routes.user, page: UserView, initial: true, deferredLoading: true),
       AutoRoute(path: Routes.search, page: AlbumView),
       AutoRoute(path: Routes.playlist, page: PlayList),

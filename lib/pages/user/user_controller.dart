@@ -18,6 +18,7 @@ class UserController extends GetxController {
   //用户登录状态
   RxBool loginStatus = false.obs;
   Rx<NeteaseAccountInfoWrap> userData = NeteaseAccountInfoWrap().obs;
+  RxList<int> likeIds = <int>[].obs;
 
   //进度
   @override
@@ -39,12 +40,23 @@ class UserController extends GetxController {
 
   static UserController get to => Get.find();
 
+  //获取用户信息
   getUserState() async {
     NeteaseAccountInfoWrap neteaseAccountInfoWrap = await NeteaseMusicApi().loginAccountInfo();
     if (neteaseAccountInfoWrap.code == 200 && neteaseAccountInfoWrap.profile != null) {
       loginStatus.value = true;
       userData.value = neteaseAccountInfoWrap;
       getUserPlayList();
+      _getUserLikeSongIds();
+    }
+  }
+
+  _getUserLikeSongIds() async {
+    LikeSongListWrap likeSongListWrap = await NeteaseMusicApi().likeSongList(userData.value.profile?.userId ?? '-1');
+    if (likeSongListWrap.code == 200) {
+      likeIds
+        ..clear()
+        ..addAll(likeSongListWrap.ids);
     }
   }
 
@@ -59,12 +71,9 @@ class UserController extends GetxController {
 
   getUserPlayList() {
     NeteaseMusicApi().userPlayList(userData.value.profile?.userId ?? '-1').then((MultiPlayListWrap2 multiPlayListWrap2) {
-      print('发生错误了========${jsonEncode(multiPlayListWrap2.toJson())}');
       playlist
         ..clear()
         ..addAll(multiPlayListWrap2.playlist ?? []);
-    }).catchError((error) {
-      print('发生错误了========${error}');
     });
   }
 }

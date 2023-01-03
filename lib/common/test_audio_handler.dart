@@ -29,7 +29,6 @@ class TextAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler i
     _loadPlaylistByStorage();
     _notifyAudioHandlerAboutPlayStateEvents(); // 背景状态更改
     _notifyAudioHandlerAboutPositionEvents();
-    _listenPlayEnd();
   }
 
   void _loadPlaylistByStorage() async {
@@ -44,7 +43,7 @@ class TextAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler i
           .map((e) => MediaItem(
               id: e.id,
               duration: Duration(milliseconds: e.dt ?? 0),
-              artUri: Uri.parse('${e.al.picUrl ?? ''}?param=300y300'),
+              artUri: Uri.parse('${e.al.picUrl ?? ''}?param=600y600'),
               extras: {'url': '', 'image': e.al.picUrl ?? '', 'type': '', 'available': e.available},
               title: e.name ?? "",
               artist: (e.ar ?? []).map((e) => e.name).toList().join(' / ')))
@@ -56,20 +55,7 @@ class TextAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler i
 
   void _initAudioSession() async {
     session = await AudioSession.instance;
-    await session?.configure(const AudioSessionConfiguration(
-      // avAudioSessionCategory: AVAudioSessionCategory.playAndRecord,
-      avAudioSessionCategoryOptions: AVAudioSessionCategoryOptions.allowBluetooth,
-      avAudioSessionMode: AVAudioSessionMode.spokenAudio,
-      avAudioSessionRouteSharingPolicy: AVAudioSessionRouteSharingPolicy.defaultPolicy,
-      avAudioSessionSetActiveOptions: AVAudioSessionSetActiveOptions.none,
-      androidAudioAttributes: AndroidAudioAttributes(
-        contentType: AndroidAudioContentType.speech,
-        flags: AndroidAudioFlags.none,
-        usage: AndroidAudioUsage.voiceCommunication,
-      ),
-      androidAudioFocusGainType: AndroidAudioFocusGainType.gain,
-      androidWillPauseWhenDucked: true,
-    ));
+    await session?.configure(const AudioSessionConfiguration.music());
     _handleInterruptions(session!);
   }
 
@@ -123,8 +109,12 @@ class TextAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler i
   }
 
   void _notifyAudioHandlerAboutPlayStateEvents() {
-    _player.onPlayerStateChanged.listen((PlayerState playerState) {
+    _player.onPlayerStateChanged.listen((PlayerState playerState) async {
       print('Current player state: $playerState');
+      if (playerState == PlayerState.completed) {
+        await skipToNext();
+        return;
+      }
       playInterrupted = false;
       final playing = playerState == PlayerState.playing;
       if (playing) session?.setActive(true);
@@ -140,7 +130,6 @@ class TextAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler i
         androidCompactActionIndices: [1, 2, 3],
         processingState: AudioProcessingState.completed,
         playing: playing,
-        queueIndex: _curIndex,
       ));
     });
   }
@@ -153,8 +142,8 @@ class TextAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler i
   }
 
   void _listenPlayEnd() {
-    _player.onPlayerComplete.listen((event) {
-      skipToNext();
+    _player.onSeekComplete.listen((event) {
+      _player.resume();
     });
   }
 
@@ -200,8 +189,8 @@ class TextAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler i
   Future<void> playIndex(int index, {bool playIt = true}) async {
     // 接收到下标
     _curIndex = index;
+    await readySongUrl(playIt: playIt);
     StorageUtil().setInt(playByIndex, _curIndex);
-    readySongUrl(playIt: playIt);
   }
 
   @override
@@ -223,9 +212,9 @@ class TextAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler i
       mediaItem.add(song);
     } else {
       if (isNext) {
-        skipToNext();
+        await skipToNext();
       } else {
-        skipToPrevious();
+        await skipToPrevious();
       }
     }
   }
@@ -237,12 +226,14 @@ class TextAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler i
   Future<void> play() async => await _player.resume();
 
   @override
-  Future<void> seek(Duration position) => _player.seek(position);
+  Future<void> seek(Duration position) async {
+    await _player.seek(position);
+  }
 
   @override
   Future<void> skipToNext() async {
     _setCurrIndex(next: true);
-    readySongUrl();
+    await readySongUrl();
   }
 
   @override

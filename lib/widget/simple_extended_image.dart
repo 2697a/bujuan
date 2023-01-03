@@ -53,7 +53,7 @@ class SimpleExtendedImageState extends State<SimpleExtendedImage> {
       gaplessPlayback: true,
       borderRadius: widget.borderRadius,
       cache: true,
-      cacheWidth: widget.cacheWidth ?? 800,
+      cacheWidth: widget.cacheWidth ?? 500,
       //展厅
       loadStateChanged: (ExtendedImageState state) {
         Widget image;

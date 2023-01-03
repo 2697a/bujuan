@@ -1,4 +1,5 @@
 import 'package:audio_service/audio_service.dart';
+import 'package:bujuan/common/constants/other.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -60,6 +61,7 @@ class PlayListController extends GetxController {
 
   @override
   void onClose() {
+    WidgetUtil.showToast('PlayListController关闭了');
     super.onClose();
   }
 }

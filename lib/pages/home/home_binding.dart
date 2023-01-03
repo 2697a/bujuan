@@ -13,6 +13,6 @@ class HomeBinding extends Bindings{
     Get.lazyPut(() => HomeController());
     Get.lazyPut(() => IndexController());
     Get.lazyPut(() => PlayListController());
-    Get.lazyPut(() => LoginController());
+    // Get.lazyPut(() => LoginController());
   }
 }

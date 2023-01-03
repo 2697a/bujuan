@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tabler_icons/tabler_icons.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 class CustomFiled extends StatefulWidget {
   final IconData iconData;
@@ -55,7 +55,7 @@ class _CustomFiledState extends State<CustomFiled> {
             visible: widget.pass ?? false,
             child: Padding(padding: EdgeInsets.symmetric(horizontal: 10.w),child: GestureDetector(
               child: Icon(
-                isPass ? TablerIcons.eyeOff : TablerIcons.eye,
+                isPass ? TablerIcons.ear_off : TablerIcons.eye,
                 size: 40.sp,
               ),
               onTap: () => setState(() {

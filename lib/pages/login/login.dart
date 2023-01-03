@@ -7,7 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:tabler_icons/tabler_icons.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 import '../../common/constants/icon.dart';
 import '../../common/constants/other.dart';
@@ -111,7 +111,7 @@ class _LoginViewState extends State<LoginView> {
                           child: IconButton(
                               padding: const EdgeInsets.all(0),
                               onPressed: () {
-                                Get.back();
+                                AutoRouter.of(context).pop();
                               },
                               icon: Icon(Icons.close, size: 52.sp)))
                     ],

@@ -7,8 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
-import '../../common/netease_api/src/api/bean.dart';
-import '../base_view.dart';
 
 class PlayList extends GetView<PlayListController> {
   const PlayList({super.key});
@@ -102,4 +100,6 @@ class PlayList extends GetView<PlayListController> {
     //   },
     // );
   }
+
+
 }

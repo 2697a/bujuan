@@ -6,9 +6,8 @@ import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/common/constants/other.dart';
 import 'package:bujuan/common/lyric_parser/parser_lrc.dart';
 import 'package:bujuan/common/netease_api/netease_music_api.dart';
-import 'package:bujuan/pages/home/second/second_body_view.dart';
+import 'package:bujuan/pages/home/view/panel_view.dart';
 import 'package:bujuan/widget/weslide/weslide_controller.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -17,13 +16,13 @@ import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-import 'package:tabler_icons/tabler_icons.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:tuna_flutter_range_slider/tuna_flutter_range_slider.dart';
 
 import '../../common/lyric_parser/lyrics_reader_model.dart';
 import '../../common/test_audio_handler.dart';
 import '../../routes/router.dart';
-import 'first/first_view.dart';
+import 'view/home_view.dart';
 
 class HomeController extends SuperController with GetSingleTickerProviderStateMixin {
   final String weSlideUpdate = 'weSlide';
@@ -33,7 +32,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   double topBarHeight = 110.h;
   final List<LeftMenu> leftMenus = [
     LeftMenu('个人中心', TablerIcons.user, Routes.user, '/home/user'),
-    LeftMenu('推荐歌单', TablerIcons.smartHome, Routes.index, '/home/index'),
+    LeftMenu('推荐歌单', TablerIcons.smart_home, Routes.index, '/home/index'),
     LeftMenu('个人云盘', TablerIcons.cloud, Routes.search, '/home/search'),
   ];
 
@@ -44,26 +43,19 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
 
   RxString currPathUrl = '/home/user'.obs;
 
-  //是否折叠
-  RxBool isCollapsed = true.obs;
   WeSlideController weSlideController = WeSlideController();
-  RxBool isCollapsedAfterSec = true.obs;
   RxInt selectIndex = 0.obs;
 
   RxDouble slidePosition = 0.0.obs;
   RxDouble slidePosition1 = 0.0.obs;
   Rx<PaletteColorData> rx = PaletteColorData().obs;
-  RxBool isRoot = true.obs;
   RxBool second = false.obs;
   PageController pageController = PageController(viewportFraction: .99);
 
-  //是否第一次进入首页
-  bool first = true;
   Rx<MediaItem> mediaItem = const MediaItem(id: '', title: '暂无', duration: Duration(seconds: 10)).obs;
   RxList<MediaItem> mediaItems = <MediaItem>[].obs;
   RxBool playing = false.obs;
 
-  // final OnAudioQuery audioQuery = GetIt.instance<OnAudioQuery>();
   late BuildContext buildContext;
   final TextAudioHandler audioServeHandler = GetIt.instance<TextAudioHandler>();
   Rx<Duration> duration = Duration.zero.obs;
@@ -75,7 +67,6 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
 
   List<Map<dynamic, dynamic>> mEffects = [];
   AnimationController? animationController;
-  String directoryPath = '';
 
   //歌词滚动控制器
   FixedExtentScrollController lyricScrollController = FixedExtentScrollController();
@@ -85,29 +76,23 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
 
   //侧滑控制器
   ZoomDrawerController myDrawerController = GetIt.instance<ZoomDrawerController>();
-  RxBool disableDragGesture = false.obs; //是否可以侧滑
 
   List<LyricsLineModel> lyricsLineModels = <LyricsLineModel>[].obs;
   List<LyricsLineModel> lyricsLineModelsTran = <LyricsLineModel>[].obs;
   RxBool onMove = false.obs;
+  int lastIndex = 0;
 
   //路由相关
   AutoRouterDelegate? autoRouterDelegate;
-
-  RxString currLyric = ''.obs;
 
   var lastPopTime = DateTime.now();
 
   bool intervalClick(int needTime) {
     // 防重复提交
     if (DateTime.now().difference(lastPopTime) > const Duration(milliseconds: 1000)) {
-      print(lastPopTime);
       lastPopTime = DateTime.now();
-      print("允许点击");
       return true;
     } else {
-      // lastPopTime = DateTime.now(); //如果不注释这行,则强制用户一定要间隔2s后才能成功点击. 而不是以上一次点击成功的时间开始计算.
-      print("请勿重复点击！");
       return false;
     }
   }
@@ -120,7 +105,6 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
 
   @override
   void onReady() {
-    print('onReady========${this}');
     autoRouterDelegate = AutoRouterDelegate.of(buildContext);
     animationController = AnimationController(vsync: this, duration: const Duration(milliseconds: 100));
     animationController?.addListener(() {
@@ -135,7 +119,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
       if (value == null) return;
       mediaItem.value = value;
       //获取歌词
-      SongLyricWrap songLyricWrap = await NeteaseMusicApi().songLyric(value.id ?? '');
+      SongLyricWrap songLyricWrap = await NeteaseMusicApi().songLyric(value.id);
       String lyric = songLyricWrap.lrc.lyric ?? "";
       String lyricTran = songLyricWrap.tlyric.lyric ?? "";
       // lyricsLineModelsTran.clear();
@@ -172,9 +156,9 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
       //如果歌词列表没有滑动，根据歌词的开始时间自动滚动歌词列表
       if (!onMove.value) {
         int index = lyricsLineModels.indexWhere((element) => (element.startTime ?? 0) >= event.inMilliseconds && (element.endTime ?? 0) <= event.inMilliseconds);
-        if (index != -1) {
-          currLyric.value = lyricsLineModels[index > 0 ? index - 1 : index].mainText ?? '';
-          lyricScrollController.animateToItem(index > 0 ? index - 1 : index, duration: const Duration(milliseconds: 300), curve: Curves.linear);
+        if (index != -1 && index != lastIndex) {
+          lyricScrollController.animateToItem((index > 0 ? index - 1 : index), duration: const Duration(milliseconds: 300), curve: Curves.linear);
+          lastIndex = index;
         }
       }
     });
@@ -200,11 +184,6 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
 
   listenRouter() {
     currPathUrl.value = autoRouterDelegate?.urlState.url ?? '';
-    if (currPathUrl.value == '/home/index' || currPathUrl.value == '/home/user' || currPathUrl.value == '/home/search') {
-      if (disableDragGesture.value) disableDragGesture.value = false;
-    } else {
-        if (!disableDragGesture.value) disableDragGesture.value = true;
-    }
   }
 
   static HomeController get to => Get.find();
@@ -243,7 +222,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
     IconData icon;
     switch (audioServiceRepeatMode.value) {
       case AudioServiceRepeatMode.one:
-        icon = TablerIcons.repeatOnce;
+        icon = TablerIcons.repeat_once;
         break;
       case AudioServiceRepeatMode.none:
       case AudioServiceRepeatMode.all:
@@ -259,7 +238,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
     IconData icon;
     switch (audioServiceShuffleMode.value) {
       case AudioServiceShuffleMode.none:
-        icon = TablerIcons.arrowsShuffle;
+        icon = TablerIcons.arrows_shuffle;
         break;
       case AudioServiceShuffleMode.all:
       case AudioServiceShuffleMode.group:
@@ -326,7 +305,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   //获取图片亮色背景下文字显示的颜色
   Color getLightTextColor() {
     if (slidePosition.value == 0 && second.value) {
-      return rx.value.main?.bodyTextColor ?? Colors.transparent;
+      return Theme.of(buildContext).cardColor.withOpacity(.8);
     } else {
       return Theme.of(buildContext).iconTheme.color ?? Colors.transparent;
     }
@@ -337,7 +316,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
     return EdgeInsets.only(
       left: 30.w,
       right: 30.w,
-      top: MediaQuery.of(buildContext).padding.top * (second.value ? (1 - slidePosition.value) : slidePosition.value),
+      top: (MediaQuery.of(buildContext).padding.top + 0.h) * (second.value ? (1 - slidePosition.value) : slidePosition.value),
     );
   }
 
@@ -386,11 +365,9 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   void onClose() {
     super.onClose();
     weSlideController.dispose();
-    print('object=====Close');
     lyricScrollController.dispose();
     autoRouterDelegate?.removeListener(listenRouter);
   }
-
 
   @override
   void onDetached() {

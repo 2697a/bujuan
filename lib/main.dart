@@ -64,7 +64,7 @@ Future<void> _initAudioServer() async {
   getIt.registerSingleton<TextAudioHandler>(await AudioService.init<TextAudioHandler>(
     builder: () => TextAudioHandler(),
     config: const AudioServiceConfig(
-      androidStopForegroundOnPause: false,
+      // androidStopForegroundOnPause: false,
       androidNotificationChannelId: 'com.sixbugs.bujuan.channel.audio',
       androidNotificationChannelName: 'Music playback',
       androidNotificationIcon: 'drawable/audio_service_icon',
