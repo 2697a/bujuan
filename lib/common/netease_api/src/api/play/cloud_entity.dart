@@ -1,5 +1,7 @@
-class CloudEntity {
-  num? code;
+import 'package:bujuan/common/netease_api/src/api/bean.dart';
+
+class CloudEntity extends ServerStatusBean{
+  // int? code;
   List<CloudData>? data;
   String? size;
   num? upgradeSign;
@@ -8,7 +10,7 @@ class CloudEntity {
   String? maxSize;
 
   CloudEntity(
-      {this.code,
+      {
       this.data,
       this.size,
       this.upgradeSign,
@@ -125,7 +127,7 @@ class CloudDataSimplesong {
   num? mst;
   num? pst;
   num? pop;
-  num? dt;
+  int? dt;
   num? rtype;
   num? sId;
   num? id;

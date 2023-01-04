@@ -30,7 +30,7 @@ class MainView extends GetView<IndexController> {
                 return;
               }
             },
-            icon: Obx(() => SimpleExtendedImage.avatar('${UserController.to.loginStatus.value ? UserController.to.userData.value.profile?.avatarUrl : ''}'))),
+            icon: Obx(() => SimpleExtendedImage.avatar('${UserController.to.loginStatus.value ? UserController.to.userData.value.profile?.avatarUrl : ''}',width: 85.w))),
         title: RichText(
             text: TextSpan(style: TextStyle(fontSize: 42.sp, color: Colors.grey, fontWeight: FontWeight.bold), text: 'Here  ', children: [
           TextSpan(text: '推荐歌单～', style: TextStyle(color: Theme.of(context).primaryColor.withOpacity(.9))),
@@ -94,7 +94,7 @@ class MainView extends GetView<IndexController> {
             ),
           ],
         ),
-        onTap: () => context.router.push(const PlayList().copyWith(args: albumModel)),
+        onTap: () => context.router.push(const PlayListView().copyWith(args: albumModel)),
       ),
     );
   }

@@ -7,6 +7,7 @@ import 'package:bujuan/common/constants/other.dart';
 import 'package:bujuan/common/storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:audio_session/audio_session.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'audio_player_handler.dart';
 import 'constants/key.dart';
 import 'netease_api/src/api/play/bean.dart';
@@ -34,20 +35,19 @@ class TextAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler i
   void _loadPlaylistByStorage() async {
     _curIndex = StorageUtil().getInt(playByIndex);
     queueTitle.value = StorageUtil().getString(playQueueTitle);
-    if (queueTitle.value.isNotEmpty) {
-      SinglePlayListWrap singlePlayListWrap = await NeteaseMusicApi().playListDetail(queueTitle.value);
-      SongDetailWrap songDetailWrap = await NeteaseMusicApi().songDetail((singlePlayListWrap.playlist?.trackIds ?? []).map((e) => e.id).toList());
-      List<Song2> songs = (songDetailWrap.songs ?? []);
-      if (songs.isEmpty) return;
-      var items = songs
-          .map((e) => MediaItem(
-              id: e.id,
-              duration: Duration(milliseconds: e.dt ?? 0),
-              artUri: Uri.parse('${e.al.picUrl ?? ''}?param=600y600'),
-              extras: {'url': '', 'image': e.al.picUrl ?? '', 'type': '', 'available': e.available},
-              title: e.name ?? "",
-              artist: (e.ar ?? []).map((e) => e.name).toList().join(' / ')))
-          .toList();
+    List<String> playList = StorageUtil().getStringList(playQueue);
+    if (queueTitle.value.isNotEmpty && playList.isNotEmpty) {
+      List<MediaItem> items = playList.map((e) {
+        var map = MediaItemMessage.fromMap(jsonDecode(e));
+        return MediaItem(
+          id: map.id,
+          duration: map.duration,
+          artUri: map.artUri,
+          extras: map.extras,
+          title: map.title,
+          artist: map.artist,
+        );
+      }).toList();
       changeQueueLists(items);
       playIndex(_curIndex, playIt: false);
     }
@@ -64,12 +64,9 @@ class TextAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler i
     // just_audio can handle interruptions for us, but we have disabled that in
     // order to demonstrate manual configuration.
     audioSession.becomingNoisyEventStream.listen((_) {
-      print('PAUSE');
       _player.pause();
     });
     audioSession.interruptionEventStream.listen((event) {
-      print('interruption begin: ${event.begin}');
-      print('interruption type: ${event.type}');
       if (event.begin) {
         switch (event.type) {
           case AudioInterruptionType.duck:
@@ -110,7 +107,6 @@ class TextAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler i
 
   void _notifyAudioHandlerAboutPlayStateEvents() {
     _player.onPlayerStateChanged.listen((PlayerState playerState) async {
-      print('Current player state: $playerState');
       if (playerState == PlayerState.completed) {
         await skipToNext();
         return;
@@ -120,7 +116,7 @@ class TextAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler i
       if (playing) session?.setActive(true);
       playbackState.add(playbackState.value.copyWith(
         controls: [
-          MediaControl(label: 'rating', action: MediaAction.setRating, androidIcon: 'drawable/audio_service_unlike'),
+          const MediaControl(label: 'rating', action: MediaAction.setRating, androidIcon: 'drawable/audio_service_unlike'),
           MediaControl.skipToPrevious,
           if (playing) MediaControl.pause else MediaControl.play,
           MediaControl.skipToNext,
@@ -136,7 +132,6 @@ class TextAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler i
 
   void _notifyAudioHandlerAboutPositionEvents() {
     _player.onPositionChanged.listen((Duration duration) {
-      // print('_notifyAudioHandlerAboutPositionEvents=========${duration.inSeconds}');
       playbackState.add(playbackState.value.copyWith(updatePosition: duration, bufferedPosition: duration));
     });
   }
@@ -182,6 +177,24 @@ class TextAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler i
     queue.value.clear();
     final newQueue = queue.value..addAll(list);
     queue.add(newQueue); // 添加到背景播放列表
+
+    List<String> playList = list
+        .map((e) => jsonEncode(MediaItemMessage(
+              id: e.id,
+              album: e.album,
+              title: e.title,
+              artist: e.artist,
+              genre: e.genre,
+              duration: e.duration,
+              artUri: e.artUri,
+              playable: e.playable,
+              displayTitle: e.displayTitle,
+              displaySubtitle: e.displaySubtitle,
+              displayDescription: e.displayDescription,
+              extras: e.extras,
+            ).toMap()))
+        .toList();
+    StorageUtil().setStringList(playQueue, playList);
     if (queueTitle.value.isNotEmpty) StorageUtil().setString(playQueueTitle, queueTitle.value);
   }
 
@@ -293,3 +306,99 @@ class TextAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler i
     await _player.dispose();
   }
 }
+
+class MediaItemMessage {
+  /// A unique id.
+  final String id;
+
+  /// The title of this media item.
+  final String title;
+
+  /// The album this media item belongs to.
+  final String? album;
+
+  /// The artist of this media item.
+  final String? artist;
+
+  /// The genre of this media item.
+  final String? genre;
+
+  /// The duration of this media item.
+  final Duration? duration;
+
+  /// The artwork for this media item as a uri.
+  final Uri? artUri;
+
+  /// Whether this is playable (i.e. not a folder).
+  final bool? playable;
+
+  /// Override the default title for display purposes.
+  final String? displayTitle;
+
+  /// Override the default subtitle for display purposes.
+  final String? displaySubtitle;
+
+  /// Override the default description for display purposes.
+  final String? displayDescription;
+
+  /// The rating of the MediaItemMessage.
+
+  /// A map of additional metadata for the media item.
+  ///
+  /// The values must be integers or strings.
+  final Map<String, dynamic>? extras;
+
+  /// Creates a [MediaItemMessage].
+  ///
+  /// The [id] must be unique for each instance.
+  const MediaItemMessage({
+    required this.id,
+    required this.title,
+    this.album,
+    this.artist,
+    this.genre,
+    this.duration,
+    this.artUri,
+    this.playable = true,
+    this.displayTitle,
+    this.displaySubtitle,
+    this.displayDescription,
+    this.extras,
+  });
+
+  /// Creates a [MediaItemMessage] from a map of key/value pairs corresponding to
+  /// fields of this class.
+  factory MediaItemMessage.fromMap(Map<String, dynamic> raw) => MediaItemMessage(
+        id: raw['id'] as String,
+        title: raw['title'] as String,
+        album: raw['album'] as String?,
+        artist: raw['artist'] as String?,
+        genre: raw['genre'] as String?,
+        duration: raw['duration'] != null ? Duration(milliseconds: raw['duration'] as int) : null,
+        artUri: raw['artUri'] != null ? Uri.parse(raw['artUri'] as String) : null,
+        playable: raw['playable'] as bool?,
+        displayTitle: raw['displayTitle'] as String?,
+        displaySubtitle: raw['displaySubtitle'] as String?,
+        displayDescription: raw['displayDescription'] as String?,
+        extras: castMap(raw['extras'] as Map?),
+      );
+
+  /// Converts this [MediaItemMessage] to a map of key/value pairs corresponding to
+  /// the fields of this class.
+  Map<String, dynamic> toMap() => <String, dynamic>{
+        'id': id,
+        'title': title,
+        'album': album,
+        'artist': artist,
+        'genre': genre,
+        'duration': duration?.inMilliseconds,
+        'artUri': artUri?.toString(),
+        'playable': playable,
+        'displayTitle': displayTitle,
+        'displaySubtitle': displaySubtitle,
+        'displayDescription': displayDescription,
+        'extras': extras,
+      };
+}
+
+Map<String, dynamic>? castMap(Map? map) => map?.cast<String, dynamic>();

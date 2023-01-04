@@ -1,4 +1,6 @@
+import 'package:audio_service/audio_service.dart';
 import 'package:bujuan/pages/index/index_controller.dart';
+import 'package:bujuan/widget/request_widget/request_view.dart';
 import 'package:bujuan/widget/simple_extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -24,38 +26,44 @@ class AlbumView extends GetView<IndexController> {
                 return;
               }
             },
-            icon: Obx(() => SimpleExtendedImage.avatar('${UserController.to.loginStatus.value ? UserController.to.userData.value.profile?.avatarUrl : ''}'))),
+            icon: Obx(() => SimpleExtendedImage.avatar('${UserController.to.loginStatus.value ? UserController.to.userData.value.profile?.avatarUrl : ''}',width: 85.w))),
         title: RichText(
             text: TextSpan(style: TextStyle(fontSize: 42.sp, color: Colors.grey, fontWeight: FontWeight.bold), text: 'Here  ', children: [
-              TextSpan(
-                  text: '云盘～',
-                  style: TextStyle(color: Theme.of(context).primaryColor.withOpacity(.9))),
-            ])),
+          TextSpan(text: '云盘～', style: TextStyle(color: Theme.of(context).primaryColor.withOpacity(.9))),
+        ])),
       ),
-      body: FutureBuilder<List<CloudData>>(
-          future: controller.getCloudData(),
-          builder: (c, s) => DataView<List<CloudData>>(
-              snapshot: s,
-              childBuilder: ListView.builder(
-                itemBuilder: (context, index) => _buildItem((s.data ?? [])[index], index),
-                itemCount: (s.data ?? []).length,
-              ))),
+      body: RequestWidget<CloudEntity>(
+          dioMetaData: controller.cloudSongDioMetaData(limit: 80),
+          childBuilder: (data) {
+            List<MediaItem> list = (data.data ?? []).map((e) => MediaItem(
+                id: '${e.songId}',
+                duration: Duration(milliseconds: e.simpleSong?.dt ?? 0),
+                artUri: Uri.parse('${e.simpleSong?.al?.picUrl ?? ''}?param=500y500'),
+                extras: {'url': '', 'image': e.simpleSong?.al?.picUrl ?? '', 'type': '', 'available': false},
+                title: e.songName ?? "",
+                artist: (e.simpleSong?.ar ?? []).map((e) => e.name).toList().join(' / '))).toList();
+            controller.mediaItems..clear()..addAll(list);
+            return ListView.builder(
+              itemBuilder: (context, index) => _buildItem(list[index], index),
+              itemCount: list.length,
+            );
+          }),
     );
   }
 
-  Widget _buildItem(CloudData data, int index) {
+  Widget _buildItem(MediaItem data, int index) {
     return ListTile(
       dense: true,
       contentPadding: EdgeInsets.symmetric(horizontal: 20.w),
       leading: SimpleExtendedImage(
-        '${data.simpleSong?.al?.picUrl?? ''}?param=200y200',
+        '${data.extras!['image']}?param=200y200',
         width: 80.w,
         height: 80.w,
       ),
-      title: Text(data.songName??''),
-      subtitle: Text(data.artist??''),
+      title: Text(data.title ?? ''),
+      subtitle: Text(data.artist ?? ''),
       onTap: () {
-        // controller.playIndex(index);
+        controller.playIndex(index);
       },
     );
   }

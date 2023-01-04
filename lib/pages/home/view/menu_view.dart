@@ -59,7 +59,7 @@ class MenuView extends GetView<HomeController> {
           itemCount: controller.leftMenus.length,
         )),
         ListTile(
-          leading: Icon(TablerIcons.login),
+          leading: const Icon(TablerIcons.login),
           title: Text(
             '注销登陆',
             style: TextStyle(color: Theme.of(context).bottomAppBarColor),

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:audio_service/audio_service.dart';
 import 'package:bujuan/common/constants/other.dart';
 import 'package:flutter/material.dart';
@@ -5,13 +7,28 @@ import 'package:get/get.dart';
 
 import '../../common/constants/key.dart';
 import '../../common/netease_api/src/api/play/bean.dart';
+import '../../common/netease_api/src/dio_ext.dart';
 import '../../common/netease_api/src/netease_api.dart';
+import '../../common/netease_api/src/netease_handler.dart';
 import '../../common/storage.dart';
 import '../home/home_controller.dart';
 
 class PlayListController extends GetxController {
   RxList<MediaItem> mediaItems = <MediaItem>[].obs;
   String queueTitle = '';
+
+  DioMetaData playListDetailDioMetaData(String categoryId, {int subCount = 5}) {
+    var params = {'id': categoryId, 'n': 1000, 's': '$subCount', 'shareUserId': '0'};
+    return DioMetaData(Uri.parse('https://music.163.com/api/v6/playlist/detail'), data: params, options: joinOptions());
+  }
+
+  DioMetaData songDetailDioMetaData(List<String> songIds) {
+    var params = {
+      'ids': songIds,
+      'c': songIds.map((e) => jsonEncode({'id': e})).toList()
+    };
+    return DioMetaData(joinUri('/api/v3/song/detail'), data: params, options: joinOptions());
+  }
 
   @override
   void onInit() {

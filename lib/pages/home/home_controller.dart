@@ -8,6 +8,7 @@ import 'package:bujuan/common/lyric_parser/parser_lrc.dart';
 import 'package:bujuan/common/netease_api/netease_music_api.dart';
 import 'package:bujuan/pages/home/view/panel_view.dart';
 import 'package:bujuan/widget/weslide/weslide_controller.dart';
+import 'package:carousel_slider/carousel_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -43,14 +44,18 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
 
   RxString currPathUrl = '/home/user'.obs;
 
-  WeSlideController weSlideController = WeSlideController();
+  // WeSlideController weSlideController = WeSlideController();
   RxInt selectIndex = 0.obs;
+  RxInt playIndex = 0.obs;
 
   RxDouble slidePosition = 0.0.obs;
   RxDouble slidePosition1 = 0.0.obs;
   Rx<PaletteColorData> rx = PaletteColorData().obs;
   RxBool second = false.obs;
   PageController pageController = PageController(viewportFraction: .99);
+
+  // PageController? pageController1;
+  CarouselController buttonCarouselController = CarouselController();
 
   Rx<MediaItem> mediaItem = const MediaItem(id: '', title: '暂无', duration: Duration(seconds: 10)).obs;
   RxList<MediaItem> mediaItems = <MediaItem>[].obs;
@@ -60,6 +65,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   final TextAudioHandler audioServeHandler = GetIt.instance<TextAudioHandler>();
   Rx<Duration> duration = Duration.zero.obs;
   PanelController panelController = PanelController();
+  PanelController panelControllerHome = PanelController();
   RxBool isDownSlide = true.obs;
 
   Rx<AudioServiceRepeatMode> audioServiceRepeatMode = AudioServiceRepeatMode.all.obs;
@@ -115,9 +121,20 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
       mEffects.add({"percent": i, "size": 5 + rng.nextInt(30 - 5).toDouble()});
     }
     audioServeHandler.setRepeatMode(audioServiceRepeatMode.value);
+    audioServeHandler.queue.listen((value) => mediaItems
+      ..clear()
+      ..addAll(value));
     audioServeHandler.mediaItem.listen((value) async {
       if (value == null) return;
       mediaItem.value = value;
+      ImageUtils.getImageColor('${mediaItem.value.extras?['image'] ?? ''}?param=150y150', (paletteColorData) => rx.value = paletteColorData);
+      int index = mediaItems.indexWhere((element) => element.id == value.id);
+      if (index != -1) {
+        playIndex.value = index;
+        !second.value && slidePosition.value == 0
+            ? buttonCarouselController.jumpToPage(index)
+            : buttonCarouselController.animateToPage(index, duration: const Duration(milliseconds: 300), curve: Curves.linear);
+      }
       //获取歌词
       SongLyricWrap songLyricWrap = await NeteaseMusicApi().songLyric(value.id);
       String lyric = songLyricWrap.lrc.lyric ?? "";
@@ -139,13 +156,12 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
           lyricsLineModels.addAll(list);
         }
       }
-      ImageUtils.getImageColor('${mediaItem.value.extras?['image'] ?? ''}?param=100y100', (paletteColorData) => rx.value = paletteColorData);
       setPlayListOffset();
     });
     //监听实时进度变化
     AudioService.position.listen((event) {
       //如果没有展示播放页面就先不监听（节省资源）
-      if (!second.value && slidePosition.value < 1) return;
+      if (!second.value && slidePosition.value == 0) return;
       //如果监听到的毫秒大于歌曲的总时长 置0并stop
       if (event.inMilliseconds > (mediaItem.value.duration?.inMilliseconds ?? 0)) {
         duration.value = Duration.zero;
@@ -165,10 +181,6 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
     audioServeHandler.playbackState.listen((value) {
       playing.value = value.playing;
     });
-
-    audioServeHandler.queue.listen((value) => mediaItems
-      ..clear()
-      ..addAll(value));
 
     //监听路由变化
     autoRouterDelegate?.addListener(listenRouter);
@@ -278,8 +290,8 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
       panelController.close();
       return false;
     }
-    if (weSlideController.isOpened) {
-      weSlideController.hide();
+    if (panelControllerHome.isPanelOpen) {
+      panelControllerHome.close();
       return false;
     }
     if (myDrawerController.isOpen!()) {
@@ -291,11 +303,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
 
   //动态设置获取Header颜色
   Color getHeaderColor() {
-    return Theme.of(buildContext).bottomAppBarColor.withOpacity(second.value
-        ? 0
-        : slidePosition.value > 0
-            ? 0
-            : 1);
+    return Theme.of(buildContext).bottomAppBarColor.withOpacity(0);
   }
 
   Color getLeftMenuColor() {
@@ -364,7 +372,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   @override
   void onClose() {
     super.onClose();
-    weSlideController.dispose();
+    // panelControllerHome.d();
     lyricScrollController.dispose();
     autoRouterDelegate?.removeListener(listenRouter);
   }

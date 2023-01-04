@@ -2,18 +2,18 @@ import 'package:audio_service/audio_service.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/common/netease_api/netease_music_api.dart';
 import 'package:bujuan/pages/play_list/playlist_controller.dart';
+import 'package:bujuan/widget/request_widget/request_view.dart';
 import 'package:bujuan/widget/simple_extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
-
-class PlayList extends GetView<PlayListController> {
-  const PlayList({super.key});
+class PlayListA extends GetView<PlayListController> {
+  const PlayListA({super.key});
 
   @override
   Widget build(BuildContext context) {
-    controller.getData((context.routeData.args as Play).id);
+    // controller.getData((context.routeData.args as Play).id);
     return GestureDetector(
       child: Stack(
         children: [
@@ -27,19 +27,28 @@ class PlayList extends GetView<PlayListController> {
               title: const Text('Song Sheet'),
               backgroundColor: Colors.transparent,
             ),
-            body: AnimatedContainer(
-              duration: const Duration(milliseconds: 0),
-              decoration: BoxDecoration(color: Theme.of(context).scaffoldBackgroundColor, borderRadius: BorderRadius.circular(50.w)),
-              padding: EdgeInsets.only(top: 30.w),
-              margin: EdgeInsets.only(top: Get.width / 5),
-              child: Obx(() => ListView.builder(
-                    itemExtent: 120.w,
-                    physics: const BouncingScrollPhysics(),
-                    padding: EdgeInsets.symmetric(horizontal: 20.w),
-                    itemBuilder: (context, index) => _buildItem(controller.mediaItems[index], index),
-                    itemCount: controller.mediaItems.length,
-                  )),
-            ),
+            body: RequestWidget<SinglePlayListWrap>(
+                dioMetaData: controller.playListDetailDioMetaData((context.routeData.args as Play).id),
+                childBuilder: (SinglePlayListWrap data) => RequestWidget<SongDetailWrap>(
+                    dioMetaData: controller.songDetailDioMetaData((data.playlist?.trackIds ?? []).map((e) => e.id).toList()),
+                    childBuilder: (playlist) {
+                      var list = (playlist.songs ?? [])
+                          .map((e) => MediaItem(
+                              id: e.id,
+                              duration: Duration(milliseconds: e.dt ?? 0),
+                              artUri: Uri.parse('${e.al.picUrl ?? ''}?param=500y500'),
+                              extras: {'url': '', 'image': e.al.picUrl ?? '', 'type': '', 'available': e.available},
+                              title: e.name ?? "",
+                              artist: (e.ar ?? []).map((e) => e.name).toList().join(' / ')))
+                          .toList();
+                      return ListView.builder(
+                        itemExtent: 120.w,
+                        physics: const BouncingScrollPhysics(),
+                        padding: EdgeInsets.symmetric(horizontal: 20.w),
+                        itemBuilder: (context, index) => _buildItem(list[index], index),
+                        itemCount: list.length,
+                      );
+                    })),
           )
         ],
       ),
@@ -100,6 +109,4 @@ class PlayList extends GetView<PlayListController> {
     //   },
     // );
   }
-
-
 }

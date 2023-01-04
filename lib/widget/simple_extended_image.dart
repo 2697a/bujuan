@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:bujuan/common/constants/images.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:extended_image/extended_image.dart';
+import 'package:octo_image/octo_image.dart';
 
 class SimpleExtendedImage extends StatefulWidget {
   final String url;
@@ -20,7 +22,15 @@ class SimpleExtendedImage extends StatefulWidget {
       : super(key: key);
 
   const SimpleExtendedImage.avatar(this.url,
-      {Key? key, this.width, this.height, this.placeholder = avatarPlaceholderImage, this.replacement, this.fit, this.shape = BoxShape.circle, this.borderRadius, this.cacheWidth = 300})
+      {Key? key,
+      this.width,
+      this.height,
+      this.placeholder = avatarPlaceholderImage,
+      this.replacement,
+      this.fit,
+      this.shape = BoxShape.circle,
+      this.borderRadius,
+      this.cacheWidth = 300})
       : super(key: key);
 
   @override
@@ -44,89 +54,106 @@ class SimpleExtendedImageState extends State<SimpleExtendedImage> {
 
   @override
   Widget build(BuildContext context) {
-    return ExtendedImage.network(
-      widget.url,
-      width: widget.width,
-      height: widget.height,
-      shape: widget.shape,
-      fit: BoxFit.cover,
-      gaplessPlayback: true,
-      borderRadius: widget.borderRadius,
-      cache: true,
-      cacheWidth: widget.cacheWidth ?? 500,
-      //展厅
-      loadStateChanged: (ExtendedImageState state) {
-        Widget image;
-        switch (state.extendedImageLoadState) {
-          case LoadState.loading:
-            image = widget.replacement ??
-                Image.asset(
-                  widget.placeholder,
-                  fit: BoxFit.cover,
-                );
-            break;
-          case LoadState.completed:
-            image = ExtendedRawImage(
-              image: state.extendedImageInfo?.image,
-              width: widget.width,
-              height: widget.height,
-              fit: widget.fit ?? BoxFit.cover,
-            );
-            break;
-          case LoadState.failed:
-            image = Image.asset(
-              widget.placeholder,
-              fit: BoxFit.cover,
-            );
-            break;
-        }
-        return image;
-      },
+    // return ExtendedImage.network(
+    //   widget.url,
+    //   width: widget.width,
+    //   height: widget.height,
+    //   shape: widget.shape,
+    //   fit: BoxFit.cover,
+    //   gaplessPlayback: true,
+    //   borderRadius: widget.borderRadius,
+    //   cache: true,
+    //   cacheWidth: widget.cacheWidth ?? 500,
+    //   //展厅
+    //   loadStateChanged: (ExtendedImageState state) {
+    //     Widget image;
+    //     switch (state.extendedImageLoadState) {
+    //       case LoadState.loading:
+    //         image = widget.replacement ??
+    //             Image.asset(
+    //               widget.placeholder,
+    //               fit: BoxFit.cover,
+    //             );
+    //         break;
+    //       case LoadState.completed:
+    //         image = ExtendedRawImage(
+    //           image: state.extendedImageInfo?.image,
+    //           width: widget.width,
+    //           height: widget.height,
+    //           fit: widget.fit ?? BoxFit.cover,
+    //         );
+    //         break;
+    //       case LoadState.failed:
+    //         image = Image.asset(
+    //           widget.placeholder,
+    //           fit: BoxFit.cover,
+    //         );
+    //
+    //         break;
+    //     }
+    //     return image;
+    //   },
+    // );
+    return ClipRRect(
+      borderRadius: widget.shape == BoxShape.circle ? BorderRadius.circular(widget.width! / 2) : widget.borderRadius ?? BorderRadius.circular(0),
+      child: OctoImage(
+        width: widget.width,
+        height: widget.height,
+        image: CachedNetworkImageProvider(widget.url),
+        placeholderBuilder: (c) => CachedNetworkImage(
+          width: widget.width,
+          height: widget.height,
+          imageUrl: widget.url.replaceAll('500', '50'),
+          fit: BoxFit.contain,
+        ),
+        errorBuilder: OctoError.icon(color: Colors.red),
+        fit: BoxFit.contain,
+      ),
     );
     // if (widget.url.startsWith('http')) {
     //
     // } else {
-      // return ExtendedImage.file(
-      //   File(widget.url),
-      //   width: widget.width,
-      //   height: widget.height,
-      //   shape: widget.shape,
-      //   cacheRawData: true,
-      //   gaplessPlayback: true,
-      //   fit: BoxFit.cover,
-      //   borderRadius: widget.borderRadius,
-      //   cacheWidth: widget.cacheWidth ?? 800,
-      //   //展厅
-      //   loadStateChanged: (ExtendedImageState state) {
-      //     Widget image;
-      //     switch (state.extendedImageLoadState) {
-      //       case LoadState.loading:
-      //         image = widget.replacement ??
-      //             Container(
-      //               color: Colors.grey,
-      //               width: widget.width,
-      //               height: widget.height,
-      //               child: Icon(Icons.image,size:( widget.width??100/3).toDouble(),),
-      //             );
-      //         break;
-      //       case LoadState.completed:
-      //         image = ExtendedRawImage(
-      //           image: state.extendedImageInfo?.image,
-      //           width: widget.width,
-      //           height: widget.height,
-      //           fit: widget.fit ?? BoxFit.cover,
-      //         );
-      //         break;
-      //       case LoadState.failed:
-      //         image = Image.asset(
-      //           widget.placeholder,
-      //           fit: BoxFit.cover,
-      //         );
-      //         break;
-      //     }
-      //     return image;
-      //   },
-      // );
+    // return ExtendedImage.file(
+    //   File(widget.url),
+    //   width: widget.width,
+    //   height: widget.height,
+    //   shape: widget.shape,
+    //   cacheRawData: true,
+    //   gaplessPlayback: true,
+    //   fit: BoxFit.cover,
+    //   borderRadius: widget.borderRadius,
+    //   cacheWidth: widget.cacheWidth ?? 800,
+    //   //展厅
+    //   loadStateChanged: (ExtendedImageState state) {
+    //     Widget image;
+    //     switch (state.extendedImageLoadState) {
+    //       case LoadState.loading:
+    //         image = widget.replacement ??
+    //             Container(
+    //               color: Colors.grey,
+    //               width: widget.width,
+    //               height: widget.height,
+    //               child: Icon(Icons.image,size:( widget.width??100/3).toDouble(),),
+    //             );
+    //         break;
+    //       case LoadState.completed:
+    //         image = ExtendedRawImage(
+    //           image: state.extendedImageInfo?.image,
+    //           width: widget.width,
+    //           height: widget.height,
+    //           fit: widget.fit ?? BoxFit.cover,
+    //         );
+    //         break;
+    //       case LoadState.failed:
+    //         image = Image.asset(
+    //           widget.placeholder,
+    //           fit: BoxFit.cover,
+    //         );
+    //         break;
+    //     }
+    //     return image;
+    //   },
+    // );
     // }
   }
 }

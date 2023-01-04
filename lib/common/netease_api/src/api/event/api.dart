@@ -166,7 +166,7 @@ mixin ApiEvent {
 
   DioMetaData commentListDioMetaData(String id, String type,
       {int offset = 0, int limit = 20, int beforeTime = 0}) {
-    String typeKey = _type2key(type);
+    String typeKey = type2key(type);
     var params = {
       'rid': id,
       'limit': limit,
@@ -195,7 +195,7 @@ mixin ApiEvent {
       int pageSize = 20,
       bool showInner = true,
       int? sortType}) {
-    String typeKey = _type2key(type) + id;
+    String typeKey = type2key(type) + id;
     var params = {
       'threadId': typeKey,
       'pageNo': pageNo,
@@ -233,7 +233,7 @@ mixin ApiEvent {
 
   DioMetaData hotCommentListDioMetaData(String id, String type,
       {int offset = 0, int limit = 20, int beforeTime = 0}) {
-    String typeKey = _type2key(type);
+    String typeKey = type2key(type);
     var params = {
       'rid': id,
       'limit': limit,
@@ -334,7 +334,7 @@ mixin ApiEvent {
       {int time = -1, int limit = 20}) {
     var params = {
       'parentCommentId': parentCommentId,
-      'threadId': _type2key(type) + id,
+      'threadId': type2key(type) + id,
       'time': time,
       'limit': limit
     };
@@ -378,7 +378,7 @@ mixin ApiEvent {
   DioMetaData likeCommentDioMetaData(
       String id, String commentId, String type, bool like,
       {String? threadId}) {
-    String typeKey = _type2key(type);
+    String typeKey = type2key(type);
     var params = {'commentId': commentId, 'threadId': typeKey + id};
     if (type == 'event') {
       if (threadId == null) {
@@ -411,7 +411,7 @@ mixin ApiEvent {
 
   DioMetaData commentDioMetaData(String id, String type, String op,
       {String? commentId, String? threadId, String? content}) {
-    String typeKey = _type2key(type);
+    String typeKey = type2key(type);
     var params = {'threadId': typeKey + id};
     if (type == 'event') {
       if (threadId == null) {
@@ -468,7 +468,7 @@ mixin ApiEvent {
 
   DioMetaData likeResourceDioMetaData(String id, String type, bool like,
       {String? commentId, String? threadId, String? content}) {
-    String typeKey = _type2key(type);
+    String typeKey = type2key(type);
     var params = {'threadId': typeKey + id};
     if (type == 'event') {
       if (threadId == null) {
@@ -507,7 +507,7 @@ mixin ApiEvent {
     int pageNo = 1,
     int pageSize = 20,
   }) {
-    String typeKey = _type2key(type);
+    String typeKey = type2key(type);
     var params = {
       'threadId': typeKey + id,
       'targetUserId': userId,
@@ -548,7 +548,7 @@ mixin ApiEvent {
 
   DioMetaData hugCommentDioMetaData(
       String id, String type, String userId, String commentId) {
-    String typeKey = _type2key(type);
+    String typeKey = type2key(type);
     var params = {
       'threadId': typeKey + id,
       'targetUserId': userId,
@@ -571,7 +571,7 @@ mixin ApiEvent {
     });
   }
 
-  String _type2key(String type) {
+  String type2key(String type) {
     String typeKey = 'R_SO_4_';
     switch (type) {
       case 'song':

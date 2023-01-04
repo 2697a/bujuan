@@ -1,7 +1,11 @@
 import 'dart:async';
+import 'package:auto_route/auto_route.dart';
+import 'package:bujuan/routes/router.gr.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+
+import '../routes/router.dart';
 // import 'package:on_audio_query/on_audio_query.dart';
 
 class SplashPage extends StatefulWidget {
@@ -29,6 +33,7 @@ class SplashPageState extends State<SplashPage> {
     });
 
     Future.delayed(durationFinish, () {
+      AutoRouter.of(context).replaceNamed(Routes.home);
       // requestPermission().then((value) => {if (value) {
       //   AutoRouter.of(context).pushNamed(Routes.home)
       // }});

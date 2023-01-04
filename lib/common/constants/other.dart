@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -11,7 +12,7 @@ class ImageUtils {
   // static ImageStream? _imageStream;
 
   static getImageColor(String url, ImageColorCallBack imageCallBack) {
-    ExtendedNetworkImageProvider imageProvider = ExtendedNetworkImageProvider(url, cache: true);
+    CachedNetworkImageProvider imageProvider = CachedNetworkImageProvider(url);
     getImageColorByProvider(imageProvider).then((value) {
       imageCallBack.call(value);
     });
@@ -58,7 +59,7 @@ class ImageUtils {
 
   static Future<PaletteColorData> getImageColorByProvider(ImageProvider imageProvider) async {
     PaletteColorData paletteColorData = PaletteColorData();
-    final PaletteGenerator paletteGenerator = await PaletteGenerator.fromImageProvider(imageProvider, size: Size(50.w, 50.w));
+    final PaletteGenerator paletteGenerator = await PaletteGenerator.fromImageProvider(imageProvider, size: Size(150.w, 150.w));
     paletteColorData.light = paletteGenerator.lightMutedColor ?? paletteGenerator.lightVibrantColor;
     paletteColorData.dark = paletteGenerator.darkMutedColor ?? paletteGenerator.darkVibrantColor;
     paletteColorData.main = paletteGenerator.dominantColor ?? paletteGenerator.mutedColor;

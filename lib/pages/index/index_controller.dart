@@ -9,6 +9,9 @@ import 'package:bujuan/common/netease_api/src/api/play/cloud_entity.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import '../../common/netease_api/src/dio_ext.dart';
+import '../../common/netease_api/src/netease_handler.dart';
 // import 'package:on_audio_query/on_audio_query.dart';
 
 class IndexController extends GetxController {
@@ -18,6 +21,10 @@ class IndexController extends GetxController {
   final String queueTitle = Get.routing.current;
   final RxList<PaletteColorData> colors = <PaletteColorData>[].obs;
 
+  DioMetaData cloudSongDioMetaData({int offset = 0, int limit = 30}) {
+    var params = {'limit': limit, 'offset': offset};
+    return DioMetaData(joinUri('/weapi/v1/cloud/get'), data: params, options: joinOptions());
+  }
 
   // List<Audio> audios = [];
 
@@ -31,9 +38,20 @@ class IndexController extends GetxController {
     return await NeteaseMusicApi().personalizedPlaylist();
   }
 
-  Future<List<CloudData>> getCloudData() async{
+  Future<List<CloudData>> getCloudData() async {
     CloudEntity cloudSongListWrap = await NeteaseMusicApi().cloudSong();
-    return cloudSongListWrap.data??[];
+    mediaItems
+      ..clear()
+      ..addAll((cloudSongListWrap.data ?? [])
+          .map((e) => MediaItem(
+              id: '${e.songId}',
+              duration: Duration(milliseconds: e.simpleSong?.dt ?? 0),
+              artUri: Uri.parse('${e.simpleSong?.al?.picUrl ?? ''}?param=500y500'),
+              extras: {'url': '', 'image': e.simpleSong?.al?.picUrl ?? '', 'type': '', 'available': false},
+              title: e.songName ?? "",
+              artist: (e.simpleSong?.ar ?? []).map((e) => e.name).toList().join(' / ')))
+          .toList());
+    return cloudSongListWrap.data ?? [];
   }
 
   // querySong() async {
@@ -74,6 +92,18 @@ class IndexController extends GetxController {
 
   queryAlbum() async {}
 
-  play(index) async {
+  playIndex(int index) async {
+    String title = HomeController.to.audioServeHandler.queueTitle.value;
+    if (title.isEmpty || title != queueTitle) {
+      HomeController.to.audioServeHandler.queueTitle.value = queueTitle;
+      HomeController.to.audioServeHandler
+        ..changeQueueLists(mediaItems, index: index)
+        ..playIndex(index);
+
+      print('playIndex==========更新播放列表');
+    } else {
+      HomeController.to.audioServeHandler.playIndex(index);
+      print('playIndex==========不更新播放列表');
+    }
   }
 }

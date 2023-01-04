@@ -44,18 +44,7 @@ class UserView extends GetView<UserController> {
                       }
                       AutoRouter.of(context).pushNamed(Routes.login);
                     },
-                    icon: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(60.w),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Theme.of(context).primaryColor.withOpacity(.9),
-                              blurRadius: 6.0,
-                              offset: const Offset(0.0, 0.0),
-                            ),
-                          ]
-                        ),
-                        child: SimpleExtendedImage.avatar('${controller.loginStatus.value ? controller.userData.value.profile?.avatarUrl : ''}'))),
+                    icon: SimpleExtendedImage.avatar('${controller.loginStatus.value ? controller.userData.value.profile?.avatarUrl : ''}', width: 85.w)),
               ),
               title: Obx(
                 () => InkWell(
@@ -216,9 +205,7 @@ class UserView extends GetView<UserController> {
           ],
         ),
       ),
-      onTap: () => context.router.push(const PlayList().copyWith(args: play)).then((value) {
-
-      }),
+      onTap: () => context.router.push(const PlayListView().copyWith(args: play)).then((value) {}),
     );
     // return ListTile(
     //   dense: true,

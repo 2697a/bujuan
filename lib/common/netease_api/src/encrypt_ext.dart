@@ -14,16 +14,18 @@ class NoPaddingEncoding extends PKCS1Encoding {
   @override
   void init(bool forEncryption, CipherParameters params) {
     super.init(forEncryption, params);
-    this._forEncryption = forEncryption;
+    _forEncryption = forEncryption;
     if (params is AsymmetricKeyParameter<RSAAsymmetricKey>) {
-      this._keyLength = (params.key.modulus?.bitLength ?? 0 + 7) ~/ 8;
+      _keyLength = (params.key.modulus?.bitLength ?? 0 + 7) ~/ 8;
     }
   }
 
+  @override
   int get inputBlockSize {
     return _keyLength;
   }
 
+  @override
   int get outputBlockSize {
     return _keyLength;
   }
@@ -41,10 +43,10 @@ class NoPaddingEncoding extends PKCS1Encoding {
   int _encodeBlock(
       Uint8List inp, int inpOff, int inpLen, Uint8List out, int outOff) {
     if (inpLen > inputBlockSize) {
-      throw new ArgumentError("Input data too large");
+      throw ArgumentError("Input data too large");
     }
 
-    var block = new Uint8List(inputBlockSize);
+    var block = Uint8List(inputBlockSize);
     var padLength = (block.length - inpLen);
 
     block.fillRange(0, padLength, 0x00);
@@ -56,12 +58,12 @@ class NoPaddingEncoding extends PKCS1Encoding {
 
   int _decodeBlock(
       Uint8List inp, int inpOff, int inpLen, Uint8List out, int outOff) {
-    var block = new Uint8List(outputBlockSize);
+    var block = Uint8List(outputBlockSize);
     var len = _engine.processBlock(inp, inpOff, inpLen, block, 0);
     block = block.sublist(0, len);
 
     if (block.length < outputBlockSize) {
-      throw new ArgumentError("Block truncated");
+      throw ArgumentError("Block truncated");
     }
 
     return block.length;
@@ -82,7 +84,7 @@ abstract class AbstractRSAExt {
   AbstractRSAExt({
     required this.publicKey,
     required this.privateKey,
-  }) : this._cipher = NoPaddingEncoding(RSAEngine());
+  }) : _cipher = NoPaddingEncoding(RSAEngine());
 }
 
 class RSAExt extends AbstractRSAExt implements Algorithm {
