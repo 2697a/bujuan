@@ -369,6 +369,8 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
     return true;
   }
 
+
+  //播放歌曲根据下标
   playByIndex(int index, String queueTitle, {List<MediaItem>? mediaItem}) async {
     String title = audioServeHandler.queueTitle.value;
     if (title.isEmpty || title != queueTitle) {

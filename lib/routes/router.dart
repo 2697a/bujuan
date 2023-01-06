@@ -8,6 +8,7 @@ import 'package:bujuan/pages/talk/talk_view.dart';
 import 'package:bujuan/pages/today/today_view.dart';
 import 'package:bujuan/pages/user/user_view.dart';
 
+import '../pages/artists/artists_view.dart';
 import '../pages/home/body/body/view.dart';
 import '../pages/login/login.dart';
 import '../pages/play_list/playlist_view.dart';
@@ -29,6 +30,7 @@ abstract class Routes {
   static const talk = _Paths.talk;
   static const today = _Paths.today;
   static const cloud = _Paths.cloud;
+  static const artists = _Paths.artists;
 }
 
 abstract class _Paths {
@@ -46,6 +48,7 @@ abstract class _Paths {
   static const talk = '/talk';
   static const today = 'today';
   static const cloud = 'cloud';
+  static const artists = 'artists';
 }
 
 @MaterialAutoRouter(
@@ -58,6 +61,7 @@ abstract class _Paths {
       AutoRoute(path: Routes.index, page: MainView),
       AutoRoute(path: Routes.today, page: TodayView),
       AutoRoute(path: Routes.search, page: SearchView),
+      AutoRoute(path: Routes.artists, page: ArtistsView),
     ]),
     AutoRoute(path: Routes.splash, page: SplashPage, initial: true, deferredLoading: true),
     AutoRoute(path: Routes.login, page: LoginView),

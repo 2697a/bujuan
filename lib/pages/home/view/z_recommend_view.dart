@@ -1,12 +1,13 @@
 import 'dart:convert';
 
-import 'package:audio_service/audio_service.dart';
 import 'package:auto_route/auto_route.dart';
+import 'package:bujuan/common/constants/other.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/widget/simple_extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:bujuan/routes/router.gr.dart';
 import 'package:get/get.dart';
 
 import '../../../common/netease_api/src/api/play/bean.dart';
@@ -34,7 +35,7 @@ class RecommendView extends GetView<HomeController> {
                   textAlign: TextAlign.left,
                 )),
           ),
-          _buildAirList(),
+          _buildArtistsList(),
           Container(
             alignment: Alignment.centerLeft,
             padding: EdgeInsets.only(top: 10.w, bottom: 20.w),
@@ -60,27 +61,35 @@ class RecommendView extends GetView<HomeController> {
     );
   }
 
-  Widget _buildAirList() {
+  Widget _buildArtistsList() {
     return Obx(() {
       var artists = controller.mediaItem.value.extras!['artist']?.split(' / ').map((e) => Artists.fromJson(jsonDecode(e))).toList() ?? [];
       return ListView.builder(
-        itemBuilder: (context, index) => Container(
-          padding: EdgeInsets.symmetric(vertical: 20.w),
-          child: Obx(() => Row(
-                children: [
-                  Expanded(
-                      child: Text(
-                    artists[index].name ?? '',
-                    maxLines: 1,
-                    style: TextStyle(fontSize: 30.sp, color: controller.rx.value.main?.bodyTextColor),
-                  )),
-                  Icon(
-                    TablerIcons.chevron_right,
-                    color: controller.rx.value.main?.bodyTextColor.withOpacity(.4),
-                    size: 38.sp,
-                  ),
-                ],
-              )),
+        itemBuilder: (context, index) => InkWell(
+          child: Container(
+            padding: EdgeInsets.symmetric(vertical: 20.w),
+            child: Obx(() => Row(
+              children: [
+                Expanded(
+                    child: Text(
+                      artists[index].name ?? '',
+                      maxLines: 1,
+                      style: TextStyle(fontSize: 30.sp, color: controller.rx.value.main?.bodyTextColor),
+                    )),
+                Icon(
+                  TablerIcons.chevron_right,
+                  color: controller.rx.value.main?.bodyTextColor.withOpacity(.4),
+                  size: 38.sp,
+                ),
+              ],
+            )),
+          ),
+          onTap: () {
+            controller.panelController.close();
+            controller.panelControllerHome.close().then((value) {
+              context.router.push(const ArtistsView().copyWith(args: artists[index]));
+            });
+          },
         ),
         itemCount: artists.length,
         shrinkWrap: true,
@@ -89,6 +98,7 @@ class RecommendView extends GetView<HomeController> {
       );
     });
   }
+
 
   Widget _buildAlbum() {
     return Padding(

@@ -920,6 +920,7 @@ class Artists {
 
   String? picUrl;
 
+
   int? img1v1Id;
   String? img1v1Url;
   String? cover;

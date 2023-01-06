@@ -16,7 +16,6 @@ import 'netease_api/src/netease_api.dart';
 class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler implements AudioPlayerHandler {
   final _player = GetIt.instance<AudioPlayer>();
   AudioServiceRepeatMode _audioServiceRepeatMode = AudioServiceRepeatMode.all;
-  AudioServiceShuffleMode _audioServiceShuffleMode = AudioServiceShuffleMode.none;
   final _playList = <MediaItem>[];
   final _playListShut = <MediaItem>[];
   int _curIndex = 0; // 播放列表索引
@@ -132,11 +131,6 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
     });
   }
 
-  void _listenPlayEnd() {
-    _player.onSeekComplete.listen((event) {
-      _player.resume();
-    });
-  }
 
   @override
   Future<void> removeQueueItem(MediaItem mediaItem) async {}

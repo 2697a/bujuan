@@ -1,12 +1,10 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:bujuan/common/constants/icon.dart';
 import 'package:bujuan/common/netease_api/netease_music_api.dart';
 import 'package:bujuan/pages/user/user_controller.dart';
 import 'package:bujuan/routes/router.gr.dart';
 import 'package:bujuan/widget/simple_extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:lottie/lottie.dart';
@@ -19,75 +17,66 @@ class UserView extends GetView<UserController> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.topRight,
-      children: [
-        SafeArea(
-            child: Padding(
-          padding: EdgeInsets.only(right: 30.w),
-          child: SvgPicture.asset(
-            AppIcons.meTop,
-            width: Get.width / 1.9,
-          ),
-        )),
-        Scaffold(
-          backgroundColor: Colors.transparent,
-          appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            centerTitle: false,
-            leadingWidth: 110.w,
-            leading: Padding(
-              padding: EdgeInsets.only(left: 20.w),
-              child: IconButton(
-                  padding: EdgeInsets.all(0.1.w),
-                  onPressed: () {
-                    if (controller.loginStatus.value) {
-                      HomeController.to.myDrawerController.open!();
-                      return;
-                    }
-                    AutoRouter.of(context).pushNamed(Routes.login);
-                  },
-                  icon: Lottie.asset(
-                    'assets/lottie/personal_character.json',
-                    width: 90.w,
-                  )),
-            ),
-            title: Obx(
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        centerTitle: false,
+        leadingWidth: 110.w,
+        leading: Padding(
+          padding: EdgeInsets.only(left: 20.w),
+          child: IconButton(
+              padding: EdgeInsets.all(0.1.w),
+              onPressed: () {
+                if (controller.loginStatus.value) {
+                  HomeController.to.myDrawerController.open!();
+                  return;
+                }
+                AutoRouter.of(context).pushNamed(Routes.login);
+              },
+              icon: Obx(() => AnimatedScale(
+                scale: 1+(controller.op.value*.06),
+                duration: const Duration(milliseconds: 120),
+                child: Lottie.asset(
+                  'assets/lottie/personal_character.json',
+                  width: 85.w,
+                ),
+              ))),
+        ),
+        title: Obx(
               () => InkWell(
-                child: AnimatedOpacity(
-                  opacity: controller.op.value,
-                  duration: const Duration(milliseconds: 100),
-                  child: RichText(
-                      text: TextSpan(style: TextStyle(fontSize: 42.sp, color: Colors.grey, fontWeight: FontWeight.bold), text: 'Hi  ', children: [
+            child: AnimatedOpacity(
+              opacity: controller.op.value,
+              duration: const Duration(milliseconds: 100),
+              child: RichText(
+                  text: TextSpan(style: TextStyle(fontSize: 42.sp, color: Colors.grey, fontWeight: FontWeight.bold), text: 'Hi  ', children: [
                     TextSpan(
                         text: '${controller.loginStatus.value ? controller.userData.value.profile?.nickname : '请登录'}～',
                         style: TextStyle(color: Theme.of(context).primaryColor.withOpacity(.9))),
                   ])),
-                ),
-                onTap: () {
-                  if (!controller.loginStatus.value) {
-                    AutoRouter.of(context).pushNamed(Routes.login);
-                  }
-                },
-              ),
             ),
-            actions: [IconButton(onPressed: () {
-              AutoRouter.of(context).pushNamed(Routes.search);
-            }, icon: const Icon(TablerIcons.search))],
+            onTap: () {
+              if (!controller.loginStatus.value) {
+                AutoRouter.of(context).pushNamed(Routes.login);
+              }
+            },
           ),
-          body: SingleChildScrollView(
-            controller: controller.userScrollController,
-            physics: const BouncingScrollPhysics(),
-            child: Column(
-              children: [
-                _buildMeInfo(context),
-                Padding(padding: EdgeInsets.symmetric(vertical: 8.w)),
-                _buildSheet(context),
-              ],
-            ),
-          ),
-        )
-      ],
+        ),
+        actions: [IconButton(onPressed: () {
+          AutoRouter.of(context).pushNamed(Routes.search);
+        }, icon: const Icon(TablerIcons.search))],
+      ),
+      body: SingleChildScrollView(
+        controller: controller.userScrollController,
+        physics: const BouncingScrollPhysics(),
+        child: Column(
+          children: [
+            _buildMeInfo(context),
+            Padding(padding: EdgeInsets.symmetric(vertical: 8.w)),
+            _buildSheet(context),
+          ],
+        ),
+      ),
     );
   }
 
@@ -100,7 +89,7 @@ class UserView extends GetView<UserController> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: EdgeInsets.symmetric(vertical: 20.w),
+                  padding: EdgeInsets.symmetric(vertical: 20.w,horizontal: 5.w),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: controller.userItems
@@ -303,7 +292,7 @@ class UserView extends GetView<UserController> {
           ],
         ),
       ),
-      onTap: () => context.router.push(const PlayListView().copyWith(args: play)).then((value) {}),
+      onTap: () => context.router.push(const PlayListView().copyWith(args: play)),
     );
   }
 }

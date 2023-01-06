@@ -318,13 +318,15 @@ class PanelView extends GetView<HomeController> {
   }
 
   Widget _buildBottom(bottomHeight) {
-    return Obx(() => Column(
+    return Obx(() => Stack(
+      alignment: Alignment.topCenter,
       children: [
-        Container(width: 70.w,height: 6.w,margin: EdgeInsets.only(top: 12.w),decoration: BoxDecoration(
+        Container(width: 70.w,height: 8.w,margin: EdgeInsets.only(top: 12.w),decoration: BoxDecoration(
             color: controller.rx.value.main?.bodyTextColor.withOpacity(.5),
-            borderRadius: BorderRadius.circular(3.w)
+            borderRadius: BorderRadius.circular(4.w)
         ),),
         FlashyNavbar(
+          height: 110.h,
           selectedIndex: controller.selectIndex.value,
           items: [
             FlashyNavbarItem(icon: const Icon(TablerIcons.atom_2)),

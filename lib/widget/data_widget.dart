@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 
 typedef RequestChildBuilder<T> = Widget Function(T data);
 
@@ -59,19 +60,16 @@ class LoadingView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  SizedBox(
+    return SizedBox(
       width: Get.width,
+      height: Get.height,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SvgPicture.asset(AppIcons.loading,width: Get.width/2.9,),
-          Padding(padding: EdgeInsets.symmetric(vertical: 15.w)),
-          TypeWriterText(
-            text: Text('拼命加载中...',style: TextStyle(fontSize: 28.sp),),
-            duration: const Duration(milliseconds: 120),
-            repeat: true,
-          )
+          // SvgPicture.asset(AppIcons.loading,width: Get.width/2.9,),
+          Lottie.asset('assets/lottie/vr_animation.json', height: Get.width / 2, fit: BoxFit.fitHeight),
+          Text('拼命加载中...', style: TextStyle(fontSize: 32.sp)),
         ],
       ),
     );

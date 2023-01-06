@@ -60,7 +60,7 @@ Future<void> _initAudioServer() async {
   // 工具初始
   await StorageUtil.init();
   // _startServer();
-  await NeteaseMusicApi.init(debug: false);
+  await NeteaseMusicApi.init(debug: true);
   getIt.registerSingleton<BujuanAudioHandler>(await AudioService.init<BujuanAudioHandler>(
     builder: () => BujuanAudioHandler(),
     config: const AudioServiceConfig(

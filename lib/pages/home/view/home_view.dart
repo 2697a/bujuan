@@ -115,13 +115,13 @@ class HomeView extends GetView<HomeController> {
                 child: AnimatedScale(
                   scale: 1 + (controller.slidePosition.value / (controller.playing.value ? 5.5 : 7.2)),
                   duration: const Duration(milliseconds: 120),
-                  child: SimpleExtendedImage(
+                  child: Opacity(opacity: .85,child: SimpleExtendedImage(
                     '${controller.mediaItem.value.extras?['image']}?param=500y500',
                     fit: BoxFit.cover,
                     height: controller.getImageSize(),
                     width: controller.getImageSize(),
                     borderRadius: BorderRadius.circular(controller.getImageSize() / 2 * (1 - (controller.slidePosition.value >= .8 ? .92 : controller.slidePosition.value))),
-                  ),
+                  ),),
                 ),
               ),
               AnimatedOpacity(
