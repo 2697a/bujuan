@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../../common/constants/other.dart';
-import '../../../common/test_audio_handler.dart';
+import '../../../common/bujuan_audio_handler.dart';
 import '../../../widget/weslide/weslide_controller.dart';
 
 class BodyModel extends ChangeNotifier{
@@ -15,7 +15,7 @@ class BodyModel extends ChangeNotifier{
 
   WeSlideController weSlideController = WeSlideController();
 
-  final TextAudioHandler audioServeHandler = GetIt.instance<TextAudioHandler>();
+  final BujuanAudioHandler audioServeHandler = GetIt.instance<BujuanAudioHandler>();
 
   //当前播放歌曲
   MediaItem mediaItem = const MediaItem(id: '', title: '暂无', duration: Duration(seconds: 10));

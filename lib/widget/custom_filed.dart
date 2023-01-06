@@ -31,7 +31,7 @@ class _CustomFiledState extends State<CustomFiled> {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 15.w),
       margin: EdgeInsets.symmetric(vertical: 35.w),
-      decoration: BoxDecoration(color: Theme.of(context).bottomAppBarColor, borderRadius: BorderRadius.circular(30.w)),
+      decoration: BoxDecoration(color: Theme.of(context).bottomAppBarColor.withOpacity(.6), borderRadius: BorderRadius.circular(50.w)),
       child: Row(
         children: [
           Icon(

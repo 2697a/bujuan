@@ -11,13 +11,9 @@ class ImageUtils {
   // static ImageStreamListener? _imageStreamListener;
   // static ImageStream? _imageStream;
 
-  static getImageColor(String url, ImageColorCallBack imageCallBack) {
+  static Future<PaletteColorData> getImageColor(String url) async {
     CachedNetworkImageProvider imageProvider = CachedNetworkImageProvider(url);
-    getImageColorByProvider(imageProvider).then((value) {
-      imageCallBack.call(value);
-    });
-
-
+    return await getImageColorByProvider(imageProvider);
 
     // _imageStream = imageProvider.resolve(ImageConfiguration.empty);
     // _imageStreamListener = ImageStreamListener((ImageInfo image, bool synchronousCall) async {
@@ -61,8 +57,10 @@ class ImageUtils {
     PaletteColorData paletteColorData = PaletteColorData();
     final PaletteGenerator paletteGenerator = await PaletteGenerator.fromImageProvider(imageProvider, size: Size(150.w, 150.w));
     paletteColorData.light = paletteGenerator.lightMutedColor ?? paletteGenerator.lightVibrantColor;
-    paletteColorData.dark = paletteGenerator.darkMutedColor ?? paletteGenerator.darkVibrantColor;
     paletteColorData.main = paletteGenerator.dominantColor ?? paletteGenerator.mutedColor;
+    paletteColorData.light1 = paletteGenerator.lightVibrantColor ?? paletteGenerator.lightMutedColor;
+    paletteColorData.main1 = paletteGenerator.mutedColor ?? paletteGenerator.dominantColor;
+    paletteColorData.dark = paletteGenerator.darkMutedColor ?? paletteGenerator.darkVibrantColor;
     if (paletteColorData.light == null && paletteColorData.dark != null) {
       paletteColorData.light = paletteColorData.dark;
     }
@@ -100,10 +98,12 @@ class ImageUtils {
 
 class PaletteColorData {
   PaletteColor? light;
+  PaletteColor? light1;
   PaletteColor? dark;
   PaletteColor? main;
+  PaletteColor? main1;
 
-  PaletteColorData({this.light, this.dark, this.main});
+  PaletteColorData({this.light, this.dark, this.main, this.light1, this.main1});
 }
 
 class WidgetUtil {

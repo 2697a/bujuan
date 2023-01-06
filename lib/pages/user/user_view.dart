@@ -9,6 +9,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:lottie/lottie.dart';
 import 'package:sticky_headers/sticky_headers.dart';
 import '../../routes/router.dart';
 import '../home/home_controller.dart';
@@ -18,110 +19,149 @@ class UserView extends GetView<UserController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        alignment: Alignment.topRight,
-        children: [
-          SafeArea(
-              child: Padding(
-            padding: EdgeInsets.only(right: 30.w),
-            child: SvgPicture.asset(
-              AppIcons.meTop,
-              width: Get.width / 1.9,
-            ),
-          )),
-          Scaffold(
+    return Stack(
+      alignment: Alignment.topRight,
+      children: [
+        SafeArea(
+            child: Padding(
+          padding: EdgeInsets.only(right: 30.w),
+          child: SvgPicture.asset(
+            AppIcons.meTop,
+            width: Get.width / 1.9,
+          ),
+        )),
+        Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
             backgroundColor: Colors.transparent,
-            appBar: AppBar(
-              backgroundColor: Colors.transparent,
-              centerTitle: false,
-              leading: Obx(
-                () => IconButton(
-                    onPressed: () {
-                      if (controller.loginStatus.value) {
-                        HomeController.to.myDrawerController.open!();
-                        return;
-                      }
-                      AutoRouter.of(context).pushNamed(Routes.login);
-                    },
-                    icon: SimpleExtendedImage.avatar('${controller.loginStatus.value ? controller.userData.value.profile?.avatarUrl : ''}', width: 85.w)),
-              ),
-              title: Obx(
-                () => InkWell(
-                  child: AnimatedOpacity(
-                    opacity: controller.op.value,
-                    duration: const Duration(milliseconds: 100),
-                    child: RichText(
-                        text: TextSpan(style: TextStyle(fontSize: 42.sp, color: Colors.grey, fontWeight: FontWeight.bold), text: 'Hi  ', children: [
-                      TextSpan(
-                          text: '${controller.loginStatus.value ? controller.userData.value.profile?.nickname : '请登录'}～',
-                          style: TextStyle(color: Theme.of(context).primaryColor.withOpacity(.9))),
-                    ])),
-                  ),
-                  onTap: () {
-                    if (!controller.loginStatus.value) {
-                      AutoRouter.of(context).pushNamed(Routes.login);
+            centerTitle: false,
+            leadingWidth: 110.w,
+            leading: Padding(
+              padding: EdgeInsets.only(left: 20.w),
+              child: IconButton(
+                  padding: EdgeInsets.all(0.1.w),
+                  onPressed: () {
+                    if (controller.loginStatus.value) {
+                      HomeController.to.myDrawerController.open!();
+                      return;
                     }
+                    AutoRouter.of(context).pushNamed(Routes.login);
                   },
+                  icon: Lottie.asset(
+                    'assets/lottie/personal_character.json',
+                    width: 90.w,
+                  )),
+            ),
+            title: Obx(
+              () => InkWell(
+                child: AnimatedOpacity(
+                  opacity: controller.op.value,
+                  duration: const Duration(milliseconds: 100),
+                  child: RichText(
+                      text: TextSpan(style: TextStyle(fontSize: 42.sp, color: Colors.grey, fontWeight: FontWeight.bold), text: 'Hi  ', children: [
+                    TextSpan(
+                        text: '${controller.loginStatus.value ? controller.userData.value.profile?.nickname : '请登录'}～',
+                        style: TextStyle(color: Theme.of(context).primaryColor.withOpacity(.9))),
+                  ])),
                 ),
-              ),
-              actions: [IconButton(onPressed: () {}, icon: const Icon(TablerIcons.search))],
-            ),
-            body: SingleChildScrollView(
-              controller: controller.userScrollController,
-              physics: const BouncingScrollPhysics(),
-              child: Column(
-                children: [
-                  _buildMeInfo(context),
-                  _buildSheet(context),
-                ],
+                onTap: () {
+                  if (!controller.loginStatus.value) {
+                    AutoRouter.of(context).pushNamed(Routes.login);
+                  }
+                },
               ),
             ),
-          )
-        ],
-      ),
+            actions: [IconButton(onPressed: () {
+              AutoRouter.of(context).pushNamed(Routes.search);
+            }, icon: const Icon(TablerIcons.search))],
+          ),
+          body: SingleChildScrollView(
+            controller: controller.userScrollController,
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+              children: [
+                _buildMeInfo(context),
+                Padding(padding: EdgeInsets.symmetric(vertical: 8.w)),
+                _buildSheet(context),
+              ],
+            ),
+          ),
+        )
+      ],
     );
   }
 
   Widget _buildSheet(context) {
     return Obx(() => Visibility(
           visible: controller.loginStatus.value,
-          child: Column(
-            children: [
-              StickyHeader(
-                header: _buildHeader('创建的歌单', context),
-                content: Obx(() => ListView.builder(
-                      shrinkWrap: true,
-                      itemExtent: 120.w,
-                      padding: EdgeInsets.symmetric(horizontal: 20.w),
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: (c, i) =>
-                          _buildItem((controller.playlist.where((element) => element.creator?.userId == controller.userData.value.profile?.userId)).toList()[i], c),
-                      itemCount: (controller.playlist.where((element) => element.creator?.userId == controller.userData.value.profile?.userId)).length,
-                    )),
-              ),
-              StickyHeader(
-                header: _buildHeader('收藏的歌单', context),
-                content: Obx(() => ListView.builder(
-                      shrinkWrap: true,
-                      itemExtent: 120.w,
-                      padding: EdgeInsets.symmetric(horizontal: 20.w),
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: (c, i) =>
-                          _buildItem((controller.playlist.where((element) => element.creator?.userId != controller.userData.value.profile?.userId)).toList()[i], c),
-                      itemCount: (controller.playlist.where((element) => element.creator?.userId != controller.userData.value.profile?.userId)).length,
-                    )),
-              ),
-            ],
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 15.w),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 20.w),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: controller.userItems
+                        .map((e) => Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                IconButton(
+                                  onPressed: () {
+                                    if (!controller.loginStatus.value) {
+                                      return;
+                                    }
+                                    AutoRouter.of(context).pushNamed(e.routes ?? '');
+                                  },
+                                  icon: Icon(e.iconData),
+                                  iconSize: 52.w,
+                                ),
+                                Text(
+                                  e.title,
+                                  style: TextStyle(fontSize: 26.sp),
+                                )
+                              ],
+                            ))
+                        .toList(),
+                  ),
+                ),
+                StickyHeader(
+                  header: _buildHeader('创建的歌单', context),
+                  content: Obx(() => SizedBox(
+                        height: (750.w - 120.w) / 3,
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (c, i) =>
+                              _buildItem((controller.playlist.where((element) => element.creator?.userId == controller.userData.value.profile?.userId)).toList()[i], c),
+                          itemCount: (controller.playlist.where((element) => element.creator?.userId == controller.userData.value.profile?.userId)).length,
+                        ),
+                      )),
+                ),
+                StickyHeader(
+                  header: _buildHeader('收藏的歌单', context),
+                  content: Obx(() => ListView.builder(
+                        shrinkWrap: true,
+                        itemExtent: 120.w,
+                        padding: EdgeInsets.symmetric(horizontal: 20.w),
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemBuilder: (c, i) =>
+                            _buildItem1((controller.playlist.where((element) => element.creator?.userId != controller.userData.value.profile?.userId)).toList()[i], c),
+                        itemCount: (controller.playlist.where((element) => element.creator?.userId != controller.userData.value.profile?.userId)).length,
+                      )),
+                ),
+              ],
+            ),
           ),
         ));
   }
 
   Widget _buildHeader(String title, context) {
     return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(colors: controller.colors.map((e) => Theme.of(context).scaffoldBackgroundColor.withOpacity(e)).toList()),
-      ),
+      // decoration: BoxDecoration(
+      //   gradient: LinearGradient(colors: controller.colors.map((e) => Theme.of(context).scaffoldBackgroundColor.withOpacity(e)).toList()),
+      // ),
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 30.w),
       alignment: Alignment.centerLeft,
       child: Row(
@@ -173,6 +213,63 @@ class UserView extends GetView<UserController> {
 
   Widget _buildItem(Play play, BuildContext context) {
     return InkWell(
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 18.w),
+        height: (750.w - 120.w) / 3,
+        child: Stack(
+          alignment: Alignment.bottomLeft,
+          children: [
+            SimpleExtendedImage(
+              '${play.coverImgUrl ?? ''}?param=400y400',
+              width: (750.w - 120.w) / 3,
+              height: (750.w - 120.w) / 3,
+              borderRadius: BorderRadius.circular(25.w),
+            ),
+            Container(
+              height: 90.w,
+              width: (750.w - 120.w) / 3,
+              color: Theme.of(context).bottomAppBarColor.withOpacity(.8),
+              padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 6.w),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    play.name ?? '',
+                    maxLines: 1,
+                    style: TextStyle(fontSize: 26.sp),
+                  ),
+                  // Padding(padding: EdgeInsets.symmetric(vertical: 2.w)),
+                  Text(
+                    '${play.trackCount ?? 0} 首',
+                    style: TextStyle(fontSize: 22.sp, color: Colors.grey),
+                  )
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
+      onTap: () => context.router.push(const PlayListView().copyWith(args: play)).then((value) {}),
+    );
+    // return ListTile(
+    //   dense: true,
+    //   contentPadding: EdgeInsets.symmetric(horizontal: 20.w),
+    //   leading: SimpleExtendedImage(
+    //     '${play.coverImgUrl ?? ''}?param=200y200',
+    //     width: 80.w,
+    //     height: 80.w,
+    //   ),
+    //   title: Text(play.name ?? ''),
+    //   subtitle: Text('${play.trackCount ?? 0} 首'),
+    //   onTap: () {
+    //     context.router.push(const PlayList().copyWith(args: play));
+    //   },
+    // );
+  }
+
+  Widget _buildItem1(Play play, BuildContext context) {
+    return InkWell(
       child: SizedBox(
         height: 120.w,
         child: Row(
@@ -181,6 +278,7 @@ class UserView extends GetView<UserController> {
               '${play.coverImgUrl ?? ''}?param=200y200',
               width: 85.w,
               height: 85.w,
+              borderRadius: BorderRadius.circular(16.w),
             ),
             Expanded(
                 child: Padding(
@@ -207,19 +305,13 @@ class UserView extends GetView<UserController> {
       ),
       onTap: () => context.router.push(const PlayListView().copyWith(args: play)).then((value) {}),
     );
-    // return ListTile(
-    //   dense: true,
-    //   contentPadding: EdgeInsets.symmetric(horizontal: 20.w),
-    //   leading: SimpleExtendedImage(
-    //     '${play.coverImgUrl ?? ''}?param=200y200',
-    //     width: 80.w,
-    //     height: 80.w,
-    //   ),
-    //   title: Text(play.name ?? ''),
-    //   subtitle: Text('${play.trackCount ?? 0} 首'),
-    //   onTap: () {
-    //     context.router.push(const PlayList().copyWith(args: play));
-    //   },
-    // );
   }
+}
+
+class UserItem {
+  String title;
+  IconData iconData;
+  String? routes;
+
+  UserItem(this.title, this.iconData, {this.routes});
 }

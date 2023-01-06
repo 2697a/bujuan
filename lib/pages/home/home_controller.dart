@@ -1,78 +1,104 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/common/constants/other.dart';
+import 'package:bujuan/common/constants/platform_utils.dart';
 import 'package:bujuan/common/lyric_parser/parser_lrc.dart';
 import 'package:bujuan/common/netease_api/netease_music_api.dart';
-import 'package:bujuan/pages/home/view/panel_view.dart';
-import 'package:bujuan/widget/weslide/weslide_controller.dart';
-import 'package:carousel_slider/carousel_controller.dart';
+import 'package:bujuan/pages/home/view/z_comment_view.dart';
+import 'package:bujuan/pages/home/view/z_lyric_view.dart';
+import 'package:bujuan/pages/home/view/z_playlist_view.dart';
+import 'package:bujuan/pages/home/view/z_recommend_view.dart';
+import 'package:bujuan/pages/user/user_controller.dart';
+import 'package:bujuan/widget/weslide/panel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_zoom_drawer/config.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
+import 'package:preload_page_view/preload_page_view.dart';
 
-import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:tuna_flutter_range_slider/tuna_flutter_range_slider.dart';
 
 import '../../common/lyric_parser/lyrics_reader_model.dart';
-import '../../common/test_audio_handler.dart';
+import '../../common/netease_api/src/api/bean.dart';
+import '../../common/bujuan_audio_handler.dart';
 import '../../routes/router.dart';
+import '../../widget/mobile/flashy_navbar.dart';
 import 'view/home_view.dart';
 
 class HomeController extends SuperController with GetSingleTickerProviderStateMixin {
-  final String weSlideUpdate = 'weSlide';
   double panelHeaderSize = 90.h;
-  double secondPanelHeaderSize = 120.w;
   double panelMobileMinSize = 90.h;
-  double topBarHeight = 110.h;
   final List<LeftMenu> leftMenus = [
     LeftMenu('个人中心', TablerIcons.user, Routes.user, '/home/user'),
     LeftMenu('推荐歌单', TablerIcons.smart_home, Routes.index, '/home/index'),
-    LeftMenu('个人云盘', TablerIcons.cloud, Routes.search, '/home/search'),
+    // LeftMenu('个人云盘', TablerIcons.cloud, Routes.search, '/home/search'),
   ];
 
-  final List<BottomItem> bottomItems = [
-    BottomItem(TablerIcons.playlist, 0),
-    BottomItem(TablerIcons.quote, 1),
+  RxList<FlashyNavbarItem> bottomItems = <FlashyNavbarItem>[].obs;
+  List<Widget> pages = [
+    const RecommendView(),
+    const PlayListView(),
+    const LyricView(),
+    const CommentView(),
   ];
 
   RxString currPathUrl = '/home/user'.obs;
 
-  // WeSlideController weSlideController = WeSlideController();
+  //歌词、播放列表PageView的下标
   RxInt selectIndex = 0.obs;
-  RxInt playIndex = 0.obs;
 
+  //歌词、播放列表PageView控制器
+  PreloadPageController pageController = PreloadPageController();
+
+  //第一层滑动高度0-1
   RxDouble slidePosition = 0.0.obs;
+
+  //第二层滑动高度0-1
   RxDouble slidePosition1 = 0.0.obs;
+
+  //专辑颜色数据
   Rx<PaletteColorData> rx = PaletteColorData().obs;
+
+  //是否第二层
   RxBool second = false.obs;
-  PageController pageController = PageController(viewportFraction: .99);
 
-  // PageController? pageController1;
-  CarouselController buttonCarouselController = CarouselController();
-
+  //当前播放歌曲
   Rx<MediaItem> mediaItem = const MediaItem(id: '', title: '暂无', duration: Duration(seconds: 10)).obs;
+
+  //当前播放列表
   RxList<MediaItem> mediaItems = <MediaItem>[].obs;
+
+  //是否播放中
   RxBool playing = false.obs;
 
+  //上下文
   late BuildContext buildContext;
-  final TextAudioHandler audioServeHandler = GetIt.instance<TextAudioHandler>();
-  Rx<Duration> duration = Duration.zero.obs;
-  PanelController panelController = PanelController();
-  PanelController panelControllerHome = PanelController();
-  RxBool isDownSlide = true.obs;
 
+  //播放器handler
+  final BujuanAudioHandler audioServeHandler = GetIt.instance<BujuanAudioHandler>();
+
+  //当前播放进度
+  Rx<Duration> duration = Duration.zero.obs;
+
+  //第一层
+  PanelController panelControllerHome = PanelController();
+
+  //第二层
+  PanelController panelController = PanelController();
+
+  //循环方式
   Rx<AudioServiceRepeatMode> audioServiceRepeatMode = AudioServiceRepeatMode.all.obs;
   Rx<AudioServiceShuffleMode> audioServiceShuffleMode = AudioServiceShuffleMode.none.obs;
 
+  //进度条数组
   List<Map<dynamic, dynamic>> mEffects = [];
-  AnimationController? animationController;
 
   //歌词滚动控制器
   FixedExtentScrollController lyricScrollController = FixedExtentScrollController();
@@ -83,10 +109,23 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   //侧滑控制器
   ZoomDrawerController myDrawerController = GetIt.instance<ZoomDrawerController>();
 
+  //解析后的歌词数组
   List<LyricsLineModel> lyricsLineModels = <LyricsLineModel>[].obs;
-  List<LyricsLineModel> lyricsLineModelsTran = <LyricsLineModel>[].obs;
+
+  //是否有翻译歌词
+  RxBool hasTran = false.obs;
+
+  //歌词是否被用户滚动中
   RxBool onMove = false.obs;
+
+  //当前歌词下标
   int lastIndex = 0;
+
+  //相似歌单
+  RxList<Play> simiSongs = <Play>[].obs;
+
+  //歌曲评论
+  RxList<CommentItem> comments = <CommentItem>[].obs;
 
   //路由相关
   AutoRouterDelegate? autoRouterDelegate;
@@ -112,13 +151,9 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   @override
   void onReady() {
     autoRouterDelegate = AutoRouterDelegate.of(buildContext);
-    animationController = AnimationController(vsync: this, duration: const Duration(milliseconds: 100));
-    animationController?.addListener(() {
-      slidePosition1.value = animationController?.value ?? 0;
-    });
     var rng = Random();
     for (double i = 0; i < 100; i++) {
-      mEffects.add({"percent": i, "size": 5 + rng.nextInt(30 - 5).toDouble()});
+      mEffects.add({"percent": i, "size": 3 + rng.nextInt(30 - 5).toDouble()});
     }
     audioServeHandler.setRepeatMode(audioServiceRepeatMode.value);
     audioServeHandler.queue.listen((value) => mediaItems
@@ -127,36 +162,11 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
     audioServeHandler.mediaItem.listen((value) async {
       if (value == null) return;
       mediaItem.value = value;
-      ImageUtils.getImageColor('${mediaItem.value.extras?['image'] ?? ''}?param=150y150', (paletteColorData) => rx.value = paletteColorData);
-      int index = mediaItems.indexWhere((element) => element.id == value.id);
-      if (index != -1) {
-        playIndex.value = index;
-        !second.value && slidePosition.value == 0
-            ? buttonCarouselController.jumpToPage(index)
-            : buttonCarouselController.animateToPage(index, duration: const Duration(milliseconds: 300), curve: Curves.linear);
-      }
-      //获取歌词
-      SongLyricWrap songLyricWrap = await NeteaseMusicApi().songLyric(value.id);
-      String lyric = songLyricWrap.lrc.lyric ?? "";
-      String lyricTran = songLyricWrap.tlyric.lyric ?? "";
-      // lyricsLineModelsTran.clear();
-      // if (lyricTran.isNotEmpty) {
-      //   lyricsLineModelsTran.addAll(ParserLrc(lyricTran).parseLines());
-      // }
-      if (lyric.isNotEmpty) {
-        lyricsLineModels.clear();
-        var list = ParserLrc(lyric).parseLines();
-        if (lyricTran.isNotEmpty) {
-          lyricsLineModels.addAll(list.map((e) {
-            int index = lyricsLineModelsTran.indexWhere((element) => element.startTime == e.startTime);
-            if (index != -1) e.extText = lyricsLineModelsTran[index].mainText;
-            return e;
-          }).toList());
-        } else {
-          lyricsLineModels.addAll(list);
-        }
-      }
-      setPlayListOffset();
+      _getAlbumColor();
+      _getSimiSheet();
+      await _getLyric();
+      _getSongTalk();
+      _setPlayListOffset();
     });
     //监听实时进度变化
     AudioService.position.listen((event) {
@@ -194,6 +204,54 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
     super.onReady();
   }
 
+  //获取歌词
+  _getLyric() async {
+    //获取歌词
+    SongLyricWrap songLyricWrap = await NeteaseMusicApi().songLyric(mediaItem.value.id);
+    String lyric = songLyricWrap.lrc.lyric ?? "";
+    String lyricTran = songLyricWrap.tlyric.lyric ?? "";
+    hasTran.value = false;
+    lyricsLineModels.clear();
+    if (lyric.isNotEmpty) {
+      var list = ParserLrc(lyric).parseLines();
+      var listTran = ParserLrc(lyricTran).parseLines();
+      if (lyricTran.isNotEmpty) {
+        hasTran.value = true;
+        lyricsLineModels.addAll(list.map((e) {
+          int index = listTran.indexWhere((element) => element.startTime == e.startTime);
+          if (index != -1) e.extText = listTran[index].mainText;
+          return e;
+        }).toList());
+      } else {
+        lyricsLineModels.addAll(list);
+      }
+    }
+  }
+
+  //获取专辑颜色
+  _getAlbumColor() async {
+    rx.value = await ImageUtils.getImageColor('${mediaItem.value.extras?['image'] ?? ''}?param=500y500');
+  }
+
+  //获取相似歌单
+  _getSimiSheet() async {
+    //获取相似歌曲
+    MultiPlayListWrap songListWrap = await NeteaseMusicApi().playListSimiList(mediaItem.value.id);
+    simiSongs
+      ..clear()
+      ..addAll(songListWrap.playlists ?? []);
+  }
+
+  //获取歌曲评论
+  _getSongTalk() async {
+    CommentListWrap commentListWrap = await NeteaseMusicApi().commentList(mediaItem.value.id, 'song');
+    if (commentListWrap.code == 200) {
+      comments
+        ..clear()
+        ..addAll(commentListWrap.comments ?? []);
+    }
+  }
+
   listenRouter() {
     currPathUrl.value = autoRouterDelegate?.urlState.url ?? '';
   }
@@ -204,29 +262,17 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   changeRepeatMode() {
     switch (audioServiceRepeatMode.value) {
       case AudioServiceRepeatMode.one:
-        audioServiceRepeatMode.value = AudioServiceRepeatMode.all;
+        audioServiceRepeatMode.value = AudioServiceRepeatMode.none;
         break;
       case AudioServiceRepeatMode.none:
+        audioServiceRepeatMode.value = AudioServiceRepeatMode.all;
+        break;
       case AudioServiceRepeatMode.all:
       case AudioServiceRepeatMode.group:
         audioServiceRepeatMode.value = AudioServiceRepeatMode.one;
         break;
     }
     audioServeHandler.setRepeatMode(audioServiceRepeatMode.value);
-  }
-
-  //改变随机模式
-  changeShuffleMode() {
-    // switch (audioServiceShuffleMode.value) {
-    //   case AudioServiceShuffleMode.none:
-    //     audioServiceShuffleMode.value = AudioServiceShuffleMode.all;
-    //     break;
-    //   case AudioServiceShuffleMode.all:
-    //   case AudioServiceShuffleMode.group:
-    //     audioServiceShuffleMode.value = AudioServiceShuffleMode.none;
-    //     break;
-    // }
-    // audioServeHandler.setShuffleMode(audioServiceShuffleMode.value);
   }
 
   //获取当前循环icon
@@ -237,24 +283,11 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
         icon = TablerIcons.repeat_once;
         break;
       case AudioServiceRepeatMode.none:
+        icon = TablerIcons.arrows_shuffle;
+        break;
       case AudioServiceRepeatMode.all:
       case AudioServiceRepeatMode.group:
         icon = TablerIcons.repeat;
-        break;
-    }
-    return icon;
-  }
-
-  //获取是否随机图标
-  IconData getShuffleIcon() {
-    IconData icon;
-    switch (audioServiceShuffleMode.value) {
-      case AudioServiceShuffleMode.none:
-        icon = TablerIcons.arrows_shuffle;
-        break;
-      case AudioServiceShuffleMode.all:
-      case AudioServiceShuffleMode.group:
-        icon = Icons.shuffle;
         break;
     }
     return icon;
@@ -269,13 +302,48 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
     }
   }
 
+  //喜欢歌曲
+  likeSong({bool? liked}) async {
+    bool isLiked = UserController.to.likeIds.contains(int.parse(mediaItem.value.id));
+    if (liked != null) {
+      isLiked = liked;
+    }
+    ServerStatusBean serverStatusBean = await NeteaseMusicApi().likeSong(mediaItem.value.id, !isLiked);
+    if (serverStatusBean.code == 200) {
+      await audioServeHandler.updateMediaItem(mediaItem.value..extras?['liked'] = !isLiked);
+      if (PlatformUtils.isAndroid) {
+        audioServeHandler.playbackState.add(audioServeHandler.playbackState.value.copyWith(
+          controls: [
+            (mediaItem.value.extras?['liked'] ?? false)
+                ? const MediaControl(label: 'fastForward', action: MediaAction.fastForward, androidIcon: 'drawable/audio_service_like')
+                : const MediaControl(label: 'rewind', action: MediaAction.rewind, androidIcon: 'drawable/audio_service_unlike'),
+            MediaControl.skipToPrevious,
+            if (playing.value) MediaControl.pause else MediaControl.play,
+            MediaControl.skipToNext,
+            MediaControl.stop
+          ],
+          systemActions: {MediaAction.playPause, MediaAction.seek, MediaAction.skipToPrevious, MediaAction.skipToNext},
+          androidCompactActionIndices: [1, 2, 3],
+          processingState: AudioProcessingState.completed,
+        ));
+      }
+      WidgetUtil.showToast(isLiked ? '取消喜欢成功' : '喜欢成功');
+      if (isLiked) {
+        UserController.to.likeIds.remove(int.parse(mediaItem.value.id));
+      } else {
+        UserController.to.likeIds.add(int.parse(mediaItem.value.id));
+      }
+    }
+  }
+
   //改变panel位置
   void changeSlidePosition(value) {
     slidePosition.value = value;
-    setPlayListOffset();
+    _setPlayListOffset();
   }
 
-  Future<void> setPlayListOffset() async {
+  //设置歌词列表偏移量
+  Future<void> _setPlayListOffset() async {
     if (slidePosition.value < 1 && !second.value) return;
     int index = mediaItems.indexWhere((element) => element.id == mediaItem.value.id);
     if (index != -1) {
@@ -301,22 +369,21 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
     return true;
   }
 
-  //动态设置获取Header颜色
-  Color getHeaderColor() {
-    return Theme.of(buildContext).bottomAppBarColor.withOpacity(0);
-  }
-
-  Color getLeftMenuColor() {
-    return Theme.of(buildContext).bottomAppBarColor;
+  playByIndex(int index, String queueTitle, {List<MediaItem>? mediaItem}) async {
+    String title = audioServeHandler.queueTitle.value;
+    if (title.isEmpty || title != queueTitle) {
+      audioServeHandler.queueTitle.value = queueTitle;
+      audioServeHandler
+        ..changeQueueLists(mediaItem ?? [], index: index)
+        ..playIndex(index);
+    } else {
+      audioServeHandler.playIndex(index);
+    }
   }
 
   //获取图片亮色背景下文字显示的颜色
   Color getLightTextColor() {
-    if (slidePosition.value == 0 && second.value) {
-      return Theme.of(buildContext).cardColor.withOpacity(.8);
-    } else {
-      return Theme.of(buildContext).iconTheme.color ?? Colors.transparent;
-    }
+    return Theme.of(buildContext).iconTheme.color?.withOpacity(.8) ?? Colors.transparent;
   }
 
   //获取Header的padding
@@ -324,13 +391,8 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
     return EdgeInsets.only(
       left: 30.w,
       right: 30.w,
-      top: (MediaQuery.of(buildContext).padding.top + 0.h) * (second.value ? (1 - slidePosition.value) : slidePosition.value),
+      top: (MediaQuery.of(buildContext).padding.top + 60.h * (slidePosition.value)) * (second.value ? (1 - slidePosition.value) : slidePosition.value),
     );
-  }
-
-  //获取panel页面顶部的高度
-  double getTopHeight() {
-    return topBarHeight * (slidePosition.value);
   }
 
   getHomeBottomPadding() {
@@ -344,24 +406,12 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
 
   //获取图片的宽高
   double getImageSize() {
-    return (panelHeaderSize * .8) * (1 + slidePosition.value * 5.4);
+    return (panelHeaderSize * .8) * (1 + slidePosition.value * 5.2);
   }
 
   //获取图片离左侧的间距
   double getImageLeft() {
     return ((Get.width - 60.w) - getImageSize()) / 2 * slidePosition.value;
-  }
-
-  //获取歌词和列表Header的高度
-  double getSecondPanelMinSize() {
-    return secondPanelHeaderSize + MediaQuery.of(buildContext).padding.bottom;
-  }
-
-  //当路由发生变化时调用
-  void changeRoute(String? route) {
-    if ((route == '/home/index' || route == '/home/user' || route == '/home/search')) {
-      return;
-    }
   }
 
   List<FlutterSliderHatchMarkLabel> updateEffects(double leftPercent, double rightPercent) {

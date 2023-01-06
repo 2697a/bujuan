@@ -18,12 +18,16 @@ class IndexController extends GetxController {
   // RxList<SongModel> songs = <SongModel>[].obs;
   // RxList<AlbumModel> albums = <AlbumModel>[].obs;
   final List<MediaItem> mediaItems = [];
-  final String queueTitle = Get.routing.current;
   final RxList<PaletteColorData> colors = <PaletteColorData>[].obs;
 
   DioMetaData cloudSongDioMetaData({int offset = 0, int limit = 30}) {
     var params = {'limit': limit, 'offset': offset};
     return DioMetaData(joinUri('/weapi/v1/cloud/get'), data: params, options: joinOptions());
+  }
+
+  DioMetaData personalizedPlaylistDioMetaData({int offset = 0, int limit = 30}) {
+    var params = {'limit': limit, 'offset': offset, 'n': 1000};
+    return DioMetaData(joinUri('/weapi/personalized/playlist'), data: params, options: joinOptions());
   }
 
   // List<Audio> audios = [];
@@ -92,18 +96,4 @@ class IndexController extends GetxController {
 
   queryAlbum() async {}
 
-  playIndex(int index) async {
-    String title = HomeController.to.audioServeHandler.queueTitle.value;
-    if (title.isEmpty || title != queueTitle) {
-      HomeController.to.audioServeHandler.queueTitle.value = queueTitle;
-      HomeController.to.audioServeHandler
-        ..changeQueueLists(mediaItems, index: index)
-        ..playIndex(index);
-
-      print('playIndex==========更新播放列表');
-    } else {
-      HomeController.to.audioServeHandler.playIndex(index);
-      print('playIndex==========不更新播放列表');
-    }
-  }
 }

@@ -31,7 +31,7 @@ class AppTheme {
             surface: surfaceDark,
             onSurface: onSurfaceDark,
           ),
-      cardColor: Color(0xFFFFFFFF),
+      cardColor: const Color(0xFFFFFFFF),
       primaryColor:  const Color(0xffe56260),
       bottomAppBarColor: onSurfaceDark,
       scaffoldBackgroundColor: const Color(0xFF2C2B2B),
@@ -43,13 +43,13 @@ class AppTheme {
 
   //right background
   static const primaryDark = Color(0xFF1c1d1f);
-  static const onPrimaryDark = Colors.white;
+  static const onPrimaryDark = Color(0xF9F1F1F1);
   static const primary = Color(0xFFd7d9d8);
   static const onPrimary = Color(0xFF1c1d1f);
 
   //disabled or inactive background
   static const surfaceDark = Color(0xFF333436);
-  static const onSurfaceDark = Color(0xff1f1f1f);
+  static const onSurfaceDark = Color(0xFF2C2B2B);
   static const surface = Color(0xff787878);
   static const onSurface = Color(0xFFAEAEAE);
 

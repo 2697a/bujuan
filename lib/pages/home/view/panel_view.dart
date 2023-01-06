@@ -1,20 +1,16 @@
-import 'package:audio_service/audio_service.dart';
-import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/pages/user/user_controller.dart';
-import 'package:bujuan/routes/router.gr.dart';
-import 'package:flutter/gestures.dart';
+import 'package:bujuan/widget/mobile/flashy_navbar.dart';
+import 'package:bujuan/widget/weslide/panel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:preload_page_view/preload_page_view.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:tuna_flutter_range_slider/tuna_flutter_range_slider.dart';
 
 import '../../../common/constants/other.dart';
 import '../../../common/constants/platform_utils.dart';
-import '../../../widget/list_wheel/clickable_list_wheel_widget.dart';
 
 class PanelView extends GetView<HomeController> {
   const PanelView({Key? key}) : super(key: key);
@@ -33,7 +29,6 @@ class PanelView extends GetView<HomeController> {
           controller.slidePosition.value = 1 - value;
           if (controller.second.value != value > 0.5) {
             controller.second.value = value > 0.5;
-            controller.isDownSlide.value = !controller.second.value;
           }
         },
         boxShadow: const [
@@ -44,82 +39,119 @@ class PanelView extends GetView<HomeController> {
         ],
         color: Colors.transparent,
         panel: Obx(() => AnimatedContainer(
-              duration: const Duration(milliseconds: 150),
+              duration: const Duration(milliseconds: 300),
               padding: EdgeInsets.only(top: 140.w),
               decoration: BoxDecoration(
                   gradient: LinearGradient(colors: [
                     controller.rx.value.main?.color ?? Colors.transparent,
-                    controller.rx.value.light?.color ?? Colors.transparent,
+                    // controller.rx.value.light?.color ?? Colors.transparent,
+                    Theme.of(context).bottomAppBarColor,
                   ], begin: Alignment.topLeft, end: Alignment.bottomRight),
-                  borderRadius: BorderRadius.only(topLeft: Radius.circular(30.w), topRight: Radius.circular(30.w))),
+                  borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w))),
               child: Column(
                 children: [
                   _buildSlide(showTime: false, disabled: true),
                   Expanded(
-                      child: PageView(
+                      child: PreloadPageView.builder(
+                    itemBuilder: (context, index) => controller.pages[index],
+                    itemCount: controller.pages.length,
                     controller: controller.pageController,
-                    onPageChanged: (index) => controller.selectIndex.value = index,
-                    children: [
-                      _buildPlayList(),
-                      _buildLyric(),
-                    ],
+                    preloadPagesCount: controller.pages.length,
+                    onPageChanged: (index) {
+                      controller.selectIndex.value = index;
+                    },
                   ))
                 ],
               ),
             )),
-        body: Stack(
-          children: [
-            Obx(() => AnimatedContainer(
-                  duration: const Duration(milliseconds: 150),
-                  decoration: BoxDecoration(
-                      gradient: LinearGradient(colors: [
-                        Theme.of(context).bottomAppBarColor,
-                        controller.rx.value.light?.color ?? Colors.transparent,
-                        controller.rx.value.main?.color ?? Colors.transparent,
-                      ], begin: Alignment.topRight, end: Alignment.bottomLeft),
-                      borderRadius: BorderRadius.only(topLeft: Radius.circular(30.w), topRight: Radius.circular(30.w))),
-                )),
-            Column(
-              children: [
-                Obx(() => SizedBox(height: controller.getPanelMinSize() + MediaQuery.of(context).padding.top)),
-                // 歌曲信息
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 30.w),
-                  child: Obx(() => SizedBox(
-                        height: 140.h,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              controller.mediaItem.value.title,
-                              style: TextStyle(fontSize: 38.sp, fontWeight: FontWeight.bold, color: controller.rx.value.main?.bodyTextColor),
-                              maxLines: 1,
+        body: Obx(() => AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              decoration: BoxDecoration(
+                  gradient: LinearGradient(colors: [
+                    Theme.of(context).bottomAppBarColor,
+                    controller.rx.value.main?.color ?? Colors.transparent,
+                  ], begin: Alignment.topLeft, end: Alignment.bottomRight),
+                  borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w))),
+              child: Column(
+                children: [
+                  // 歌曲信息
+                  Obx(() => AnimatedOpacity(
+                    opacity: controller.slidePosition.value,
+                    duration: Duration.zero,
+                    child: Container(
+                      height: 60.h,
+                      margin: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+                      padding: EdgeInsets.symmetric(horizontal: 20.w),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          IconButton(
+                              onPressed: () {
+                                controller.panelControllerHome.close();
+                              },
+                              icon: Icon(
+                                TablerIcons.chevron_down,
+                                color: Theme.of(context).iconTheme.color?.withOpacity(.8),
+                              )),
+                          Container(
+                            alignment: Alignment.center,
+                            margin: EdgeInsets.only(top: 20.h),
+                            height: 60.h,
+                            width: 240.w,
+                            // decoration: BoxDecoration(
+                            //   color: controller.rx.value.light?.color.withOpacity(.6)??Colors.transparent,
+                            //   borderRadius: BorderRadius.circular(25.h)
+                            // ),
+                            child: Text(
+                              'Now Playing',
+                              style: TextStyle(color: Theme.of(context).iconTheme.color?.withOpacity(.8), fontWeight: FontWeight.w500, fontSize: 32.sp),
                             ),
-                            Padding(padding: EdgeInsets.symmetric(vertical: 5.w)),
-                            Text(
-                              controller.mediaItem.value.artist ?? '',
-                              style: TextStyle(fontSize: 28.sp, color: controller.rx.value.main?.bodyTextColor),
-                              maxLines: 1,
-                            )
-                          ],
+                          ),
+                          IconButton(
+                              onPressed: () {},
+                              icon: Icon(
+                                TablerIcons.brand_stackoverflow,
+                                color: Theme.of(context).iconTheme.color?.withOpacity(.8),
+                              )),
+                        ],
+                      ),
+                    ),
+                  )),
+                  Obx(() => SizedBox(height: controller.getPanelMinSize())),
+                  Obx(() => SizedBox(
+                    height: 90.h,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          controller.mediaItem.value.title,
+                          style: TextStyle(fontSize: 36.sp, fontWeight: FontWeight.bold, color: controller.rx.value.main?.bodyTextColor.withOpacity(.6)),
+                          maxLines: 1,
                         ),
-                      )),
-                ),
-                //操控区域
-                _buildPlayController(),
-                //进度条
-                _buildSlide(),
-                //功能按钮
-                SizedBox(
-                  height: 100.h + MediaQuery.of(context).padding.bottom,
-                )
-              ],
-            ),
-          ],
-        ),
+                        Padding(padding: EdgeInsets.symmetric(vertical: 3.w)),
+                        Text(
+                          controller.mediaItem.value.artist ?? '',
+                          style: TextStyle(fontSize: 24.sp, color: controller.rx.value.main?.bodyTextColor.withOpacity(.6)),
+                          maxLines: 1,
+                        )
+                      ],
+                    ),
+                  )),
+                  //操控区域
+                  _buildPlayController(),
+                  //进度条
+                  _buildSlide(),
+                  //功能按钮
+                  SizedBox(
+                    height: 110.h + MediaQuery.of(context).padding.bottom,
+                  )
+                ],
+              ),
+            )),
         header: _buildBottom(bottomHeight),
-        minHeight: 100.h + bottomHeight,
+        minHeight: 110.h + bottomHeight,
         maxHeight: Get.height - controller.panelHeaderSize - MediaQuery.of(context).padding.top - 10.w,
       ),
       onHorizontalDragDown: (e) {
@@ -131,7 +163,7 @@ class PanelView extends GetView<HomeController> {
   Widget _buildSlide({bool showTime = true, bool disabled = false}) {
     return Container(
       height: showTime ? 220.h : 100.h,
-      padding: EdgeInsets.only(left: 40.w, right: 40.w),
+      padding: EdgeInsets.symmetric(horizontal: disabled ? 30.w : 40.w),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -160,7 +192,7 @@ class PanelView extends GetView<HomeController> {
             visible: showTime,
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 0.w),
-              child: Padding(padding: EdgeInsets.symmetric(vertical: 18.h)),
+              child: Padding(padding: EdgeInsets.symmetric(vertical: 8.h)),
             ),
           ),
           Obx(() {
@@ -178,7 +210,7 @@ class PanelView extends GetView<HomeController> {
                     handler: FlutterSliderHandler(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
-                          color: controller.rx.value.dark?.color.withOpacity(.6) ?? Colors.black12,
+                          color: controller.rx.value.main?.color.withOpacity(.6) ?? Colors.black12,
                           // border: Border.all(color: controller.rx.value.dark?.color ?? Colors.transparent, width: 4.w),
                         ),
                         child: const SizedBox.shrink()),
@@ -219,12 +251,14 @@ class PanelView extends GetView<HomeController> {
   Widget _buildPlayController() {
     return Expanded(child: Obx(() {
       return Padding(
-        padding: EdgeInsets.only(left: 40.w, right: 40.w, bottom: 10.h),
+        padding: EdgeInsets.only(left: 40.w, right: 40.w),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             IconButton(
-                onPressed: () => controller.changeRepeatMode(), icon: Icon(controller.getRepeatIcon(), size: 46.w, color: controller.rx.value.main?.bodyTextColor.withOpacity(.6))),
+                onPressed: () => controller.likeSong(),
+                icon: Icon(UserController.to.likeIds.contains(int.tryParse(controller.mediaItem.value.id)) ? TablerIcons.hearts : TablerIcons.heart,
+                    size: 44.w, color: controller.rx.value.main?.bodyTextColor.withOpacity(.6))),
             Expanded(
                 child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -232,7 +266,7 @@ class PanelView extends GetView<HomeController> {
                 IconButton(
                     onPressed: () {
                       if (controller.intervalClick(1)) {
-                        controller.buttonCarouselController.previousPage(duration: const Duration(milliseconds: 150), curve: Curves.linear);
+                        controller.audioServeHandler.skipToPrevious();
                       }
                     },
                     icon: Icon(
@@ -250,7 +284,7 @@ class PanelView extends GetView<HomeController> {
                       width: 100.h,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(80.w),
-                        color: controller.rx.value.dark?.color.withOpacity(.4),
+                        color: controller.rx.value.main?.color.withOpacity(.6),
                         // border: Border.all(color: controller.rx.value.main?.color.withOpacity(.8) ?? Colors.transparent, width: 0.w),
                       ),
                       child: Icon(
@@ -265,7 +299,7 @@ class PanelView extends GetView<HomeController> {
                 IconButton(
                     onPressed: () {
                       if (controller.intervalClick(1)) {
-                        controller.buttonCarouselController.nextPage(duration: const Duration(milliseconds: 150), curve: Curves.linear);
+                        controller.audioServeHandler.skipToNext();
                       }
                     },
                     icon: Icon(
@@ -276,8 +310,7 @@ class PanelView extends GetView<HomeController> {
               ],
             )),
             IconButton(
-                onPressed: () => controller.changeShuffleMode(),
-                icon: Icon(controller.getShuffleIcon(), size: 42.w, color: controller.rx.value.main?.bodyTextColor.withOpacity(.6))),
+                onPressed: () => controller.changeRepeatMode(), icon: Icon(controller.getRepeatIcon(), size: 43.w, color: controller.rx.value.main?.bodyTextColor.withOpacity(.6))),
           ],
         ),
       );
@@ -285,228 +318,35 @@ class PanelView extends GetView<HomeController> {
   }
 
   Widget _buildBottom(bottomHeight) {
-    return Column(
+    return Obx(() => Column(
       children: [
-        Obx(() => Container(
-              margin: EdgeInsets.symmetric(horizontal: 20.w),
-              padding: EdgeInsets.symmetric(horizontal: 30.w),
-              height: 100.h,
-              width: 710.w,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  InkWell(
-                    child: Icon(
-                      UserController.to.likeIds.contains(int.tryParse(controller.mediaItem.value.id)) ? TablerIcons.thumb_up : TablerIcons.thumb_up_off,
-                      color: controller.rx.value.main?.bodyTextColor.withOpacity(.6),
-                    ),
-                    onTap: () async {},
-                  ),
-                  Stack(
-                    alignment: Alignment.topCenter,
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(top: 8.w),
-                        height: 8.w,
-                        width: 8.w,
-                        color: controller.selectIndex.value == 0 ? controller.rx.value.main?.bodyTextColor.withOpacity(.6) : Colors.transparent,
-                      ),
-                      IconButton(
-                          onPressed: () {
-                            if (!controller.panelController.isPanelOpen) controller.panelController.open();
-                            controller.pageController.jumpToPage(0);
-                          },
-                          icon: Icon(
-                            TablerIcons.playlist,
-                            color: controller.rx.value.main?.bodyTextColor.withOpacity(.6),
-                          )),
-                    ],
-                  ),
-                  Stack(
-                    alignment: Alignment.topCenter,
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(top: 8.w),
-                        height: 8.w,
-                        width: 8.w,
-                        color: controller.selectIndex.value == 1 ? controller.rx.value.main?.bodyTextColor.withOpacity(.6) : Colors.transparent,
-                      ),
-                      IconButton(
-                          onPressed: () {
-                            if (!controller.panelController.isPanelOpen) controller.panelController.open();
-                            controller.pageController.jumpToPage(1);
-                          },
-                          icon: Icon(
-                            TablerIcons.quote,
-                            color: controller.rx.value.main?.bodyTextColor.withOpacity(.6),
-                          )),
-                    ],
-                  ),
-                  InkWell(
-                    child: Icon(
-                      TablerIcons.message_2,
-                      color: controller.rx.value.main?.bodyTextColor,
-                    ),
-                    onTap: () => controller.buildContext.router.push(const TalkView().copyWith(args: controller.mediaItem.value.id)),
-                  ),
-                ],
-              ),
-            )),
-        GestureDetector(
-          child: Container(
-            width: Get.width,
-            color: Colors.transparent,
-            height: bottomHeight,
-          ),
-          onVerticalDragDown: (e) {
-            return;
-          },
-        )
-      ],
-    );
-  }
-
-  //播放列表
-  Widget _buildPlayList() {
-    return ListView.builder(
-      physics: const ClampingScrollPhysics(),
-      controller: controller.playListScrollController,
-      padding: EdgeInsets.symmetric(horizontal: 30.w),
-      itemExtent: 110.w,
-      itemBuilder: (context, index) => Container(
-        margin: EdgeInsets.symmetric(horizontal: 10.w),
-        alignment: Alignment.centerLeft,
-        child: _buildPlayListItem(controller.mediaItems[index], index),
-      ),
-      itemCount: controller.mediaItems.length,
-    );
-  }
-
-  Widget _buildPlayListItem(MediaItem mediaItem, int index) {
-    return InkWell(
-      child: SizedBox(
-        width: Get.width,
-        height: 110.w,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Expanded(
-                child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  mediaItem.title,
-                  maxLines: 1,
-                  style: TextStyle(fontSize: 30.sp, color: controller.rx.value.main?.bodyTextColor),
-                ),
-                Padding(padding: EdgeInsets.symmetric(vertical: 4.w)),
-                Text(
-                  mediaItem.artist ?? '',
-                  maxLines: 1,
-                  style: TextStyle(fontSize: 24.sp, color: controller.rx.value.main?.bodyTextColor.withOpacity(.4)),
-                )
-              ],
-            )),
-            Visibility(
-              visible: controller.mediaItem.value.id == mediaItem.id,
-              child: LoadingAnimationWidget.horizontalRotatingDots(
-                color: controller.rx.value.main?.bodyTextColor ?? Colors.red,
-                size: 40.w,
-              ),
-            ),
-            Padding(padding: EdgeInsets.symmetric(horizontal: 10.w)),
-            IconButton(
-                onPressed: () {
-                  controller.audioServeHandler.removeQueueItemAt(index);
-                },
-                icon: Icon(
-                  TablerIcons.trash_x,
-                  color: controller.rx.value.main?.bodyTextColor.withOpacity(.4),
-                  size: 42.w,
-                ))
+        Container(width: 70.w,height: 6.w,margin: EdgeInsets.only(top: 12.w),decoration: BoxDecoration(
+            color: controller.rx.value.main?.bodyTextColor.withOpacity(.5),
+            borderRadius: BorderRadius.circular(3.w)
+        ),),
+        FlashyNavbar(
+          selectedIndex: controller.selectIndex.value,
+          items: [
+            FlashyNavbarItem(icon: const Icon(TablerIcons.atom_2)),
+            FlashyNavbarItem(icon: const Icon(TablerIcons.playlist)),
+            FlashyNavbarItem(icon: const Icon(TablerIcons.quote)),
+            FlashyNavbarItem(icon: const Icon(TablerIcons.message_2)),
           ],
-        ),
-      ),
-      onTap: () => controller.buttonCarouselController.jumpToPage(index),
-    );
-  }
-
-  //歌词
-  Widget _buildLyric() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 20.w),
-      child: Visibility(
-        visible: controller.lyricsLineModels.isNotEmpty,
-        replacement: Center(
-          child: Text('暂无歌词～', style: TextStyle(fontSize: 34.sp, color: controller.rx.value.light?.color)),
-        ),
-        child: Listener(
-          onPointerDown: (event) {
-            controller.onMove.value = true;
+          onItemSelected: (index) {
+            controller.pageController.jumpToPage(index);
+            if (!controller.panelController.isPanelOpen) controller.panelController.open();
           },
-          onPointerMove: (event) {
-            //手指移动暂停歌词自动滚动
-            controller.onMove.value = true;
-          },
-          onPointerUp: (event) {
-            //手指放开 延时三秒开始自动滚动（用户三秒期间可以滑动到指定位置并播放）
-            Future.delayed(const Duration(milliseconds: 1500), () => controller.onMove.value = false);
-          },
-          child: ClickableListWheelScrollView(
-            itemHeight: controller.lyricsLineModelsTran.isNotEmpty ? 162.w : 90.w,
-            itemCount: controller.lyricsLineModels.length,
-            onItemTapCallback: (index) {
-              //点击歌词
-              controller.audioServeHandler.seek(Duration(milliseconds: controller.lyricsLineModels[index].startTime ?? 0));
-            },
-            scrollController: controller.lyricScrollController,
-            child: ListWheelScrollView.useDelegate(
-              itemExtent: controller.lyricsLineModelsTran.isNotEmpty ? 162.w : 90.w,
-              controller: controller.lyricScrollController,
-              physics: const ClampingScrollPhysics(),
-              overAndUnderCenterOpacity: 0.5,
-              perspective: 0.0001,
-              onSelectedItemChanged: (index) {
-                //TODO 此处可以获取实时歌词
-              },
-              childDelegate: ListWheelChildBuilderDelegate(
-                builder: (context, index) => Container(
-                  width: Get.width,
-                  height: controller.lyricsLineModelsTran.isNotEmpty ? 162.w : 90.w,
-                  alignment: Alignment.center,
-                  child: Text(
-                    controller.lyricsLineModels[index].mainText ?? '',
-                    style: TextStyle(fontSize: controller.lyricsLineModelsTran.isNotEmpty ? 28.sp : 32.sp, color: controller.rx.value.main?.bodyTextColor),
-                    textAlign: TextAlign.center,
-                    maxLines: 4,
-                  ),
-                ),
-                childCount: controller.lyricsLineModels.length,
-              ),
-            ),
-          ),
+          backgroundColor: controller.rx.value.main?.bodyTextColor.withOpacity(.6),
         ),
-      ),
-    );
-  }
-
-  //评论列表
-  Widget _buildTalkList() {
-    return Container();
+      ],
+    ));
   }
 }
 
 class BottomItem {
   IconData iconData;
   int index;
+  VoidCallback? onTap;
 
-  BottomItem(this.iconData, this.index);
-}
-
-class _MyVerticalDragGestureRecognizer extends VerticalDragGestureRecognizer {
-  @override
-  void rejectGesture(int pointer) {
-    acceptGesture(pointer);
-  }
+  BottomItem(this.iconData, this.index, {this.onTap});
 }

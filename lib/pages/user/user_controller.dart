@@ -1,8 +1,11 @@
 import 'dart:convert';
 
 import 'package:bujuan/common/constants/other.dart';
+import 'package:bujuan/pages/user/user_view.dart';
+import 'package:bujuan/routes/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get/get.dart';
 
 import '../../common/netease_api/src/api/login/bean.dart';
@@ -14,7 +17,12 @@ class UserController extends GetxController {
   ScrollController userScrollController = ScrollController();
   RxDouble op = 0.0.obs;
   final List<double> colors = [1, .9, .8, .7, .6, .5, .4, .3, .2, .1, 0];
-
+  final List<UserItem> userItems = [
+    UserItem('每日', TablerIcons.calendar,routes: Routes.today),
+    UserItem('FM', TablerIcons.a_b_2),
+    UserItem('电台', TablerIcons.radio),
+    UserItem('云盘', TablerIcons.cloud_fog,routes: Routes.cloud)
+  ];
   //用户登录状态
   RxBool loginStatus = false.obs;
   Rx<NeteaseAccountInfoWrap> userData = NeteaseAccountInfoWrap().obs;

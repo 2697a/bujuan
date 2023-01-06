@@ -15,7 +15,7 @@ import 'package:get_it/get_it.dart';
 import 'common/constants/colors.dart';
 import 'common/netease_api/src/netease_api.dart';
 import 'common/storage.dart';
-import 'common/test_audio_handler.dart';
+import 'common/bujuan_audio_handler.dart';
 
 main() async {
   bool isMobile = PlatformUtils.isAndroid || PlatformUtils.isIOS || PlatformUtils.isFuchsia;
@@ -30,9 +30,9 @@ main() async {
         title: "Application",
         theme: AppTheme.light.copyWith(
             pageTransitionsTheme: const PageTransitionsTheme(builders: {
-          TargetPlatform.iOS: NoShadowCupertinoPageTransitionsBuilder(),
-          TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
-        })),
+              TargetPlatform.iOS: NoShadowCupertinoPageTransitionsBuilder(),
+              TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+            })),
         darkTheme: AppTheme.dark,
         // showPerformanceOverlay: true,
         themeMode: ThemeMode.system,
@@ -61,8 +61,8 @@ Future<void> _initAudioServer() async {
   await StorageUtil.init();
   // _startServer();
   await NeteaseMusicApi.init(debug: false);
-  getIt.registerSingleton<TextAudioHandler>(await AudioService.init<TextAudioHandler>(
-    builder: () => TextAudioHandler(),
+  getIt.registerSingleton<BujuanAudioHandler>(await AudioService.init<BujuanAudioHandler>(
+    builder: () => BujuanAudioHandler(),
     config: const AudioServiceConfig(
       // androidStopForegroundOnPause: false,
       androidNotificationChannelId: 'com.sixbugs.bujuan.channel.audio',

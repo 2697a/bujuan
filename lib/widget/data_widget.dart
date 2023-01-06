@@ -59,22 +59,20 @@ class LoadingView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
-      body: SizedBox(
-        width: Get.width,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SvgPicture.asset(AppIcons.loading,width: Get.width/2.6,),
-            Padding(padding: EdgeInsets.symmetric(vertical: 15.w)),
-            TypeWriterText(
-              text: Text('拼命加载中...',style: TextStyle(fontSize: 32.sp),),
-              duration: const Duration(milliseconds: 120),
-              repeat: true,
-            )
-          ],
-        ),
+    return  SizedBox(
+      width: Get.width,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SvgPicture.asset(AppIcons.loading,width: Get.width/2.9,),
+          Padding(padding: EdgeInsets.symmetric(vertical: 15.w)),
+          TypeWriterText(
+            text: Text('拼命加载中...',style: TextStyle(fontSize: 28.sp),),
+            duration: const Duration(milliseconds: 120),
+            repeat: true,
+          )
+        ],
       ),
     );
   }

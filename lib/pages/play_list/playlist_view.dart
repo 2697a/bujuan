@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:auto_route/auto_route.dart';
+import 'package:bujuan/pages/user/user_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -36,17 +37,17 @@ class _PlayListViewState extends State<PlayListView> {
 
   final List<MediaItem> _mediaItem = [];
 
-  _playIndex(int index) async {
-    String title = HomeController.to.audioServeHandler.queueTitle.value;
-    if (title.isEmpty || title != (context.routeData.args as Play).id) {
-      HomeController.to.audioServeHandler.queueTitle.value = (context.routeData.args as Play).id;
-      HomeController.to.audioServeHandler
-        .changeQueueLists(_mediaItem, index: index);
-      HomeController.to.buttonCarouselController.jumpToPage(index);
-    } else {
-      HomeController.to.buttonCarouselController.jumpToPage(index);
-    }
-  }
+  // _playIndex(int index) async {
+  //   String title = HomeController.to.audioServeHandler.queueTitle.value;
+  //   if (title.isEmpty || title != (context.routeData.args as Play).id) {
+  //     HomeController.to.audioServeHandler.queueTitle.value = (context.routeData.args as Play).id;
+  //     HomeController.to.audioServeHandler
+  //       ..changeQueueLists(_mediaItem, index: index)
+  //       ..playIndex(index);
+  //   } else {
+  //     HomeController.to.audioServeHandler.playIndex(index);
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -66,12 +67,19 @@ class _PlayListViewState extends State<PlayListView> {
                     ..clear()
                     ..addAll((playlist.songs ?? [])
                         .map((e) => MediaItem(
-                        id: e.id,
-                        duration: Duration(milliseconds: e.dt ?? 0),
-                        artUri: Uri.parse('${e.al.picUrl ?? ''}?param=500y500'),
-                        extras: {'url': '', 'image': e.al.picUrl ?? '', 'type': '', 'available': e.available},
-                        title: e.name ?? "",
-                        artist: (e.ar ?? []).map((e) => e.name).toList().join(' / ')))
+                            id: e.id,
+                            duration: Duration(milliseconds: e.dt ?? 0),
+                            artUri: Uri.parse('${e.al.picUrl ?? ''}?param=500y500'),
+                            extras: {
+                              'url': '',
+                              'image': e.al.picUrl ?? '',
+                              'type': '',
+                              'liked': UserController.to.likeIds.contains(int.tryParse(e.id)),
+                              'artist': (e.ar ?? []).map((e) => jsonEncode(e.toJson())).toList().join(' / ')
+                            },
+                            title: e.name ?? "",
+                            album: jsonEncode(e.al.toJson()),
+                            artist: (e.ar ?? []).map((e) => e.name).toList().join(' / ')))
                         .toList());
                   return ListView.builder(
                     itemExtent: 120.w,
@@ -122,7 +130,7 @@ class _PlayListViewState extends State<PlayListView> {
           ],
         ),
       ),
-      onTap: () => _playIndex(index),
+      onTap: () => HomeController.to.playByIndex(index, (context.routeData.args as Play).id,mediaItem: _mediaItem),
     );
     // return ListTile(
     //   dense: true,

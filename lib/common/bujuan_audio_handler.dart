@@ -1,30 +1,29 @@
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:bujuan/common/constants/other.dart';
 import 'package:bujuan/common/storage.dart';
+import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:get_it/get_it.dart';
 import 'package:audio_session/audio_session.dart';
-import 'package:json_annotation/json_annotation.dart';
 import 'audio_player_handler.dart';
 import 'constants/key.dart';
+import 'constants/platform_utils.dart';
 import 'netease_api/src/api/play/bean.dart';
 import 'netease_api/src/netease_api.dart';
 
-class TextAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler implements AudioPlayerHandler {
+class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler implements AudioPlayerHandler {
   final _player = GetIt.instance<AudioPlayer>();
   AudioServiceRepeatMode _audioServiceRepeatMode = AudioServiceRepeatMode.all;
   AudioServiceShuffleMode _audioServiceShuffleMode = AudioServiceShuffleMode.none;
   final _playList = <MediaItem>[];
   final _playListShut = <MediaItem>[];
-  List<int> _playedIndexList = []; //播放过的index,循环播放时使用
   int _curIndex = 0; // 播放列表索引
   bool playInterrupted = false;
   AudioSession? session;
 
-  TextAudioHandler() {
+  BujuanAudioHandler() {
     // 初始化
     _initAudioSession();
     _loadPlaylistByStorage();
@@ -39,14 +38,7 @@ class TextAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler i
     if (queueTitle.value.isNotEmpty && playList.isNotEmpty) {
       List<MediaItem> items = playList.map((e) {
         var map = MediaItemMessage.fromMap(jsonDecode(e));
-        return MediaItem(
-          id: map.id,
-          duration: map.duration,
-          artUri: map.artUri,
-          extras: map.extras,
-          title: map.title,
-          artist: map.artist,
-        );
+        return MediaItem(id: map.id, duration: map.duration, artUri: map.artUri, extras: map.extras, title: map.title, artist: map.artist, album: map.album);
       }).toList();
       changeQueueLists(items);
       playIndex(_curIndex, playIt: false);
@@ -55,7 +47,7 @@ class TextAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler i
 
   void _initAudioSession() async {
     session = await AudioSession.instance;
-    await session?.configure(const AudioSessionConfiguration.music());
+    await session?.configure(const AudioSessionConfiguration.speech());
     _handleInterruptions(session!);
   }
 
@@ -116,7 +108,11 @@ class TextAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler i
       if (playing) session?.setActive(true);
       playbackState.add(playbackState.value.copyWith(
         controls: [
-          const MediaControl(label: 'rating', action: MediaAction.setRating, androidIcon: 'drawable/audio_service_unlike'),
+          PlatformUtils.isAndroid
+              ? ((mediaItem.value?.extras?['liked'] ?? false)
+                  ? const MediaControl(label: 'fastForward', action: MediaAction.fastForward, androidIcon: 'drawable/audio_service_like')
+                  : const MediaControl(label: 'rewind', action: MediaAction.rewind, androidIcon: 'drawable/audio_service_unlike'))
+              : const MediaControl(label: 'setRating', action: MediaAction.setRating, androidIcon: 'drawable/audio_service_like'),
           MediaControl.skipToPrevious,
           if (playing) MediaControl.pause else MediaControl.play,
           MediaControl.skipToNext,
@@ -163,21 +159,26 @@ class TextAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler i
     throw UnimplementedError();
   }
 
+  //更改为不喜欢按钮
+  @override
+  Future<void> fastForward() async {
+    // updateMediaItem(mediaItem.value?.copyWith(extras: {'liked':'true'})??const MediaItem(id: 'id', title: 'title'));
+    HomeController.to.likeSong(liked: true);
+  }
+
+  //更改为喜欢按钮
+  @override
+  Future<void> rewind() async {
+    HomeController.to.likeSong(liked: false);
+  }
+
   @override
   Future<void> changeQueueLists(List<MediaItem> list, {int index = 0}) async {
     _playList
       ..clear()
       ..addAll(list);
-    _playedIndexList.clear();
-    for (int i = 0; i <= list.length; i++) {
-      _playedIndexList.add(i);
-    }
-    _playedIndexList.shuffle();
     // notify system
-    queue.value.clear();
-    final newQueue = queue.value..addAll(list);
-    queue.add(newQueue); // 添加到背景播放列表
-
+    updateQueue(list);
     List<String> playList = list
         .map((e) => jsonEncode(MediaItemMessage(
               id: e.id,
@@ -209,8 +210,8 @@ class TextAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler i
   @override
   Future<void> readySongUrl({bool isNext = true, bool playIt = true}) async {
     // 这里是获取歌曲url
-    if (_playList.isEmpty) return;
-    var song = _playList[_curIndex];
+    if (queue.value.isEmpty) return;
+    var song = queue.value[_curIndex];
     SongUrlListWrap songUrl = await NeteaseMusicApi().songUrl([song.id]);
     print('SongUrlListWrap==========${jsonEncode(songUrl.toJson())}');
     String url = (songUrl.data ?? [])[0].url ?? '';
@@ -256,31 +257,16 @@ class TextAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler i
   }
 
   void _setCurrIndex({bool next = false}) {
-    if (_audioServiceShuffleMode != AudioServiceShuffleMode.none) {
-      //说明循环模式已经开启了,这里不管AudioServiceShuffleMode的具体值，只要不是none 就按照随机模式来
-      // TODO 随机逻辑今天先不写
-      _curIndex = _playedIndexList[_curIndex];
+    if (_audioServiceRepeatMode == AudioServiceRepeatMode.one) return;
+    if (next ? _curIndex >= _playList.length - 1 : _curIndex <= 0) {
+      next ? _curIndex = 0 : _curIndex = _playList.length - 1;
     } else {
-      switch (_audioServiceRepeatMode) {
-        case AudioServiceRepeatMode.all:
-        case AudioServiceRepeatMode.group:
-        case AudioServiceRepeatMode.none:
-          //一律按列表循环
-          // 当触发播放下一首
-          if (next ? _curIndex >= _playList.length - 1 : _curIndex <= 0) {
-            next ? _curIndex = 0 : _curIndex = _playList.length - 1;
-          } else {
-            next ? _curIndex++ : _curIndex--;
-          }
-          StorageUtil().setInt(playByIndex, _curIndex);
-          playbackState.add(playbackState.value.copyWith(
-            queueIndex: _curIndex,
-          ));
-          break;
-        default:
-          break;
-      }
+      next ? _curIndex++ : _curIndex--;
     }
+    StorageUtil().setInt(playByIndex, _curIndex);
+    playbackState.add(playbackState.value.copyWith(
+      queueIndex: _curIndex,
+    ));
   }
 
   @override
@@ -291,13 +277,39 @@ class TextAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler i
 
   @override
   Future<void> setRepeatMode(AudioServiceRepeatMode repeatMode) async {
+    if (repeatMode == AudioServiceRepeatMode.none) {
+      //none当作随机播放吧
+      _playListShut
+        ..clear()
+        ..addAll(_playList)
+        ..shuffle();
+      int index = _playListShut.indexWhere((element) => element.id == mediaItem.value?.id);
+      if (index != -1) _curIndex = index;
+      updateQueue(_playListShut);
+    } else {
+      int index = _playList.indexWhere((element) => element.id == mediaItem.value?.id);
+      if (index != -1) _curIndex = index;
+      updateQueue(_playList);
+    }
     _audioServiceRepeatMode = repeatMode;
   }
 
-  @override
-  Future<void> setShuffleMode(AudioServiceShuffleMode shuffleMode) async {
-    _audioServiceShuffleMode = shuffleMode;
-  }
+  // @override
+  // Future<void> setShuffleMode(AudioServiceShuffleMode shuffleMode) async {
+  //   if (shuffleMode != AudioServiceShuffleMode.none) {
+  //     _playListShut
+  //       ..clear()
+  //       ..addAll(_playList)
+  //       ..shuffle();
+  //     int index = _playListShut.indexWhere((element) => element.id == mediaItem.value?.id);
+  //     if (index != -1) _curIndex = index;
+  //     updateQueue(_playListShut);
+  //   } else {
+  //     int index = _playList.indexWhere((element) => element.id == mediaItem.value?.id);
+  //     if (index != -1) _curIndex = index;
+  //     updateQueue(_playList);
+  //   }
+  // }
 
   @override
   Future<void> onTaskRemoved() async {

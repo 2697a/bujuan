@@ -27,8 +27,8 @@ class FlashyNavbar extends StatelessWidget {
     this.animationCurve = Curves.linear,
     this.shadows = const [
       BoxShadow(
-        color: Colors.black12,
-        blurRadius: 3,
+        color: Colors.transparent,
+        blurRadius: 0,
       ),
     ],
     required this.items,
@@ -41,18 +41,15 @@ class FlashyNavbar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bg = (backgroundColor == null) ? Theme.of(context).bottomAppBarColor : backgroundColor;
-
     return Container(
       height: height,
       decoration: BoxDecoration(
-        color: bg,
         boxShadow: showElevation ? shadows : [],
         // border: Border(top: BorderSide(color: Colors.grey.withOpacity(.1),width: 1.w))
       ),
-      child: Container(
+      child: SizedBox(
         width: Get.width,
         height: height,
-        padding:  EdgeInsets.only(top: 0, bottom: MediaQuery.of(context).padding.bottom/2),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: items.map((item) {
@@ -66,6 +63,7 @@ class FlashyNavbar extends StatelessWidget {
                   iconSize: iconSize,
                   isSelected: index == selectedIndex,
                   backgroundColor: bg!,
+                  color: backgroundColor!,
                   animationDuration: animationDuration,
                   animationCurve: animationCurve,
                 ),
@@ -80,14 +78,14 @@ class FlashyNavbar extends StatelessWidget {
 
 class FlashyNavbarItem {
   final Icon icon;
-  final Text title;
+  // final Text title;
 
   Color activeColor;
   Color inactiveColor;
 
   FlashyNavbarItem({
     required this.icon,
-    required this.title,
+    // required this.title,
     this.activeColor =  Colors.black,
     this.inactiveColor =  Colors.grey,
   });
@@ -98,6 +96,7 @@ class _FlashyNavbarItem extends StatelessWidget {
   final double iconSize;
 
   final FlashyNavbarItem item;
+  final Color color;
 
   final bool isSelected;
   final Color backgroundColor;
@@ -112,13 +111,12 @@ class _FlashyNavbarItem extends StatelessWidget {
       required this.backgroundColor,
       required this.animationDuration,
       required this.animationCurve,
-      required this.iconSize})
+      required this.iconSize, required this.color})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        color: backgroundColor,
+    return SizedBox(
         height: double.maxFinite,
         child: Stack(
           clipBehavior: Clip.hardEdge,
@@ -126,53 +124,51 @@ class _FlashyNavbarItem extends StatelessWidget {
           children: <Widget>[
             AnimatedAlign(
               duration: animationDuration,
-              alignment: isSelected ? Alignment.topCenter : Alignment.center,
+              alignment: Alignment.center,
               child: AnimatedOpacity(
                   opacity: isSelected ? 1.0 : 1.0,
                   duration: animationDuration,
                   child: IconTheme(
-
-                    data: IconThemeData(size: iconSize, color: isSelected ? item.activeColor.withOpacity(0) : Theme.of(context).iconTheme.color),
+                    data: IconThemeData(size: iconSize, color: color),
                     child: item.icon,
                   )),
             ),
-            AnimatedPositioned(
-              curve: animationCurve,
-              duration: animationDuration,
-              top: isSelected ? -2.0 * iconSize : tabBarHeight / 4,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  SizedBox(
-                    width: iconSize,
-                    height: iconSize,
-                  ),
-                  CustomPaint(
-                    painter: _CustomPath(backgroundColor),
-                    child: SizedBox(
-                      width: 80,
-                      height: iconSize,
-                    ),
-                  )
-                ],
-              ),
-            ),
-            AnimatedAlign(
-                alignment: isSelected ? Alignment.center : Alignment.bottomCenter,
-                duration: animationDuration,
-                curve: animationCurve,
-                child: AnimatedOpacity(
-                    opacity: isSelected ? 1.0 : 0.0,
-                    duration: animationDuration,
-                    child: DefaultTextStyle.merge(
-                      style: TextStyle(
-                        color: Theme.of(context).primaryColor.withOpacity(.9),
-                        fontWeight: FontWeight.w600,
-                        fontSize: 28.sp
-
-                      ),
-                      child: item.title,
-                    ))),
+            // AnimatedPositioned(
+            //   curve: animationCurve,
+            //   duration: animationDuration,
+            //   top: isSelected ? -2.0 * iconSize : tabBarHeight / 4,
+            //   child: Column(
+            //     mainAxisAlignment: MainAxisAlignment.center,
+            //     children: <Widget>[
+            //       SizedBox(
+            //         width: iconSize,
+            //         height: iconSize,
+            //       ),
+            //       CustomPaint(
+            //         painter: _CustomPath(backgroundColor),
+            //         child: SizedBox(
+            //           width: 80,
+            //           height: iconSize,
+            //         ),
+            //       )
+            //     ],
+            //   ),
+            // ),
+            // AnimatedAlign(
+            //     alignment: isSelected ? Alignment.center : Alignment.bottomCenter,
+            //     duration: animationDuration,
+            //     curve: animationCurve,
+            //     child: AnimatedOpacity(
+            //         opacity: isSelected ? 1.0 : 0.0,
+            //         duration: animationDuration,
+            //         child: DefaultTextStyle.merge(
+            //           style: TextStyle(
+            //             color: item.inactiveColor,
+            //             fontWeight: FontWeight.bold,
+            //             fontSize: 26.sp
+            //           ),
+            //           child: item.title,
+            //         ))),
             // Positioned(
             //     bottom: 0,
             //     child: CustomPaint(
@@ -191,9 +187,9 @@ class _FlashyNavbarItem extends StatelessWidget {
                     width: 5,
                     height: 5,
                     alignment: Alignment.bottomCenter,
-                    margin: const EdgeInsets.all(4),
+                    margin: const EdgeInsets.all(2),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor.withOpacity(.9),
+                      color: color,
                       borderRadius: BorderRadius.circular(2),
                     ),
                   )),

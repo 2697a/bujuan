@@ -4,13 +4,13 @@ import 'package:bujuan/pages/home/view/body_view.dart';
 import 'package:bujuan/pages/home/view/menu_view.dart';
 import 'package:bujuan/pages/home/view/panel_view.dart';
 import 'package:bujuan/widget/simple_extended_image.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:get/get.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
+
+import '../../../widget/weslide/panel.dart';
 
 class HomeView extends GetView<HomeController> {
   const HomeView({Key? key}) : super(key: key);
@@ -22,6 +22,7 @@ class HomeView extends GetView<HomeController> {
     if (bottomHeight == 0) bottomHeight = 25.w;
     return Scaffold(
       resizeToAvoidBottomInset: false,
+      backgroundColor: Colors.transparent,
       body: WillPopScope(
           child: ZoomDrawer(
             dragOffset: Get.width / 1.8,
@@ -41,31 +42,11 @@ class HomeView extends GetView<HomeController> {
                   color: Colors.transparent,
                   panel: const PanelView(),
                   body: const BodyView(),
+                  isDraggable: !controller.second.value,
                   header: controller.mediaItem.value.id.isNotEmpty ? _buildPanelHeader(bottomHeight) : const SizedBox.shrink(),
                   minHeight: controller.mediaItem.value.id.isNotEmpty ? controller.panelMobileMinSize + bottomHeight : 0,
                   maxHeight: Get.height,
                 )),
-            // mainScreen: Obx(() {
-            //   //TODO 熱更新时 会重构obx下的组件，WeSlide会走dispose方法，controller被dispose了，会出现问题，暂时没法判断是否被dispose，每次重构是重新实例化一下
-            //   controller.weSlideController = WeSlideController();
-            //   return WeSlide(
-            //     backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-            //     controller: controller.weSlideController,
-            //     panelWidth: Get.width,
-            //     bodyWidth: Get.width,
-            //     panelMaxSize: Get.height,
-            //     panelBorderRadiusBegin: 30.w,
-            //     panelBorderRadiusEnd: 30.w,
-            //     parallax: true,
-            //     body: const BodyView(),
-            //     panel: const PanelView(),
-            //     panelHeader: controller.mediaItem.value.id.isNotEmpty ? _buildPanelHeader(bottomHeight) : const SizedBox.shrink(),
-            //     hidePanelHeader: false,
-            //     isDownSlide: controller.isDownSlide.value,
-            //     panelMinSize: controller.mediaItem.value.id.isNotEmpty ? controller.panelMobileMinSize + bottomHeight : 0,
-            //     onPosition: (value) => controller.changeSlidePosition(value),
-            //   );
-            // }),
             controller: controller.myDrawerController,
           ),
           onWillPop: () => controller.onWillPop()),
@@ -78,42 +59,45 @@ class HomeView extends GetView<HomeController> {
   // )
 
   Widget _buildPanelHeader(bottomHeight) {
-    return GestureDetector(
-      child: Obx(() => Stack(
-            children: [
-              AnimatedContainer(
-                color: Colors.transparent,
-                padding: controller.getHeaderPadding().copyWith(bottom: bottomHeight),
-                width: Get.width,
-                height: controller.getPanelMinSize() + controller.getHeaderPadding().top + bottomHeight,
-                duration: const Duration(milliseconds: 0),
-                child: _buildPlayBar(),
-              ),
-              Positioned(
-                bottom: 0,
-                child: GestureDetector(
-                  child: Container(
-                    color: Colors.transparent,
-                    height: bottomHeight * (1 - controller.slidePosition.value),
-                    width: Get.width,
-                  ),
-                  onVerticalDragDown: (e) {
-                    return;
-                  },
+    return IgnorePointer(
+      ignoring: controller.slidePosition.value == 1,
+      child: GestureDetector(
+        child: Obx(() => Stack(
+              children: [
+                AnimatedContainer(
+                  color: Colors.transparent,
+                  padding: controller.getHeaderPadding().copyWith(bottom: bottomHeight),
+                  width: Get.width,
+                  height: controller.getPanelMinSize() + controller.getHeaderPadding().top + bottomHeight,
+                  duration: const Duration(milliseconds: 0),
+                  child: _buildPlayBar(),
                 ),
-              )
-            ],
-          )),
-      onHorizontalDragDown: (e) {
-        return;
-      },
-      onTap: () {
-        if (!controller.panelControllerHome.isPanelOpen) {
-          controller.panelControllerHome.open();
-        } else {
-          if (controller.panelController.isPanelOpen) controller.panelController.close();
-        }
-      },
+                Positioned(
+                  bottom: 0,
+                  child: GestureDetector(
+                    child: Container(
+                      color: Colors.transparent,
+                      height: bottomHeight * (1 - controller.slidePosition.value),
+                      width: Get.width,
+                    ),
+                    onVerticalDragDown: (e) {
+                      return;
+                    },
+                  ),
+                )
+              ],
+            )),
+        onHorizontalDragDown: (e) {
+          return;
+        },
+        onTap: () {
+          if (!controller.panelControllerHome.isPanelOpen) {
+            controller.panelControllerHome.open();
+          } else {
+            if (controller.panelController.isPanelOpen) controller.panelController.close();
+          }
+        },
+      ),
     );
   }
 
@@ -129,32 +113,14 @@ class HomeView extends GetView<HomeController> {
                 left: controller.getImageLeft(),
                 duration: const Duration(milliseconds: 0),
                 child: AnimatedScale(
-                  scale: 1 + (controller.slidePosition.value / (PlatformUtils.isIOS ? 7.6 : 7.4)),
-                  duration: const Duration(milliseconds: 100),
-                  child: SizedBox(
+                  scale: 1 + (controller.slidePosition.value / (controller.playing.value ? 5.5 : 7.2)),
+                  duration: const Duration(milliseconds: 120),
+                  child: SimpleExtendedImage(
+                    '${controller.mediaItem.value.extras?['image']}?param=500y500',
+                    fit: BoxFit.cover,
+                    height: controller.getImageSize(),
                     width: controller.getImageSize(),
-                    child: CarouselSlider.builder(
-                      itemCount: controller.mediaItems.length,
-                      carouselController: controller.buttonCarouselController,
-                      itemBuilder: (BuildContext context, int index, int pageViewIndex) => SimpleExtendedImage(
-                        '${controller.mediaItems[index].extras?['image']}?param=500y500',
-                        fit: BoxFit.cover,
-                        height: controller.getImageSize(),
-                        width: controller.getImageSize(),
-                        borderRadius: BorderRadius.circular(controller.getImageSize() / 2 * (1 - (controller.slidePosition.value >= .8 ? .97 : controller.slidePosition.value))),
-                      ),
-                      options: CarouselOptions(
-                          scrollPhysics:
-                              !controller.second.value && controller.slidePosition.value == 0 ? const NeverScrollableScrollPhysics() : const AlwaysScrollableScrollPhysics(),
-                          autoPlay: false,
-                          height: controller.getImageSize(),
-                          enlargeCenterPage: true,
-                          enlargeFactor: .6,
-                          enlargeStrategy: CenterPageEnlargeStrategy.height,
-                          viewportFraction: 1,
-                          initialPage: controller.playIndex.value,
-                          onPageChanged: (index, a) => Future.delayed(const Duration(milliseconds: 300),() => controller.audioServeHandler.playIndex(index))),
-                    ),
+                    borderRadius: BorderRadius.circular(controller.getImageSize() / 2 * (1 - (controller.slidePosition.value >= .8 ? .92 : controller.slidePosition.value))),
                   ),
                 ),
               ),
@@ -252,7 +218,7 @@ class HomeView extends GetView<HomeController> {
           visible: controller.slidePosition.value == 0,
           child: IconButton(
               onPressed: () {
-                if (controller.intervalClick(1)) controller.buttonCarouselController.jumpToPage(controller.playIndex.value + 1);
+                if (controller.intervalClick(1)) controller.audioServeHandler.skipToNext();
               },
               icon: Icon(
                 TablerIcons.player_skip_forward,

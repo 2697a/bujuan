@@ -5,9 +5,11 @@ import 'package:bujuan/pages/base_view.dart';
 import 'package:bujuan/pages/index/index_controller.dart';
 import 'package:bujuan/pages/user/user_controller.dart';
 import 'package:bujuan/widget/data_widget.dart';
+import 'package:bujuan/widget/request_widget/request_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 // import 'package:on_audio_query/on_audio_query.dart';
 import '../../common/constants/other.dart';
 import '../../routes/router.gr.dart';
@@ -20,8 +22,10 @@ class MainView extends GetView<IndexController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.transparent,
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
         centerTitle: false,
         leading: IconButton(
             onPressed: () {
@@ -30,36 +34,25 @@ class MainView extends GetView<IndexController> {
                 return;
               }
             },
-            icon: Obx(() => SimpleExtendedImage.avatar('${UserController.to.loginStatus.value ? UserController.to.userData.value.profile?.avatarUrl : ''}',width: 85.w))),
+            icon: Lottie.asset(
+              'assets/lottie/personal_character.json',
+              width: 90.w,
+            )),
         title: RichText(
             text: TextSpan(style: TextStyle(fontSize: 42.sp, color: Colors.grey, fontWeight: FontWeight.bold), text: 'Here  ', children: [
           TextSpan(text: '推荐歌单～', style: TextStyle(color: Theme.of(context).primaryColor.withOpacity(.9))),
         ])),
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.only(bottom: HomeController.to.getHomeBottomPadding(), top: 20.w),
-        child: Column(
-          children: [
-            BaseWidget<PersonalizedPlayListWrap>(
-                future: controller.getSheetData(),
-                childBuilder: (ServerStatusBean p ) {
-                  p as PersonalizedPlayListWrap;
-                  return GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    padding: EdgeInsets.only(left: 20.w, right: 20.w, bottom: HomeController.to.getHomeBottomPadding()),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      childAspectRatio: .73,
-                      crossAxisSpacing: 20.w,
-                    ),
-                    itemBuilder: (context, index) => _buildItem((p.result ?? [])[index], context),
-                    itemCount: (p.result ?? []).length,
-                  );
-                })
-          ],
+      body: RequestWidget<PersonalizedPlayListWrap>(dioMetaData: controller.personalizedPlaylistDioMetaData(), childBuilder: (p) => GridView.builder(
+        padding: EdgeInsets.only(left: 20.w, right: 20.w, top: 20.w),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          childAspectRatio: .73,
+          crossAxisSpacing: 20.w,
         ),
-      ),
+        itemBuilder: (context, index) => _buildItem((p.result ?? [])[index], context),
+        itemCount: (p.result ?? []).length,
+      )),
     );
   }
 
