@@ -5,7 +5,6 @@ import 'package:bujuan/routes/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 import '../../../widget/simple_extended_image.dart';
 
@@ -34,7 +33,7 @@ class MenuView extends GetView<HomeController> {
         Expanded(
             child: ListView.builder(
           padding: EdgeInsets.symmetric(vertical: 140.w),
-          itemBuilder: (context, index) => InkWell(
+          itemBuilder: (context1, index) => InkWell(
             child: Obx(() => Container(
                   padding: EdgeInsets.symmetric(horizontal: 0.w, vertical: 32.w),
                   child: Row(
@@ -47,7 +46,7 @@ class MenuView extends GetView<HomeController> {
                       ),
                       Padding(padding: EdgeInsets.symmetric(horizontal: 10.w)),
                       Icon(controller.leftMenus[index].icon,
-                          color: controller.currPathUrl.value == controller.leftMenus[index].pathUrl ? Theme.of(context).primaryColor : Theme.of(context).bottomAppBarColor),
+                          color: controller.currPathUrl.value == controller.leftMenus[index].pathUrl ? Theme.of(context).primaryColor : Theme.of(context).scaffoldBackgroundColor),
                       Expanded(
                           child: Padding(
                         padding: EdgeInsets.only(left: 30.w, top: 8.w),
@@ -55,7 +54,7 @@ class MenuView extends GetView<HomeController> {
                           controller.leftMenus[index].title,
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              color: controller.currPathUrl.value == controller.leftMenus[index].pathUrl ? Theme.of(context).primaryColor : Theme.of(context).bottomAppBarColor),
+                              color: controller.currPathUrl.value == controller.leftMenus[index].pathUrl ? Theme.of(context).primaryColor : Theme.of(context).scaffoldBackgroundColor),
                         ),
                       )),
                     ],

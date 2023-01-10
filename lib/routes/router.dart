@@ -4,6 +4,7 @@ import 'package:bujuan/pages/home/body/body_view.dart';
 import 'package:bujuan/pages/home/view/home_view.dart';
 import 'package:bujuan/pages/index/album_view.dart';
 import 'package:bujuan/pages/index/main_view.dart';
+import 'package:bujuan/pages/mv/mv_view.dart';
 import 'package:bujuan/pages/play_list/playlist.dart';
 import 'package:bujuan/pages/radio/my_radio_view.dart';
 import 'package:bujuan/pages/setting/settring_view.dart';
@@ -38,6 +39,7 @@ abstract class Routes {
   static const myRadio = _Paths.myRadio;
   static const guide = _Paths.guide;
   static const userSetting = _Paths.userSetting;
+  static const mv = _Paths.mv;
 }
 
 abstract class _Paths {
@@ -59,6 +61,7 @@ abstract class _Paths {
   static const myRadio = 'myRadio';
   static const guide = '/guide';
   static const userSetting = '/userSetting';
+  static const mv = '/mv';
 }
 
 @MaterialAutoRouter(
@@ -80,6 +83,7 @@ abstract class _Paths {
     AutoRoute(path: Routes.setting, page: SettingView),
     AutoRoute(path: Routes.guide, page: GuideView),
     AutoRoute(path: Routes.userSetting, page: UserSettingView),
+    AutoRoute(path: Routes.mv, page: MvView),
   ],
 )
 class $RootRouter {}

@@ -595,4 +595,24 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
     ));
     super.didChangePlatformBrightness();
   }
+
+  List<MediaItem> song2ToMedia(List<Song2> songs) {
+    return songs
+        .map((e) => MediaItem(
+            id: e.id,
+            duration: Duration(milliseconds: e.dt ?? 0),
+            artUri: Uri.parse('${e.al?.picUrl ?? ''}?param=500y500'),
+            extras: {
+              'url': '',
+              'image': e.al?.picUrl ?? '',
+              'type': '',
+              'liked': UserController.to.likeIds.contains(int.tryParse(e.id)),
+              'artist': (e.ar ?? []).map((e) => jsonEncode(e.toJson())).toList().join(' / '),
+              'mv':e.mv
+            },
+            title: e.name ?? "",
+            album: jsonEncode(e.al?.toJson()),
+            artist: (e.ar ?? []).map((e) => e.name).toList().join(' / ')))
+        .toList();
+  }
 }

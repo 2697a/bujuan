@@ -8,6 +8,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "50.0.0"
+  adaptive_dialog:
+    dependency: "direct main"
+    description:
+      name: adaptive_dialog
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.8.0+1"
   analyzer:
     dependency: transitive
     description:
@@ -15,6 +22,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "5.2.0"
+  animations:
+    dependency: transitive
+    description:
+      name: animations
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.0.7"
   archive:
     dependency: transitive
     description:
@@ -71,6 +85,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.1.13"
+  audio_video_progress_bar:
+    dependency: "direct main"
+    description:
+      name: audio_video_progress_bar
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.11.0"
   audioplayers:
     dependency: "direct main"
     description:
@@ -302,6 +323,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "3.0.2"
+  csslib:
+    dependency: transitive
+    description:
+      name: csslib
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.17.2"
   cupertino_icons:
     dependency: "direct main"
     description:
@@ -330,6 +358,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.0.0"
+  dynamic_color:
+    dependency: transitive
+    description:
+      name: dynamic_color
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.5.4"
   encrypt:
     dependency: "direct main"
     description:
@@ -499,6 +534,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.2.0"
+  html:
+    dependency: transitive
+    description:
+      name: html
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.15.1"
   http:
     dependency: transitive
     description:
@@ -527,6 +569,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "4.0.1"
+  intersperse:
+    dependency: transitive
+    description:
+      name: intersperse
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.0.0"
   io:
     dependency: transitive
     description:
@@ -583,6 +632,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.1.0"
+  macos_ui:
+    dependency: transitive
+    description:
+      name: macos_ui
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.7.5"
   matcher:
     dependency: transitive
     description:
@@ -1022,6 +1078,41 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.1.2"
+  video_player:
+    dependency: "direct main"
+    description:
+      name: video_player
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.4.10"
+  video_player_android:
+    dependency: transitive
+    description:
+      name: video_player_android
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.3.10"
+  video_player_avfoundation:
+    dependency: transitive
+    description:
+      name: video_player_avfoundation
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.3.8"
+  video_player_platform_interface:
+    dependency: transitive
+    description:
+      name: video_player_platform_interface
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "6.0.1"
+  video_player_web:
+    dependency: transitive
+    description:
+      name: video_player_web
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.0.13"
   watcher:
     dependency: transitive
     description:

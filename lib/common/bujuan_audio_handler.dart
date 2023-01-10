@@ -41,6 +41,9 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
         return MediaItem(id: map.id, duration: map.duration, artUri: map.artUri, extras: map.extras, title: map.title, artist: map.artist, album: map.album);
       }).toList();
       changeQueueLists(items, init: true);
+      playbackState.add(playbackState.value.copyWith(
+        queueIndex: _curIndex,
+      ));
       playIndex(_curIndex, playIt: false);
     }
   }

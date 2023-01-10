@@ -97,6 +97,9 @@ dependencies:
   aurora: ^1.0.0
   pull_to_refresh: ^2.0.0
   notification_permissions: ^0.6.1
+  video_player: ^2.4.10
+  audio_video_progress_bar: ^0.11.0
+  adaptive_dialog: ^1.8.0+1
 
 
 dev_dependencies:
