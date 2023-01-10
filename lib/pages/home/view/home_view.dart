@@ -18,14 +18,14 @@ class HomeView extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     controller.buildContext = context;
-    double bottomHeight = MediaQuery.of(controller.buildContext).padding.bottom * (PlatformUtils.isIOS ? 0.4 : 0.6);
+    double bottomHeight = MediaQuery.of(controller.buildContext).padding.bottom * (PlatformUtils.isIOS ? 0.6 : 0.8);
     if (bottomHeight == 0) bottomHeight = 25.w;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.transparent,
       body: WillPopScope(
           child: ZoomDrawer(
-            dragOffset: Get.width / 1.8,
+            dragOffset: Get.width / 2,
             menuScreenTapClose: true,
             showShadow: true,
             mainScreenTapClose: true,
@@ -37,13 +37,20 @@ class HomeView extends GetView<HomeController> {
             mainScreen: Obx(() => SlidingUpPanel(
                   controller: controller.panelControllerHome,
                   onPanelSlide: (value) => controller.changeSlidePosition(value),
+                  onPanelClosed: () {
+                    controller.changeStatusIconColor(false);
+                  },
+                  onPanelOpened: () {
+                    controller.changeStatusIconColor(true);
+                  },
                   parallaxEnabled: true,
+                  parallaxOffset: .05,
                   boxShadow: const [BoxShadow(blurRadius: 8.0, color: Color.fromRGBO(0, 0, 0, 0.15))],
                   color: Colors.transparent,
                   panel: const PanelView(),
                   body: const BodyView(),
                   isDraggable: !controller.second.value,
-                  header: controller.mediaItem.value.id.isNotEmpty ? _buildPanelHeader(bottomHeight) : const SizedBox.shrink(),
+                  header: controller.mediaItem.value.id.isNotEmpty ? _buildPanelHeader(bottomHeight,context) : const SizedBox.shrink(),
                   minHeight: controller.mediaItem.value.id.isNotEmpty ? controller.panelMobileMinSize + bottomHeight : 0,
                   maxHeight: Get.height,
                 )),
@@ -58,7 +65,7 @@ class HomeView extends GetView<HomeController> {
   // height: bottomHeight,
   // )
 
-  Widget _buildPanelHeader(bottomHeight) {
+  Widget _buildPanelHeader(bottomHeight,context) {
     return IgnorePointer(
       ignoring: controller.slidePosition.value == 1,
       child: GestureDetector(
@@ -70,7 +77,7 @@ class HomeView extends GetView<HomeController> {
                   width: Get.width,
                   height: controller.getPanelMinSize() + controller.getHeaderPadding().top + bottomHeight,
                   duration: const Duration(milliseconds: 0),
-                  child: _buildPlayBar(),
+                  child: _buildPlayBar(context),
                 ),
                 Positioned(
                   bottom: 0,
@@ -101,7 +108,7 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  Widget _buildPlayBar() {
+  Widget _buildPlayBar(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -113,15 +120,15 @@ class HomeView extends GetView<HomeController> {
                 left: controller.getImageLeft(),
                 duration: const Duration(milliseconds: 0),
                 child: AnimatedScale(
-                  scale: 1 + (controller.slidePosition.value / (controller.playing.value ? 5.5 : 7.2)),
-                  duration: const Duration(milliseconds: 120),
-                  child: Opacity(opacity: .85,child: SimpleExtendedImage(
+                  scale: 1 + (controller.slidePosition.value / (controller.playing.value ? 6 : 7)),
+                  duration: const Duration(milliseconds: 100),
+                  child: SimpleExtendedImage(
                     '${controller.mediaItem.value.extras?['image']}?param=500y500',
                     fit: BoxFit.cover,
                     height: controller.getImageSize(),
                     width: controller.getImageSize(),
                     borderRadius: BorderRadius.circular(controller.getImageSize() / 2 * (1 - (controller.slidePosition.value >= .8 ? .92 : controller.slidePosition.value))),
-                  ),),
+                  ),
                 ),
               ),
               AnimatedOpacity(
@@ -133,18 +140,31 @@ class HomeView extends GetView<HomeController> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        controller.mediaItem.value.title,
-                        style: TextStyle(fontSize: 28.sp, color: controller.getLightTextColor(), fontWeight: FontWeight.w500),
+                      RichText(
+                        text: TextSpan(
+                            text: '${controller.mediaItem.value.title} - ',
+                            children: [
+                              TextSpan(
+                                text: controller.mediaItem.value.artist ?? '',
+                                style: TextStyle(fontSize: 24.sp, color: controller.second.value?controller.getPlayPageTheme(context).withOpacity(.6):controller.getLightTextColor().withOpacity(.6), fontWeight: FontWeight.w500),
+                              )
+                            ],
+                            style: TextStyle(fontSize: 30.sp, color: controller.second.value?controller.getPlayPageTheme(context):controller.getLightTextColor(), fontWeight: FontWeight.w500)),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      Padding(padding: EdgeInsets.symmetric(vertical: 5.w)),
-                      Text(
-                        controller.mediaItem.value.artist ?? '',
-                        style: TextStyle(fontSize: 22.sp, color: controller.getLightTextColor(), fontWeight: FontWeight.w500),
-                        maxLines: 1,
-                      )
+                      // Text(
+                      //   controller.mediaItem.value.title,
+                      //   style: TextStyle(fontSize: 32.sp, color: controller.getLightTextColor(), fontWeight: FontWeight.w500),
+                      //   maxLines: 1,
+                      //   overflow: TextOverflow.ellipsis,
+                      // )
+                      // Padding(padding: EdgeInsets.symmetric(vertical: 5.w)),
+                      // Text(
+                      //   controller.mediaItem.value.artist ?? '',
+                      //   style: TextStyle(fontSize: 22.sp, color: controller.getLightTextColor(), fontWeight: FontWeight.w500),
+                      //   maxLines: 1,
+                      // )
                     ],
                   ),
                 ),
@@ -211,7 +231,7 @@ class HomeView extends GetView<HomeController> {
               icon: Icon(
                 controller.playing.value ? TablerIcons.player_pause : TablerIcons.player_play,
                 size: controller.playing.value ? 46.w : 42.w,
-                color: controller.getLightTextColor(),
+                color: controller.second.value?controller.getPlayPageTheme(context).withOpacity(.6):controller.getLightTextColor().withOpacity(.6),
               )),
         ),
         Visibility(
@@ -223,7 +243,7 @@ class HomeView extends GetView<HomeController> {
               icon: Icon(
                 TablerIcons.player_skip_forward,
                 size: 40.w,
-                color: controller.getLightTextColor(),
+                color: controller.second.value?controller.getPlayPageTheme(context).withOpacity(.6):controller.getLightTextColor().withOpacity(.6),
               )),
         )
       ],

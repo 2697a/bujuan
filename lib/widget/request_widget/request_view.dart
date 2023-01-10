@@ -2,6 +2,7 @@ import 'package:bujuan/common/constants/other.dart';
 import 'package:bujuan/common/netease_api/src/api/bean.dart';
 import 'package:bujuan/generated/json/base/json_convert_content.dart';
 import 'package:bujuan/widget/data_widget.dart';
+import 'package:bujuan/widget/request_widget/request_loadmore_view.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
@@ -46,7 +47,7 @@ class RequestWidgetState<T> extends State<RequestWidget<T>> with RefreshState {
     return _loading
         ? const LoadingView()
         : _error
-            ? const EmptyView()
+            ? const ErrorView()
             : widget.childBuilder(data);
   }
 
@@ -63,6 +64,7 @@ class RequestWidgetState<T> extends State<RequestWidget<T>> with RefreshState {
       _loading = false;
       if (code == 200) {
         data = JsonConvert.fromJsonAsT<T>(value.data) as T;
+        widget.onData?.call(data);
         _error = false;
       } else {
         _error = true;
@@ -71,46 +73,17 @@ class RequestWidgetState<T> extends State<RequestWidget<T>> with RefreshState {
       // if(serverStatusBean.code ==200){
       //   data = JsonConvert.fromJsonAsT<T>(value.data)!;
       // }
+    }, onError: (e) {
+      setState(() {
+        print('catch==========${e}');
+        _loading = false;
+        _error = true;
+      });
     });
   }
 
   @override
   setParams(DioMetaData params) {
     dioMetaData = params;
-  }
-}
-
-mixin RefreshState {
-  initState() {
-    callRefresh();
-  }
-
-  setParams(DioMetaData params);
-
-  callRefresh();
-}
-
-class RequestRefreshController {
-  /// 更新入参并刷新
-  void callRefreshWithParams(DioMetaData params) {
-    _requestBoxState?.setParams(params);
-    _requestBoxState?.callRefresh();
-  }
-
-  /// 触发刷新
-  void callRefresh() {
-    _requestBoxState?.callRefresh();
-  }
-
-  // 状态
-  RefreshState? _requestBoxState;
-
-  // 绑定状态
-  void bindEasyRefreshState(RefreshState state) {
-    _requestBoxState = state;
-  }
-
-  void dispose() {
-    _requestBoxState = null;
   }
 }

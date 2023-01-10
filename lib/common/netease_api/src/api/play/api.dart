@@ -22,6 +22,18 @@ mixin ApiPlay {
     });
   }
 
+  DioMetaData subscribePlayListDioMetaData(String pid, {bool subscribe = true}) {
+    var params = {'id': pid};
+    return DioMetaData(joinUri('/weapi/playlist/${subscribe?'subscribe':'unsubscribe'}'), data: params, options: joinOptions());
+  }
+
+  /// 歌单收藏
+  Future<ServerStatusBean> subscribePlayList(String pid, {bool subscribe = true}) {
+    return Https.dioProxy.postUri(subscribePlayListDioMetaData(pid, subscribe: subscribe)).then((Response value) {
+      return ServerStatusBean.fromJson(value.data);
+    });
+  }
+
   DioMetaData playlistCatalogueDioMetaData() {
     return DioMetaData(joinUri('/weapi/playlist/catalogue'), data: {}, options: joinOptions());
   }
@@ -372,9 +384,9 @@ mixin ApiPlay {
 
   /// 获取云盘?音乐?
   /// !需要登录
-  Future<CloudEntity> cloudSong({int offset = 0, int limit = 30}) {
+  Future<CloudSongListWrap> cloudSong({int offset = 0, int limit = 30}) {
     return Https.dioProxy.postUri(cloudSongDioMetaData(offset: offset, limit: limit)).then((Response value) {
-      return CloudEntity.fromJson(value.data);
+      return CloudSongListWrap.fromJson(value.data);
     });
   }
 
@@ -428,7 +440,7 @@ mixin ApiPlay {
         data: params,
         options: joinOptions(
           userAgent: UserAgent.Pc,
-          cookies: {'os': 'pc','appver':'2.9.7'},
+          cookies: {'os': 'pc', 'appver': '2.9.7'},
         ));
   }
 

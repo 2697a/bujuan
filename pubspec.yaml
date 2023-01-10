@@ -94,8 +94,9 @@ dependencies:
   preload_page_view: ^0.1.6
   auto_size_text: ^3.0.0
   lottie: ^2.1.0
-  scaffold_gradient_background: ^1.0.3+1
   aurora: ^1.0.0
+  pull_to_refresh: ^2.0.0
+  notification_permissions: ^0.6.1
 
 
 dev_dependencies:

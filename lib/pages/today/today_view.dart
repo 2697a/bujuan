@@ -1,9 +1,11 @@
 import 'dart:convert';
 
 import 'package:audio_service/audio_service.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/widget/request_widget/request_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../common/netease_api/src/api/play/bean.dart';
@@ -41,16 +43,16 @@ class _TodayViewState extends State<TodayView> {
                     .map((e) => MediaItem(
                     id: e.id,
                     duration: Duration(milliseconds: e.dt ?? 0),
-                    artUri: Uri.parse('${e.al.picUrl ?? ''}?param=500y500'),
+                    artUri: Uri.parse('${e.al?.picUrl ?? ''}?param=500y500'),
                     extras: {
                       'url': '',
-                      'image': e.al.picUrl ?? '',
+                      'image': e.al?.picUrl ?? '',
                       'type': '',
                       'liked': UserController.to.likeIds.contains(int.tryParse(e.id)),
                       'artist': (e.ar ?? []).map((e) => jsonEncode(e.toJson())).toList().join(' / ')
                     },
                     title: e.name ?? "",
-                    album: jsonEncode(e.al.toJson()),
+                    album: jsonEncode(e.al?.toJson()),
                     artist: (e.ar ?? []).map((e) => e.name).toList().join(' / ')))
                     .toList());
               return ListView.builder(
@@ -64,7 +66,8 @@ class _TodayViewState extends State<TodayView> {
     );
   }
 
-  Widget _buildItem(MediaItem data,int index) {
+
+  Widget _buildItem(MediaItem data, int index) {
     return InkWell(
       child: SizedBox(
         height: 120.w,
@@ -74,6 +77,7 @@ class _TodayViewState extends State<TodayView> {
               '${data.extras?['image'] ?? ''}?param=200y200',
               width: 85.w,
               height: 85.w,
+              borderRadius: BorderRadius.circular(10.w),
             ),
             Expanded(
                 child: Padding(
@@ -98,7 +102,21 @@ class _TodayViewState extends State<TodayView> {
           ],
         ),
       ),
-      onTap: () => HomeController.to.playByIndex(index, 'today',mediaItem: _mediaItem),
+      onTap: () => HomeController.to.playByIndex(index, (context.routeData.args as Play).id, mediaItem: _mediaItem),
     );
+    // return ListTile(
+    //   dense: true,
+    //   contentPadding: EdgeInsets.symmetric(horizontal: 10.w),
+    //   leading: SimpleExtendedImage(
+    //     '${data.extras?['image'] ?? ''}?param=200y200',
+    //     width: 80.w,
+    //     height: 80.w,
+    //   ),
+    //   title: Text(data.title),
+    //   subtitle: Text(data.artist??''),
+    //   onTap: () {
+    //     controller.playIndex(index);
+    //   },
+    // );
   }
 }

@@ -45,8 +45,8 @@ class PlayListController extends GetxController {
       mediaItems.add(MediaItem(
           id: e.id,
           duration: Duration(milliseconds: e.dt ?? 0),
-          artUri: Uri.parse('${e.al.picUrl ?? ''}?param=300y300'),
-          extras: {'url': '', 'image': e.al.picUrl ?? '', 'type': '', 'available': e.available},
+          artUri: Uri.parse('${e.al?.picUrl ?? ''}?param=300y300'),
+          extras: {'url': '', 'image': e.al?.picUrl ?? '', 'type': '', 'available': e.available},
           title: e.name ?? "",
           artist: (e.ar ?? []).map((e) => e.name).toList().join(' / ')));
     }

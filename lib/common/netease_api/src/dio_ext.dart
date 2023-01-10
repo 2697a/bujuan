@@ -1,3 +1,5 @@
+import 'package:bujuan/common/constants/other.dart';
+import 'package:bujuan/common/netease_api/src/api/bean.dart';
 import 'package:dio/dio.dart';
 
 class Https {
@@ -8,8 +10,7 @@ class Https {
 
   static Map<String, String> optHeader = {};
 
-  static Dio get dio =>
-      _dio ??= Dio(BaseOptions(connectTimeout: 10000, headers: optHeader));
+  static Dio get dio => _dio ??= Dio(BaseOptions(connectTimeout: 8000, headers: optHeader));
 
   static DioProxy get dioProxy => _dioProxy ??= DioProxy();
 }
@@ -32,13 +33,16 @@ class DioProxy {
     CancelToken? cancelToken,
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
-  }) {
+  }) async {
     var error = metaData.error;
     if (error != null) {
       return Future.error(error);
     }
-    return Https.dio
-        .postUri(metaData.uri, data: metaData.data, options: metaData.options);
+    try {
+      return await Https.dio.postUri(metaData.uri, data: metaData.data, options: metaData.options);
+    } on DioError catch (e) {
+      return Future.error(e);
+    }
   }
 
   Future<Response<T>> getUri<T>(
@@ -61,10 +65,6 @@ class DioProxy {
     CancelToken? cancelToken,
     ProgressCallback? onReceiveProgress,
   }) {
-    return Https.dio.get(path,
-        queryParameters: queryParameters,
-        options: options,
-        cancelToken: cancelToken,
-        onReceiveProgress: onReceiveProgress);
+    return Https.dio.get(path, queryParameters: queryParameters, options: options, cancelToken: cancelToken, onReceiveProgress: onReceiveProgress);
   }
 }

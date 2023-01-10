@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
+import '../../widget/app_bar.dart';
+
 class PlayListA extends GetView<PlayListController> {
   const PlayListA({super.key});
 
@@ -23,7 +25,7 @@ class PlayListA extends GetView<PlayListController> {
           ),
           Scaffold(
             backgroundColor: Colors.transparent,
-            appBar: AppBar(
+            appBar: MyAppBar(
               title: const Text('Song Sheet'),
               backgroundColor: Colors.transparent,
             ),
@@ -36,8 +38,8 @@ class PlayListA extends GetView<PlayListController> {
                           .map((e) => MediaItem(
                               id: e.id,
                               duration: Duration(milliseconds: e.dt ?? 0),
-                              artUri: Uri.parse('${e.al.picUrl ?? ''}?param=500y500'),
-                              extras: {'url': '', 'image': e.al.picUrl ?? '', 'type': '', 'available': e.available},
+                              artUri: Uri.parse('${e.al?.picUrl ?? ''}?param=500y500'),
+                              extras: {'url': '', 'image': e.al?.picUrl ?? '', 'type': '', 'available': e.available},
                               title: e.name ?? "",
                               artist: (e.ar ?? []).map((e) => e.name).toList().join(' / ')))
                           .toList();

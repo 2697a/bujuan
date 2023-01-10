@@ -42,6 +42,7 @@ NeteaseAccountProfile _$NeteaseAccountProfileFromJson(
     ..detailDescription = json['detailDescription'] as String?
     ..recommendReason = json['recommendReason'] as String?
     ..gender = json['gender'] as int?
+    ..followeds = json['followeds'] as int?
     ..authority = json['authority'] as int?
     ..birthday = json['birthday'] as int?
     ..city = json['city'] as int?

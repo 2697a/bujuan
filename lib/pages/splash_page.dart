@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'package:auto_route/auto_route.dart';
+import 'package:bujuan/common/constants/key.dart';
+import 'package:bujuan/common/storage.dart';
 import 'package:bujuan/routes/router.gr.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
@@ -23,30 +26,26 @@ class SplashPageState extends State<SplashPage> {
   Duration duration = const Duration(milliseconds: 2000);
   Duration durationFinish = const Duration(milliseconds: 2200);
   bool isFinish = false;
+
   // final OnAudioQuery onAudioQuery = GetIt.instance<OnAudioQuery>();
 
   @override
   void initState() {
     super.initState();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       changeOpacity();
+      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        statusBarBrightness: Get.isPlatformDarkMode ? Brightness.dark : Brightness.light,
+        statusBarIconBrightness: Get.isPlatformDarkMode ? Brightness.light : Brightness.dark,
+      ));
     });
 
     Future.delayed(durationFinish, () {
-      AutoRouter.of(context).replaceNamed(Routes.home);
-      // requestPermission().then((value) => {if (value) {
-      //   AutoRouter.of(context).pushNamed(Routes.home)
-      // }});
+      bool noFirst = StorageUtil().getBool(noFirstOpen);
+      AutoRouter.of(context).replaceNamed(noFirst ? Routes.home : Routes.guide);
     });
   }
-
-  // Future<bool> requestPermission() async {
-    // bool permissionStatus = await onAudioQuery.permissionsStatus();
-    // if (!permissionStatus) {
-    //   permissionStatus = await onAudioQuery.permissionsRequest();
-    // }
-    // return permissionStatus;
-  // }
 
   changeOpacity() {
     setState(() {
@@ -82,11 +81,6 @@ class SplashPageState extends State<SplashPage> {
                     width: Get.width / 1.8,
                     fit: BoxFit.fitWidth,
                   ),
-                  // Container(
-                  //   alignment: Alignment.bottomCenter,
-                  //   padding: EdgeInsets.only(bottom: 100.w),
-                  //   child:  Text('不倦',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 56.sp),),
-                  // )
                 ],
               ),
             ),

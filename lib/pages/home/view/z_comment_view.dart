@@ -13,41 +13,43 @@ class CommentView extends GetView<HomeController> {
   Widget build(BuildContext context) {
     return Obx(() => ListView.builder(
       padding: const EdgeInsets.all(0),
-          itemBuilder: (context, index) => _buildItem(controller.comments[index]),
+          itemBuilder: (context1, index) => _buildItem(controller.comments[index],context),
           itemCount: controller.comments.length,
         ));
   }
 
-  Widget _buildItem(CommentItem comment) {
+  Widget _buildItem(CommentItem comment,BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 20.w, horizontal: 30.w),
-      child: Obx(() => Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  SimpleExtendedImage.avatar(
-                    '${comment.user.avatarUrl ?? ''}?param=150y150',
-                    width: 60.w,
-                    height: 60.w,
-                  ),
-                  Padding(padding: EdgeInsets.symmetric(horizontal: 8.w)),
-                  Expanded(
-                      child: Text(
-                    (comment.user.nickname ?? ''),
-                    style: TextStyle(color: controller.rx.value.main?.bodyTextColor,fontSize: 28.sp),
-                  ))
-                ],
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: 20.w,left: 80.w),
-                child: Text(
-                  (comment.content ?? '').replaceAll('\n', ''),
-                  style: TextStyle(color: controller.rx.value.main?.bodyTextColor.withOpacity(.5),fontSize: 24.sp),
+      child: Obx((){
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                SimpleExtendedImage.avatar(
+                  '${comment.user.avatarUrl ?? ''}?param=150y150',
+                  width: 60.w,
+                  height: 60.w,
                 ),
+                Padding(padding: EdgeInsets.symmetric(horizontal: 8.w)),
+                Expanded(
+                    child: Text(
+                      (comment.user.nickname ?? ''),
+                      style: TextStyle(color: controller.getPlayPageTheme(context),fontSize: 28.sp),
+                    ))
+              ],
+            ),
+            Padding(
+              padding: EdgeInsets.only(top: 20.w,left: 80.w),
+              child: Text(
+                (comment.content ?? '').replaceAll('\n', ''),
+                style: TextStyle(color: controller.getPlayPageTheme(context),fontSize: 24.sp),
               ),
-            ],
-          )),
+            ),
+          ],
+        );
+      }),
     );
   }
 }

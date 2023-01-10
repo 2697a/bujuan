@@ -9,8 +9,10 @@ class CustomFiled extends StatefulWidget {
   final TextEditingController textEditingController;
   final bool? pass;
   final TextInputType? textInputType;
+  final ValueChanged<String>? onSubmitted;
+  final TextInputAction? textInputAction;
 
-  const CustomFiled({Key? key, required this.iconData, this.hitText, this.hintStyle, required this.textEditingController, this.pass, this.textInputType}) : super(key: key);
+  const CustomFiled({Key? key, required this.iconData, this.hitText, this.hintStyle, required this.textEditingController, this.pass, this.textInputType, this.onSubmitted, this.textInputAction}) : super(key: key);
 
   @override
   State<CustomFiled> createState() => _CustomFiledState();
@@ -44,6 +46,8 @@ class _CustomFiledState extends State<CustomFiled> {
             controller: widget.textEditingController,
             keyboardType: widget.textInputType ?? TextInputType.text,
             cursorColor: Theme.of(context).primaryColor.withOpacity(.4),
+            onSubmitted: widget.onSubmitted,
+            textInputAction: widget.textInputAction,
             decoration: InputDecoration(
               hintText: widget.hitText ?? '',
               hintStyle: TextStyle(fontSize: 28.sp, color: Colors.grey),
@@ -55,7 +59,7 @@ class _CustomFiledState extends State<CustomFiled> {
             visible: widget.pass ?? false,
             child: Padding(padding: EdgeInsets.symmetric(horizontal: 10.w),child: GestureDetector(
               child: Icon(
-                isPass ? TablerIcons.ear_off : TablerIcons.eye,
+                isPass ? TablerIcons.eye_off : TablerIcons.eye,
                 size: 40.sp,
               ),
               onTap: () => setState(() {

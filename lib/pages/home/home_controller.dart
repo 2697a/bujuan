@@ -4,10 +4,12 @@ import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:auto_route/auto_route.dart';
+import 'package:bujuan/common/constants/key.dart';
 import 'package:bujuan/common/constants/other.dart';
 import 'package:bujuan/common/constants/platform_utils.dart';
 import 'package:bujuan/common/lyric_parser/parser_lrc.dart';
 import 'package:bujuan/common/netease_api/netease_music_api.dart';
+import 'package:bujuan/common/storage.dart';
 import 'package:bujuan/pages/home/view/z_comment_view.dart';
 import 'package:bujuan/pages/home/view/z_lyric_view.dart';
 import 'package:bujuan/pages/home/view/z_playlist_view.dart';
@@ -21,6 +23,7 @@ import 'package:flutter_zoom_drawer/config.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:preload_page_view/preload_page_view.dart';
+import 'dart:math' as math;
 
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:tuna_flutter_range_slider/tuna_flutter_range_slider.dart';
@@ -32,13 +35,15 @@ import '../../routes/router.dart';
 import '../../widget/mobile/flashy_navbar.dart';
 import 'view/home_view.dart';
 
+typedef _ContrastCalculator = double Function(Color a, Color b, int alpha);
+
 class HomeController extends SuperController with GetSingleTickerProviderStateMixin {
-  double panelHeaderSize = 90.h;
-  double panelMobileMinSize = 90.h;
+  double panelHeaderSize = 100.w;
+  double panelMobileMinSize = 100.w;
   final List<LeftMenu> leftMenus = [
     LeftMenu('个人中心', TablerIcons.user, Routes.user, '/home/user'),
     LeftMenu('推荐歌单', TablerIcons.smart_home, Routes.index, '/home/index'),
-    // LeftMenu('个人云盘', TablerIcons.cloud, Routes.search, '/home/search'),
+    LeftMenu('个性设置', TablerIcons.settings, Routes.setting, '/setting'),
   ];
 
   RxList<FlashyNavbarItem> bottomItems = <FlashyNavbarItem>[].obs;
@@ -77,6 +82,13 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
 
   //是否播放中
   RxBool playing = false.obs;
+
+  RxBool fm = false.obs;
+
+  RxBool leftImage = true.obs;
+
+  //是否渐变播放背景
+  RxBool gradientBackground = false.obs;
 
   //上下文
   late BuildContext buildContext;
@@ -130,11 +142,13 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   //路由相关
   AutoRouterDelegate? autoRouterDelegate;
 
+  RxBool isAurora = false.obs;
+
   var lastPopTime = DateTime.now();
 
   bool intervalClick(int needTime) {
     // 防重复提交
-    if (DateTime.now().difference(lastPopTime) > const Duration(milliseconds: 1000)) {
+    if (DateTime.now().difference(lastPopTime) > const Duration(milliseconds: 800)) {
       lastPopTime = DateTime.now();
       return true;
     } else {
@@ -145,6 +159,10 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   //进度
   @override
   void onInit() async {
+    StorageUtil().setBool(noFirstOpen, true);
+    leftImage.value = StorageUtil().getBool(leftImageSp);
+    gradientBackground.value = StorageUtil().getBool(gradientBackgroundSp);
+    fm.value = StorageUtil().getBool(fmSp);
     super.onInit();
   }
 
@@ -160,11 +178,12 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
       ..clear()
       ..addAll(value));
     audioServeHandler.mediaItem.listen((value) async {
+      lyricsLineModels.clear();
       if (value == null) return;
       mediaItem.value = value;
       _getAlbumColor();
       _getSimiSheet();
-      await _getLyric();
+      _getLyric();
       _getSongTalk();
       _setPlayListOffset();
     });
@@ -197,8 +216,12 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
     myDrawerController.stateNotifier?.addListener(() {
       if (myDrawerController.isOpen!()) {
         SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-          statusBarIconBrightness: Theme.of(buildContext).brightness == Brightness.dark ? Brightness.dark : Brightness.light,
+          statusBarBrightness: Get.isPlatformDarkMode ? Brightness.light : Brightness.dark,
+          statusBarIconBrightness: Get.isPlatformDarkMode ? Brightness.dark : Brightness.light,
         ));
+      }
+      if (!myDrawerController.isOpen!()) {
+        didChangePlatformBrightness();
       }
     });
     super.onReady();
@@ -211,7 +234,6 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
     String lyric = songLyricWrap.lrc.lyric ?? "";
     String lyricTran = songLyricWrap.tlyric.lyric ?? "";
     hasTran.value = false;
-    lyricsLineModels.clear();
     if (lyric.isNotEmpty) {
       var list = ParserLrc(lyric).parseLines();
       var listTran = ParserLrc(lyricTran).parseLines();
@@ -231,6 +253,29 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   //获取专辑颜色
   _getAlbumColor() async {
     rx.value = await ImageUtils.getImageColor('${mediaItem.value.extras?['image'] ?? ''}?param=500y500');
+    if (slidePosition.value == 1 || second.value) changeStatusIconColor(true);
+  }
+
+  changeStatusIconColor(bool changed) {
+    const Color white = Color(0xffffffff);
+    var color = rx.value.main?.color ?? Colors.white;
+    int? lightBodyAlpha = _calculateMinimumAlpha(white, color, 4.5);
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarBrightness: changed
+          ? lightBodyAlpha == null
+              ? Brightness.light
+              : Brightness.dark
+          : Get.isPlatformDarkMode
+              ? Brightness.dark
+              : Brightness.light,
+      statusBarIconBrightness: changed
+          ? lightBodyAlpha == null
+              ? Brightness.dark
+              : Brightness.light
+          : Get.isPlatformDarkMode
+              ? Brightness.light
+              : Brightness.dark,
+    ));
   }
 
   //获取相似歌单
@@ -253,7 +298,10 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   }
 
   listenRouter() {
-    currPathUrl.value = autoRouterDelegate?.urlState.url ?? '';
+    String path = autoRouterDelegate?.urlState.url ?? '';
+    if (path == '/home/user' || path == '/home/index') {
+      currPathUrl.value = path;
+    }
   }
 
   static HomeController get to => Get.find();
@@ -339,14 +387,75 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   //改变panel位置
   void changeSlidePosition(value) {
     slidePosition.value = value;
+    // SystemChrome.setEnabledSystemUIMode(value>0.5?SystemUiMode.manual:SystemUiMode.edgeToEdge,overlays: []);
     _setPlayListOffset();
+  }
+
+  double _calculateContrast(Color foreground, Color background) {
+    assert(background.alpha == 0xff, 'background can not be translucent: $background.');
+    if (foreground.alpha < 0xff) {
+      // If the foreground is translucent, composite the foreground over the
+      // background
+      foreground = Color.alphaBlend(foreground, background);
+    }
+    final double lightness1 = foreground.computeLuminance() + 0.05;
+    final double lightness2 = background.computeLuminance() + 0.05;
+    return math.max(lightness1, lightness2) / math.min(lightness1, lightness2);
+  }
+
+  int? _calculateMinimumAlpha(Color foreground, Color background, double minContrastRatio) {
+    assert(background.alpha == 0xff, 'The background cannot be translucent: $background.');
+    double contrastCalculator(Color fg, Color bg, int alpha) {
+      final Color testForeground = fg.withAlpha(alpha);
+      return _calculateContrast(testForeground, bg);
+    }
+
+    // First lets check that a fully opaque foreground has sufficient contrast
+    final double testRatio = contrastCalculator(foreground, background, 0xff);
+    if (testRatio < minContrastRatio) {
+      // Fully opaque foreground does not have sufficient contrast, return error
+      return null;
+    }
+    foreground = foreground.withAlpha(0xff);
+    return _binaryAlphaSearch(foreground, background, minContrastRatio, contrastCalculator);
+  }
+
+  int _binaryAlphaSearch(
+    Color foreground,
+    Color background,
+    double minContrastRatio,
+    _ContrastCalculator calculator,
+  ) {
+    assert(background.alpha == 0xff, 'The background cannot be translucent: $background.');
+    const int minAlphaSearchMaxIterations = 10;
+    const int minAlphaSearchPrecision = 1;
+
+    // Binary search to find a value with the minimum value which provides
+    // sufficient contrast
+    int numIterations = 0;
+    int minAlpha = 0;
+    int maxAlpha = 0xff;
+    while (numIterations <= minAlphaSearchMaxIterations && (maxAlpha - minAlpha) > minAlphaSearchPrecision) {
+      final int testAlpha = (minAlpha + maxAlpha) ~/ 2;
+      final double testRatio = calculator(foreground, background, testAlpha);
+      if (testRatio < minContrastRatio) {
+        minAlpha = testAlpha;
+      } else {
+        maxAlpha = testAlpha;
+      }
+      numIterations++;
+    }
+    // Conservatively return the max of the range of possible alphas, which is
+    // known to pass.
+    return maxAlpha;
   }
 
   //设置歌词列表偏移量
   Future<void> _setPlayListOffset() async {
     if (slidePosition.value < 1 && !second.value) return;
+    bool maxOffset = playListScrollController.position.pixels >= playListScrollController.position.maxScrollExtent;
     int index = mediaItems.indexWhere((element) => element.id == mediaItem.value.id);
-    if (index != -1) {
+    if (index != -1 && !maxOffset) {
       double offset = 110.w * index;
       await playListScrollController.animateTo(offset, duration: const Duration(milliseconds: 300), curve: Curves.linear);
     }
@@ -369,7 +478,6 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
     return true;
   }
 
-
   //播放歌曲根据下标
   playByIndex(int index, String queueTitle, {List<MediaItem>? mediaItem}) async {
     String title = audioServeHandler.queueTitle.value;
@@ -383,6 +491,28 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
     }
   }
 
+  getFmSongList() async {
+    SongListWrap2 songListWrap2 = await NeteaseMusicApi().userRadio();
+    if (songListWrap2.code == 200) {
+      List<Song> songs = songListWrap2.data ?? [];
+      List<MediaItem> medias = songs
+          .map((e) => MediaItem(
+              id: e.id,
+              duration: Duration(milliseconds: e.duration ?? 0),
+              artUri: Uri.parse('${e.album?.picUrl ?? ''}?param=500y500'),
+              extras: {
+                'image': e.album?.picUrl ?? '',
+                'liked': UserController.to.likeIds.contains(int.tryParse(e.id)),
+                'artist': (e.artists ?? []).map((e) => jsonEncode(e.toJson())).toList().join(' / ')
+              },
+              title: e.name ?? "",
+              album: jsonEncode(e.album!.toJson()),
+              artist: (e.artists ?? []).map((e) => e.name).toList().join(' / ')))
+          .toList();
+      audioServeHandler.addFmItems(medias, false);
+    }
+  }
+
   //获取图片亮色背景下文字显示的颜色
   Color getLightTextColor() {
     return Theme.of(buildContext).iconTheme.color?.withOpacity(.8) ?? Colors.transparent;
@@ -393,7 +523,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
     return EdgeInsets.only(
       left: 30.w,
       right: 30.w,
-      top: (MediaQuery.of(buildContext).padding.top + 60.h * (slidePosition.value)) * (second.value ? (1 - slidePosition.value) : slidePosition.value),
+      top: (MediaQuery.of(buildContext).padding.top + 70.h * (slidePosition.value)) * (second.value ? (1 - slidePosition.value) : slidePosition.value),
     );
   }
 
@@ -403,12 +533,12 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
 
   //外层panel的高度和颜色
   double getPanelMinSize() {
-    return panelHeaderSize * (1 + slidePosition.value * 5.6);
+    return panelHeaderSize * (1 + slidePosition.value * 6);
   }
 
   //获取图片的宽高
   double getImageSize() {
-    return (panelHeaderSize * .8) * (1 + slidePosition.value * 5.2);
+    return (panelHeaderSize * .8) * (1 + slidePosition.value * 5.65);
   }
 
   //获取图片离左侧的间距
@@ -419,6 +549,10 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   List<FlutterSliderHatchMarkLabel> updateEffects(double leftPercent, double rightPercent) {
     List<FlutterSliderHatchMarkLabel> newLabels = mEffects.map((e) => FlutterSliderHatchMarkLabel()).toList();
     return newLabels;
+  }
+
+  Color getPlayPageTheme(BuildContext context) {
+    return isAurora.value ? Theme.of(context).cardColor.withOpacity(.8) : rx.value.main?.titleTextColor.withOpacity(.7) ?? Colors.transparent;
   }
 
   @override
@@ -450,5 +584,15 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   @override
   void onResumed() {
     // WidgetUtil.showToast('onResumed');
+  }
+
+  @override
+  void didChangePlatformBrightness() {
+    if (second.value || slidePosition.value == 1) return;
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarBrightness: Get.isPlatformDarkMode ? Brightness.dark : Brightness.light,
+      statusBarIconBrightness: Get.isPlatformDarkMode ? Brightness.light : Brightness.dark,
+    ));
+    super.didChangePlatformBrightness();
   }
 }

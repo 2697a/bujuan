@@ -3,11 +3,9 @@ import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:scaffold_gradient_background/scaffold_gradient_background.dart';
+import 'package:lottie/lottie.dart';
 
-import '../../../common/constants/icon.dart';
 import '../../../common/constants/platform_utils.dart';
 
 class BodyView extends GetView<HomeController> {
@@ -20,6 +18,7 @@ class BodyView extends GetView<HomeController> {
     if (bottomHeight == 0) bottomHeight = 25.w;
     return Obx(
       () => Scaffold(
+        resizeToAvoidBottomInset: false,
         body: Stack(
           alignment: Alignment.topRight,
           children: [
@@ -29,20 +28,24 @@ class BodyView extends GetView<HomeController> {
               child: Aurora(
                 size: 800.w,
                 colors: [
-                  controller.rx.value.light?.color.withOpacity(.25) ?? Colors.transparent,
-                  controller.rx.value.main?.color.withOpacity(.25) ?? Colors.transparent,
+                  controller.rx.value.light?.color.withOpacity(.35) ?? Colors.transparent,
+                  controller.rx.value.main?.color.withOpacity(.35) ?? Colors.transparent,
                 ],
                 blur: 400,
               ),
             ),
-            SafeArea(
-                child: Padding(
-                  padding: EdgeInsets.only(right: 30.w),
-                  child: Opacity(opacity: .9,child: SvgPicture.asset(
-                    AppIcons.meTop,
-                    width: Get.width / 1.9,
-                  ),),
-                )),
+            Visibility(visible: controller.leftImage.value,child:  Positioned(
+              top: -70.w,
+              right: -85.w,
+              child: Opacity(
+                  opacity: .9,
+                  child: Lottie.asset(
+                    'assets/lottie/vr_animation.json',
+                    width: Get.width / 1.3,
+                    fit: BoxFit.fitWidth,
+                    // filterQuality: FilterQuality.low,
+                  )),
+            ),),
             Padding(
               padding: EdgeInsets.only(
                 bottom: controller.mediaItem.value.id.isNotEmpty ? controller.panelMobileMinSize + bottomHeight : 0,

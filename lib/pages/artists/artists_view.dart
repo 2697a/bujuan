@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../common/netease_api/src/dio_ext.dart';
 import '../../common/netease_api/src/netease_handler.dart';
+import '../../widget/app_bar.dart';
 
 class ArtistsView extends StatefulWidget {
   const ArtistsView({Key? key}) : super(key: key);
@@ -32,49 +33,50 @@ class _ArtistsViewState extends State<ArtistsView> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          title: Text(artists?.name ?? ''),
-        ),
-        body: RequestWidget<ArtistDetailWrap>(
-            dioMetaData: artistDetailDioMetaData(artists?.id ?? '-1'),
-            childBuilder: (artistDetails) => SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 15.w),
-                  child: Column(
+      child: RequestWidget<ArtistDetailWrap>(
+          dioMetaData: artistDetailDioMetaData(artists?.id ?? '-1'),
+          childBuilder: (artistDetails) => Scaffold(
+            backgroundColor: Colors.transparent,
+            appBar: MyAppBar(
+              backgroundColor: Colors.transparent,
+              leading: IconButton(
+                  padding: EdgeInsets.only(left: 20.w),
+                  onPressed: () => AutoRouter.of(context).pop(),
+                  icon: SimpleExtendedImage.avatar(
+                    '${artistDetails.data?.artist?.cover ?? ''}?param=100y100',
+                    width: 75.w,
+                    height: 75.w,
+                  )),
+              title: Text(artists?.name ?? ''),
+            ),
+            body: SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 15.w),
+              child: Column(
+                children: [
+                  Row(
                     children: [
-                      Row(
-                        children: [
-                          SimpleExtendedImage(
-                            '${artistDetails.data?.artist?.cover ?? ''}?param=500y500',
-                            borderRadius: BorderRadius.circular(110.w),
-                            width: 220.w,
+                      Expanded(
+                          child: Container(
                             height: 220.w,
-                          ),
-                          Padding(padding: EdgeInsets.symmetric(horizontal: 10.w)),
-                          Expanded(
-                              child: Container(
-                                height: 220.w,
-                                padding: EdgeInsets.symmetric(horizontal: 10.w),
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context).scaffoldBackgroundColor.withOpacity(.7),
-                                  borderRadius: BorderRadius.circular(15.w)
-                                ),
-                                child: Text(
-                                  (artistDetails.data?.artist?.briefDesc ?? '').replaceAll('\n', ''),
-                                  maxLines: 5,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(fontSize: 26.sp,height: 1.6),
-                                ),
-                              ))
-                        ],
-                      )
+                            padding: EdgeInsets.symmetric(horizontal: 10.w),
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                                color: Theme.of(context).scaffoldBackgroundColor.withOpacity(.7),
+                                borderRadius: BorderRadius.circular(15.w)
+                            ),
+                            child: Text(
+                              (artistDetails.data?.artist?.briefDesc ?? '').replaceAll('\n', ''),
+                              maxLines: 5,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(fontSize: 26.sp,height: 1.6),
+                            ),
+                          ))
                     ],
-                  ),
-                )),
-      ),
+                  )
+                ],
+              ),
+            ),
+          )),
       onHorizontalDragDown: (e) {},
     );
   }

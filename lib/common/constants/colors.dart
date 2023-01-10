@@ -14,10 +14,10 @@ class AppTheme {
       cardColor: Color(0xFF1C1B1B),
       iconTheme: const IconThemeData(color: Color(0xFF494949)),
       primaryColor: const Color(0xffe56260),
-      bottomAppBarColor: onPrimaryDark,
+      bottomAppBarColor: const Color(0xFFFFFFF),
       scaffoldBackgroundColor: const Color(0xFFF5F3F3),
       appBarTheme: const AppBarTheme(
-          systemOverlayStyle: SystemUiOverlayStyle(statusBarBrightness: Brightness.light, statusBarIconBrightness: Brightness.dark),
+          systemOverlayStyle: SystemUiOverlayStyle(statusBarBrightness: Brightness.dark, statusBarIconBrightness: Brightness.dark),
           backgroundColor: Color(0xFFF5F3F3),
           foregroundColor: primaryDark,
           elevation: 0));
@@ -27,16 +27,16 @@ class AppTheme {
             primary: primaryDark,
             onPrimary: onPrimaryDark,
             secondary: onSecondary,
-            onSecondary: onSecondary,
+            onSecondary: secondary,
             surface: surfaceDark,
             onSurface: onSurfaceDark,
           ),
       cardColor: const Color(0xFFFFFFFF),
       primaryColor:  const Color(0xffe56260),
-      bottomAppBarColor: onSurfaceDark,
+      bottomAppBarColor: primaryDark,
       scaffoldBackgroundColor: const Color(0xFF2C2B2B),
       appBarTheme: const AppBarTheme(
-          systemOverlayStyle: SystemUiOverlayStyle(statusBarBrightness: Brightness.dark, statusBarIconBrightness: Brightness.light),
+          systemOverlayStyle: SystemUiOverlayStyle(statusBarBrightness: Brightness.light, statusBarIconBrightness: Brightness.light),
           backgroundColor:  Color(0xFF2C2B2B),
           foregroundColor: primary,
           elevation: 0));

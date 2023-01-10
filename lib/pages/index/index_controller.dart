@@ -42,21 +42,6 @@ class IndexController extends GetxController {
     return await NeteaseMusicApi().personalizedPlaylist();
   }
 
-  Future<List<CloudData>> getCloudData() async {
-    CloudEntity cloudSongListWrap = await NeteaseMusicApi().cloudSong();
-    mediaItems
-      ..clear()
-      ..addAll((cloudSongListWrap.data ?? [])
-          .map((e) => MediaItem(
-              id: '${e.songId}',
-              duration: Duration(milliseconds: e.simpleSong?.dt ?? 0),
-              artUri: Uri.parse('${e.simpleSong?.al?.picUrl ?? ''}?param=500y500'),
-              extras: {'url': '', 'image': e.simpleSong?.al?.picUrl ?? '', 'type': '', 'available': false},
-              title: e.songName ?? "",
-              artist: (e.simpleSong?.ar ?? []).map((e) => e.name).toList().join(' / ')))
-          .toList());
-    return cloudSongListWrap.data ?? [];
-  }
 
   // querySong() async {
   //   List<AlbumModel> albumList = await HomeController.to.audioQuery.queryAlbums();
@@ -95,5 +80,4 @@ class IndexController extends GetxController {
   // }
 
   queryAlbum() async {}
-
 }

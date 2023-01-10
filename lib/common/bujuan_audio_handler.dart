@@ -34,12 +34,13 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
     _curIndex = StorageUtil().getInt(playByIndex);
     queueTitle.value = StorageUtil().getString(playQueueTitle);
     List<String> playList = StorageUtil().getStringList(playQueue);
-    if (queueTitle.value.isNotEmpty && playList.isNotEmpty) {
+    print('开始读取${playList.join(',')}');
+    if (playList.isNotEmpty) {
       List<MediaItem> items = playList.map((e) {
         var map = MediaItemMessage.fromMap(jsonDecode(e));
         return MediaItem(id: map.id, duration: map.duration, artUri: map.artUri, extras: map.extras, title: map.title, artist: map.artist, album: map.album);
       }).toList();
-      changeQueueLists(items);
+      changeQueueLists(items, init: true);
       playIndex(_curIndex, playIt: false);
     }
   }
@@ -56,11 +57,13 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
     // order to demonstrate manual configuration.
     audioSession.becomingNoisyEventStream.listen((_) {
       _player.pause();
+
     });
     audioSession.interruptionEventStream.listen((event) {
       if (event.begin) {
         switch (event.type) {
           case AudioInterruptionType.duck:
+            print('begin==========duck');
             if (audioSession.androidAudioAttributes!.usage == AndroidAudioUsage.game) {
               _player.setVolume(1);
             }
@@ -68,6 +71,7 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
             break;
           case AudioInterruptionType.pause:
           case AudioInterruptionType.unknown:
+          print('begin==========pauseunknown');
             if (_player.state == PlayerState.playing) {
               _player.pause();
               playInterrupted = true;
@@ -78,13 +82,16 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
         switch (event.type) {
           case AudioInterruptionType.duck:
             // _player.setVolume(min(1.0, _player.volume * 2));
+          print('duck==========');
             playInterrupted = false;
             break;
           case AudioInterruptionType.pause:
+            print('pause==========${playInterrupted}');
             if (playInterrupted) _player.resume();
             playInterrupted = false;
             break;
           case AudioInterruptionType.unknown:
+            print('unknown==========');
             playInterrupted = false;
             break;
         }
@@ -102,7 +109,7 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
         await skipToNext();
         return;
       }
-      playInterrupted = false;
+      // playInterrupted = false;
       final playing = playerState == PlayerState.playing;
       if (playing) session?.setActive(true);
       playbackState.add(playbackState.value.copyWith(
@@ -131,7 +138,6 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
     });
   }
 
-
   @override
   Future<void> removeQueueItem(MediaItem mediaItem) async {}
 
@@ -148,9 +154,42 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
   }
 
   @override
-  Future<void> addFmItems(List<MediaItem> mediaItems, bool isAddcurIndex) {
-    // TODO: implement addFmItems
-    throw UnimplementedError();
+  Future<void> addFmItems(List<MediaItem> mediaItems, bool isAddcurIndex) async {
+    if (HomeController.to.fm.value && _playList.length >=3) {
+      _playList.removeRange(0, queue.value.length - 1);
+      updateQueue(_playList);
+      addQueueItems(mediaItems);
+    } else {
+      _playList.clear();
+      updateQueue(mediaItems);
+      StorageUtil().setBool(fmSp,true);
+    }
+    _curIndex = 0;
+    _playList.addAll(mediaItems);
+    if (isAddcurIndex) _curIndex++;
+    if (!HomeController.to.fm.value) HomeController.to.fm.value = true;
+    playIndex(_curIndex);
+    List<String> playList = mediaItems
+        .map((e) => jsonEncode(MediaItemMessage(
+              id: e.id,
+              album: e.album,
+              title: e.title,
+              artist: e.artist,
+              genre: e.genre,
+              duration: e.duration,
+              artUri: e.artUri,
+              playable: e.playable,
+              displayTitle: e.displayTitle,
+              displaySubtitle: e.displaySubtitle,
+              displayDescription: e.displayDescription,
+              extras: e.extras,
+            ).toMap()))
+        .toList();
+    print('开始存储${playList.join(',')}');
+
+    queueTitle.value = 'Fm';
+    StorageUtil().setStringList(playQueue, playList);
+    StorageUtil().setString(playQueueTitle, 'Fm');
   }
 
   //更改为不喜欢按钮
@@ -167,7 +206,11 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
   }
 
   @override
-  Future<void> changeQueueLists(List<MediaItem> list, {int index = 0}) async {
+  Future<void> changeQueueLists(List<MediaItem> list, {int index = 0, bool init = false}) async {
+    if (!init && HomeController.to.fm.value) {
+      HomeController.to.fm.value = false;
+      StorageUtil().setBool(fmSp,false);
+    }
     _playList
       ..clear()
       ..addAll(list);
@@ -207,9 +250,9 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
     if (queue.value.isEmpty) return;
     var song = queue.value[_curIndex];
     SongUrlListWrap songUrl = await NeteaseMusicApi().songUrl([song.id]);
-    print('SongUrlListWrap==========${jsonEncode(songUrl.toJson())}');
     String url = (songUrl.data ?? [])[0].url ?? '';
     if (url.isNotEmpty) {
+      mediaItem.add(song);
       // 加载音乐
       // url = url.replaceFirst('http', 'https');
       try {
@@ -217,7 +260,6 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
       } catch (e) {
         print('error======$e');
       }
-      mediaItem.add(song);
     } else {
       if (isNext) {
         await skipToNext();
@@ -242,6 +284,16 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
   Future<void> skipToNext() async {
     _setCurrIndex(next: true);
     await readySongUrl();
+    print('触发播放下一首');
+    if (HomeController.to.fm.value) {
+      // 如果是私人fm
+      print('私人fm========$_curIndex');
+      if (_curIndex == queue.value.length - 1) {
+        // 判断如果是最后一首
+        print('触发');
+        HomeController.to.getFmSongList();
+      }
+    }
   }
 
   @override

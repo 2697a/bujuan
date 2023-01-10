@@ -6,6 +6,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../common/netease_api/src/api/event/bean.dart';
 import '../../common/netease_api/src/dio_ext.dart';
 import '../../common/netease_api/src/netease_handler.dart';
+import '../../widget/app_bar.dart';
+import '../../widget/request_widget/request_loadmore_view.dart';
 
 class TalkView extends StatefulWidget {
   const TalkView({Key? key}) : super(key: key);
@@ -55,7 +57,7 @@ class _TalkViewState extends State<TalkView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: MyAppBar(),
       body: RequestWidget<CommentList2Wrap>(
         refreshController: _refreshController,
         dioMetaData: commentListDioMetaData2((context.routeData.args as String), 'song',pageNo: pageNum),

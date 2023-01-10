@@ -27,8 +27,8 @@ class _BaseWidgetState<T extends ServerStatusBean> extends State<BaseWidget<T>> 
   @override
   Widget build(BuildContext context) {
     if (loading) return const LoadingView();
-    if (error) return const EmptyView();
-    if (serverStatusBean == null) return const EmptyView();
+    if (error) return const ErrorView();
+    if (serverStatusBean == null) return const ErrorView();
     return widget.childBuilder(serverStatusBean! as T);
   }
 

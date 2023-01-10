@@ -68,21 +68,57 @@ class LoadingView extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // SvgPicture.asset(AppIcons.loading,width: Get.width/2.9,),
-          Lottie.asset('assets/lottie/vr_animation.json', height: Get.width / 2, fit: BoxFit.fitHeight),
-          Text('拼命加载中...', style: TextStyle(fontSize: 32.sp)),
+          Lottie.asset('assets/lottie/empty_status.json', height: Get.width / 3.5, fit: BoxFit.fitHeight,
+              filterQuality: FilterQuality.low),
+          Text('加载中...', style: TextStyle(fontSize: 28.sp)),
         ],
       ),
     );
   }
 }
 
+
 class EmptyView extends StatelessWidget {
   const EmptyView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text('暂无数据'),
+    return SizedBox(
+      width: Get.width,
+      height: Get.height,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // SvgPicture.asset(AppIcons.loading,width: Get.width/2.9,),
+          Lottie.asset('assets/lottie/empty_status.json', height: Get.width / 3.5, fit: BoxFit.fitHeight,
+              filterQuality: FilterQuality.low),
+          Text('暂无数据...', style: TextStyle(fontSize: 28.sp)),
+        ],
+      ),
     );
   }
 }
+
+class ErrorView extends StatelessWidget {
+  const ErrorView({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: Get.width,
+      height: Get.height,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // SvgPicture.asset(AppIcons.loading,width: Get.width/2.9,),
+          Lottie.asset('assets/lottie/no_internet_connection.json', height: Get.width / 2.5, fit: BoxFit.fitHeight,
+              filterQuality: FilterQuality.low),
+          Text('网络错误', style: TextStyle(fontSize: 32.sp)),
+        ],
+      ),
+    );
+  }
+}
+

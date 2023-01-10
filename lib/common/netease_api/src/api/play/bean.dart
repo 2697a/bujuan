@@ -182,7 +182,7 @@ class Song2 {
   int? v;
   String? cf;
 
-  late Album al;
+  Album? al;
 
   int? dt;
 
@@ -554,6 +554,7 @@ class Play {
   int? subscribedCount;
   int? shareCount;
   int? commentCount;
+  bool? subscribed;
 
   int? trackCount;
   int? trackNumberUpdateTime;

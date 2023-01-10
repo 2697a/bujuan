@@ -13,6 +13,7 @@ import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 
 import 'common/constants/colors.dart';
+import 'common/constants/key.dart';
 import 'common/netease_api/src/netease_api.dart';
 import 'common/storage.dart';
 import 'common/bujuan_audio_handler.dart';
@@ -30,10 +31,14 @@ main() async {
         title: "Application",
         theme: AppTheme.light.copyWith(
             pageTransitionsTheme: const PageTransitionsTheme(builders: {
-              TargetPlatform.iOS: NoShadowCupertinoPageTransitionsBuilder(),
-              TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
-            })),
-        darkTheme: AppTheme.dark,
+          TargetPlatform.iOS: FadeUpwardsPageTransitionsBuilder(),
+          TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+        })),
+        darkTheme: AppTheme.dark.copyWith(
+            pageTransitionsTheme: const PageTransitionsTheme(builders: {
+          TargetPlatform.iOS: FadeUpwardsPageTransitionsBuilder(),
+          TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+        })),
         // showPerformanceOverlay: true,
         themeMode: ThemeMode.system,
         routerDelegate: rootRouter.delegate(
@@ -60,7 +65,7 @@ Future<void> _initAudioServer() async {
   // 工具初始
   await StorageUtil.init();
   // _startServer();
-  await NeteaseMusicApi.init(debug: true);
+  await NeteaseMusicApi.init(debug: false);
   getIt.registerSingleton<BujuanAudioHandler>(await AudioService.init<BujuanAudioHandler>(
     builder: () => BujuanAudioHandler(),
     config: const AudioServiceConfig(

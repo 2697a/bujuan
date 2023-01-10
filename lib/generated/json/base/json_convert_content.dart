@@ -678,6 +678,9 @@ class JsonConvert {
 		if(<CloudSongListWrap>[] is M){
 			return data.map<CloudSongListWrap>((Map<String, dynamic> e) => CloudSongListWrap.fromJson(e)).toList() as M;
 		}
+		if(<CloudEntity>[] is M){
+			return data.map<CloudEntity>((Map<String, dynamic> e) => CloudEntity.fromJson(e)).toList() as M;
+		}
 		if(<RecommendSongReason>[] is M){
 			return data.map<RecommendSongReason>((Map<String, dynamic> e) => RecommendSongReason.fromJson(e)).toList() as M;
 		}

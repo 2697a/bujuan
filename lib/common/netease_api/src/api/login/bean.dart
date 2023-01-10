@@ -32,6 +32,7 @@ class NeteaseAccount {
 class NeteaseAccountProfile extends NeteaseUserInfo {
   int? follows;
   int? playlistCount;
+  int? followeds;
 
   NeteaseAccountProfile();
 

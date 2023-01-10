@@ -187,7 +187,7 @@ class _FlashyNavbarItem extends StatelessWidget {
                     width: 5,
                     height: 5,
                     alignment: Alignment.bottomCenter,
-                    margin: const EdgeInsets.all(2),
+                    margin: const EdgeInsets.only(bottom: 8),
                     decoration: BoxDecoration(
                       color: color,
                       borderRadius: BorderRadius.circular(2),

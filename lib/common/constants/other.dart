@@ -55,7 +55,7 @@ class ImageUtils {
 
   static Future<PaletteColorData> getImageColorByProvider(ImageProvider imageProvider) async {
     PaletteColorData paletteColorData = PaletteColorData();
-    final PaletteGenerator paletteGenerator = await PaletteGenerator.fromImageProvider(imageProvider, size: Size(150.w, 150.w));
+    final PaletteGenerator paletteGenerator = await PaletteGenerator.fromImageProvider(imageProvider, size: Size(500.w, 500.w));
     paletteColorData.light = paletteGenerator.lightMutedColor ?? paletteGenerator.lightVibrantColor;
     paletteColorData.main = paletteGenerator.dominantColor ?? paletteGenerator.mutedColor;
     paletteColorData.light1 = paletteGenerator.lightVibrantColor ?? paletteGenerator.lightMutedColor;

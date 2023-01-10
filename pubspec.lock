@@ -618,6 +618,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.0.0"
+  notification_permissions:
+    dependency: "direct main"
+    description:
+      name: notification_permissions
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.6.1"
   octo_image:
     dependency: "direct main"
     description:
@@ -793,6 +800,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.2.1"
+  pull_to_refresh:
+    dependency: "direct main"
+    description:
+      name: pull_to_refresh
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.0.0"
   qr:
     dependency: transitive
     description:
@@ -814,13 +828,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.27.4"
-  scaffold_gradient_background:
-    dependency: "direct main"
-    description:
-      name: scaffold_gradient_background
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "1.0.3+1"
   shared_preferences:
     dependency: "direct main"
     description:

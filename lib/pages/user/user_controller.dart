@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:bujuan/common/constants/other.dart';
 import 'package:bujuan/pages/user/user_view.dart';
@@ -10,21 +9,27 @@ import 'package:get/get.dart';
 
 import '../../common/netease_api/src/api/login/bean.dart';
 import '../../common/netease_api/src/api/play/bean.dart';
+import '../../common/netease_api/src/dio_ext.dart';
 import '../../common/netease_api/src/netease_api.dart';
+import '../../common/netease_api/src/netease_handler.dart';
+import '../../widget/request_widget/request_loadmore_view.dart';
+
+enum LoginStatus { login, noLogin }
 
 class UserController extends GetxController {
-  List<Play> playlist = <Play>[].obs;
+  // List<Play> playlist = <Play>[].obs;
   ScrollController userScrollController = ScrollController();
   RxDouble op = 0.0.obs;
   final List<double> colors = [1, .9, .8, .7, .6, .5, .4, .3, .2, .1, 0];
   final List<UserItem> userItems = [
-    UserItem('每日', TablerIcons.calendar,routes: Routes.today),
-    UserItem('FM', TablerIcons.a_b_2),
-    UserItem('电台', TablerIcons.radio),
-    UserItem('云盘', TablerIcons.cloud_fog,routes: Routes.cloud)
+    UserItem('每日', TablerIcons.calendar, routes: Routes.today),
+    UserItem('FM', TablerIcons.vinyl, routes: 'playFm'),
+    UserItem('播客', TablerIcons.brand_apple_podcast, routes: Routes.myRadio),
+    UserItem('云盘', TablerIcons.cloud_fog, routes: Routes.cloud)
   ];
-  //用户登录状态
-  RxBool loginStatus = false.obs;
+
+  Rx<LoginStatus> loginStatus = LoginStatus.noLogin.obs;
+  RequestRefreshController refreshController = RequestRefreshController();
   Rx<NeteaseAccountInfoWrap> userData = NeteaseAccountInfoWrap().obs;
   RxList<int> likeIds = <int>[].obs;
 
@@ -50,12 +55,17 @@ class UserController extends GetxController {
 
   //获取用户信息
   getUserState() async {
-    NeteaseAccountInfoWrap neteaseAccountInfoWrap = await NeteaseMusicApi().loginAccountInfo();
-    if (neteaseAccountInfoWrap.code == 200 && neteaseAccountInfoWrap.profile != null) {
-      loginStatus.value = true;
-      userData.value = neteaseAccountInfoWrap;
-      getUserPlayList();
-      _getUserLikeSongIds();
+    try {
+      NeteaseAccountInfoWrap neteaseAccountInfoWrap = await NeteaseMusicApi().loginAccountInfo();
+      if (neteaseAccountInfoWrap.code == 200 && neteaseAccountInfoWrap.profile != null) {
+        userData.value = neteaseAccountInfoWrap;
+        loginStatus.value = LoginStatus.login;
+        getUserPlayList();
+        _getUserLikeSongIds();
+      }
+    } catch (e) {
+      loginStatus.value = LoginStatus.noLogin;
+      WidgetUtil.showToast('获取用户资料失败，请检查网络');
     }
   }
 
@@ -73,15 +83,26 @@ class UserController extends GetxController {
       if (value.code != 200) {
         WidgetUtil.showToast(value.message ?? '');
       }
-      loginStatus.value = false;
+      loginStatus.value = LoginStatus.noLogin;
     });
   }
 
   getUserPlayList() {
-    NeteaseMusicApi().userPlayList(userData.value.profile?.userId ?? '-1').then((MultiPlayListWrap2 multiPlayListWrap2) {
-      playlist
-        ..clear()
-        ..addAll(multiPlayListWrap2.playlist ?? []);
-    });
+    // NeteaseMusicApi().userPlayList(userData.value.profile?.userId ?? '-1').then((MultiPlayListWrap2 multiPlayListWrap2) {
+    //   playlist
+    //     ..clear()
+    //     ..addAll(multiPlayListWrap2.playlist ?? []);
+    // });
+  }
+
+  DioMetaData userPlayListDioMetaData(String userId, {int offset = 0, int limit = 30}) {
+    var params = {'uid': userId, 'limit': limit, 'offset': offset};
+    return DioMetaData(joinUri('/weapi/user/playlist'), data: params, options: joinOptions());
+  }
+
+  @override
+  void onClose() {
+    userScrollController.dispose();
+    super.onClose();
   }
 }

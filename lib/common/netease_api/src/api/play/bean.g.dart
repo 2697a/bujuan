@@ -188,7 +188,7 @@ Song2 _$Song2FromJson(Map<String, dynamic> json) {
     ..fee = json['fee'] as int?
     ..v = json['v'] as int?
     ..cf = json['cf'] as String?
-    ..al = Album.fromJson(json['al'] as Map<String, dynamic>)
+    ..al = json['al']!=null?Album.fromJson(json['al'] as Map<String, dynamic>):null
     ..dt = json['dt'] as int?
     ..h = json['h'] == null ? null : Music2.fromJson(json['h'] as Map<String, dynamic>)
     ..m = json['m'] == null ? null : Music2.fromJson(json['m'] as Map<String, dynamic>)
@@ -609,6 +609,7 @@ Play _$PlayFromJson(Map<String, dynamic> json) {
     ..coverImgUrl = json['coverImgUrl'] as String?
     ..picUrl = json['picUrl'] as String?
     ..tag = json['tag'] as String?
+    ..subscribed = json['subscribed'] as bool?
     ..tags = (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList()
     ..copywriter = json['copywriter'] as String?
     ..createTime = json['createTime'] as int?
@@ -637,6 +638,7 @@ Map<String, dynamic> _$PlayToJson(Play instance) => <String, dynamic>{
       'picUrl': instance.picUrl,
       'tag': instance.tag,
       'tags': instance.tags,
+      'subscribed':instance.subscribed,
       'copywriter': instance.copywriter,
       'createTime': instance.createTime,
       'updateTime': instance.updateTime,

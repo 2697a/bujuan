@@ -1,18 +1,15 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/common/netease_api/netease_music_api.dart';
-import 'package:bujuan/common/netease_api/src/api/bean.dart';
-import 'package:bujuan/pages/base_view.dart';
 import 'package:bujuan/pages/index/index_controller.dart';
 import 'package:bujuan/pages/user/user_controller.dart';
-import 'package:bujuan/widget/data_widget.dart';
 import 'package:bujuan/widget/request_widget/request_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
-// import 'package:on_audio_query/on_audio_query.dart';
-import '../../common/constants/other.dart';
+
 import '../../routes/router.gr.dart';
+import '../../widget/app_bar.dart';
 import '../../widget/simple_extended_image.dart';
 import '../home/home_controller.dart';
 
@@ -24,35 +21,39 @@ class MainView extends GetView<IndexController> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(
+      appBar: MyAppBar(
         backgroundColor: Colors.transparent,
         centerTitle: false,
         leading: IconButton(
             onPressed: () {
-              if (UserController.to.loginStatus.value) {
+              if (UserController.to.loginStatus.value == LoginStatus.login) {
                 HomeController.to.myDrawerController.open!();
                 return;
               }
             },
-            icon: Lottie.asset(
-              'assets/lottie/personal_character.json',
-              width: 90.w,
-            )),
+            icon: Obx(() => SimpleExtendedImage.avatar(
+                  UserController.to.loginStatus.value == LoginStatus.login
+                      ? UserController.to.userData.value.profile?.avatarUrl ?? ''
+                      : 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fc-ssl.duitang.com%2Fuploads%2Fblog%2F202105%2F06%2F20210506002916_3ce11.thumb.1000_0.jpeg&refer=http%3A%2F%2Fc-ssl.duitang.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1675913899&t=7e774d368476b1959bda340aa8dadf5c',
+                  width: 200.w,
+                ))),
         title: RichText(
             text: TextSpan(style: TextStyle(fontSize: 42.sp, color: Colors.grey, fontWeight: FontWeight.bold), text: 'Here  ', children: [
           TextSpan(text: '推荐歌单～', style: TextStyle(color: Theme.of(context).primaryColor.withOpacity(.9))),
         ])),
       ),
-      body: RequestWidget<PersonalizedPlayListWrap>(dioMetaData: controller.personalizedPlaylistDioMetaData(), childBuilder: (p) => GridView.builder(
-        padding: EdgeInsets.only(left: 20.w, right: 20.w, top: 20.w),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          childAspectRatio: .73,
-          crossAxisSpacing: 20.w,
-        ),
-        itemBuilder: (context, index) => _buildItem((p.result ?? [])[index], context),
-        itemCount: (p.result ?? []).length,
-      )),
+      body: RequestWidget<PersonalizedPlayListWrap>(
+          dioMetaData: controller.personalizedPlaylistDioMetaData(),
+          childBuilder: (p) => GridView.builder(
+                padding: EdgeInsets.only(left: 20.w, right: 20.w, top: 20.w),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  childAspectRatio: .73,
+                  crossAxisSpacing: 20.w,
+                ),
+                itemBuilder: (context, index) => _buildItem((p.result ?? [])[index], context),
+                itemCount: (p.result ?? []).length,
+              )),
     );
   }
 
@@ -92,51 +93,51 @@ class MainView extends GetView<IndexController> {
     );
   }
 
-  // Widget _buildTopCard() {
-  //   return ListView.builder(
-  //     padding: EdgeInsets.symmetric(horizontal: 15.w),
-  //     shrinkWrap: true,
-  //     physics: const NeverScrollableScrollPhysics(),
-  //     itemBuilder: (context, index) => _buildSongItem(controller.songs[index], index),
-  //     itemCount: controller.songs.length > 10 ? 10 : controller.songs.length,
-  //   );
-  // }
+// Widget _buildTopCard() {
+//   return ListView.builder(
+//     padding: EdgeInsets.symmetric(horizontal: 15.w),
+//     shrinkWrap: true,
+//     physics: const NeverScrollableScrollPhysics(),
+//     itemBuilder: (context, index) => _buildSongItem(controller.songs[index], index),
+//     itemCount: controller.songs.length > 10 ? 10 : controller.songs.length,
+//   );
+// }
 
-  // Widget _buildSongItem(SongModel data, int index) {
-  //   return InkWell(
-  //     child: Container(
-  //       margin: EdgeInsets.symmetric(vertical: 10.w),
-  //       padding: EdgeInsets.symmetric(vertical: 5.w),
-  //       child: Row(
-  //         children: [
-  //           SimpleExtendedImage(
-  //             '${HomeController.to.directoryPath}${data.albumId}',
-  //             cacheWidth: 200,
-  //             width: 90.w,
-  //             height: 90.w,
-  //             borderRadius: BorderRadius.circular(10.w),
-  //           ),
-  //           Expanded(
-  //               child: Padding(
-  //             padding: EdgeInsets.symmetric(horizontal: 20.w),
-  //             child: Column(
-  //               crossAxisAlignment: CrossAxisAlignment.start,
-  //               children: [
-  //                 Text(
-  //                   data.title,
-  //                   style: TextStyle(fontSize: 28.sp),
-  //                 ),
-  //                 Text(
-  //                   '${data.artist ?? 'No Artist'} - ${ImageUtils.getTimeStamp(data.duration ?? 0)}',
-  //                   style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.normal),
-  //                 ),
-  //               ],
-  //             ),
-  //           )),
-  //         ],
-  //       ),
-  //     ),
-  //     onTap: () => controller.play(index),
-  //   );
-  // }
+// Widget _buildSongItem(SongModel data, int index) {
+//   return InkWell(
+//     child: Container(
+//       margin: EdgeInsets.symmetric(vertical: 10.w),
+//       padding: EdgeInsets.symmetric(vertical: 5.w),
+//       child: Row(
+//         children: [
+//           SimpleExtendedImage(
+//             '${HomeController.to.directoryPath}${data.albumId}',
+//             cacheWidth: 200,
+//             width: 90.w,
+//             height: 90.w,
+//             borderRadius: BorderRadius.circular(10.w),
+//           ),
+//           Expanded(
+//               child: Padding(
+//             padding: EdgeInsets.symmetric(horizontal: 20.w),
+//             child: Column(
+//               crossAxisAlignment: CrossAxisAlignment.start,
+//               children: [
+//                 Text(
+//                   data.title,
+//                   style: TextStyle(fontSize: 28.sp),
+//                 ),
+//                 Text(
+//                   '${data.artist ?? 'No Artist'} - ${ImageUtils.getTimeStamp(data.duration ?? 0)}',
+//                   style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.normal),
+//                 ),
+//               ],
+//             ),
+//           )),
+//         ],
+//       ),
+//     ),
+//     onTap: () => controller.play(index),
+//   );
+// }
 }

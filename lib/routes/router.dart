@@ -1,9 +1,13 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:bujuan/pages/guide/guide_view.dart';
 import 'package:bujuan/pages/home/body/body_view.dart';
 import 'package:bujuan/pages/home/view/home_view.dart';
 import 'package:bujuan/pages/index/album_view.dart';
 import 'package:bujuan/pages/index/main_view.dart';
 import 'package:bujuan/pages/play_list/playlist.dart';
+import 'package:bujuan/pages/radio/my_radio_view.dart';
+import 'package:bujuan/pages/setting/settring_view.dart';
+import 'package:bujuan/pages/setting/user_setting_view.dart';
 import 'package:bujuan/pages/talk/talk_view.dart';
 import 'package:bujuan/pages/today/today_view.dart';
 import 'package:bujuan/pages/user/user_view.dart';
@@ -31,6 +35,9 @@ abstract class Routes {
   static const today = _Paths.today;
   static const cloud = _Paths.cloud;
   static const artists = _Paths.artists;
+  static const myRadio = _Paths.myRadio;
+  static const guide = _Paths.guide;
+  static const userSetting = _Paths.userSetting;
 }
 
 abstract class _Paths {
@@ -49,6 +56,9 @@ abstract class _Paths {
   static const today = 'today';
   static const cloud = 'cloud';
   static const artists = 'artists';
+  static const myRadio = 'myRadio';
+  static const guide = '/guide';
+  static const userSetting = '/userSetting';
 }
 
 @MaterialAutoRouter(
@@ -62,10 +72,14 @@ abstract class _Paths {
       AutoRoute(path: Routes.today, page: TodayView),
       AutoRoute(path: Routes.search, page: SearchView),
       AutoRoute(path: Routes.artists, page: ArtistsView),
+      AutoRoute(path: Routes.myRadio, page: MyRadioView),
     ]),
     AutoRoute(path: Routes.splash, page: SplashPage, initial: true, deferredLoading: true),
     AutoRoute(path: Routes.login, page: LoginView),
     AutoRoute(path: Routes.talk, page: TalkView),
+    AutoRoute(path: Routes.setting, page: SettingView),
+    AutoRoute(path: Routes.guide, page: GuideView),
+    AutoRoute(path: Routes.userSetting, page: UserSettingView),
   ],
 )
 class $RootRouter {}
