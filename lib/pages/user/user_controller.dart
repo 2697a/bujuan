@@ -1,11 +1,14 @@
-
+import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/common/constants/other.dart';
 import 'package:bujuan/pages/user/user_view.dart';
 import 'package:bujuan/routes/router.dart';
+import 'package:bujuan/routes/router.gr.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../common/netease_api/src/api/login/bean.dart';
 import '../../common/netease_api/src/api/play/bean.dart';
@@ -49,7 +52,9 @@ class UserController extends GetxController {
   }
 
   @override
-  void onReady() {}
+  void onReady() {
+  }
+
 
   static UserController get to => Get.find();
 

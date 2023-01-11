@@ -134,6 +134,8 @@ class UserView extends GetView<UserController> {
             itemExtent: 120.w,
             padding: EdgeInsets.symmetric(horizontal: 20.w),
             physics: const NeverScrollableScrollPhysics(),
+            addAutomaticKeepAlives: false,
+            addRepaintBoundaries: false,
             itemBuilder: (c, i) => _buildItem1((playlist.where((element) => element.creator?.userId != controller.userData.value.profile?.userId)).toList()[i], c),
             itemCount: (playlist.where((element) => element.creator?.userId != controller.userData.value.profile?.userId)).length,
           ),

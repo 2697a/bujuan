@@ -142,6 +142,8 @@ class CommentItemBase {
   int? time;
 
   int? likedCount;
+  int? replyCount;
+
   bool? liked;
 
   // beReplied

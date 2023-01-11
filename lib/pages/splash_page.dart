@@ -1,13 +1,16 @@
 import 'dart:async';
 import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/common/constants/key.dart';
+import 'package:bujuan/common/constants/platform_utils.dart';
 import 'package:bujuan/common/storage.dart';
 import 'package:bujuan/routes/router.gr.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
+import '../common/netease_api/src/dio_ext.dart';
 import '../routes/router.dart';
 // import 'package:on_audio_query/on_audio_query.dart';
 
@@ -26,6 +29,7 @@ class SplashPageState extends State<SplashPage> {
   Duration duration = const Duration(milliseconds: 2000);
   Duration durationFinish = const Duration(milliseconds: 2200);
   bool isFinish = false;
+  Map<String, dynamic>? mapData;
 
   // final OnAudioQuery onAudioQuery = GetIt.instance<OnAudioQuery>();
 
@@ -34,6 +38,7 @@ class SplashPageState extends State<SplashPage> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _update();
       changeOpacity();
       SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
         statusBarBrightness: Get.isPlatformDarkMode ? Brightness.dark : Brightness.light,
@@ -43,7 +48,23 @@ class SplashPageState extends State<SplashPage> {
 
     Future.delayed(durationFinish, () {
       bool noFirst = StorageUtil().getBool(noFirstOpen);
+      if(mapData!=null && PlatformUtils.isAndroid){
+        AutoRouter.of(context).replace(const UpdateView().copyWith(queryParams: mapData));
+        return;
+      }
       AutoRouter.of(context).replaceNamed(noFirst ? Routes.home : Routes.guide);
+    });
+  }
+
+
+  _update() {
+    Https.dioProxy.get('https://gitee.com/yasengsuoai/bujuan_version/raw/master/version.json').then((value) async {
+      PackageInfo packageInfo = await PackageInfo.fromPlatform();
+      String version = packageInfo.version;
+      Map<String, dynamic> versionData = value.data..putIfAbsent('oldVersion', () => version)..putIfAbsent('splash', () => 'splash');
+      if (int.parse((versionData['version']??'0').replaceAll('.', '')) > int.parse(version.replaceAll('.', ''))) {
+        mapData = versionData;
+      }
     });
   }
 

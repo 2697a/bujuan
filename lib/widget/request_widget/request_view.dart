@@ -75,7 +75,6 @@ class RequestWidgetState<T> extends State<RequestWidget<T>> with RefreshState {
       // }
     }, onError: (e) {
       setState(() {
-        print('catch==========${e}');
         _loading = false;
         _error = true;
       });

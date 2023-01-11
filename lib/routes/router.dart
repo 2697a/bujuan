@@ -1,11 +1,9 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/pages/guide/guide_view.dart';
-import 'package:bujuan/pages/home/body/body_view.dart';
 import 'package:bujuan/pages/home/view/home_view.dart';
 import 'package:bujuan/pages/index/album_view.dart';
 import 'package:bujuan/pages/index/main_view.dart';
 import 'package:bujuan/pages/mv/mv_view.dart';
-import 'package:bujuan/pages/play_list/playlist.dart';
 import 'package:bujuan/pages/radio/my_radio_view.dart';
 import 'package:bujuan/pages/setting/settring_view.dart';
 import 'package:bujuan/pages/setting/user_setting_view.dart';
@@ -14,11 +12,11 @@ import 'package:bujuan/pages/today/today_view.dart';
 import 'package:bujuan/pages/user/user_view.dart';
 
 import '../pages/artists/artists_view.dart';
-import '../pages/home/body/body/view.dart';
 import '../pages/login/login.dart';
 import '../pages/play_list/playlist_view.dart';
 import '../pages/search/search_view.dart';
 import '../pages/splash_page.dart';
+import '../pages/update/update_view.dart';
 
 abstract class Routes {
   Routes._();
@@ -40,6 +38,7 @@ abstract class Routes {
   static const guide = _Paths.guide;
   static const userSetting = _Paths.userSetting;
   static const mv = _Paths.mv;
+  static const update = _Paths.update;
 }
 
 abstract class _Paths {
@@ -62,6 +61,7 @@ abstract class _Paths {
   static const guide = '/guide';
   static const userSetting = '/userSetting';
   static const mv = '/mv';
+  static const update = '/update';
 }
 
 @MaterialAutoRouter(
@@ -84,6 +84,7 @@ abstract class _Paths {
     AutoRoute(path: Routes.guide, page: GuideView),
     AutoRoute(path: Routes.userSetting, page: UserSettingView),
     AutoRoute(path: Routes.mv, page: MvView),
+    AutoRoute(path: Routes.update, page: UpdateView),
   ],
 )
 class $RootRouter {}

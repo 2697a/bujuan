@@ -50,7 +50,7 @@ dependencies:
 #  临时解决延迟加载音乐url的问题
 #  just_audio: ^0.9.30
   audio_service: ^0.18.9
-  audioplayers: ^1.2.0
+  audioplayers: ^2.0.0
   audio_session: ^0.1.13
   get_it: ^7.2.0
   loading_animation_widget: ^1.2.0+2
@@ -58,8 +58,8 @@ dependencies:
   just_waveform: ^0.0.3
   font_awesome_flutter: ^10.1.0
   wheel_slider: ^1.0.0
-#  flutter_inappwebview: ^5.7.2+3
   qr_flutter: ^4.0.0
+  marquee: ^2.2.3
 
   # ext
   # app path
@@ -70,19 +70,12 @@ dependencies:
   pointycastle: ^3.1.2
   # x json
   json_annotation: ^4.0.1
-#  jaudiotagger:
-#    path: ../jaudiotagger
   tuna_flutter_range_slider: ^1.0.0
-#  modal_bottom_sheet: ^2.1.0
-#  tabler_icons:
-#    path: plugins/tabler-icons
   flutter_tabler_icons: ^1.1.2
-#  sliding_up_panel: ^2.0.0+1
-#  url_launcher: ^6.1.5
-#  carousel_slider: ^4.1.1
+  url_launcher: ^6.0.14
+  package_info_plus: ^3.0.2
   flutter_zoom_drawer: ^3.0.3
   auto_route: ^5.0.4
-#  mobx: ^2.1.3
   sticky_headers: ^0.3.0+2
   flutter_svg: ^1.1.6
   fluttertoast: ^8.1.2

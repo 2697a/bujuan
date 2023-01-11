@@ -331,7 +331,6 @@ class _WeSlideState extends State<WeSlide> with TickerProviderStateMixin {
     }
 
     if (widget.isDownSlide == false ) {
-      print('object');
       return;
     }
     _ac.value -= 1.5 * fractionDragged;

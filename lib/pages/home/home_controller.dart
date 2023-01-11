@@ -289,7 +289,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
 
   //获取歌曲评论
   _getSongTalk() async {
-    CommentListWrap commentListWrap = await NeteaseMusicApi().commentList(mediaItem.value.id, 'song');
+    CommentListWrap commentListWrap = await NeteaseMusicApi().commentList(mediaItem.value.id, 'song',limit: 10);
     if (commentListWrap.code == 200) {
       comments
         ..clear()
@@ -452,6 +452,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
 
   //设置歌词列表偏移量
   Future<void> _setPlayListOffset() async {
+    if(fm.value) return;
     if (slidePosition.value < 1 && !second.value) return;
     bool maxOffset = playListScrollController.position.pixels >= playListScrollController.position.maxScrollExtent;
     int index = mediaItems.indexWhere((element) => element.id == mediaItem.value.id);

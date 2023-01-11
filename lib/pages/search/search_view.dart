@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:audio_service/audio_service.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
+import 'package:bujuan/widget/request_widget/request_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
@@ -42,6 +43,10 @@ class _SearchViewState extends State<SearchView> {
   DioMetaData searchSongDioMetaData(String keyword, int type, {bool cloudSearch = true, int offset = 0, int limit = 30}) {
     var params = {'s': keyword, 'type': type, 'limit': limit, 'offset': offset};
     return DioMetaData(_searchUrl(cloudSearch), data: params, options: joinOptions());
+  }
+
+  DioMetaData searchHotKeyDioMetaData() {
+    return DioMetaData(joinUri('/weapi/search/hot'), data: {'type': 1111}, options: joinOptions(userAgent: UserAgent.Mobile));
   }
 
   Uri _searchUrl(bool cloudSearch) => cloudSearch ? joinUri('/weapi/cloudsearch/pc') : joinUri('/weapi/search/get');
@@ -102,6 +107,26 @@ class _SearchViewState extends State<SearchView> {
         ),
         body: Visibility(
             visible: searchContent.isNotEmpty,
+            replacement: RequestWidget<SearchKeyWrapX>(
+                dioMetaData: searchHotKeyDioMetaData(),
+                childBuilder: (data) => Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 30.w,vertical: 30.w),
+                      child: Wrap(
+                        children: data.result.hots
+                            .map((e) => InkWell(
+                          child: Container(
+                            margin: EdgeInsets.symmetric(horizontal: 6.w, vertical: 15.w),
+                            padding: EdgeInsets.symmetric(vertical: 5.w, horizontal: 10.w),
+                            decoration: BoxDecoration(color: Theme.of(context).colorScheme.onSecondary,borderRadius: BorderRadius.circular(30.w)),
+                            child: Text(e.first ?? '',style: TextStyle(fontSize: 26.sp),),
+                          ),
+                          onTap: (){
+                            _search.text = e.first??'';
+                          },
+                        ))
+                            .toList(),
+                      ),
+                    )),
             child: Column(
               children: [
                 Expanded(

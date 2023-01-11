@@ -1,4 +1,6 @@
 import 'package:aurora/aurora.dart';
+import 'package:auto_route/auto_route.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/pages/user/user_controller.dart';
 import 'package:bujuan/widget/mobile/flashy_navbar.dart';
@@ -12,6 +14,7 @@ import 'package:tuna_flutter_range_slider/tuna_flutter_range_slider.dart';
 
 import '../../../common/constants/other.dart';
 import '../../../common/constants/platform_utils.dart';
+import '../../../routes/router.gr.dart';
 
 class PanelView extends GetView<HomeController> {
   const PanelView({Key? key}) : super(key: key);
@@ -23,42 +26,34 @@ class PanelView extends GetView<HomeController> {
     double bottomHeight = MediaQuery.of(controller.buildContext).padding.bottom * (PlatformUtils.isIOS ? 0.4 : 0.6);
     if (bottomHeight == 0) bottomHeight = 20.w;
     return GestureDetector(
-      child: Obx(() => SlidingUpPanel(
-            controller: controller.panelController,
-            onPanelSlide: (value) {
-              // TODO 忘记是干啥的了..... 应该是解决一大堆华东冲突
-              controller.slidePosition.value = 1 - value;
-              if (controller.second.value != value > 0.5) {
-                controller.second.value = value > 0.5;
-              }
-            },
-            boxShadow: const [
-              BoxShadow(
-                blurRadius: 8.0,
-                color: Color.fromRGBO(0, 0, 0, 0.15),
-              )
-            ],
-            onPanelOpened: () {
-              controller.didChangePlatformBrightness();
-            },
-            onPanelClosed: () {
-              controller.changeStatusIconColor(true);
-            },
-            color: Colors.transparent,
-            panel: Visibility(
-              visible: controller.isAurora.value,
-              replacement: _buildDefaultPanel(context),
-              child: _buildAuroraPanel(context),
-            ),
-            body: Visibility(
-              visible: controller.isAurora.value,
-              replacement: _buildDefaultBody(context),
-              child: _buildAuroraBody(context),
-            ),
-            header: _buildBottom(bottomHeight, context),
-            minHeight: 110.h + bottomHeight,
-            maxHeight: Get.height - controller.panelHeaderSize - MediaQuery.of(context).padding.top - 10.w,
-          )),
+      child: SlidingUpPanel(
+        controller: controller.panelController,
+        onPanelSlide: (value) {
+          // TODO 忘记是干啥的了..... 应该是解决一大堆华东冲突
+          controller.slidePosition.value = 1 - value;
+          if (controller.second.value != value > 0.5) {
+            controller.second.value = value > 0.5;
+          }
+        },
+        boxShadow: const [
+          BoxShadow(
+            blurRadius: 8.0,
+            color: Color.fromRGBO(0, 0, 0, 0.15),
+          )
+        ],
+        onPanelOpened: () {
+          controller.didChangePlatformBrightness();
+        },
+        onPanelClosed: () {
+          controller.changeStatusIconColor(true);
+        },
+        color: Colors.transparent,
+        panel: _buildDefaultPanel(context),
+        body: _buildDefaultBody(context),
+        header: _buildBottom(bottomHeight, context),
+        minHeight: 110.h + bottomHeight,
+        maxHeight: Get.height - controller.panelHeaderSize - MediaQuery.of(context).padding.top - 10.w,
+      ),
       onHorizontalDragDown: (e) {
         return;
       },
@@ -295,88 +290,17 @@ class PanelView extends GetView<HomeController> {
         child: _buildPanelContent(context)));
   }
 
-  Widget _buildAuroraBody(BuildContext context) {
-    return Obx(() => Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).scaffoldBackgroundColor,
-            borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),
-          ),
-          child: Stack(
-            alignment: Alignment.bottomCenter,
-            children: [
-              Positioned(
-                top: -100.w - 110 * controller.slidePosition.value,
-                right: -200.w * controller.slidePosition.value,
-                child: Aurora(
-                  size: 800.w,
-                  colors: [
-                    controller.rx.value.light?.color.withOpacity(.5) ?? Colors.transparent,
-                    controller.rx.value.main?.color.withOpacity(.5) ?? Colors.transparent,
-                  ],
-                  blur: 400,
-                ),
-              ),
-              Positioned(
-                bottom: -110.w,
-                left: -200.w,
-                child: Aurora(
-                  size: 800.w,
-                  colors: [
-                    controller.rx.value.light?.color.withOpacity(.4) ?? Colors.transparent,
-                    controller.rx.value.main?.color.withOpacity(.4) ?? Colors.transparent,
-                  ],
-                  blur: 400,
-                ),
-              ),
-              _buildBodyContent(context)
-            ],
-          ),
-        ));
-  }
-
-  Widget _buildAuroraPanel(BuildContext context) {
-    return Obx(() => AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          padding: EdgeInsets.only(top: 0.w),
-          decoration:
-              BoxDecoration(color: Theme.of(context).scaffoldBackgroundColor, borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w))),
-          child: Stack(
-            alignment: Alignment.bottomCenter,
-            children: [
-              Positioned(
-                top: -140.h + (460.h * (1 - controller.slidePosition.value)),
-                child: Aurora(
-                  size: 800.w,
-                  colors: [
-                    controller.rx.value.light?.color.withOpacity(.4) ?? Colors.transparent,
-                    controller.rx.value.main?.color.withOpacity(.4) ?? Colors.transparent,
-                  ],
-                  blur: 400,
-                ),
-              ),
-              _buildPanelContent(context)
-            ],
-          ),
-        ));
-  }
-
   Widget _buildPanelContent(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(top: 140.w),
-      child: Column(
-        children: [
-          _buildSlide(context, showTime: false, disabled: true),
-          Expanded(
-              child: PreloadPageView.builder(
-            itemBuilder: (context, index) => controller.pages[index],
-            itemCount: controller.pages.length,
-            controller: controller.pageController,
-            preloadPagesCount: controller.pages.length,
-            onPageChanged: (index) {
-              controller.selectIndex.value = index;
-            },
-          ))
-        ],
+      child: PreloadPageView.builder(
+        itemBuilder: (context, index) => controller.pages[index],
+        itemCount: controller.pages.length,
+        controller: controller.pageController,
+        preloadPagesCount: controller.pages.length,
+        onPageChanged: (index) {
+          controller.selectIndex.value = index;
+        },
       ),
     );
   }
@@ -404,21 +328,19 @@ class PanelView extends GetView<HomeController> {
                           TablerIcons.chevron_down,
                           color: controller.getPlayPageTheme(context),
                         )),
-                    Expanded(
-                      child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 30.w),
-                        alignment: Alignment.center,
-                        margin: EdgeInsets.only(top: 5.w),
-                        height: 60.h,
-                        // decoration: BoxDecoration(
-                        //   color: controller.rx.value.light?.color.withOpacity(.6)??Colors.transparent,
-                        //   borderRadius: BorderRadius.circular(25.h)
-                        // ),
-                        child: Text(
-                          controller.mediaItem.value.artist ?? '',
-                          style: TextStyle(color: controller.getPlayPageTheme(context), fontWeight: FontWeight.w500, fontSize: 32.sp),
-                        ),
-                      ),
+                    const Expanded(
+                      child: SizedBox.shrink(),
+                    ),
+                    Visibility(
+                      visible: (controller.mediaItem.value.extras?['mv'] ?? 0) > 0,
+                      child: IconButton(
+                          onPressed: () {
+                            context.router.push(const MvView().copyWith(queryParams: {'mvId': controller.mediaItem.value.extras?['mv'] ?? 0}));
+                          },
+                          icon: Icon(
+                            TablerIcons.brand_youtube,
+                            color: controller.getPlayPageTheme(context),
+                          )),
                     ),
                     IconButton(
                         onPressed: () {},
@@ -439,16 +361,18 @@ class PanelView extends GetView<HomeController> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(
+                  AutoSizeText(
                     controller.mediaItem.value.title,
                     style: TextStyle(fontSize: 40.sp, fontWeight: FontWeight.bold, color: controller.getPlayPageTheme(context)),
                     maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   Padding(padding: EdgeInsets.symmetric(vertical: 3.w)),
-                  Text(
+                  AutoSizeText(
                     controller.mediaItem.value.artist ?? '',
                     style: TextStyle(fontSize: 28.sp, color: controller.getPlayPageTheme(context)),
                     maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   )
                 ],
               ),

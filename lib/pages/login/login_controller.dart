@@ -19,10 +19,6 @@ class LoginController extends GetxController {
   RxString qrCodeUrl = ''.obs;
   // CreatorController creatorController = CreatorController();
 
-  @override
-  onReday() {
-    print('object');
-  }
 
   loginCallPhone(context) {
     if (phone.text.isEmpty || pass.text.isEmpty) {
@@ -47,10 +43,8 @@ class LoginController extends GetxController {
     }
     String codeUrl = NeteaseMusicApi().loginQrCodeUrl(qrCodeLoginKey.unikey);
     qrCodeUrl.value = codeUrl;
-    print('object============${qrCodeUrl}');
     timer = Timer.periodic(const Duration(seconds: 5), (Timer t) async {
       ServerStatusBean serverStatusBean = await NeteaseMusicApi().loginQrCodeCheck(qrCodeLoginKey.unikey);
-      print('loginQrCodeCheck=====${jsonEncode(serverStatusBean.toJson())}');
       if (serverStatusBean.code == 800) {
         WidgetUtil.showToast('二维码过期请重新获取');
         timer?.cancel();

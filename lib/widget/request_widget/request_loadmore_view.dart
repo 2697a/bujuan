@@ -1,7 +1,10 @@
+import 'package:bujuan/common/constants/other.dart';
 import 'package:bujuan/generated/json/base/json_convert_content.dart';
 import 'package:bujuan/widget/data_widget.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../common/netease_api/src/dio_ext.dart';
@@ -14,6 +17,8 @@ class RequestLoadMoreWidget<E, T> extends StatefulWidget {
   final RequestChildBuilder<T> childBuilder;
   final RequestRefreshController? refreshController;
   final bool enableLoad;
+  final bool isPageNmu;
+  final int pageSize;
   final ScrollController? scrollController;
   final OnData<E>? onData;
   final List<String> listKey;
@@ -27,6 +32,8 @@ class RequestLoadMoreWidget<E, T> extends StatefulWidget {
     this.onData,
     required this.listKey,
     this.scrollController,
+    this.isPageNmu = false,
+    this.pageSize = 30,
   }) : super(key: key);
 
   @override
@@ -41,10 +48,13 @@ class RequestLoadMoreWidgetState<E, T> extends State<RequestLoadMoreWidget<E, T>
   List<T> list = [];
   final RefreshController _refreshController = RefreshController();
   int pageNum = 0;
+  CancelToken cancelToken = CancelToken();
+  bool noMore = false;
 
   @override
   initState() {
     dioMetaData = widget.dioMetaData;
+    if (widget.isPageNmu) pageNum = 1;
     super.initState();
     _bindController();
   }
@@ -58,6 +68,7 @@ class RequestLoadMoreWidgetState<E, T> extends State<RequestLoadMoreWidget<E, T>
   void dispose() {
     _refreshController.dispose();
     widget.refreshController?.dispose();
+    cancelToken.cancel();
     super.dispose();
   }
 
@@ -74,20 +85,48 @@ class RequestLoadMoreWidgetState<E, T> extends State<RequestLoadMoreWidget<E, T>
                     enablePullUp: widget.enableLoad,
                     scrollController: widget.scrollController,
                     header: WaterDropHeader(
-                      waterDropColor: Theme.of(context).cardColor,
+                      waterDropColor: Theme.of(context).colorScheme.onSecondary,
+                      refresh: CupertinoActivityIndicator(
+                        color: Theme.of(context).iconTheme.color,
+                      ),
+                      complete: RichText(
+                          text: TextSpan(children: [
+                        const WidgetSpan(
+                            child: Padding(
+                          padding: EdgeInsets.only(right: 16),
+                          child: Icon(TablerIcons.mood_unamused),
+                        )),
+                        TextSpan(text: '呼～  搞定', style: TextStyle(color: Theme.of(context).iconTheme.color))
+                      ])),
+                      idleIcon: Icon(
+                        TablerIcons.refresh,
+                        size: 15,
+                        color: Theme.of(context).cardColor,
+                      ),
                     ),
                     controller: _refreshController,
                     onRefresh: () async {
-                      pageNum = 0;
+                      noMore = false;
+                      _refreshController.resetNoData();
+                      pageNum = widget.isPageNmu ? 1 : 0;
+                      if (widget.isPageNmu) {
+                        dioMetaData?.data['pageNo'] = pageNum;
+                        dioMetaData?.data['cursor'] = 0;
+                      }
                       if (dioMetaData?.data['offset'] != null) {
                         dioMetaData?.data['offset'] = pageNum;
                       }
                       callRefresh();
                     },
                     onLoading: () async {
+                      if (noMore) return;
                       pageNum++;
+                      if (widget.isPageNmu) {
+                        dioMetaData?.data['pageNo'] = pageNum;
+                        dioMetaData?.data['cursor'] = (pageNum-1) * widget.pageSize;
+                      }
                       if (dioMetaData?.data['offset'] != null) {
-                        dioMetaData?.data['offset'] = pageNum * 30;
+                        dioMetaData?.data['offset'] = pageNum * widget.pageSize;
                       }
                       callRefresh();
                     },
@@ -97,7 +136,7 @@ class RequestLoadMoreWidgetState<E, T> extends State<RequestLoadMoreWidget<E, T>
 
   @override
   callRefresh() {
-    Https.dioProxy.postUri(dioMetaData!).then((Response value) {
+    Https.dioProxy.postUri(dioMetaData!, cancelToken: cancelToken).then((Response value) {
       int code = value.data['code'];
       _loading = false;
       if (code == 200) {
@@ -112,20 +151,23 @@ class RequestLoadMoreWidgetState<E, T> extends State<RequestLoadMoreWidget<E, T>
         }
         if (pageNum == 0) list.clear();
         var listData = (mapData as List);
-        if (listData.length < 30) {
-          _refreshController.loadNoData();
-        }
+        print('============${listData.length}');
         list.addAll(listData.map((e) => JsonConvert.fromJsonAsT<T>(e) as T).toList());
         _empty = list.isEmpty;
+        setState(() {});
+        if (pageNum == 0) {
+          _refreshController.refreshCompleted();
+        } else {
+          _refreshController.loadComplete();
+        }
+        if (listData.length < widget.pageSize) {
+          noMore = true;
+          _refreshController.loadNoData();
+        }
       } else {
         _error = true;
+        setState(() {});
       }
-      if (pageNum == 0) {
-        _refreshController.refreshCompleted();
-      } else {
-        _refreshController.loadComplete();
-      }
-      if (mounted) setState(() {});
     }, onError: (e) {
       if (mounted) {
         setState(() {
@@ -144,7 +186,9 @@ class RequestLoadMoreWidgetState<E, T> extends State<RequestLoadMoreWidget<E, T>
 
 mixin RefreshState {
   initState() {
-    callRefresh();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      callRefresh();
+    });
   }
 
   setParams(DioMetaData params);

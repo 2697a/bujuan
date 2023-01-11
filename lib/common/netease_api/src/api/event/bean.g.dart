@@ -160,6 +160,7 @@ CommentItemBase _$CommentItemBaseFromJson(Map<String, dynamic> json) {
     ..content = json['content'] as String?
     ..time = json['time'] as int?
     ..likedCount = json['likedCount'] as int?
+    ..replyCount = json['replyCount'] as int?
     ..liked = json['liked'] as bool?
     ..status = json['status'] as int?
     ..commentLocationType = json['commentLocationType'] as int?;
@@ -174,6 +175,7 @@ Map<String, dynamic> _$CommentItemBaseToJson(CommentItemBase instance) =>
       'content': instance.content,
       'time': instance.time,
       'likedCount': instance.likedCount,
+      'replyCount': instance.replyCount,
       'liked': instance.liked,
       'status': instance.status,
       'commentLocationType': instance.commentLocationType,
@@ -187,6 +189,7 @@ CommentItem _$CommentItemFromJson(Map<String, dynamic> json) {
     ..content = json['content'] as String?
     ..time = json['time'] as int?
     ..likedCount = json['likedCount'] as int?
+    ..replyCount = json['replyCount'] as int?
     ..liked = json['liked'] as bool?
     ..status = json['status'] as int?
     ..commentLocationType = json['commentLocationType'] as int?
@@ -203,6 +206,7 @@ Map<String, dynamic> _$CommentItemToJson(CommentItem instance) =>
       'content': instance.content,
       'time': instance.time,
       'likedCount': instance.likedCount,
+      'replyCount': instance.replyCount,
       'liked': instance.liked,
       'status': instance.status,
       'commentLocationType': instance.commentLocationType,

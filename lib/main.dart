@@ -4,7 +4,6 @@ import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/common/constants/platform_utils.dart';
 import 'package:bujuan/pages/home/home_binding.dart';
 import 'package:bujuan/routes/router.gr.dart';
-import 'package:bujuan/widget/weslide/weslide_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -13,16 +12,16 @@ import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 
 import 'common/constants/colors.dart';
-import 'common/constants/key.dart';
 import 'common/netease_api/src/netease_api.dart';
 import 'common/storage.dart';
 import 'common/bujuan_audio_handler.dart';
 
 main() async {
-  bool isMobile = PlatformUtils.isAndroid || PlatformUtils.isIOS || PlatformUtils.isFuchsia;
+  bool isMobile = PlatformUtils.isAndroid || PlatformUtils.isIOS || PlatformUtils.isFuchsia|| PlatformUtils.isWeb;
   WidgetsFlutterBinding.ensureInitialized();
-  final rootRouter = RootRouter();
-  await _initAudioServer();
+  final getIt = GetIt.instance;
+  await _initAudioServer(getIt);
+  final rootRouter = getIt<RootRouter>();
   HomeBinding().dependencies();
   runApp(ScreenUtilInit(
     designSize: isMobile ? const Size(750, 1334) : const Size(2160, 1406),
@@ -56,11 +55,10 @@ main() async {
   // SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge).then((value) => );
 }
 
-Future<void> _initAudioServer() async {
-  final getIt = GetIt.instance;
+Future<void> _initAudioServer(getIt) async {
   await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  getIt.registerSingleton<RootRouter>(RootRouter());
   getIt.registerSingleton<AudioPlayer>(AudioPlayer());
-  getIt.registerSingleton<WeSlideController>(WeSlideController());
   getIt.registerSingleton<ZoomDrawerController>(ZoomDrawerController());
   // 工具初始
   await StorageUtil.init();

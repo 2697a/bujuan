@@ -5,7 +5,6 @@ import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/widget/request_widget/request_view.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../common/netease_api/src/api/play/bean.dart';
@@ -25,6 +24,7 @@ class _TodayViewState extends State<TodayView> {
   DioMetaData recommendSongListDioMetaData() {
     return DioMetaData(joinUri('/api/v3/discovery/recommend/songs'), data: {}, options: joinOptions(cookies: {'os': 'ios'}));
   }
+
   final List<MediaItem> _mediaItem = [];
 
   @override
@@ -32,8 +32,10 @@ class _TodayViewState extends State<TodayView> {
     return GestureDetector(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: AppBar(title: const Text('每日'),
-          backgroundColor: Colors.transparent,),
+        appBar: AppBar(
+          title: const Text('每日'),
+          backgroundColor: Colors.transparent,
+        ),
         body: RequestWidget<RecommendSongListWrapX>(
             dioMetaData: recommendSongListDioMetaData(),
             childBuilder: (playlist) {
@@ -41,31 +43,30 @@ class _TodayViewState extends State<TodayView> {
                 ..clear()
                 ..addAll((playlist.data.dailySongs ?? [])
                     .map((e) => MediaItem(
-                    id: e.id,
-                    duration: Duration(milliseconds: e.dt ?? 0),
-                    artUri: Uri.parse('${e.al?.picUrl ?? ''}?param=500y500'),
-                    extras: {
-                      'url': '',
-                      'image': e.al?.picUrl ?? '',
-                      'type': '',
-                      'liked': UserController.to.likeIds.contains(int.tryParse(e.id)),
-                      'artist': (e.ar ?? []).map((e) => jsonEncode(e.toJson())).toList().join(' / ')
-                    },
-                    title: e.name ?? "",
-                    album: jsonEncode(e.al?.toJson()),
-                    artist: (e.ar ?? []).map((e) => e.name).toList().join(' / ')))
+                        id: e.id,
+                        duration: Duration(milliseconds: e.dt ?? 0),
+                        artUri: Uri.parse('${e.al?.picUrl ?? ''}?param=500y500'),
+                        extras: {
+                          'url': '',
+                          'image': e.al?.picUrl ?? '',
+                          'type': '',
+                          'liked': UserController.to.likeIds.contains(int.tryParse(e.id)),
+                          'artist': (e.ar ?? []).map((e) => jsonEncode(e.toJson())).toList().join(' / ')
+                        },
+                        title: e.name ?? "",
+                        album: jsonEncode(e.al?.toJson()),
+                        artist: (e.ar ?? []).map((e) => e.name).toList().join(' / ')))
                     .toList());
               return ListView.builder(
                 padding: EdgeInsets.symmetric(horizontal: 20.w),
-                itemBuilder: (context, index) => _buildItem(_mediaItem[index],index),
+                itemBuilder: (context, index) => _buildItem(_mediaItem[index], index),
                 itemCount: _mediaItem.length,
               );
             }),
       ),
-      onHorizontalDragDown: (e){},
+      onHorizontalDragDown: (e) {},
     );
   }
-
 
   Widget _buildItem(MediaItem data, int index) {
     return InkWell(
@@ -81,42 +82,28 @@ class _TodayViewState extends State<TodayView> {
             ),
             Expanded(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 15.w),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        data.title,
-                        maxLines: 1,
-                        style: TextStyle(fontSize: 28.sp),
-                      ),
-                      Padding(padding: EdgeInsets.symmetric(vertical: 3.w)),
-                      Text(
-                        data.artist ?? '',
-                        style: TextStyle(fontSize: 26.sp, color: Colors.grey),
-                      )
-                    ],
+              padding: EdgeInsets.symmetric(horizontal: 15.w),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    data.title,
+                    maxLines: 1,
+                    style: TextStyle(fontSize: 28.sp),
                   ),
-                ))
+                  Padding(padding: EdgeInsets.symmetric(vertical: 3.w)),
+                  Text(
+                    data.artist ?? '',
+                    style: TextStyle(fontSize: 26.sp, color: Colors.grey),
+                  )
+                ],
+              ),
+            ))
           ],
         ),
       ),
-      onTap: () => HomeController.to.playByIndex(index, (context.routeData.args as Play).id, mediaItem: _mediaItem),
+      onTap: () => HomeController.to.playByIndex(index, 'today${DateTime.now().millisecondsSinceEpoch}', mediaItem: _mediaItem),
     );
-    // return ListTile(
-    //   dense: true,
-    //   contentPadding: EdgeInsets.symmetric(horizontal: 10.w),
-    //   leading: SimpleExtendedImage(
-    //     '${data.extras?['image'] ?? ''}?param=200y200',
-    //     width: 80.w,
-    //     height: 80.w,
-    //   ),
-    //   title: Text(data.title),
-    //   subtitle: Text(data.artist??''),
-    //   onTap: () {
-    //     controller.playIndex(index);
-    //   },
-    // );
   }
 }

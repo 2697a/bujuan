@@ -2,15 +2,12 @@ import 'dart:convert';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:bujuan/common/constants/other.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../common/constants/key.dart';
 import '../../common/netease_api/src/api/play/bean.dart';
 import '../../common/netease_api/src/dio_ext.dart';
 import '../../common/netease_api/src/netease_api.dart';
 import '../../common/netease_api/src/netease_handler.dart';
-import '../../common/storage.dart';
 import '../home/home_controller.dart';
 
 class PlayListController extends GetxController {
@@ -69,10 +66,8 @@ class PlayListController extends GetxController {
         ..changeQueueLists(mediaItems, index: index)
         ..playIndex(index);
 
-      print('playIndex==========更新播放列表');
     } else {
       HomeController.to.audioServeHandler.playIndex(index);
-      print('playIndex==========不更新播放列表');
     }
   }
 
