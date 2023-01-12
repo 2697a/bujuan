@@ -7,6 +7,7 @@ import 'package:bujuan/widget/request_widget/request_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:keframe/keframe.dart';
 
 import '../../common/netease_api/src/api/play/bean.dart';
 import '../../common/netease_api/src/api/search/bean.dart';
@@ -179,8 +180,9 @@ class _SearchViewState extends State<SearchView> {
                 artist: (e.ar ?? []).map((e) => e.name).toList().join(' / ')))
             .toList();
         return ListView.builder(
+          itemExtent: 120.w,
           padding: EdgeInsets.symmetric(horizontal: 30.w),
-          itemBuilder: (context, index) => InkWell(
+          itemBuilder: (context, index) => FrameSeparateWidget(index: index,child: InkWell(
             child: SizedBox(
               height: 120.w,
               child: Column(
@@ -207,7 +209,7 @@ class _SearchViewState extends State<SearchView> {
                 mediaItem: list.length > 500 ? list.sublist(0, 499) : list,
               );
             },
-          ),
+          ),),
           itemCount: list.length,
         );
       },
@@ -221,7 +223,8 @@ class _SearchViewState extends State<SearchView> {
       childBuilder: (List<Play> playlist) {
         return ListView.builder(
           padding: EdgeInsets.symmetric(horizontal: 20.w),
-          itemBuilder: (context, index) => InkWell(
+          itemExtent: 120.w,
+          itemBuilder: (context, index) => FrameSeparateWidget(index: index,child: InkWell(
             child: SizedBox(
               height: 120.w,
               child: Row(
@@ -234,29 +237,29 @@ class _SearchViewState extends State<SearchView> {
                   ),
                   Expanded(
                       child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 15.w),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          playlist[index].name ?? '',
-                          maxLines: 1,
-                          style: TextStyle(fontSize: 28.sp),
+                        padding: EdgeInsets.symmetric(horizontal: 15.w),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              playlist[index].name ?? '',
+                              maxLines: 1,
+                              style: TextStyle(fontSize: 28.sp),
+                            ),
+                            Padding(padding: EdgeInsets.symmetric(vertical: 3.w)),
+                            Text(
+                              '${playlist[index].trackCount ?? 0} 首',
+                              style: TextStyle(fontSize: 26.sp, color: Colors.grey),
+                            )
+                          ],
                         ),
-                        Padding(padding: EdgeInsets.symmetric(vertical: 3.w)),
-                        Text(
-                          '${playlist[index].trackCount ?? 0} 首',
-                          style: TextStyle(fontSize: 26.sp, color: Colors.grey),
-                        )
-                      ],
-                    ),
-                  ))
+                      ))
                 ],
               ),
             ),
             onTap: () => context.router.push(const PlayListView().copyWith(args: playlist[index])),
-          ),
+          ),),
           itemCount: playlist.length,
         );
       },
@@ -270,7 +273,8 @@ class _SearchViewState extends State<SearchView> {
       childBuilder: (List<Album> playlist) {
         return ListView.builder(
           padding: EdgeInsets.symmetric(horizontal: 20.w),
-          itemBuilder: (context, index) => InkWell(
+          itemExtent: 120.w,
+          itemBuilder: (context, index) => FrameSeparateWidget(index: index,child: InkWell(
             child: SizedBox(
               height: 120.w,
               child: Row(
@@ -283,28 +287,28 @@ class _SearchViewState extends State<SearchView> {
                   ),
                   Expanded(
                       child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 15.w),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          playlist[index].name ?? '',
-                          maxLines: 1,
-                          style: TextStyle(fontSize: 28.sp),
+                        padding: EdgeInsets.symmetric(horizontal: 15.w),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              playlist[index].name ?? '',
+                              maxLines: 1,
+                              style: TextStyle(fontSize: 28.sp),
+                            ),
+                            Padding(padding: EdgeInsets.symmetric(vertical: 3.w)),
+                            Text(
+                              '${playlist[index].artist?.name}',
+                              style: TextStyle(fontSize: 26.sp, color: Colors.grey),
+                            )
+                          ],
                         ),
-                        Padding(padding: EdgeInsets.symmetric(vertical: 3.w)),
-                        Text(
-                          '${playlist[index].artist?.name}',
-                          style: TextStyle(fontSize: 26.sp, color: Colors.grey),
-                        )
-                      ],
-                    ),
-                  ))
+                      ))
                 ],
               ),
             ),
-          ),
+          ),),
           itemCount: playlist.length,
         );
       },
@@ -317,8 +321,9 @@ class _SearchViewState extends State<SearchView> {
       dioMetaData: searchSongDioMetaData(searchContent, 100),
       childBuilder: (List<Artists> playlist) {
         return ListView.builder(
+          itemExtent: 120.w,
           padding: EdgeInsets.symmetric(horizontal: 20.w),
-          itemBuilder: (context, index) => InkWell(
+          itemBuilder: (context, index) => FrameSeparateWidget(index: index,child: InkWell(
             child: SizedBox(
               height: 120.w,
               child: Row(
@@ -331,28 +336,31 @@ class _SearchViewState extends State<SearchView> {
                   ),
                   Expanded(
                       child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 15.w),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          playlist[index].name ?? '',
-                          maxLines: 1,
-                          style: TextStyle(fontSize: 28.sp),
+                        padding: EdgeInsets.symmetric(horizontal: 15.w),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              playlist[index].name ?? '',
+                              maxLines: 1,
+                              style: TextStyle(fontSize: 28.sp),
+                            ),
+                            Padding(padding: EdgeInsets.symmetric(vertical: 3.w)),
+                            Text(
+                              '${playlist[index].albumSize}',
+                              style: TextStyle(fontSize: 26.sp, color: Colors.grey),
+                            )
+                          ],
                         ),
-                        Padding(padding: EdgeInsets.symmetric(vertical: 3.w)),
-                        Text(
-                          '${playlist[index].albumSize}',
-                          style: TextStyle(fontSize: 26.sp, color: Colors.grey),
-                        )
-                      ],
-                    ),
-                  ))
+                      ))
                 ],
               ),
             ),
-          ),
+            onTap: (){
+              context.router.push(const ArtistsView().copyWith(args: playlist[index]));
+            },
+          ),),
           itemCount: playlist.length,
         );
       },

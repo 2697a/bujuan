@@ -133,6 +133,7 @@ class _SettingViewState extends State<SettingView> {
               style: TextStyle(fontSize: 28.sp, color: Theme.of(context).cardColor.withOpacity(.4)),
             ),
           ),
+
           ListTile(
             title: Text(
               '检测更新',

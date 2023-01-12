@@ -10,6 +10,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_zoom_drawer/config.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 
 import 'common/constants/colors.dart';
 import 'common/netease_api/src/netease_api.dart';
@@ -30,14 +31,12 @@ main() async {
         title: "Application",
         theme: AppTheme.light.copyWith(
             pageTransitionsTheme: const PageTransitionsTheme(builders: {
-          TargetPlatform.iOS: FadeUpwardsPageTransitionsBuilder(),
-          TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
-        })),
+              TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+            })),
         darkTheme: AppTheme.dark.copyWith(
             pageTransitionsTheme: const PageTransitionsTheme(builders: {
-          TargetPlatform.iOS: FadeUpwardsPageTransitionsBuilder(),
-          TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
-        })),
+              TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+            })),
         // showPerformanceOverlay: true,
         themeMode: ThemeMode.system,
         routerDelegate: rootRouter.delegate(
@@ -45,9 +44,7 @@ main() async {
         ),
         routeInformationParser: rootRouter.defaultRouteParser(),
         debugShowCheckedModeBanner: false,
-        builder: (_, router) {
-          return router!;
-        },
+        builder: (_, router) => router!,
         // home: const SplashPage(),
       );
     },
@@ -60,10 +57,11 @@ Future<void> _initAudioServer(getIt) async {
   getIt.registerSingleton<RootRouter>(RootRouter());
   getIt.registerSingleton<AudioPlayer>(AudioPlayer());
   getIt.registerSingleton<ZoomDrawerController>(ZoomDrawerController());
+  getIt.registerSingleton<OnAudioQuery>(OnAudioQuery());
   // 工具初始
   await StorageUtil.init();
   // _startServer();
-  await NeteaseMusicApi.init(debug: false);
+  await NeteaseMusicApi.init(debug: true);
   getIt.registerSingleton<BujuanAudioHandler>(await AudioService.init<BujuanAudioHandler>(
     builder: () => BujuanAudioHandler(),
     config: const AudioServiceConfig(

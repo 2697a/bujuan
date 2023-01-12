@@ -159,6 +159,7 @@ CommentItemBase _$CommentItemBaseFromJson(Map<String, dynamic> json) {
         .toList()
     ..content = json['content'] as String?
     ..time = json['time'] as int?
+    ..timeStr = json['timeStr'] as String?
     ..likedCount = json['likedCount'] as int?
     ..replyCount = json['replyCount'] as int?
     ..liked = json['liked'] as bool?
@@ -174,6 +175,7 @@ Map<String, dynamic> _$CommentItemBaseToJson(CommentItemBase instance) =>
       'beReplied': instance.beReplied,
       'content': instance.content,
       'time': instance.time,
+      'timeStr': instance.timeStr,
       'likedCount': instance.likedCount,
       'replyCount': instance.replyCount,
       'liked': instance.liked,

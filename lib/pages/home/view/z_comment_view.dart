@@ -13,18 +13,47 @@ class CommentView extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() => ListView.builder(
-      padding: const EdgeInsets.all(0),
-          itemBuilder: (context1, index) => _buildItem(controller.comments[index],context),
-          itemCount: controller.comments.length,
-        ));
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 20.w, horizontal: 30.w),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Obx(() => Text(
+                      '热评榜',
+                      style: TextStyle(color: controller.getPlayPageTheme(context), fontSize: 44.sp),
+                    )),
+                TextButton(
+                    onPressed: () {
+                        context.router.push(const TalkView().copyWith(queryParams: {'id': controller.mediaItem.value.id, 'type': 'song','name':controller.mediaItem.value.title}));
+                    },
+                    child: Obx(() => Text(
+                      '查看更多>',
+                      style: TextStyle(color: controller.getPlayPageTheme(context), fontSize: 28.sp),
+                    )))
+              ],
+            ),
+          ),
+          Obx(() => ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(0),
+                itemBuilder: (context1, index) => _buildItem(controller.comments[index], context),
+                itemCount: controller.comments.length,
+              )),
+        ],
+      ),
+    );
   }
 
-  Widget _buildItem(CommentItem comment,BuildContext context) {
+  Widget _buildItem(CommentItem comment, BuildContext context) {
     return InkWell(
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 20.w, horizontal: 30.w),
-        child: Obx((){
+        child: Obx(() {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -38,27 +67,24 @@ class CommentView extends GetView<HomeController> {
                   Padding(padding: EdgeInsets.symmetric(horizontal: 8.w)),
                   Expanded(
                       child: Text(
-                        (comment.user.nickname ?? ''),
-                        style: TextStyle(color: controller.getPlayPageTheme(context),fontSize: 28.sp),
-                      ))
+                    '${comment.user.nickname ?? ''}   (${comment.likedCount}赞)',
+                    style: TextStyle(color: controller.getPlayPageTheme(context), fontSize: 28.sp),
+                  ))
                 ],
               ),
               Padding(
-                padding: EdgeInsets.only(top: 20.w,left: 80.w),
+                padding: EdgeInsets.only(top: 20.w, left: 80.w),
                 child: Text(
                   (comment.content ?? '').replaceAll('\n', ''),
-                  style: TextStyle(color: controller.getPlayPageTheme(context),fontSize: 24.sp),
+                  style: TextStyle(color: controller.getPlayPageTheme(context), fontSize: 24.sp),
                 ),
               ),
             ],
           );
         }),
       ),
-      onTap: (){
-        controller.panelController.close();
-        controller.panelControllerHome.close().then((value) {
-          context.router.push(const TalkView().copyWith(queryParams: {'id':controller.mediaItem.value.id,'type':'song'}));
-        });
+      onTap: () {
+          context.router.push(const TalkView().copyWith(queryParams: {'id': controller.mediaItem.value.id, 'type': 'song','name':controller.mediaItem.value.title}));
       },
     );
   }

@@ -9,6 +9,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:get/get.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:keframe/keframe.dart';
 
 import '../../../widget/weslide/panel.dart';
 
@@ -25,35 +26,38 @@ class HomeView extends GetView<HomeController> {
       backgroundColor: Colors.transparent,
       body: WillPopScope(
           child: ZoomDrawer(
-            dragOffset: Get.width / 2,
+            dragOffset: 500.w,
             menuScreenTapClose: true,
             showShadow: true,
             mainScreenTapClose: true,
-            menuScreen: const MenuView(),
+            menuScreen: const FrameSeparateWidget(
+              index: 3,
+              child: MenuView(),
+            ),
             moveMenuScreen: true,
             drawerShadowsBackgroundColor: Theme.of(context).scaffoldBackgroundColor.withOpacity(.6),
             menuBackgroundColor: Theme.of(context).cardColor,
             clipMainScreen: true,
             mainScreen: Obx(() => SlidingUpPanel(
-                  controller: controller.panelControllerHome,
-                  onPanelSlide: (value) => controller.changeSlidePosition(value),
-                  onPanelClosed: () {
-                    controller.changeStatusIconColor(false);
-                  },
-                  onPanelOpened: () {
-                    controller.changeStatusIconColor(true);
-                  },
-                  parallaxEnabled: true,
-                  parallaxOffset: .05,
-                  boxShadow: const [BoxShadow(blurRadius: 8.0, color: Color.fromRGBO(0, 0, 0, 0.15))],
-                  color: Colors.transparent,
-                  panel: const PanelView(),
-                  body: const BodyView(),
-                  isDraggable: !controller.second.value,
-                  header: controller.mediaItem.value.id.isNotEmpty ? _buildPanelHeader(bottomHeight,context) : const SizedBox.shrink(),
-                  minHeight: controller.mediaItem.value.id.isNotEmpty ? controller.panelMobileMinSize + bottomHeight : 0,
-                  maxHeight: Get.height,
-                )),
+              color: Colors.transparent,
+              controller: controller.panelControllerHome,
+              onPanelSlide: (value) => controller.changeSlidePosition(value),
+              onPanelClosed: () {
+                controller.changeStatusIconColor(false);
+              },
+              onPanelOpened: () {
+                controller.changeStatusIconColor(true);
+              },
+              parallaxEnabled: true,
+              parallaxOffset: .05,
+              boxShadow: const [BoxShadow(blurRadius: 8.0, color: Color.fromRGBO(0, 0, 0, 0.15))],
+              panel: const  PanelView(),
+              body: const BodyView(),
+              isDraggable: !controller.second.value,
+              header: controller.mediaItem.value.id.isNotEmpty ? _buildPanelHeader(bottomHeight,context) : const SizedBox.shrink(),
+              minHeight: controller.mediaItem.value.id.isNotEmpty ? controller.panelMobileMinSize + bottomHeight : 0,
+              maxHeight: Get.height,
+            )),
             controller: controller.myDrawerController,
           ),
           onWillPop: () => controller.onWillPop()),

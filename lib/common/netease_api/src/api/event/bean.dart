@@ -140,6 +140,7 @@ class CommentItemBase {
   String? content;
 
   int? time;
+  String? timeStr;
 
   int? likedCount;
   int? replyCount;

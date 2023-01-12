@@ -7,10 +7,6 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../common/constants/key.dart';
-import '../../common/storage.dart';
-import '../../routes/router.dart';
-
 class UpdateView extends StatelessWidget {
   const UpdateView({Key? key}) : super(key: key);
 
@@ -18,23 +14,19 @@ class UpdateView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
+        left: false,
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 30.w),
+          padding: EdgeInsets.symmetric(horizontal: 15.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 10.w),
+                padding: EdgeInsets.symmetric(vertical: 10.w),
                 child: Row(
                   children: [
                     IconButton(
                       onPressed: () {
-                        if(context.routeData.queryParams.getString('splash').isNotEmpty){
-                          bool noFirst = StorageUtil().getBool(noFirstOpen);
-                          AutoRouter.of(context).replaceNamed(noFirst ? Routes.home : Routes.guide);
-                        }else{
-                          AutoRouter.of(context).pop();
-                        }
+                        AutoRouter.of(context).pop();
                       },
                       icon: const Icon(TablerIcons.x),
                       iconSize: 52.w,
@@ -48,9 +40,9 @@ class UpdateView extends StatelessWidget {
                 fit: BoxFit.fitWidth,
               ),
               Padding(padding: EdgeInsets.symmetric(vertical: 30.w)),
-              const Text(
+              Text(
                 '检测到APP有新版本~',
-                style: TextStyle(color: Color(0xFF6C63FF), fontSize: 28),
+                style: TextStyle(color: Theme.of(context).primaryColor, fontSize: 28),
               ),
               Padding(padding: EdgeInsets.symmetric(vertical: 10.w)),
               Text(
@@ -71,8 +63,8 @@ class UpdateView extends StatelessWidget {
                     height: 88.w,
                     alignment: Alignment.center,
                     width: Get.width,
-                    margin: EdgeInsets.symmetric(vertical: 40.w, horizontal: 15.w),
-                    decoration: BoxDecoration(color: const Color(0xFF6C63FF), borderRadius: BorderRadius.circular(20.w)),
+                    margin: EdgeInsets.symmetric(vertical: 40.w, horizontal: 25.w),
+                    decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: BorderRadius.circular(20.w)),
                     child: Text(
                       '立即更新',
                       style: TextStyle(fontSize: 32.sp, color: Colors.white),

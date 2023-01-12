@@ -35,16 +35,14 @@ class BodyView extends GetView<HomeController> {
               ),
             ),
             Visibility(visible: controller.leftImage.value,child:  Positioned(
-              top: -70.w,
-              right: -85.w,
-              child: Opacity(
-                  opacity: .9,
-                  child: Lottie.asset(
-                    'assets/lottie/vr_animation.json',
-                    width: Get.width / 1.3,
-                    fit: BoxFit.fitWidth,
-                    // filterQuality: FilterQuality.low,
-                  )),
+              top: -40.w,
+              right: -75.w,
+              child: Lottie.asset(
+                'assets/lottie/vr_animation.json',
+                width: Get.width / 1.6,
+                fit: BoxFit.fitWidth,
+                // filterQuality: FilterQuality.low,
+              ),
             ),),
             Padding(
               padding: EdgeInsets.only(

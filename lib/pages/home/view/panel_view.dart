@@ -5,9 +5,11 @@ import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/pages/user/user_controller.dart';
 import 'package:bujuan/widget/mobile/flashy_navbar.dart';
 import 'package:bujuan/widget/weslide/panel.dart';
+import 'package:bujuan/widget/wheel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:keframe/keframe.dart';
 import 'package:preload_page_view/preload_page_view.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:tuna_flutter_range_slider/tuna_flutter_range_slider.dart';
@@ -48,9 +50,9 @@ class PanelView extends GetView<HomeController> {
           controller.changeStatusIconColor(true);
         },
         color: Colors.transparent,
-        panel: _buildDefaultPanel(context),
-        body: _buildDefaultBody(context),
-        header: _buildBottom(bottomHeight, context),
+        panel: FrameSeparateWidget(index: 0,child: _buildDefaultPanel(context,bottomHeight),),
+        body: FrameSeparateWidget(index: 1,child: _buildDefaultBody(context),),
+        header: FrameSeparateWidget(index: 2,child: _buildBottom(bottomHeight, context),),
         minHeight: 110.h + bottomHeight,
         maxHeight: Get.height - controller.panelHeaderSize - MediaQuery.of(context).padding.top - 10.w,
       ),
@@ -76,11 +78,11 @@ class PanelView extends GetView<HomeController> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      ImageUtils.getTimeStamp(controller.duration.value.inMilliseconds),
+                      OtherUtils.getTimeStamp(controller.duration.value.inMilliseconds),
                       style: TextStyle(color: controller.getPlayPageTheme(context), fontSize: 30.sp),
                     ),
                     Text(
-                      ImageUtils.getTimeStamp(controller.mediaItem.value.duration?.inMilliseconds ?? 0),
+                      OtherUtils.getTimeStamp(controller.mediaItem.value.duration?.inMilliseconds ?? 0),
                       style: TextStyle(color: controller.getPlayPageTheme(context), fontSize: 30.sp),
                     ),
                   ],
@@ -96,47 +98,44 @@ class PanelView extends GetView<HomeController> {
             ),
           ),
           Obx(() {
-            return IgnorePointer(
-              ignoring: disabled,
-              child: SizedBox(
-                width: Get.width,
-                child: Visibility(
-                  visible: controller.mediaItem.value.id.isNotEmpty,
-                  child: FlutterRangeSlider(
-                    min: 0,
-                    disabled: disabled,
-                    max: controller.mEffects.length.toDouble(),
-                    values: [controller.duration.value.inMilliseconds / (controller.mediaItem.value.duration?.inMilliseconds ?? 0) * 100],
-                    handler: FlutterSliderHandler(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          color: controller.rx.value.main?.bodyTextColor.withOpacity(.2) ?? Colors.black12,
-                          // border: Border.all(color: controller.rx.value.dark?.color ?? Colors.transparent, width: 4.w),
-                        ),
-                        child: const SizedBox.shrink()),
-                    handlerWidth: 22,
-                    handlerHeight: 22,
-                    touchSize: 18,
-                    tooltip: FlutterSliderTooltip(disabled: true),
-                    hatchMark: FlutterSliderHatchMark(
-                        labels: controller.mEffects
-                            .map((e) => FlutterSliderHatchMarkLabel(
-                                percent: e['percent'],
-                                label: Container(
-                                  height: e['size'],
-                                  decoration: BoxDecoration(color: controller.getPlayPageTheme(context), borderRadius: BorderRadius.circular(1)),
-                                  width: 1.3,
-                                )))
-                            .toList(),
-                        linesAlignment: FlutterSliderHatchMarkAlignment.right,
-                        density: 0.5),
-                    trackBar: const FlutterSliderTrackBar(activeTrackBarHeight: .1, inactiveTrackBarHeight: .1, activeTrackBar: BoxDecoration(color: Colors.transparent)),
-                    onDragCompleted: (a, b, c) {
-                      if (!disabled) {
-                        controller.audioServeHandler.seek(Duration(milliseconds: (controller.mediaItem.value.duration?.inMilliseconds ?? 0) * b ~/ 100));
-                      }
-                    },
-                  ),
+            return SizedBox(
+              width: Get.width,
+              child: Visibility(
+                visible: controller.mediaItem.value.id.isNotEmpty,
+                child: FlutterRangeSlider(
+                  min: 0,
+                  disabled: disabled,
+                  max: controller.mEffects.length.toDouble(),
+                  values: [controller.duration.value.inMilliseconds / (controller.mediaItem.value.duration?.inMilliseconds ?? 0) * 100],
+                  handler: FlutterSliderHandler(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        color: controller.rx.value.main?.bodyTextColor.withOpacity(.2) ?? Colors.black12,
+                        // border: Border.all(color: controller.rx.value.dark?.color ?? Colors.transparent, width: 4.w),
+                      ),
+                      child: const SizedBox.shrink()),
+                  handlerWidth: 22,
+                  handlerHeight: 22,
+                  touchSize: 18,
+                  tooltip: FlutterSliderTooltip(disabled: true),
+                  hatchMark: FlutterSliderHatchMark(
+                      labels: controller.mEffects
+                          .map((e) => FlutterSliderHatchMarkLabel(
+                          percent: e['percent'],
+                          label: Container(
+                            height: e['size'],
+                            decoration: BoxDecoration(color: controller.getPlayPageTheme(context), borderRadius: BorderRadius.circular(1)),
+                            width: 1.3,
+                          )))
+                          .toList(),
+                      linesAlignment: FlutterSliderHatchMarkAlignment.right,
+                      density: 0.5),
+                  trackBar: const FlutterSliderTrackBar(activeTrackBarHeight: .1, inactiveTrackBarHeight: .1, activeTrackBar: BoxDecoration(color: Colors.transparent)),
+                  onDragCompleted: (a, b, c) {
+                    if (!disabled) {
+                      controller.audioServeHandler.seek(Duration(milliseconds: (controller.mediaItem.value.duration?.inMilliseconds ?? 0) * b ~/ 100));
+                    }
+                  },
                 ),
               ),
             );
@@ -148,7 +147,7 @@ class PanelView extends GetView<HomeController> {
 
   // height:329.h-MediaQuery.of(context).padding.top,
   Widget _buildPlayController(BuildContext context) {
-    return Expanded(child: Obx(() {
+    return Expanded(child: FrameSeparateWidget(index: 7,child: Obx(() {
       return Padding(
         padding: EdgeInsets.only(left: 40.w, right: 40.w),
         child: Row(
@@ -160,56 +159,56 @@ class PanelView extends GetView<HomeController> {
                     size: 44.w, color: controller.getPlayPageTheme(context))),
             Expanded(
                 child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                    onPressed: () {
-                      if (controller.fm.value) {
-                        return;
-                      }
-                      if (controller.intervalClick(1)) {
-                        controller.audioServeHandler.skipToPrevious();
-                      }
-                    },
-                    icon: Icon(
-                      TablerIcons.player_skip_back,
-                      size: 46.w,
-                      color: controller.getPlayPageTheme(context).withOpacity(controller.fm.value ? 0.3 : .7),
-                    )),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 60.w),
-                  child: InkWell(
-                    child: Container(
-                      alignment: Alignment.center,
-                      padding: EdgeInsets.only(bottom: 5.h),
-                      height: 100.h,
-                      width: 100.h,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(80.w),
-                        color: controller.rx.value.main?.bodyTextColor.withOpacity(.2) ?? Colors.black12,
-                      ),
-                      child: Icon(
-                        controller.playing.value ? TablerIcons.player_pause : TablerIcons.player_play,
-                        size: 52.w,
-                        color: controller.getPlayPageTheme(context),
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                        onPressed: () {
+                          if (controller.fm.value) {
+                            return;
+                          }
+                          if (controller.intervalClick(1)) {
+                            controller.audioServeHandler.skipToPrevious();
+                          }
+                        },
+                        icon: Icon(
+                          TablerIcons.player_skip_back,
+                          size: 46.w,
+                          color: controller.getPlayPageTheme(context).withOpacity(controller.fm.value ? 0.3 : .7),
+                        )),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 60.w),
+                      child: InkWell(
+                        child: Container(
+                          alignment: Alignment.center,
+                          padding: EdgeInsets.only(bottom: 5.h),
+                          height: 100.h,
+                          width: 100.h,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(80.w),
+                            color: controller.rx.value.main?.bodyTextColor.withOpacity(.2) ?? Colors.black12,
+                          ),
+                          child: Icon(
+                            controller.playing.value ? TablerIcons.player_pause : TablerIcons.player_play,
+                            size: 52.w,
+                            color: controller.getPlayPageTheme(context),
+                          ),
+                        ),
+                        onTap: () => controller.playOrPause(),
                       ),
                     ),
-                    onTap: () => controller.playOrPause(),
-                  ),
-                ),
-                IconButton(
-                    onPressed: () {
-                      if (controller.intervalClick(1)) {
-                        controller.audioServeHandler.skipToNext();
-                      }
-                    },
-                    icon: Icon(
-                      TablerIcons.player_skip_forward,
-                      size: 46.w,
-                      color: controller.getPlayPageTheme(context),
-                    )),
-              ],
-            )),
+                    IconButton(
+                        onPressed: () {
+                          if (controller.intervalClick(1)) {
+                            controller.audioServeHandler.skipToNext();
+                          }
+                        },
+                        icon: Icon(
+                          TablerIcons.player_skip_forward,
+                          size: 46.w,
+                          color: controller.getPlayPageTheme(context),
+                        )),
+                  ],
+                )),
             IconButton(
                 onPressed: () {
                   if (controller.fm.value) {
@@ -225,7 +224,7 @@ class PanelView extends GetView<HomeController> {
           ],
         ),
       );
-    }));
+    }),));
   }
 
   Widget _buildBottom(bottomHeight, context) {
@@ -276,7 +275,7 @@ class PanelView extends GetView<HomeController> {
         ));
   }
 
-  Widget _buildDefaultPanel(BuildContext context) {
+  Widget _buildDefaultPanel(BuildContext context,bottomHeight) {
     return Obx(() => AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         decoration: BoxDecoration(
@@ -287,12 +286,12 @@ class PanelView extends GetView<HomeController> {
               // Theme.of(context).bottomAppBarColor,
             ], begin: Alignment.topLeft, end: Alignment.bottomCenter),
             borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w))),
-        child: _buildPanelContent(context)));
+        child: _buildPanelContent(context,bottomHeight)));
   }
 
-  Widget _buildPanelContent(BuildContext context) {
+  Widget _buildPanelContent(BuildContext context,bottomHeight) {
     return Padding(
-      padding: EdgeInsets.only(top: 140.w),
+      padding: EdgeInsets.only(top: 110.h + bottomHeight),
       child: PreloadPageView.builder(
         itemBuilder: (context, index) => controller.pages[index],
         itemCount: controller.pages.length,
@@ -309,78 +308,79 @@ class PanelView extends GetView<HomeController> {
     return Column(
       children: [
         // 歌曲信息
-        Obx(() => AnimatedOpacity(
-              opacity: controller.slidePosition.value,
-              duration: Duration.zero,
-              child: Container(
-                height: 70.h,
-                margin: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-                padding: EdgeInsets.symmetric(horizontal: 20.w),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    IconButton(
-                        onPressed: () {
-                          controller.panelControllerHome.close();
-                        },
-                        icon: Icon(
-                          TablerIcons.chevron_down,
-                          color: controller.getPlayPageTheme(context),
-                        )),
-                    const Expanded(
-                      child: SizedBox.shrink(),
-                    ),
-                    Visibility(
-                      visible: (controller.mediaItem.value.extras?['mv'] ?? 0) > 0,
-                      child: IconButton(
-                          onPressed: () {
-                            context.router.push(const MvView().copyWith(queryParams: {'mvId': controller.mediaItem.value.extras?['mv'] ?? 0}));
-                          },
-                          icon: Icon(
-                            TablerIcons.brand_youtube,
-                            color: controller.getPlayPageTheme(context),
-                          )),
-                    ),
-                    IconButton(
-                        onPressed: () {},
-                        icon: Icon(
-                          TablerIcons.brand_stackoverflow,
-                          color: controller.getPlayPageTheme(context),
-                        )),
-                  ],
+        FrameSeparateWidget(index: 4,child: Obx(() => AnimatedOpacity(
+          opacity: controller.slidePosition.value,
+          duration: Duration.zero,
+          child: Container(
+            height: 70.h,
+            margin: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+            padding: EdgeInsets.symmetric(horizontal: 20.w),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                    onPressed: () {
+                      controller.panelControllerHome.close();
+                    },
+                    icon: Icon(
+                      TablerIcons.chevron_down,
+                      color: controller.getPlayPageTheme(context),
+                    )),
+                const Expanded(
+                  child: SizedBox.shrink(),
                 ),
-              ),
-            )),
+                Visibility(
+                  visible: (controller.mediaItem.value.extras?['mv'] ?? 0) > 0,
+                  child: IconButton(
+                      onPressed: () {
+                        context.router.push(const MvView().copyWith(queryParams: {'mvId': controller.mediaItem.value.extras?['mv'] ?? 0}));
+                      },
+                      icon: Icon(
+                        TablerIcons.brand_youtube,
+                        color: controller.getPlayPageTheme(context),
+                      )),
+                ),
+                IconButton(
+                    onPressed: () {},
+                    icon: Icon(
+                      TablerIcons.brand_stackoverflow,
+                      color: controller.getPlayPageTheme(context),
+                    )),
+              ],
+            ),
+          ),
+        )),),
         Obx(() => Container(
               height: controller.getPanelMinSize(),
             )),
-        Obx(() => SizedBox(
-              height: 90.h,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  AutoSizeText(
-                    controller.mediaItem.value.title,
-                    style: TextStyle(fontSize: 40.sp, fontWeight: FontWeight.bold, color: controller.getPlayPageTheme(context)),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Padding(padding: EdgeInsets.symmetric(vertical: 3.w)),
-                  AutoSizeText(
-                    controller.mediaItem.value.artist ?? '',
-                    style: TextStyle(fontSize: 28.sp, color: controller.getPlayPageTheme(context)),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  )
-                ],
+        FrameSeparateWidget(index: 5,child: Obx(() => Container(
+          padding: EdgeInsets.symmetric(horizontal: 35.w),
+          height: 90.h,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                controller.mediaItem.value.title.fixAutoLines(),
+                style: TextStyle(fontSize: 40.sp, fontWeight: FontWeight.bold, color: controller.getPlayPageTheme(context)),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
-            )),
+              Padding(padding: EdgeInsets.symmetric(vertical: 3.w)),
+              Text(
+                (controller.mediaItem.value.artist ?? '').fixAutoLines(),
+                style: TextStyle(fontSize: 28.sp, color: controller.getPlayPageTheme(context)),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              )
+            ],
+          ),
+        )),),
         //操控区域
         _buildPlayController(context),
-        //进度条
-        _buildSlide(context),
+        FrameSeparateWidget(index: 6,child:  _buildSlide(context),),
+        // //进度条
         //功能按钮
         SizedBox(
           height: 110.h + MediaQuery.of(context).padding.bottom,
@@ -396,4 +396,11 @@ class BottomItem {
   VoidCallback? onTap;
 
   BottomItem(this.iconData, this.index, {this.onTap});
+}
+
+extension FixAutoLines on String
+{
+  String fixAutoLines() {
+    return Characters(this).join('\u{200B}');
+  }
 }

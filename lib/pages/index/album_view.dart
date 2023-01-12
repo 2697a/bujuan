@@ -4,17 +4,16 @@ import 'package:audio_service/audio_service.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/pages/index/index_controller.dart';
 import 'package:bujuan/widget/request_widget/request_loadmore_view.dart';
-import 'package:bujuan/widget/request_widget/request_view.dart';
 import 'package:bujuan/widget/simple_extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 import '../../common/netease_api/src/api/play/bean.dart';
-import '../../common/netease_api/src/api/play/cloud_entity.dart';
 import '../../common/netease_api/src/dio_ext.dart';
 import '../../common/netease_api/src/netease_handler.dart';
 import '../../widget/app_bar.dart';
+import '../play_list/playlist_view.dart';
 import '../user/user_controller.dart';
 
 class AlbumView extends GetView<IndexController> {
@@ -66,7 +65,7 @@ class AlbumView extends GetView<IndexController> {
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 padding: EdgeInsets.symmetric(horizontal: 20.w),
-                itemBuilder: (context, index) => _buildItem(controller.mediaItems[index], index),
+                itemBuilder: (context, index) => SongItem(index: index, mediaItems: controller.mediaItems,queueTitle: 'cloud${DateTime.now().millisecondsSinceEpoch}',),
                 itemCount: controller.mediaItems.length,
               );
             }),
@@ -75,56 +74,56 @@ class AlbumView extends GetView<IndexController> {
     );
   }
 
-  Widget _buildItem(MediaItem data, int index) {
-    return InkWell(
-      child: SizedBox(
-        height: 120.w,
-        child: Row(
-          children: [
-            SimpleExtendedImage(
-              '${data.extras?['image'] ?? ''}?param=200y200',
-              width: 85.w,
-              height: 85.w,
-              borderRadius: BorderRadius.circular(10.w),
-            ),
-            Expanded(
-                child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15.w),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    data.title,
-                    maxLines: 1,
-                    style: TextStyle(fontSize: 28.sp),
-                  ),
-                  Padding(padding: EdgeInsets.symmetric(vertical: 3.w)),
-                  Text(
-                    data.artist ?? '',
-                    style: TextStyle(fontSize: 26.sp, color: Colors.grey),
-                  )
-                ],
-              ),
-            ))
-          ],
-        ),
-      ),
-      onTap: () => HomeController.to.playByIndex(index, 'cloudSong', mediaItem: controller.mediaItems),
-    );
-    // return ListTile(
-    //   dense: true,
-    //   contentPadding: EdgeInsets.symmetric(horizontal: 10.w),
-    //   leading: SimpleExtendedImage(
-    //     '${data.extras?['image'] ?? ''}?param=200y200',
-    //     width: 80.w,
-    //     height: 80.w,
-    //   ),
-    //   title: Text(data.title),
-    //   subtitle: Text(data.artist??''),
-    //   onTap: () {
-    //     controller.playIndex(index);
-    //   },
-    // );
-  }
+  // Widget _buildItem(MediaItem data, int index) {
+  //   return InkWell(
+  //     child: SizedBox(
+  //       height: 120.w,
+  //       child: Row(
+  //         children: [
+  //           SimpleExtendedImage(
+  //             '${data.extras?['image'] ?? ''}?param=200y200',
+  //             width: 85.w,
+  //             height: 85.w,
+  //             borderRadius: BorderRadius.circular(10.w),
+  //           ),
+  //           Expanded(
+  //               child: Padding(
+  //             padding: EdgeInsets.symmetric(horizontal: 15.w),
+  //             child: Column(
+  //               crossAxisAlignment: CrossAxisAlignment.start,
+  //               mainAxisAlignment: MainAxisAlignment.center,
+  //               children: [
+  //                 Text(
+  //                   data.title,
+  //                   maxLines: 1,
+  //                   style: TextStyle(fontSize: 28.sp),
+  //                 ),
+  //                 Padding(padding: EdgeInsets.symmetric(vertical: 3.w)),
+  //                 Text(
+  //                   data.artist ?? '',
+  //                   style: TextStyle(fontSize: 26.sp, color: Colors.grey),
+  //                 )
+  //               ],
+  //             ),
+  //           ))
+  //         ],
+  //       ),
+  //     ),
+  //     onTap: () => HomeController.to.playByIndex(index, 'cloudSong', mediaItem: controller.mediaItems),
+  //   );
+  //   // return ListTile(
+  //   //   dense: true,
+  //   //   contentPadding: EdgeInsets.symmetric(horizontal: 10.w),
+  //   //   leading: SimpleExtendedImage(
+  //   //     '${data.extras?['image'] ?? ''}?param=200y200',
+  //   //     width: 80.w,
+  //   //     height: 80.w,
+  //   //   ),
+  //   //   title: Text(data.title),
+  //   //   subtitle: Text(data.artist??''),
+  //   //   onTap: () {
+  //   //     controller.playIndex(index);
+  //   //   },
+  //   // );
+  // }
 }

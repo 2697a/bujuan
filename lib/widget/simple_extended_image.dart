@@ -94,28 +94,26 @@ class SimpleExtendedImageState extends State<SimpleExtendedImage> {
     //     return image;
     //   },
     // );
-    return ClipRRect(
-      borderRadius: widget.shape == BoxShape.circle ? BorderRadius.circular(widget.width! / 2) : widget.borderRadius ?? BorderRadius.circular(0),
-      // child: OctoImage(
-      //   width: widget.width,
-      //   height: widget.height,
-      //   image: CachedNetworkImageProvider(widget.url),
-      //   placeholderBuilder: (c) => CachedNetworkImage(
-      //     width: widget.width,
-      //     height: widget.height,
-      //     imageUrl: widget.url.replaceAll('500', '50'),
-      //     fit: BoxFit.contain,
-      //   ),
-      //   errorBuilder: OctoError.icon(color: Colors.red),
-      //   fit: BoxFit.contain,
-      // ),
-      child: CachedNetworkImage(
-        imageUrl: widget.url,
-        width: widget.width,
-        height: widget.height,
-        fit: widget.fit,
-        useOldImageOnUrlChange: true,
-        colorBlendMode: BlendMode.lighten,
+    return Visibility(
+      visible: widget.shape != BoxShape.circle,
+      replacement: ClipOval(
+        child: CachedNetworkImage(
+          imageUrl: widget.url,
+          width: widget.width,
+          height: widget.height,
+          fit: widget.fit,
+        ),
+      ),
+      child: ClipRRect(
+        borderRadius: widget.borderRadius ?? BorderRadius.circular(0),
+        child: CachedNetworkImage(
+          imageUrl: widget.url,
+          width: widget.width,
+          height: widget.height,
+          fit: widget.fit,
+          useOldImageOnUrlChange: true,
+          colorBlendMode: BlendMode.lighten,
+        ),
       ),
     );
     // if (widget.url.startsWith('http')) {

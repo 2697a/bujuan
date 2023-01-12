@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get/get.dart';
+import 'package:keframe/keframe.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class PlayListView extends GetView<HomeController>{
@@ -32,7 +33,7 @@ class PlayListView extends GetView<HomeController>{
   }
 
   Widget _buildPlayListItem(MediaItem mediaItem, int index,BuildContext context) {
-    return InkWell(
+    return FrameSeparateWidget(index: index,child: InkWell(
       child: Obx(() {
         return SizedBox(
           width: Get.width,
@@ -67,9 +68,7 @@ class PlayListView extends GetView<HomeController>{
               ),
               Padding(padding: EdgeInsets.symmetric(horizontal: 10.w)),
               IconButton(
-                  onPressed: () {
-                    controller.audioServeHandler.removeQueueItemAt(index);
-                  },
+                  onPressed: () => controller.audioServeHandler.removeQueueItemAt(index),
                   icon: Icon(
                     TablerIcons.trash_x,
                     color: controller.getPlayPageTheme(context),
@@ -80,7 +79,7 @@ class PlayListView extends GetView<HomeController>{
         );
       }),
       onTap: () => controller.audioServeHandler.playIndex(index),
-    );
+    ),);
   }
 
 }

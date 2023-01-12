@@ -30,41 +30,23 @@ class SplashPageState extends State<SplashPage> {
   Duration durationFinish = const Duration(milliseconds: 2200);
   bool isFinish = false;
   Map<String, dynamic>? mapData;
+  bool noFirst = false;
 
   // final OnAudioQuery onAudioQuery = GetIt.instance<OnAudioQuery>();
 
   @override
   void initState() {
     super.initState();
-
+    noFirst = StorageUtil().getBool(noFirstOpen);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _update();
       changeOpacity();
       SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
         statusBarBrightness: Get.isPlatformDarkMode ? Brightness.dark : Brightness.light,
         statusBarIconBrightness: Get.isPlatformDarkMode ? Brightness.light : Brightness.dark,
       ));
-    });
-
-    Future.delayed(durationFinish, () {
-      bool noFirst = StorageUtil().getBool(noFirstOpen);
-      if(mapData!=null && PlatformUtils.isAndroid){
-        AutoRouter.of(context).replace(const UpdateView().copyWith(queryParams: mapData));
-        return;
-      }
-      AutoRouter.of(context).replaceNamed(noFirst ? Routes.home : Routes.guide);
-    });
-  }
-
-
-  _update() {
-    Https.dioProxy.get('https://gitee.com/yasengsuoai/bujuan_version/raw/master/version.json').then((value) async {
-      PackageInfo packageInfo = await PackageInfo.fromPlatform();
-      String version = packageInfo.version;
-      Map<String, dynamic> versionData = value.data..putIfAbsent('oldVersion', () => version)..putIfAbsent('splash', () => 'splash');
-      if (int.parse((versionData['version']??'0').replaceAll('.', '')) > int.parse(version.replaceAll('.', ''))) {
-        mapData = versionData;
-      }
+      Future.delayed(durationFinish, () {
+        AutoRouter.of(context).replaceNamed(noFirst ? Routes.home : Routes.guide);
+      });
     });
   }
 

@@ -447,7 +447,7 @@ mixin ApiEvent {
         break;
     }
     return DioMetaData(joinUri('/weapi/resource/comments/$op'),
-        data: params, options: joinOptions(cookies: {'os': 'pc'}));
+        data: params, options: joinOptions(cookies: {'os': 'android'}));
   }
 
   /// 发表/删除/回复评论

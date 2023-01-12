@@ -6,3 +6,4 @@ String leftImageSp = 'LEFT_IMAGE';
 String gradientBackgroundSp = 'SOLID_BACK_GROUND';
 String fmSp = 'FM_SP';
 String noFirstOpen = 'NO_FIRST_OPEN';
+String loginData = 'LOGIN_DATA';

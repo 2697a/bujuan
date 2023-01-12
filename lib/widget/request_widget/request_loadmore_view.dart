@@ -1,4 +1,3 @@
-import 'package:bujuan/common/constants/other.dart';
 import 'package:bujuan/generated/json/base/json_convert_content.dart';
 import 'package:bujuan/widget/data_widget.dart';
 import 'package:dio/dio.dart';
@@ -22,6 +21,7 @@ class RequestLoadMoreWidget<E, T> extends StatefulWidget {
   final ScrollController? scrollController;
   final OnData<E>? onData;
   final List<String> listKey;
+  final String? lastField;
 
   const RequestLoadMoreWidget({
     Key? key,
@@ -34,6 +34,7 @@ class RequestLoadMoreWidget<E, T> extends StatefulWidget {
     this.scrollController,
     this.isPageNmu = false,
     this.pageSize = 30,
+    this.lastField,
   }) : super(key: key);
 
   @override
@@ -50,6 +51,7 @@ class RequestLoadMoreWidgetState<E, T> extends State<RequestLoadMoreWidget<E, T>
   int pageNum = 0;
   CancelToken cancelToken = CancelToken();
   bool noMore = false;
+  Map<String, dynamic>? map;
 
   @override
   initState() {
@@ -111,7 +113,9 @@ class RequestLoadMoreWidgetState<E, T> extends State<RequestLoadMoreWidget<E, T>
                       pageNum = widget.isPageNmu ? 1 : 0;
                       if (widget.isPageNmu) {
                         dioMetaData?.data['pageNo'] = pageNum;
-                        dioMetaData?.data['cursor'] = 0;
+                      }
+                      if ((widget.lastField ?? '').isNotEmpty) {
+                        dioMetaData?.data[widget.lastField] = 0;
                       }
                       if (dioMetaData?.data['offset'] != null) {
                         dioMetaData?.data['offset'] = pageNum;
@@ -123,7 +127,9 @@ class RequestLoadMoreWidgetState<E, T> extends State<RequestLoadMoreWidget<E, T>
                       pageNum++;
                       if (widget.isPageNmu) {
                         dioMetaData?.data['pageNo'] = pageNum;
-                        dioMetaData?.data['cursor'] = (pageNum-1) * widget.pageSize;
+                      }
+                      if ((widget.lastField ?? '').isNotEmpty) {
+                        dioMetaData?.data[widget.lastField] = map![widget.lastField];
                       }
                       if (dioMetaData?.data['offset'] != null) {
                         dioMetaData?.data['offset'] = pageNum * widget.pageSize;
@@ -138,6 +144,9 @@ class RequestLoadMoreWidgetState<E, T> extends State<RequestLoadMoreWidget<E, T>
   callRefresh() {
     Https.dioProxy.postUri(dioMetaData!, cancelToken: cancelToken).then((Response value) {
       int code = value.data['code'];
+      if (widget.listKey.length == 2) {
+        map = value.data[widget.listKey.first];
+      }
       _loading = false;
       if (code == 200) {
         _error = false;
@@ -149,13 +158,12 @@ class RequestLoadMoreWidgetState<E, T> extends State<RequestLoadMoreWidget<E, T>
         for (var element in widget.listKey) {
           mapData = mapData[element];
         }
-        if (pageNum == 0) list.clear();
+        if (pageNum == (widget.isPageNmu ? 1 : 0)) list.clear();
         var listData = (mapData as List);
-        print('============${listData.length}');
         list.addAll(listData.map((e) => JsonConvert.fromJsonAsT<T>(e) as T).toList());
         _empty = list.isEmpty;
         setState(() {});
-        if (pageNum == 0) {
+        if (pageNum == (widget.isPageNmu ? 1 : 0)) {
           _refreshController.refreshCompleted();
         } else {
           _refreshController.loadComplete();
@@ -180,6 +188,12 @@ class RequestLoadMoreWidgetState<E, T> extends State<RequestLoadMoreWidget<E, T>
 
   @override
   setParams(DioMetaData params) {
+    setState(() {
+      _loading = true;
+      _error = false;
+      _empty = false;
+    });
+    pageNum = widget.isPageNmu ? 1 : 0;
     dioMetaData = params;
   }
 }

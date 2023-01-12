@@ -43,6 +43,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   final List<LeftMenu> leftMenus = [
     LeftMenu('个人中心', TablerIcons.user, Routes.user, '/home/user'),
     LeftMenu('推荐歌单', TablerIcons.smart_home, Routes.index, '/home/index'),
+    LeftMenu('本地歌曲', TablerIcons.file_music, Routes.local, '/home/local'),
     LeftMenu('个性设置', TablerIcons.settings, Routes.setting, '/setting'),
   ];
 
@@ -252,7 +253,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
 
   //获取专辑颜色
   _getAlbumColor() async {
-    rx.value = await ImageUtils.getImageColor('${mediaItem.value.extras?['image'] ?? ''}?param=500y500');
+    rx.value = await OtherUtils.getImageColor('${mediaItem.value.extras?['image'] ?? ''}?param=500y500');
     if (slidePosition.value == 1 || second.value) changeStatusIconColor(true);
   }
 
@@ -289,11 +290,11 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
 
   //获取歌曲评论
   _getSongTalk() async {
-    CommentListWrap commentListWrap = await NeteaseMusicApi().commentList(mediaItem.value.id, 'song',limit: 10);
+    CommentList2Wrap commentListWrap = await NeteaseMusicApi().commentList2(mediaItem.value.id, 'song',pageSize: 3,sortType: 2);
     if (commentListWrap.code == 200) {
       comments
         ..clear()
-        ..addAll(commentListWrap.comments ?? []);
+        ..addAll(commentListWrap.data.comments ?? []);
     }
   }
 

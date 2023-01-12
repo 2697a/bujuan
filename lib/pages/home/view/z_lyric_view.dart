@@ -3,6 +3,7 @@ import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:keframe/keframe.dart';
 
 import '../../../widget/list_wheel/clickable_list_wheel_widget.dart';
 
@@ -55,7 +56,7 @@ class LyricView extends GetView<HomeController> {
                   //TODO 此处可以获取实时歌词
                 },
                 childDelegate: ListWheelChildBuilderDelegate(
-                  builder: (context, index) => Container(
+                  builder: (context, index) => FrameSeparateWidget(index: index,child: Container(
                     width: Get.width,
                     height: controller.hasTran.value ? 150.w : 90.w,
                     alignment: Alignment.center,
@@ -85,7 +86,7 @@ class LyricView extends GetView<HomeController> {
                                 overflow: TextOverflow.ellipsis))
                       ],
                     ),
-                  ),
+                  ),),
                   childCount: controller.lyricsLineModels.length,
                 ),
               ),

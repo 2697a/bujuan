@@ -12,6 +12,7 @@ import 'package:bujuan/pages/today/today_view.dart';
 import 'package:bujuan/pages/user/user_view.dart';
 
 import '../pages/artists/artists_view.dart';
+import '../pages/local/local_view.dart';
 import '../pages/login/login.dart';
 import '../pages/play_list/playlist_view.dart';
 import '../pages/search/search_view.dart';
@@ -39,6 +40,7 @@ abstract class Routes {
   static const userSetting = _Paths.userSetting;
   static const mv = _Paths.mv;
   static const update = _Paths.update;
+  static const local = _Paths.local;
 }
 
 abstract class _Paths {
@@ -47,6 +49,7 @@ abstract class _Paths {
   static const home = '/home';
   static const index = 'index';
   static const user = 'user';
+  static const local = 'local';
   static const search = 'search';
   static const playlist = 'playlist';
   static const details = '/details';
@@ -76,6 +79,7 @@ abstract class _Paths {
       AutoRoute(path: Routes.search, page: SearchView),
       AutoRoute(path: Routes.artists, page: ArtistsView),
       AutoRoute(path: Routes.myRadio, page: MyRadioView),
+      AutoRoute(path: Routes.local, page: LocalView),
     ]),
     AutoRoute(path: Routes.splash, page: SplashPage, initial: true, deferredLoading: true),
     AutoRoute(path: Routes.login, page: LoginView),

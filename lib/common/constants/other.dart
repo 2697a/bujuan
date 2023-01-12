@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:date_format/date_format.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,7 +8,7 @@ import 'package:palette_generator/palette_generator.dart';
 
 typedef ImageColorCallBack = void Function(PaletteColorData paletteColorData);
 
-class ImageUtils {
+class OtherUtils {
   // static ImageStreamListener? _imageStreamListener;
   // static ImageStream? _imageStream;
 
@@ -94,6 +95,11 @@ class ImageUtils {
 
     return "$minutesStr:$secondsStr";
   }
+
+  static String formatDate2Str(int time) {
+    if(time<=0) return '';
+    return formatDate(DateTime.fromMillisecondsSinceEpoch(time), [yyyy, '-', mm, '-', dd,' ', HH, ':', nn]);
+  }
 }
 
 class PaletteColorData {
@@ -109,6 +115,13 @@ class PaletteColorData {
 class WidgetUtil {
   static showToast(String message) {
     Fluttertoast.showToast(
-        msg: message, toastLength: Toast.LENGTH_SHORT, gravity: ToastGravity.CENTER, timeInSecForIosWeb: 1, backgroundColor: Colors.red, textColor: Colors.white, fontSize: 16.0);
+      msg: message,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.CENTER,
+      timeInSecForIosWeb: 1,
+      backgroundColor: Colors.grey,
+      textColor: Colors.white,
+      fontSize: 16.0,
+    );
   }
 }

@@ -1,5 +1,9 @@
+import 'dart:convert';
+
 import 'package:auto_route/auto_route.dart';
+import 'package:bujuan/common/constants/key.dart';
 import 'package:bujuan/common/constants/other.dart';
+import 'package:bujuan/common/storage.dart';
 import 'package:bujuan/pages/user/user_view.dart';
 import 'package:bujuan/routes/router.dart';
 import 'package:bujuan/routes/router.gr.dart';
@@ -40,7 +44,6 @@ class UserController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    getUserState();
     userScrollController.addListener(() {
       if (userScrollController.position.pixels <= 130.w && op.value != 0) {
         op.value = 0;
@@ -53,8 +56,29 @@ class UserController extends GetxController {
 
   @override
   void onReady() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      String userDataStr = StorageUtil().getString(loginData);
+      if (userDataStr.isNotEmpty) {
+        loginStatus.value = LoginStatus.login;
+        userData.value = NeteaseAccountInfoWrap.fromJson(jsonDecode(userDataStr));
+        getUserState();
+      }
+      _update();
+    });
   }
 
+  _update() {
+    Https.dioProxy.get('https://gitee.com/yasengsuoai/bujuan_version/raw/master/version.json').then((value) async {
+      PackageInfo packageInfo = await PackageInfo.fromPlatform();
+      String version = packageInfo.version;
+      Map<String, dynamic> versionData = value.data..putIfAbsent('oldVersion', () => version);
+      if (int.parse((versionData['version']??'0').replaceAll('.', '')) > int.parse(version.replaceAll('.', ''))) {
+        Future.delayed(const Duration(milliseconds: 1000),(){
+          // GetIt.instance<RootRouter>().push(const UpdateView().copyWith(queryParams: versionData));
+        });
+      }
+    });
+  }
 
   static UserController get to => Get.find();
 
@@ -65,7 +89,7 @@ class UserController extends GetxController {
       if (neteaseAccountInfoWrap.code == 200 && neteaseAccountInfoWrap.profile != null) {
         userData.value = neteaseAccountInfoWrap;
         loginStatus.value = LoginStatus.login;
-        getUserPlayList();
+        StorageUtil().setString(loginData, jsonEncode(neteaseAccountInfoWrap.toJson()));
         _getUserLikeSongIds();
       }
     } catch (e) {
@@ -87,7 +111,9 @@ class UserController extends GetxController {
     NeteaseMusicApi().logout().then((value) {
       if (value.code != 200) {
         WidgetUtil.showToast(value.message ?? '');
+        return;
       }
+      StorageUtil().setString(loginData, '');
       loginStatus.value = LoginStatus.noLogin;
     });
   }

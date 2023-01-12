@@ -91,7 +91,7 @@ class EmptyView extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // SvgPicture.asset(AppIcons.loading,width: Get.width/2.9,),
-          Lottie.asset('assets/lottie/empty_status.json', height: Get.width / 3.5, fit: BoxFit.fitHeight,
+          Lottie.asset('assets/lottie/empty.json', height: Get.width / 2, fit: BoxFit.fitHeight,
               filterQuality: FilterQuality.low),
           Text('暂无数据...', style: TextStyle(fontSize: 28.sp)),
         ],
