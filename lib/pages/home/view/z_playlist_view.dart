@@ -5,9 +5,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get/get.dart';
 import 'package:keframe/keframe.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 
-class PlayListView extends GetView<HomeController>{
+class PlayListView extends GetView<HomeController> {
   const PlayListView({super.key});
 
   @override
@@ -15,25 +14,29 @@ class PlayListView extends GetView<HomeController>{
     return buildPlayList(context);
   }
 
-
   //播放列表
   Widget buildPlayList(BuildContext context) {
-    return Obx(() => Visibility(visible: !controller.fm.value,child: ListView.builder(
-      physics: const ClampingScrollPhysics(),
-      controller: controller.playListScrollController,
-      padding: EdgeInsets.symmetric(horizontal: 30.w),
-      itemExtent: 110.w,
-      itemBuilder: (context, index) => Container(
-        margin: EdgeInsets.symmetric(horizontal: 10.w),
-        alignment: Alignment.centerLeft,
-        child: _buildPlayListItem(controller.mediaItems[index], index,context),
-      ),
-      itemCount: controller.mediaItems.length,
-    ),));
+    return FrameSeparateWidget(
+        index: 3,
+        child: Obx(() => Visibility(
+              visible: !controller.fm.value,
+              child: ListView.builder(
+                physics: const ClampingScrollPhysics(),
+                controller: controller.playListScrollController,
+                padding: EdgeInsets.symmetric(horizontal: 30.w),
+                itemExtent: 110.w,
+                itemBuilder: (context, index) => Container(
+                  margin: EdgeInsets.symmetric(horizontal: 10.w),
+                  alignment: Alignment.centerLeft,
+                  child: _buildPlayListItem(controller.mediaItems[index], index, context),
+                ),
+                itemCount: controller.mediaItems.length,
+              ),
+            )));
   }
 
-  Widget _buildPlayListItem(MediaItem mediaItem, int index,BuildContext context) {
-    return FrameSeparateWidget(index: index,child: InkWell(
+  Widget _buildPlayListItem(MediaItem mediaItem, int index, BuildContext context) {
+    return InkWell(
       child: Obx(() {
         return SizedBox(
           width: Get.width,
@@ -61,10 +64,7 @@ class PlayListView extends GetView<HomeController>{
                   )),
               Visibility(
                 visible: controller.mediaItem.value.id == mediaItem.id,
-                child: LoadingAnimationWidget.horizontalRotatingDots(
-                  color: controller.getPlayPageTheme(context),
-                  size: 40.w,
-                ),
+                child:  Icon(TablerIcons.circle_letter_p,color: controller.getPlayPageTheme(context),),
               ),
               Padding(padding: EdgeInsets.symmetric(horizontal: 10.w)),
               IconButton(
@@ -79,7 +79,6 @@ class PlayListView extends GetView<HomeController>{
         );
       }),
       onTap: () => controller.audioServeHandler.playIndex(index),
-    ),);
+    );
   }
-
 }

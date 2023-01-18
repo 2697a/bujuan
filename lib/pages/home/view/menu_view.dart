@@ -19,15 +19,18 @@ class MenuView extends GetView<HomeController> {
         Padding(padding: EdgeInsets.symmetric(vertical: 25.w)),
         GestureDetector(
           child: Obx(() => SimpleExtendedImage.avatar(
-            UserController.to.loginStatus.value == LoginStatus.login ? UserController.to.userData.value.profile?.avatarUrl ?? '' : 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fc-ssl.duitang.com%2Fuploads%2Fblog%2F202105%2F06%2F20210506002916_3ce11.thumb.1000_0.jpeg&refer=http%3A%2F%2Fc-ssl.duitang.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1675913899&t=7e774d368476b1959bda340aa8dadf5c',
-            width: 200.w,
-          )),
-          onTap: (){
+                UserController.to.userData.value.profile?.avatarUrl ?? '',
+                width: 200.w,
+              )),
+          onTap: () {
+            if (UserController.to.loginStatus.value == LoginStatus.noLogin) {
+              context.router.pushNamed(Routes.login);
+              return;
+            }
             controller.myDrawerController.close!();
             Future.delayed(const Duration(milliseconds: 400), () {
               context.router.pushNamed(Routes.userSetting);
             });
-
           },
         ),
         Expanded(
@@ -54,7 +57,8 @@ class MenuView extends GetView<HomeController> {
                           controller.leftMenus[index].title,
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              color: controller.currPathUrl.value == controller.leftMenus[index].pathUrl ? Theme.of(context).primaryColor : Theme.of(context).scaffoldBackgroundColor),
+                              color:
+                                  controller.currPathUrl.value == controller.leftMenus[index].pathUrl ? Theme.of(context).primaryColor : Theme.of(context).scaffoldBackgroundColor),
                         ),
                       )),
                     ],
@@ -87,7 +91,6 @@ class MenuView extends GetView<HomeController> {
         //     Future.delayed(const Duration(milliseconds: 400), () => HomeController.to.isAurora.value = !HomeController.to.isAurora.value);
         //   },
         // ),
-
       ],
     ));
   }

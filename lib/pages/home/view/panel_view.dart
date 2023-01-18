@@ -1,11 +1,8 @@
-import 'package:aurora/aurora.dart';
 import 'package:auto_route/auto_route.dart';
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/pages/user/user_controller.dart';
 import 'package:bujuan/widget/mobile/flashy_navbar.dart';
 import 'package:bujuan/widget/weslide/panel.dart';
-import 'package:bujuan/widget/wheel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -50,9 +47,15 @@ class PanelView extends GetView<HomeController> {
           controller.changeStatusIconColor(true);
         },
         color: Colors.transparent,
-        panel: FrameSeparateWidget(index: 0,child: _buildDefaultPanel(context,bottomHeight),),
-        body: FrameSeparateWidget(index: 1,child: _buildDefaultBody(context),),
-        header: FrameSeparateWidget(index: 2,child: _buildBottom(bottomHeight, context),),
+        panel: FrameSeparateWidget(
+          index: 1,
+          child: _buildDefaultPanel(context, bottomHeight),
+        ),
+        body: _buildDefaultBody(context),
+        header: FrameSeparateWidget(
+          index: 2,
+          child: _buildBottom(bottomHeight, context),
+        ),
         minHeight: 110.h + bottomHeight,
         maxHeight: Get.height - controller.panelHeaderSize - MediaQuery.of(context).padding.top - 10.w,
       ),
@@ -64,7 +67,7 @@ class PanelView extends GetView<HomeController> {
 
   Widget _buildSlide(BuildContext context, {bool showTime = true, bool disabled = false}) {
     return Container(
-      height: showTime ? 220.h : 100.h,
+      height: showTime ? 190.h : 100.h,
       padding: EdgeInsets.symmetric(horizontal: disabled ? 30.w : 40.w),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -110,7 +113,7 @@ class PanelView extends GetView<HomeController> {
                   handler: FlutterSliderHandler(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
-                        color: controller.rx.value.main?.bodyTextColor.withOpacity(.2) ?? Colors.black12,
+                        color: controller.rx.value.dominantColor?.bodyTextColor.withOpacity(.2) ?? Colors.black12,
                         // border: Border.all(color: controller.rx.value.dark?.color ?? Colors.transparent, width: 4.w),
                       ),
                       child: const SizedBox.shrink()),
@@ -121,12 +124,12 @@ class PanelView extends GetView<HomeController> {
                   hatchMark: FlutterSliderHatchMark(
                       labels: controller.mEffects
                           .map((e) => FlutterSliderHatchMarkLabel(
-                          percent: e['percent'],
-                          label: Container(
-                            height: e['size'],
-                            decoration: BoxDecoration(color: controller.getPlayPageTheme(context), borderRadius: BorderRadius.circular(1)),
-                            width: 1.3,
-                          )))
+                              percent: e['percent'],
+                              label: Container(
+                                height: e['size'],
+                                decoration: BoxDecoration(color: controller.getPlayPageTheme(context), borderRadius: BorderRadius.circular(1)),
+                                width: 1.3,
+                              )))
                           .toList(),
                       linesAlignment: FlutterSliderHatchMarkAlignment.right,
                       density: 0.5),
@@ -147,84 +150,88 @@ class PanelView extends GetView<HomeController> {
 
   // height:329.h-MediaQuery.of(context).padding.top,
   Widget _buildPlayController(BuildContext context) {
-    return Expanded(child: FrameSeparateWidget(index: 7,child: Obx(() {
-      return Padding(
-        padding: EdgeInsets.only(left: 40.w, right: 40.w),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            IconButton(
-                onPressed: () => controller.likeSong(),
-                icon: Icon(UserController.to.likeIds.contains(int.tryParse(controller.mediaItem.value.id)) ? TablerIcons.hearts : TablerIcons.heart,
-                    size: 44.w, color: controller.getPlayPageTheme(context))),
-            Expanded(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                        onPressed: () {
-                          if (controller.fm.value) {
-                            return;
-                          }
-                          if (controller.intervalClick(1)) {
-                            controller.audioServeHandler.skipToPrevious();
-                          }
-                        },
-                        icon: Icon(
-                          TablerIcons.player_skip_back,
-                          size: 46.w,
-                          color: controller.getPlayPageTheme(context).withOpacity(controller.fm.value ? 0.3 : .7),
-                        )),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 60.w),
-                      child: InkWell(
-                        child: Container(
-                          alignment: Alignment.center,
-                          padding: EdgeInsets.only(bottom: 5.h),
-                          height: 100.h,
-                          width: 100.h,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(80.w),
-                            color: controller.rx.value.main?.bodyTextColor.withOpacity(.2) ?? Colors.black12,
-                          ),
-                          child: Icon(
-                            controller.playing.value ? TablerIcons.player_pause : TablerIcons.player_play,
-                            size: 52.w,
-                            color: controller.getPlayPageTheme(context),
-                          ),
+    return Expanded(
+        child: FrameSeparateWidget(
+      index: 7,
+      child: Obx(() {
+        return Padding(
+          padding: EdgeInsets.only(left: 40.w, right: 40.w),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              IconButton(
+                  onPressed: () => controller.likeSong(),
+                  icon: Icon(UserController.to.likeIds.contains(int.tryParse(controller.mediaItem.value.id)) ? TablerIcons.hearts : TablerIcons.heart,
+                      size: 44.w, color: controller.getPlayPageTheme(context))),
+              Expanded(
+                  child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                      onPressed: () {
+                        if (controller.fm.value) {
+                          return;
+                        }
+                        if (controller.intervalClick(1)) {
+                          controller.audioServeHandler.skipToPrevious();
+                        }
+                      },
+                      icon: Icon(
+                        TablerIcons.player_skip_back,
+                        size: 46.w,
+                        color: controller.getPlayPageTheme(context).withOpacity(controller.fm.value ? 0.3 : .7),
+                      )),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 60.w),
+                    child: InkWell(
+                      child: Container(
+                        alignment: Alignment.center,
+                        padding: EdgeInsets.only(bottom: 5.h),
+                        height: 100.h,
+                        width: 100.h,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(80.w),
+                          color: controller.rx.value.dominantColor?.bodyTextColor.withOpacity(.2) ?? Colors.black12,
                         ),
-                        onTap: () => controller.playOrPause(),
-                      ),
-                    ),
-                    IconButton(
-                        onPressed: () {
-                          if (controller.intervalClick(1)) {
-                            controller.audioServeHandler.skipToNext();
-                          }
-                        },
-                        icon: Icon(
-                          TablerIcons.player_skip_forward,
-                          size: 46.w,
+                        child: Icon(
+                          controller.playing.value ? TablerIcons.player_pause : TablerIcons.player_play,
+                          size: 52.w,
                           color: controller.getPlayPageTheme(context),
-                        )),
-                  ],
-                )),
-            IconButton(
-                onPressed: () {
-                  if (controller.fm.value) {
-                    return;
-                  }
-                  controller.changeRepeatMode();
-                },
-                icon: Icon(
-                  controller.getRepeatIcon(),
-                  size: 43.w,
-                  color: controller.getPlayPageTheme(context).withOpacity(controller.fm.value ? 0.3 : .7),
-                )),
-          ],
-        ),
-      );
-    }),));
+                        ),
+                      ),
+                      onTap: () => controller.playOrPause(),
+                    ),
+                  ),
+                  IconButton(
+                      onPressed: () {
+                        if (controller.intervalClick(1)) {
+                          controller.audioServeHandler.skipToNext();
+                        }
+                      },
+                      icon: Icon(
+                        TablerIcons.player_skip_forward,
+                        size: 46.w,
+                        color: controller.getPlayPageTheme(context),
+                      )),
+                ],
+              )),
+              IconButton(
+                  onPressed: () {
+                    if (controller.fm.value) {
+                      return;
+                    }
+                    controller.changeRepeatMode();
+                  },
+                  icon: Icon(
+                    controller.getRepeatIcon(),
+                    size: 43.w,
+                    color: controller.getPlayPageTheme(context).withOpacity(controller.fm.value ? 0.3 : .7),
+                  )),
+            ],
+          ),
+        );
+      }),
+    ));
   }
 
   Widget _buildBottom(bottomHeight, context) {
@@ -266,36 +273,40 @@ class PanelView extends GetView<HomeController> {
                 controller.slidePosition.value < 0.1 && !controller.second.value
                     ? Theme.of(context).bottomAppBarColor
                     : !controller.gradientBackground.value
-                        ? controller.rx.value.main?.color ?? Colors.transparent
-                        : controller.rx.value.light?.color ?? Colors.transparent,
-                controller.rx.value.main?.color ?? Colors.transparent,
+                        ? controller.rx.value.dominantColor?.color ?? Colors.transparent
+                        : controller.rx.value.lightVibrantColor?.color ?? controller.rx.value.lightMutedColor?.color?? controller.rx.value.dominantColor?.color ?? Colors.transparent,
+                controller.rx.value.dominantColor?.color ?? Colors.transparent,
               ], begin: Alignment.topLeft, end: Alignment.bottomCenter),
               borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w))),
-          child: _buildBodyContent(context),
+          child: FrameSeparateWidget(
+            index: 1,
+            child: _buildBodyContent(context),
+          ),
         ));
   }
 
-  Widget _buildDefaultPanel(BuildContext context,bottomHeight) {
+  Widget _buildDefaultPanel(BuildContext context, bottomHeight) {
     return Obx(() => AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         decoration: BoxDecoration(
             gradient: LinearGradient(colors: [
-              controller.rx.value.main?.color ?? Colors.transparent,
-              !controller.gradientBackground.value ? controller.rx.value.main?.color ?? Colors.transparent : controller.rx.value.light?.color ?? Colors.transparent,
-              // controller.rx.value.main?.color ?? Colors.transparent,
-              // Theme.of(context).bottomAppBarColor,
+              controller.rx.value.dominantColor?.color ?? Colors.transparent,
+              !controller.gradientBackground.value
+                  ? controller.rx.value.dominantColor?.color ?? Colors.transparent
+                  : controller.rx.value.lightVibrantColor?.color ?? controller.rx.value.lightMutedColor?.color ??controller.rx.value.dominantColor?.color ?? Colors.transparent,
             ], begin: Alignment.topLeft, end: Alignment.bottomCenter),
             borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w))),
-        child: _buildPanelContent(context,bottomHeight)));
+        child: _buildPanelContent(context, bottomHeight)));
   }
 
-  Widget _buildPanelContent(BuildContext context,bottomHeight) {
+  Widget _buildPanelContent(BuildContext context, bottomHeight) {
     return Padding(
       padding: EdgeInsets.only(top: 110.h + bottomHeight),
       child: PreloadPageView.builder(
         itemBuilder: (context, index) => controller.pages[index],
         itemCount: controller.pages.length,
         controller: controller.pageController,
+        physics: const NeverScrollableScrollPhysics(),
         preloadPagesCount: controller.pages.length,
         onPageChanged: (index) {
           controller.selectIndex.value = index;
@@ -308,78 +319,95 @@ class PanelView extends GetView<HomeController> {
     return Column(
       children: [
         // 歌曲信息
-        FrameSeparateWidget(index: 4,child: Obx(() => AnimatedOpacity(
-          opacity: controller.slidePosition.value,
-          duration: Duration.zero,
-          child: Container(
-            height: 70.h,
-            margin: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-            padding: EdgeInsets.symmetric(horizontal: 20.w),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                    onPressed: () {
-                      controller.panelControllerHome.close();
-                    },
-                    icon: Icon(
-                      TablerIcons.chevron_down,
-                      color: controller.getPlayPageTheme(context),
-                    )),
-                const Expanded(
-                  child: SizedBox.shrink(),
+        FrameSeparateWidget(
+          index: 4,
+          child: Obx(() => AnimatedOpacity(
+                opacity: controller.slidePosition.value,
+                duration: Duration.zero,
+                child: Container(
+                  height: 70.h,
+                  margin: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+                  padding: EdgeInsets.symmetric(horizontal: 20.w),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      IconButton(
+                          onPressed: () {
+                            controller.panelControllerHome.close();
+                          },
+                          icon: Icon(
+                            TablerIcons.chevron_down,
+                            color: controller.getPlayPageTheme(context),
+                          )),
+                      Expanded(
+                        child: Text(
+                          controller.currLyric.value.fixAutoLines(),
+                          style: TextStyle(fontSize: 28.sp, color: controller.getPlayPageTheme(context).withOpacity(.6)),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      Visibility(
+                        visible: (controller.mediaItem.value.extras?['mv'] ?? 0) > 0,
+                        child: IconButton(
+                            onPressed: () {
+                              context.router.push(const MvView().copyWith(queryParams: {'mvId': controller.mediaItem.value.extras?['mv'] ?? 0}));
+                            },
+                            icon: Icon(
+                              TablerIcons.brand_youtube,
+                              color: controller.getPlayPageTheme(context),
+                            )),
+                      ),
+                      IconButton(
+                          onPressed: () {
+                            WidgetUtil.showToast('分享暂未开启');
+                          },
+                          icon: Icon(
+                            TablerIcons.brand_stackoverflow,
+                            color: controller.getPlayPageTheme(context),
+                          )),
+                    ],
+                  ),
                 ),
-                Visibility(
-                  visible: (controller.mediaItem.value.extras?['mv'] ?? 0) > 0,
-                  child: IconButton(
-                      onPressed: () {
-                        context.router.push(const MvView().copyWith(queryParams: {'mvId': controller.mediaItem.value.extras?['mv'] ?? 0}));
-                      },
-                      icon: Icon(
-                        TablerIcons.brand_youtube,
-                        color: controller.getPlayPageTheme(context),
-                      )),
-                ),
-                IconButton(
-                    onPressed: () {},
-                    icon: Icon(
-                      TablerIcons.brand_stackoverflow,
-                      color: controller.getPlayPageTheme(context),
-                    )),
-              ],
-            ),
-          ),
-        )),),
+              )),
+        ),
         Obx(() => Container(
               height: controller.getPanelMinSize(),
             )),
-        FrameSeparateWidget(index: 5,child: Obx(() => Container(
-          padding: EdgeInsets.symmetric(horizontal: 35.w),
-          height: 90.h,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                controller.mediaItem.value.title.fixAutoLines(),
-                style: TextStyle(fontSize: 40.sp, fontWeight: FontWeight.bold, color: controller.getPlayPageTheme(context)),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              Padding(padding: EdgeInsets.symmetric(vertical: 3.w)),
-              Text(
-                (controller.mediaItem.value.artist ?? '').fixAutoLines(),
-                style: TextStyle(fontSize: 28.sp, color: controller.getPlayPageTheme(context)),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              )
-            ],
-          ),
-        )),),
+        FrameSeparateWidget(
+          index: 5,
+          child: Obx(() => Container(
+                padding: EdgeInsets.symmetric(horizontal: 35.w),
+                height: 100.h,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      controller.mediaItem.value.title.fixAutoLines(),
+                      style: TextStyle(fontSize: 40.sp, fontWeight: FontWeight.bold, color: controller.getPlayPageTheme(context)),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Padding(padding: EdgeInsets.symmetric(vertical: 3.w)),
+                    Text(
+                      (controller.mediaItem.value.artist ?? '').fixAutoLines(),
+                      style: TextStyle(fontSize: 28.sp, color: controller.getPlayPageTheme(context)),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    )
+                  ],
+                ),
+              )),
+        ),
         //操控区域
         _buildPlayController(context),
-        FrameSeparateWidget(index: 6,child:  _buildSlide(context),),
+        FrameSeparateWidget(
+          index: 6,
+          child: _buildSlide(context),
+        ),
         // //进度条
         //功能按钮
         SizedBox(
@@ -398,8 +426,7 @@ class BottomItem {
   BottomItem(this.iconData, this.index, {this.onTap});
 }
 
-extension FixAutoLines on String
-{
+extension FixAutoLines on String {
   String fixAutoLines() {
     return Characters(this).join('\u{200B}');
   }

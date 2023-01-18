@@ -36,19 +36,25 @@ class _LoginViewState extends State<LoginView> {
     super.initState();
   }
 
-  loginCallPhone(context) {
+  loginCallPhone(context) async {
     if (phone.text.isEmpty || pass.text.isEmpty) {
       WidgetUtil.showToast('账号密码为必填项，请检查');
       return;
     }
-    NeteaseMusicApi().loginCellPhone(phone.text, pass.text).then((NeteaseAccountInfoWrap neteaseAccountInfoWrap) {
-      if (neteaseAccountInfoWrap.code != 200) {
-        WidgetUtil.showToast(neteaseAccountInfoWrap.message ?? '未知错误');
-        return;
-      }
-      UserController.to.getUserState();
-      AutoRouter.of(context).pop();
-    });
+    WidgetUtil.showLoadingDialog(context);
+    NeteaseAccountInfoWrap neteaseAccountInfoWrap;
+    if (phone.text.contains('@')) {
+      neteaseAccountInfoWrap = await NeteaseMusicApi().loginEmail(phone.text, pass.text);
+    } else {
+      neteaseAccountInfoWrap = await NeteaseMusicApi().loginCellPhone(phone.text, pass.text);
+    }
+    if (mounted) Navigator.of(context).pop();
+    if (neteaseAccountInfoWrap.code != 200) {
+      WidgetUtil.showToast(neteaseAccountInfoWrap.message ?? '未知错误');
+      return;
+    }
+    UserController.to.getUserState();
+    AutoRouter.of(context).pop();
   }
 
   getQrCode(context) async {

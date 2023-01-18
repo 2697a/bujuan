@@ -94,28 +94,76 @@ class SimpleExtendedImageState extends State<SimpleExtendedImage> {
     //     return image;
     //   },
     // );
-    return Visibility(
-      visible: widget.shape != BoxShape.circle,
-      replacement: ClipOval(
-        child: CachedNetworkImage(
-          imageUrl: widget.url,
-          width: widget.width,
-          height: widget.height,
-          fit: widget.fit,
+    if (widget.url.startsWith('http')) {
+      return Visibility(
+        visible: widget.shape != BoxShape.circle,
+        replacement: ClipOval(
+          child: CachedNetworkImage(
+            imageUrl: widget.url,
+            width: widget.width,
+            height: widget.height,
+            fit: widget.fit,
+          ),
         ),
-      ),
-      child: ClipRRect(
+        child: ClipRRect(
+          borderRadius: widget.borderRadius ?? BorderRadius.circular(0),
+          child: CachedNetworkImage(
+            imageUrl: widget.url,
+            width: widget.width,
+            height: widget.height,
+            fit: widget.fit,
+            useOldImageOnUrlChange: true,
+            colorBlendMode: BlendMode.lighten,
+            placeholder: (c, u) => Image.asset(
+              widget.placeholder,
+              fit: BoxFit.cover,
+            ),
+            errorWidget: (c,u,e) => Image.asset(
+              widget.placeholder,
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
+      );
+    } else {
+      return ClipRRect(
         borderRadius: widget.borderRadius ?? BorderRadius.circular(0),
-        child: CachedNetworkImage(
-          imageUrl: widget.url,
+        child: ExtendedImage.file(
+          borderRadius: widget.borderRadius,
+          File(widget.url.split('?').first),
           width: widget.width,
           height: widget.height,
           fit: widget.fit,
-          useOldImageOnUrlChange: true,
-          colorBlendMode: BlendMode.lighten,
+          loadStateChanged: (state) {
+            Widget image;
+            switch (state.extendedImageLoadState) {
+              case LoadState.loading:
+                image = Image.asset(
+                  widget.placeholder,
+                  fit: BoxFit.cover,
+                );
+                break;
+              case LoadState.completed:
+                image = ExtendedRawImage(
+                  image: state.extendedImageInfo?.image,
+                  width: widget.width,
+                  height: widget.height,
+                  fit: widget.fit ?? BoxFit.cover,
+                );
+                break;
+              case LoadState.failed:
+                image = Image.asset(
+                  widget.placeholder,
+                  fit: BoxFit.cover,
+                );
+                break;
+            }
+            return image;
+          },
         ),
-      ),
-    );
+      );
+    }
+
     // if (widget.url.startsWith('http')) {
     //
     // } else {

@@ -1,7 +1,7 @@
-import 'dart:convert';
 
+import 'package:auto_route/auto_route.dart';
+import 'package:bujuan/routes/router.gr.dart';
 import 'package:bujuan/widget/request_widget/request_loadmore_view.dart';
-import 'package:bujuan/widget/request_widget/request_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -84,20 +84,8 @@ class _MyRadioViewState extends State<MyRadioView> {
             ],
           ),
         ),
-        onTap: () {});
-    // return ListTile(
-    //   dense: true,
-    //   contentPadding: EdgeInsets.symmetric(horizontal: 10.w),
-    //   leading: SimpleExtendedImage(
-    //     '${data.extras?['image'] ?? ''}?param=200y200',
-    //     width: 80.w,
-    //     height: 80.w,
-    //   ),
-    //   title: Text(data.title),
-    //   subtitle: Text(data.artist??''),
-    //   onTap: () {
-    //     controller.playIndex(index);
-    //   },
-    // );
+        onTap: () {
+          context.router.push(const RadioDetailsView().copyWith(args: data));
+        });
   }
 }

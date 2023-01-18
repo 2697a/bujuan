@@ -28,22 +28,25 @@ class BodyView extends GetView<HomeController> {
               child: Aurora(
                 size: 800.w,
                 colors: [
-                  controller.rx.value.light?.color.withOpacity(.35) ?? Colors.transparent,
-                  controller.rx.value.main?.color.withOpacity(.35) ?? Colors.transparent,
+                  controller.rx.value.lightVibrantColor?.color.withOpacity(.35) ?? Colors.transparent,
+                  controller.rx.value.dominantColor?.color.withOpacity(.35) ?? Colors.transparent,
                 ],
                 blur: 400,
               ),
             ),
-            Visibility(visible: controller.leftImage.value,child:  Positioned(
-              top: -40.w,
-              right: -75.w,
-              child: Lottie.asset(
-                'assets/lottie/vr_animation.json',
-                width: Get.width / 1.6,
-                fit: BoxFit.fitWidth,
-                // filterQuality: FilterQuality.low,
+            Visibility(
+              visible: controller.leftImage.value,
+              child: Positioned(
+                top: -40.w,
+                right: -75.w,
+                child: Lottie.asset(
+                  'assets/lottie/vr_animation.json',
+                  width: Get.width / 1.6,
+                  fit: BoxFit.fitWidth,
+                  // filterQuality: FilterQuality.low,
+                ),
               ),
-            ),),
+            ),
             Padding(
               padding: EdgeInsets.only(
                 bottom: controller.mediaItem.value.id.isNotEmpty ? controller.panelMobileMinSize + bottomHeight : 0,

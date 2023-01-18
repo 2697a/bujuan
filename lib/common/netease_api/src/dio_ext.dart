@@ -67,4 +67,14 @@ class DioProxy {
   }) {
     return Https.dio.get(path, queryParameters: queryParameters, options: options, cancelToken: cancelToken, onReceiveProgress: onReceiveProgress);
   }
+
+  Future<Response<T>> post<T>(
+      String path, {
+        Map<String, dynamic>? data,
+        Options? options,
+        CancelToken? cancelToken,
+        ProgressCallback? onReceiveProgress,
+      }) {
+    return Https.dio.post(path, data: data, options: options, cancelToken: cancelToken, onReceiveProgress: onReceiveProgress);
+  }
 }

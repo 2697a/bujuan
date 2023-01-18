@@ -26,8 +26,8 @@ class SplashPage extends StatefulWidget {
 class SplashPageState extends State<SplashPage> {
   double opacity = 0;
   double scale = 1;
-  Duration duration = const Duration(milliseconds: 2000);
-  Duration durationFinish = const Duration(milliseconds: 2200);
+  Duration duration = const Duration(milliseconds: 1000);
+  Duration durationFinish = const Duration(milliseconds: 1000);
   bool isFinish = false;
   Map<String, dynamic>? mapData;
   bool noFirst = false;

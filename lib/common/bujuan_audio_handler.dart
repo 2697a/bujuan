@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:bujuan/common/constants/enmu.dart';
 import 'package:bujuan/common/constants/other.dart';
 import 'package:bujuan/common/storage.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
@@ -37,7 +38,15 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
     if (playList.isNotEmpty) {
       List<MediaItem> items = playList.map((e) {
         var map = MediaItemMessage.fromMap(jsonDecode(e));
-        return MediaItem(id: map.id, duration: map.duration, artUri: map.artUri, extras: map.extras, title: map.title, artist: map.artist, album: map.album);
+        return MediaItem(
+          id: map.id,
+          duration: map.duration,
+          artUri: map.artUri,
+          extras: map.extras,
+          title: map.title,
+          artist: map.artist,
+          album: map.album,
+        );
       }).toList();
       changeQueueLists(items, init: true);
       playbackState.add(playbackState.value.copyWith(
@@ -215,13 +224,8 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
               album: e.album,
               title: e.title,
               artist: e.artist,
-              genre: e.genre,
               duration: e.duration,
               artUri: e.artUri,
-              playable: e.playable,
-              displayTitle: e.displayTitle,
-              displaySubtitle: e.displaySubtitle,
-              displayDescription: e.displayDescription,
               extras: e.extras,
             ).toMap()))
         .toList();
@@ -242,15 +246,20 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
     // 这里是获取歌曲url
     if (queue.value.isEmpty) return;
     var song = queue.value[_curIndex];
-    SongUrlListWrap songUrl = await NeteaseMusicApi().songUrl([song.id]);
-    String url = (songUrl.data ?? [])[0].url ?? '';
+    String url = '';
+    if (song.extras?['type'] == MediaType.local.name) {
+      url = song.extras?['url'];
+    } else {
+      SongUrlListWrap songUrl = await NeteaseMusicApi().songUrl([song.id]);
+      print('object=====${jsonEncode(songUrl.data)}');
+      url = (songUrl.data ?? [])[0].url ?? '';
+    }
     if (url.isNotEmpty) {
       mediaItem.add(song);
-      // 加载音乐
-      // url = url.replaceFirst('http', 'https');
-      try {
+      if (song.extras?['type'] == MediaType.local.name) {
+        playIt ? await _player.play(DeviceFileSource(url), mode: PlayerMode.mediaPlayer) : await _player.setSourceDeviceFile(url);
+      } else {
         playIt ? await _player.play(UrlSource(url), mode: PlayerMode.mediaPlayer) : await _player.setSourceUrl(url);
-      } catch (e) {
       }
     } else {
       if (isNext) {

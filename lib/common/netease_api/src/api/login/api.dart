@@ -80,7 +80,7 @@ mixin ApiLogin {
       'rememberLogin': true,
       'timerstamp': '${DateTime.now()}',
     };
-    return DioMetaData(joinUri('/weapi/login'), data: params, options: joinOptions(userAgent: UserAgent.Pc, cookies: {'os': 'pc'}));
+    return DioMetaData(joinUri('/weapi/login'), data: params, options: joinOptions(userAgent: UserAgent.Pc, cookies: {'os': 'android'}));
   }
 
   /// 邮箱登录

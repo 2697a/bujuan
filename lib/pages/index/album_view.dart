@@ -1,10 +1,8 @@
 import 'dart:convert';
 
 import 'package:audio_service/audio_service.dart';
-import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/pages/index/index_controller.dart';
 import 'package:bujuan/widget/request_widget/request_loadmore_view.dart';
-import 'package:bujuan/widget/simple_extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';

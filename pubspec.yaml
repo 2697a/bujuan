@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.0+1
+version: 2.0.0+21
 
 environment:
   sdk: ">=2.17.1 <3.0.0"
@@ -47,21 +47,24 @@ dependencies:
   extended_image: ^6.0.1
   palette_generator: ^0.3.3+2
   on_audio_query: ^2.6.1
+  on_audio_edit:
+    path: plugins/on_audio_edit
 #  临时解决延迟加载音乐url的问题
 #  just_audio: ^0.9.30
   audio_service: ^0.18.9
   audioplayers: ^2.0.0
   audio_session: ^0.1.13
   get_it: ^7.2.0
-  loading_animation_widget: ^1.2.0+2
+#  loading_animation_widget: ^1.2.0+2
   dio: ^4.0.6
-  just_waveform: ^0.0.3
-  font_awesome_flutter: ^10.1.0
-  wheel_slider: ^1.0.0
+#  just_waveform: ^0.0.3
+#  font_awesome_flutter: ^10.1.0
+#  wheel_slider: ^1.0.0
   qr_flutter: ^4.0.0
-  marquee: ^2.2.3
+#  marquee: ^2.2.3
   keframe: ^3.0.0
   date_format: ^2.0.7
+#  just_audio: ^0.9.31
 
   # ext
   # app path
@@ -78,14 +81,14 @@ dependencies:
   package_info_plus: ^3.0.2
   flutter_zoom_drawer: ^3.0.3
   auto_route: ^5.0.4
-  sticky_headers: ^0.3.0+2
+#  sticky_headers: ^0.3.0+2
   flutter_svg: ^1.1.6
   fluttertoast: ^8.1.2
-  flutter_bloc: ^8.0.1
-  provider: ^6.0.5
-  octo_image: ^1.0.2
+#  flutter_bloc: ^8.0.1
+#  provider: ^6.0.5
+#  octo_image: ^1.0.2
   cached_network_image: ^3.2.3
-  carousel_slider: ^4.2.1
+#  carousel_slider: ^4.2.1
   preload_page_view: ^0.1.6
   auto_size_text: ^3.0.0
   lottie: ^2.1.0

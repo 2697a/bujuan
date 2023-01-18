@@ -72,9 +72,9 @@ class UserController extends GetxController {
       PackageInfo packageInfo = await PackageInfo.fromPlatform();
       String version = packageInfo.version;
       Map<String, dynamic> versionData = value.data..putIfAbsent('oldVersion', () => version);
-      if (int.parse((versionData['version']??'0').replaceAll('.', '')) > int.parse(version.replaceAll('.', ''))) {
-        Future.delayed(const Duration(milliseconds: 1000),(){
-          // GetIt.instance<RootRouter>().push(const UpdateView().copyWith(queryParams: versionData));
+      if (int.parse((versionData['version'] ?? '0').replaceAll('.', '')) > int.parse(version.replaceAll('.', ''))) {
+        Future.delayed(const Duration(milliseconds: 1000), () {
+          GetIt.instance<RootRouter>().push(const UpdateView().copyWith(queryParams: versionData));
         });
       }
     });

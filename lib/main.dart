@@ -1,6 +1,7 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:auto_route/auto_route.dart';
+import 'package:bujuan/common/constants/log.dart';
 import 'package:bujuan/common/constants/platform_utils.dart';
 import 'package:bujuan/pages/home/home_binding.dart';
 import 'package:bujuan/routes/router.gr.dart';
@@ -10,6 +11,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_zoom_drawer/config.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
+import 'package:on_audio_edit/on_audio_edit.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
 import 'common/constants/colors.dart';
@@ -28,7 +30,7 @@ main() async {
     designSize: isMobile ? const Size(750, 1334) : const Size(2160, 1406),
     builder: (BuildContext context, Widget? child) {
       return GetMaterialApp.router(
-        title: "Application",
+        title: "Bujuan",
         theme: AppTheme.light.copyWith(
             pageTransitionsTheme: const PageTransitionsTheme(builders: {
               TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
@@ -58,10 +60,12 @@ Future<void> _initAudioServer(getIt) async {
   getIt.registerSingleton<AudioPlayer>(AudioPlayer());
   getIt.registerSingleton<ZoomDrawerController>(ZoomDrawerController());
   getIt.registerSingleton<OnAudioQuery>(OnAudioQuery());
+  getIt.registerSingleton<OnAudioEdit>(OnAudioEdit());
   // 工具初始
   await StorageUtil.init();
+   LogUtil.init(isDebug: true);
   // _startServer();
-  await NeteaseMusicApi.init(debug: true);
+  await NeteaseMusicApi.init(debug: false);
   getIt.registerSingleton<BujuanAudioHandler>(await AudioService.init<BujuanAudioHandler>(
     builder: () => BujuanAudioHandler(),
     config: const AudioServiceConfig(

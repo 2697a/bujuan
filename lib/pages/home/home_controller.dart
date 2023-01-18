@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:auto_route/auto_route.dart';
+import 'package:bujuan/common/constants/enmu.dart';
 import 'package:bujuan/common/constants/key.dart';
 import 'package:bujuan/common/constants/other.dart';
 import 'package:bujuan/common/constants/platform_utils.dart';
@@ -22,6 +23,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_zoom_drawer/config.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
+import 'package:on_audio_edit/on_audio_edit.dart';
+import 'package:palette_generator/palette_generator.dart';
 import 'package:preload_page_view/preload_page_view.dart';
 import 'dart:math' as math;
 
@@ -43,7 +46,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   final List<LeftMenu> leftMenus = [
     LeftMenu('个人中心', TablerIcons.user, Routes.user, '/home/user'),
     LeftMenu('推荐歌单', TablerIcons.smart_home, Routes.index, '/home/index'),
-    LeftMenu('本地歌曲', TablerIcons.file_music, Routes.local, '/home/local'),
+    // LeftMenu('本地歌曲', TablerIcons.file_music, Routes.local, '/home/local'),
     LeftMenu('个性设置', TablerIcons.settings, Routes.setting, '/setting'),
   ];
 
@@ -56,6 +59,9 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   ];
 
   RxString currPathUrl = '/home/user'.obs;
+
+  RxString currLyric = ''.obs;
+
 
   //歌词、播放列表PageView的下标
   RxInt selectIndex = 0.obs;
@@ -70,7 +76,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   RxDouble slidePosition1 = 0.0.obs;
 
   //专辑颜色数据
-  Rx<PaletteColorData> rx = PaletteColorData().obs;
+  Rx<PaletteGenerator> rx = PaletteGenerator.fromColors([]).obs;
 
   //是否第二层
   RxBool second = false.obs;
@@ -143,6 +149,8 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   //路由相关
   AutoRouterDelegate? autoRouterDelegate;
 
+  OnAudioEdit onAudioEdit = GetIt.instance<OnAudioEdit>();
+
   RxBool isAurora = false.obs;
 
   var lastPopTime = DateTime.now();
@@ -180,18 +188,21 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
       ..addAll(value));
     audioServeHandler.mediaItem.listen((value) async {
       lyricsLineModels.clear();
+      currLyric.value = '';
       if (value == null) return;
       mediaItem.value = value;
       _getAlbumColor();
-      _getSimiSheet();
       _getLyric();
-      _getSongTalk();
       _setPlayListOffset();
+      if (value.extras?['type'] == MediaType.playlist.name) {
+        // _getSimiSheet();
+        _getSongTalk();
+      }
     });
     //监听实时进度变化
     AudioService.position.listen((event) {
       //如果没有展示播放页面就先不监听（节省资源）
-      if (!second.value && slidePosition.value == 0) return;
+      if (!second.value && slidePosition.value != 1) return;
       //如果监听到的毫秒大于歌曲的总时长 置0并stop
       if (event.inMilliseconds > (mediaItem.value.duration?.inMilliseconds ?? 0)) {
         duration.value = Duration.zero;
@@ -202,6 +213,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
       //如果歌词列表没有滑动，根据歌词的开始时间自动滚动歌词列表
       if (!onMove.value) {
         int index = lyricsLineModels.indexWhere((element) => (element.startTime ?? 0) >= event.inMilliseconds && (element.endTime ?? 0) <= event.inMilliseconds);
+        if(index !=-1) currLyric.value = lyricsLineModels[index > 0 ? index - 1 : index].mainText??'';
         if (index != -1 && index != lastIndex) {
           lyricScrollController.animateToItem((index > 0 ? index - 1 : index), duration: const Duration(milliseconds: 300), curve: Curves.linear);
           lastIndex = index;
@@ -231,23 +243,29 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   //获取歌词
   _getLyric() async {
     //获取歌词
-    SongLyricWrap songLyricWrap = await NeteaseMusicApi().songLyric(mediaItem.value.id);
-    String lyric = songLyricWrap.lrc.lyric ?? "";
-    String lyricTran = songLyricWrap.tlyric.lyric ?? "";
     hasTran.value = false;
-    if (lyric.isNotEmpty) {
-      var list = ParserLrc(lyric).parseLines();
-      var listTran = ParserLrc(lyricTran).parseLines();
-      if (lyricTran.isNotEmpty) {
-        hasTran.value = true;
-        lyricsLineModels.addAll(list.map((e) {
-          int index = listTran.indexWhere((element) => element.startTime == e.startTime);
-          if (index != -1) e.extText = listTran[index].mainText;
-          return e;
-        }).toList());
-      } else {
-        lyricsLineModels.addAll(list);
+    if (mediaItem.value.extras?['type'] != MediaType.local.name) {
+      SongLyricWrap songLyricWrap = await NeteaseMusicApi().songLyric(mediaItem.value.id);
+      String lyric = songLyricWrap.lrc.lyric ?? "";
+      String lyricTran = songLyricWrap.tlyric.lyric ?? "";
+      if (lyric.isNotEmpty) {
+        var list = ParserLrc(lyric).parseLines();
+        var listTran = ParserLrc(lyricTran).parseLines();
+        if (lyricTran.isNotEmpty) {
+          hasTran.value = true;
+          lyricsLineModels.addAll(list.map((e) {
+            int index = listTran.indexWhere((element) => element.startTime == e.startTime);
+            if (index != -1) e.extText = listTran[index].mainText;
+            return e;
+          }).toList());
+        } else {
+          lyricsLineModels.addAll(list);
+        }
       }
+    } else {
+      AudioModel audioModel = await onAudioEdit.readAudio(mediaItem.value.extras?['url']);
+      var list = ParserLrc(audioModel.lyrics ?? '').parseLines();
+      lyricsLineModels.addAll(list);
     }
   }
 
@@ -259,7 +277,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
 
   changeStatusIconColor(bool changed) {
     const Color white = Color(0xffffffff);
-    var color = rx.value.main?.color ?? Colors.white;
+    var color = rx.value.dominantColor?.color ?? Colors.white;
     int? lightBodyAlpha = _calculateMinimumAlpha(white, color, 4.5);
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarBrightness: changed
@@ -290,7 +308,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
 
   //获取歌曲评论
   _getSongTalk() async {
-    CommentList2Wrap commentListWrap = await NeteaseMusicApi().commentList2(mediaItem.value.id, 'song',pageSize: 3,sortType: 2);
+    CommentList2Wrap commentListWrap = await NeteaseMusicApi().commentList2(mediaItem.value.id, 'song', pageSize: 3, sortType: 2);
     if (commentListWrap.code == 200) {
       comments
         ..clear()
@@ -300,7 +318,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
 
   listenRouter() {
     String path = autoRouterDelegate?.urlState.url ?? '';
-    if (path == '/home/user' || path == '/home/index') {
+    if (path == '/home/user' || path == '/home/index' || path == '/home/local') {
       currPathUrl.value = path;
     }
   }
@@ -453,7 +471,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
 
   //设置歌词列表偏移量
   Future<void> _setPlayListOffset() async {
-    if(fm.value) return;
+    if (fm.value) return;
     if (slidePosition.value < 1 && !second.value) return;
     bool maxOffset = playListScrollController.position.pixels >= playListScrollController.position.maxScrollExtent;
     int index = mediaItems.indexWhere((element) => element.id == mediaItem.value.id);
@@ -483,7 +501,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   //播放歌曲根据下标
   playByIndex(int index, String queueTitle, {List<MediaItem>? mediaItem}) async {
     String title = audioServeHandler.queueTitle.value;
-    if (title.isEmpty || title != queueTitle) {
+    if ((title.isEmpty || title != queueTitle) && (mediaItem??[]).length != mediaItems.length) {
       audioServeHandler.queueTitle.value = queueTitle;
       audioServeHandler
         ..changeQueueLists(mediaItem ?? [], index: index)
@@ -505,7 +523,8 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
               extras: {
                 'image': e.album?.picUrl ?? '',
                 'liked': UserController.to.likeIds.contains(int.tryParse(e.id)),
-                'artist': (e.artists ?? []).map((e) => jsonEncode(e.toJson())).toList().join(' / ')
+                'artist': (e.artists ?? []).map((e) => jsonEncode(e.toJson())).toList().join(' / '),
+                'type':MediaType.fm.name
               },
               title: e.name ?? "",
               album: jsonEncode(e.album!.toJson()),
@@ -554,7 +573,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   }
 
   Color getPlayPageTheme(BuildContext context) {
-    return isAurora.value ? Theme.of(context).cardColor.withOpacity(.8) : rx.value.main?.titleTextColor.withOpacity(.7) ?? Colors.transparent;
+    return isAurora.value ? Theme.of(context).cardColor.withOpacity(.8) : rx.value.dominantColor?.titleTextColor.withOpacity(.6) ?? Colors.transparent;
   }
 
   @override
@@ -605,12 +624,11 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
             duration: Duration(milliseconds: e.dt ?? 0),
             artUri: Uri.parse('${e.al?.picUrl ?? ''}?param=500y500'),
             extras: {
-              'url': '',
+              'type': MediaType.playlist.name,
               'image': e.al?.picUrl ?? '',
-              'type': '',
               'liked': UserController.to.likeIds.contains(int.tryParse(e.id)),
               'artist': (e.ar ?? []).map((e) => jsonEncode(e.toJson())).toList().join(' / '),
-              'mv':e.mv
+              'mv': e.mv
             },
             title: e.name ?? "",
             album: jsonEncode(e.al?.toJson()),

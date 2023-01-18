@@ -6,7 +6,6 @@ import 'package:bujuan/widget/request_widget/request_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:lottie/lottie.dart';
 
 import '../../routes/router.gr.dart';
 import '../../widget/app_bar.dart';
@@ -26,16 +25,11 @@ class MainView extends GetView<IndexController> {
         centerTitle: false,
         leading: IconButton(
             onPressed: () {
-              if (UserController.to.loginStatus.value == LoginStatus.login) {
-                HomeController.to.myDrawerController.open!();
-                return;
-              }
+              HomeController.to.myDrawerController.open!();
             },
             icon: Obx(() => SimpleExtendedImage.avatar(
-                  UserController.to.loginStatus.value == LoginStatus.login
-                      ? UserController.to.userData.value.profile?.avatarUrl ?? ''
-                      : 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fc-ssl.duitang.com%2Fuploads%2Fblog%2F202105%2F06%2F20210506002916_3ce11.thumb.1000_0.jpeg&refer=http%3A%2F%2Fc-ssl.duitang.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1675913899&t=7e774d368476b1959bda340aa8dadf5c',
-                  width: 200.w,
+                  UserController.to.userData.value.profile?.avatarUrl ?? '',
+                  width: 80.w,
                 ))),
         title: RichText(
             text: TextSpan(style: TextStyle(fontSize: 42.sp, color: Colors.grey, fontWeight: FontWeight.bold), text: 'Here  ', children: [
@@ -65,7 +59,7 @@ class MainView extends GetView<IndexController> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SimpleExtendedImage(
-              '${albumModel.picUrl ?? ''}?param=400y400',
+              '${albumModel.picUrl ?? ''}?param=300y300',
               cacheWidth: 400,
               width: (Get.width - 90.w) / 3,
               height: (Get.width - 90.w) / 3,

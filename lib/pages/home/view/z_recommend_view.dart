@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:auto_route/auto_route.dart';
+import 'package:bujuan/common/constants/enmu.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/widget/simple_extended_image.dart';
 import 'package:flutter/material.dart';
@@ -20,43 +21,46 @@ class RecommendView extends GetView<HomeController> {
   }
 
   Widget _buildBody(BuildContext context) {
-    return SingleChildScrollView(
-      padding: EdgeInsets.symmetric(horizontal: 30.w),
-      child: Column(
-        children: [
-          Container(
-            alignment: Alignment.centerLeft,
-            padding: EdgeInsets.only(top: 10.w, bottom: 20.w),
-            child: Obx(() => Text(
-                  '歌手',
-                  style: TextStyle(fontSize: 36.sp, color: controller.getPlayPageTheme(context), fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.left,
-                )),
+    return Obx(() => Visibility(
+          visible: controller.mediaItem.value.extras?['type'] != MediaType.local.name,
+          child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(horizontal: 30.w),
+            child: Column(
+              children: [
+                Container(
+                  alignment: Alignment.centerLeft,
+                  padding: EdgeInsets.only(top: 10.w, bottom: 20.w),
+                  child: Obx(() => Text(
+                        '歌手',
+                        style: TextStyle(fontSize: 36.sp, color: controller.getPlayPageTheme(context), fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.left,
+                      )),
+                ),
+                _buildArtistsList(),
+                Container(
+                  alignment: Alignment.centerLeft,
+                  padding: EdgeInsets.only(top: 10.w, bottom: 20.w),
+                  child: Obx(() => Text(
+                        '专辑',
+                        style: TextStyle(fontSize: 36.sp, color: controller.getPlayPageTheme(context), fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.left,
+                      )),
+                ),
+                _buildAlbum(context),
+                // Container(
+                //   alignment: Alignment.centerLeft,
+                //   padding: EdgeInsets.only(top: 10.w, bottom: 20.w),
+                //   child: Obx(() => Text(
+                //         '相似歌单',
+                //         style: TextStyle(fontSize: 36.sp, color: controller.getPlayPageTheme(context), fontWeight: FontWeight.bold),
+                //         textAlign: TextAlign.left,
+                //       )),
+                // ),
+                // _buildSimSongListView(),
+              ],
+            ),
           ),
-          _buildArtistsList(),
-          Container(
-            alignment: Alignment.centerLeft,
-            padding: EdgeInsets.only(top: 10.w, bottom: 20.w),
-            child: Obx(() => Text(
-                  '专辑',
-                  style: TextStyle(fontSize: 36.sp, color: controller.getPlayPageTheme(context), fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.left,
-                )),
-          ),
-          _buildAlbum(context),
-          Container(
-            alignment: Alignment.centerLeft,
-            padding: EdgeInsets.only(top: 10.w, bottom: 20.w),
-            child: Obx(() => Text(
-                  '相似歌单',
-                  style: TextStyle(fontSize: 36.sp, color: controller.getPlayPageTheme(context), fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.left,
-                )),
-          ),
-          _buildSimSongListView(),
-        ],
-      ),
-    );
+        ));
   }
 
   Widget _buildArtistsList() {
@@ -102,7 +106,7 @@ class RecommendView extends GetView<HomeController> {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 20.w),
       child: Obx(() {
-        if((controller.mediaItem.value.album??'').isEmpty) return const SizedBox.shrink();
+        if ((controller.mediaItem.value.album ?? '').isEmpty) return const SizedBox.shrink();
         return Row(
           children: [
             SimpleExtendedImage.avatar(
@@ -113,10 +117,10 @@ class RecommendView extends GetView<HomeController> {
             Padding(padding: EdgeInsets.symmetric(horizontal: 8.w)),
             Expanded(
                 child: Text(
-                  Album.fromJson(jsonDecode(controller.mediaItem.value.album ?? '')).name ?? '',
-                  maxLines: 1,
-                  style: TextStyle(fontSize: 30.sp, color: controller.getPlayPageTheme(context)),
-                )),
+              Album.fromJson(jsonDecode(controller.mediaItem.value.album ?? '')).name ?? '',
+              maxLines: 1,
+              style: TextStyle(fontSize: 30.sp, color: controller.getPlayPageTheme(context)),
+            )),
             Icon(
               TablerIcons.chevron_right,
               color: controller.getPlayPageTheme(context),

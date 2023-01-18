@@ -163,22 +163,7 @@ class _SearchViewState extends State<SearchView> {
     return RequestLoadMoreWidget<SearchSongWrapX, Song2>(
       dioMetaData: searchSongDioMetaData(searchContent, 1),
       childBuilder: (List<Song2> songs) {
-        var list = songs
-            .map((e) => MediaItem(
-                id: e.id,
-                duration: Duration(milliseconds: e.dt ?? 0),
-                artUri: Uri.parse('${e.al?.picUrl ?? ''}?param=500y500'),
-                extras: {
-                  'url': '',
-                  'image': e.al?.picUrl ?? '',
-                  'type': '',
-                  'liked': UserController.to.likeIds.contains(int.tryParse(e.id)),
-                  'artist': (e.ar ?? []).map((e) => jsonEncode(e.toJson())).toList().join(' / ')
-                },
-                title: e.name ?? "",
-                album: jsonEncode(e.al?.toJson()),
-                artist: (e.ar ?? []).map((e) => e.name).toList().join(' / ')))
-            .toList();
+        var list = HomeController.to.song2ToMedia(songs);
         return ListView.builder(
           itemExtent: 120.w,
           padding: EdgeInsets.symmetric(horizontal: 30.w),

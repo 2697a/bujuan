@@ -1,90 +1,38 @@
+import 'dart:io';
+
+import 'package:bujuan/common/constants/icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:date_format/date_format.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 import 'package:palette_generator/palette_generator.dart';
 
-typedef ImageColorCallBack = void Function(PaletteColorData paletteColorData);
+import 'images.dart';
 
 class OtherUtils {
-  // static ImageStreamListener? _imageStreamListener;
-  // static ImageStream? _imageStream;
+  OtherUtils._();
 
-  static Future<PaletteColorData> getImageColor(String url) async {
-    CachedNetworkImageProvider imageProvider = CachedNetworkImageProvider(url);
-    return await getImageColorByProvider(imageProvider);
-
-    // _imageStream = imageProvider.resolve(ImageConfiguration.empty);
-    // _imageStreamListener = ImageStreamListener((ImageInfo image, bool synchronousCall) async {
-    //   ImageProvider _imageProvider = imageProvider;
-    //   _imageStream?.removeListener(_imageStreamListener!);
-    //   _getImageColorByProvider(_imageProvider).then((value) {
-    //     imageCallBack.call(value);
-    //   });
-    // }, onError: (Object exception, StackTrace? stackTrace) {
-    //   ImageProvider imageProvider =  AssetImage('');
-    //   _getImageColorByProvider(imageProvider).then((value) {
-    //     imageCallBack.call(value);
-    //   });
-    // });
-    // _imageStream?.addListener(_imageStreamListener!);
+  static Future<PaletteGenerator> getImageColor(String url) async {
+    if (url.replaceAll('?param=500y500', '').isEmpty) {
+      ExtendedAssetImageProvider imageProvider = const ExtendedAssetImageProvider(placeholderImage);
+      return await getImageColorByProvider(imageProvider);
+    }
+    if (url.startsWith('http')) {
+      CachedNetworkImageProvider imageProvider = CachedNetworkImageProvider(url);
+      return await getImageColorByProvider(imageProvider);
+    } else {
+      ExtendedFileImageProvider imageProvider = ExtendedFileImageProvider(File(url.split('?').first));
+      return await getImageColorByProvider(imageProvider);
+    }
   }
 
-  // static Future<PaletteColorData> getImageColor2(String url) async{
-  //   ImageProvider imageProvider = ExtendedFileImageProvider(File(url));
-  //   if(url.isEmpty){
-  //     imageProvider = ExtendedAssetImageProvider('assets/images/placeholder.png');
-  //   }
-  //   return await _getImageColorByProvider(imageProvider);
-  //   // _imageStream = imageProvider.resolve(ImageConfiguration.empty);
-  //   // _imageStreamListener = ImageStreamListener((ImageInfo image, bool synchronousCall) async {
-  //   //   ImageProvider _imageProvider = imageProvider;
-  //   //   _imageStream?.removeListener(_imageStreamListener!);
-  //   //   _getImageColorByProvider(_imageProvider).then((value) {
-  //   //     imageCallBack.call(value);
-  //   //   });
-  //   // }, onError: (Object exception, StackTrace? stackTrace) {
-  //   //   ImageProvider imageProvider =  AssetImage('');
-  //   //   _getImageColorByProvider(imageProvider).then((value) {
-  //   //     imageCallBack.call(value);
-  //   //   });
-  //   // });
-  //   // _imageStream?.addListener(_imageStreamListener!);
-  // }
-
-  static Future<PaletteColorData> getImageColorByProvider(ImageProvider imageProvider) async {
-    PaletteColorData paletteColorData = PaletteColorData();
-    final PaletteGenerator paletteGenerator = await PaletteGenerator.fromImageProvider(imageProvider, size: Size(500.w, 500.w));
-    paletteColorData.light = paletteGenerator.lightMutedColor ?? paletteGenerator.lightVibrantColor;
-    paletteColorData.main = paletteGenerator.dominantColor ?? paletteGenerator.mutedColor;
-    paletteColorData.light1 = paletteGenerator.lightVibrantColor ?? paletteGenerator.lightMutedColor;
-    paletteColorData.main1 = paletteGenerator.mutedColor ?? paletteGenerator.dominantColor;
-    paletteColorData.dark = paletteGenerator.darkMutedColor ?? paletteGenerator.darkVibrantColor;
-    if (paletteColorData.light == null && paletteColorData.dark != null) {
-      paletteColorData.light = paletteColorData.dark;
-    }
-    if (paletteColorData.dark == null && paletteColorData.light != null) {
-      paletteColorData.dark = paletteColorData.light;
-    }
-    paletteColorData.main ?? paletteColorData.light;
-    return paletteColorData;
+  static Future<PaletteGenerator> getImageColorByProvider(ImageProvider imageProvider) async {
+    return await PaletteGenerator.fromImageProvider(imageProvider, size: Size(500.w, 500.w));
   }
-
-  // static Future<Uint8List> testCompressList(Uint8List list) async {
-  //   print('压缩前========${list.length}====${DateTime.now()}');
-  //   var result = await FlutterImageCompress.compressWithList(
-  //     list,
-  //     minHeight: 400,
-  //     minWidth: 400,
-  //     quality: 96,
-  //   );
-  //   if (kDebugMode) {
-  //     print('压缩后========${result.length}====${DateTime.now()}');
-  //   }
-  //   return result;
-  // }
 
   static String getTimeStamp(int milliseconds) {
     int seconds = (milliseconds / 1000).truncate();
@@ -97,8 +45,8 @@ class OtherUtils {
   }
 
   static String formatDate2Str(int time) {
-    if(time<=0) return '';
-    return formatDate(DateTime.fromMillisecondsSinceEpoch(time), [yyyy, '-', mm, '-', dd,' ', HH, ':', nn]);
+    if (time <= 0) return '';
+    return formatDate(DateTime.fromMillisecondsSinceEpoch(time), [yyyy, '-', mm, '-', dd, ' ', HH, ':', nn]);
   }
 }
 
@@ -123,5 +71,19 @@ class WidgetUtil {
       textColor: Colors.white,
       fontSize: 16.0,
     );
+  }
+
+  static showLoadingDialog(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (context) => Center(
+              child: Lottie.asset(
+                'assets/lottie/empty_status.json',
+                width: 750.w / 4,
+                height: 750.w / 4,
+                fit: BoxFit.fitWidth,
+                // filterQuality: FilterQuality.low,
+              ),
+            ));
   }
 }

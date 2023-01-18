@@ -116,8 +116,10 @@ class _FlashyNavbarItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
+      color: Colors.transparent,
         height: double.maxFinite,
+        width: double.maxFinite,
         child: Stack(
           clipBehavior: Clip.hardEdge,
           alignment: Alignment.center,

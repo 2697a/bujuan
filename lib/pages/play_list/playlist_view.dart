@@ -5,6 +5,7 @@ import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:bujuan/common/constants/enmu.dart';
 import 'package:bujuan/common/constants/other.dart';
 import 'package:bujuan/common/netease_api/netease_music_api.dart';
 import 'package:bujuan/common/netease_api/src/api/bean.dart';
@@ -13,6 +14,7 @@ import 'package:bujuan/routes/router.gr.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:get_it/get_it.dart';
 import 'package:keframe/keframe.dart';
 
 import '../../common/netease_api/src/dio_ext.dart';
@@ -182,7 +184,11 @@ class _ListWidgetState extends State<ListWidget> {
       shrinkWrap: true,
       itemExtent: 120.w,
       physics: const NeverScrollableScrollPhysics(),
-      itemBuilder: (context, index) => SongItem(index: index, mediaItems: widget.mediaItem,queueTitle: (context.routeData.args as Play).id,),
+      itemBuilder: (context, index) => SongItem(
+        index: index,
+        mediaItems: widget.mediaItem,
+        queueTitle: (context.routeData.args as Play).id,
+      ),
       itemCount: widget.mediaItem.length,
     );
     // return Column(
@@ -253,180 +259,192 @@ class _ListWidgetState extends State<ListWidget> {
     super.dispose();
   }
 
-  // Widget _buildItem(MediaItem data, {int index = 0}) {
-  //   return FrameSeparateWidget(
-  //     index: index,
-  //     child: InkWell(
-  //       key: Key(data.id),
-  //       child: Container(
-  //         padding: EdgeInsets.symmetric(horizontal: 30.w),
-  //         height: 120.w,
-  //         child: Row(
-  //           children: [
-  //             Expanded(
-  //                 child: Column(
-  //               crossAxisAlignment: CrossAxisAlignment.start,
-  //               mainAxisAlignment: MainAxisAlignment.center,
-  //               children: [
-  //                 Text(
-  //                   data.title,
-  //                   maxLines: 1,
-  //                   style: TextStyle(fontSize: 30.sp),
-  //                 ),
-  //                 Padding(padding: EdgeInsets.symmetric(vertical: 3.w)),
-  //                 Text(
-  //                   data.artist ?? '',
-  //                   maxLines: 1,
-  //                   style: TextStyle(fontSize: 24.sp, color: Colors.grey),
-  //                 )
-  //               ],
-  //             )),
-  //             Visibility(
-  //               visible: (data.extras!['mv'] ?? 0) != 0,
-  //               child: IconButton(
-  //                   onPressed: () {
-  //                     context.router.push(const MvView().copyWith(queryParams: {'mvId': data.extras?['mv'] ?? 0}));
-  //                   },
-  //                   icon: const Icon(
-  //                     TablerIcons.brand_youtube,
-  //                     color: Colors.grey,
-  //                   )),
-  //             ),
-  //             Visibility(
-  //               visible: index != null,
-  //               replacement: IconButton(
-  //                   onPressed: () {},
-  //                   icon: const Icon(
-  //                     TablerIcons.arrows_move_vertical,
-  //                     color: Colors.grey,
-  //                   )),
-  //               child: IconButton(
-  //                   onPressed: () {
-  //                     showModalActionSheet(
-  //                       context: context,
-  //                       title: data.title,
-  //                       message: data.artist,
-  //                       actions: [const SheetAction<String>(label: '下一首播放', icon: TablerIcons.player_play, key: 'next')],
-  //                     ).then((value) {
-  //                       if (value != null) {
-  //                         if (HomeController.to.audioServeHandler.playbackState.value.queueIndex != 0) {
-  //                           HomeController.to.audioServeHandler.insertQueueItem(HomeController.to.audioServeHandler.playbackState.value.queueIndex! + 1, data);
-  //                           WidgetUtil.showToast('已添加到下一曲');
-  //                         } else {
-  //                           WidgetUtil.showToast('未知错误');
-  //                         }
-  //                       }
-  //                     });
-  //                   },
-  //                   icon: const Icon(
-  //                     TablerIcons.dots_vertical,
-  //                     color: Colors.grey,
-  //                   )),
-  //             ),
-  //           ],
-  //         ),
-  //       ),
-  //       onTap: () {
-  //         HomeController.to.playByIndex(index, (context.routeData.args as Play).id, mediaItem: widget.mediaItem);
-  //       },
-  //     ),
-  //   );
-  // }
+// Widget _buildItem(MediaItem data, {int index = 0}) {
+//   return FrameSeparateWidget(
+//     index: index,
+//     child: InkWell(
+//       key: Key(data.id),
+//       child: Container(
+//         padding: EdgeInsets.symmetric(horizontal: 30.w),
+//         height: 120.w,
+//         child: Row(
+//           children: [
+//             Expanded(
+//                 child: Column(
+//               crossAxisAlignment: CrossAxisAlignment.start,
+//               mainAxisAlignment: MainAxisAlignment.center,
+//               children: [
+//                 Text(
+//                   data.title,
+//                   maxLines: 1,
+//                   style: TextStyle(fontSize: 30.sp),
+//                 ),
+//                 Padding(padding: EdgeInsets.symmetric(vertical: 3.w)),
+//                 Text(
+//                   data.artist ?? '',
+//                   maxLines: 1,
+//                   style: TextStyle(fontSize: 24.sp, color: Colors.grey),
+//                 )
+//               ],
+//             )),
+//             Visibility(
+//               visible: (data.extras!['mv'] ?? 0) != 0,
+//               child: IconButton(
+//                   onPressed: () {
+//                     context.router.push(const MvView().copyWith(queryParams: {'mvId': data.extras?['mv'] ?? 0}));
+//                   },
+//                   icon: const Icon(
+//                     TablerIcons.brand_youtube,
+//                     color: Colors.grey,
+//                   )),
+//             ),
+//             Visibility(
+//               visible: index != null,
+//               replacement: IconButton(
+//                   onPressed: () {},
+//                   icon: const Icon(
+//                     TablerIcons.arrows_move_vertical,
+//                     color: Colors.grey,
+//                   )),
+//               child: IconButton(
+//                   onPressed: () {
+//                     showModalActionSheet(
+//                       context: context,
+//                       title: data.title,
+//                       message: data.artist,
+//                       actions: [const SheetAction<String>(label: '下一首播放', icon: TablerIcons.player_play, key: 'next')],
+//                     ).then((value) {
+//                       if (value != null) {
+//                         if (HomeController.to.audioServeHandler.playbackState.value.queueIndex != 0) {
+//                           HomeController.to.audioServeHandler.insertQueueItem(HomeController.to.audioServeHandler.playbackState.value.queueIndex! + 1, data);
+//                           WidgetUtil.showToast('已添加到下一曲');
+//                         } else {
+//                           WidgetUtil.showToast('未知错误');
+//                         }
+//                       }
+//                     });
+//                   },
+//                   icon: const Icon(
+//                     TablerIcons.dots_vertical,
+//                     color: Colors.grey,
+//                   )),
+//             ),
+//           ],
+//         ),
+//       ),
+//       onTap: () {
+//         HomeController.to.playByIndex(index, (context.routeData.args as Play).id, mediaItem: widget.mediaItem);
+//       },
+//     ),
+//   );
+// }
 }
 
 class SongItem extends StatelessWidget {
   final int index;
   final List<MediaItem> mediaItems;
   final String queueTitle;
+  final VoidCallback? voidCallback;
 
-  const SongItem({Key? key, required this.index, required this.mediaItems, required this.queueTitle}) : super(key: key);
+  const SongItem({Key? key, required this.index, required this.mediaItems, required this.queueTitle, this.voidCallback}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return FrameSeparateWidget(
-      index: index,
-      placeHolder: Container(
-        padding: EdgeInsets.symmetric(horizontal: 30.w),
+    return InkWell(
+      key: Key(mediaItems[index].id),
+      child: Container(
+        padding: EdgeInsets.only(left: 30.w),
         height: 120.w,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           children: [
-            Container(height: 36.w,width: 150.w,color: Theme.of(context).cardColor.withOpacity(.1),),
-            SizedBox(height: 20.w,width: 260.w),
-            Container(height: 36.w,width: 260.w,color: Theme.of(context).cardColor.withOpacity(.1),),
+            Expanded(
+                child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  mediaItems[index].title,
+                  maxLines: 1,
+                  style: TextStyle(fontSize: 30.sp),
+                ),
+                Padding(padding: EdgeInsets.symmetric(vertical: 3.w)),
+                Text(
+                  mediaItems[index].artist ?? '',
+                  maxLines: 1,
+                  style: TextStyle(fontSize: 24.sp, color: Colors.grey),
+                )
+              ],
+            )),
+            Visibility(
+              visible: (mediaItems[index].extras!['mv'] ?? 0) != 0,
+              child: IconButton(
+                  onPressed: () {
+                    context.router.push(const MvView().copyWith(queryParams: {'mvId': mediaItems[index].extras?['mv'] ?? 0}));
+                  },
+                  icon: const Icon(
+                    TablerIcons.brand_youtube,
+                    color: Colors.grey,
+                  )),
+            ),
+            IconButton(
+                onPressed: () => _showSheet(context),
+                icon: const Icon(
+                  TablerIcons.dots_vertical,
+                  color: Colors.grey,
+                )),
           ],
         ),
       ),
-      child: InkWell(
-        key: Key(mediaItems[index].id),
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 30.w),
-          height: 120.w,
-          child: Row(
-            children: [
-              Expanded(
-                  child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    mediaItems[index].title,
-                    maxLines: 1,
-                    style: TextStyle(fontSize: 30.sp),
-                  ),
-                  Padding(padding: EdgeInsets.symmetric(vertical: 3.w)),
-                  Text(
-                    mediaItems[index].artist ?? '',
-                    maxLines: 1,
-                    style: TextStyle(fontSize: 24.sp, color: Colors.grey),
-                  )
-                ],
-              )),
-              Visibility(
-                visible: (mediaItems[index].extras!['mv'] ?? 0) != 0,
-                child: IconButton(
-                    onPressed: () {
-                      context.router.push(const MvView().copyWith(queryParams: {'mvId': mediaItems[index].extras?['mv'] ?? 0}));
-                    },
-                    icon: const Icon(
-                      TablerIcons.brand_youtube,
-                      color: Colors.grey,
-                    )),
-              ),
-              IconButton(
-                  onPressed: () {
-                    showModalActionSheet(
-                      context: context,
-                      title: mediaItems[index].title,
-                      message: mediaItems[index].artist,
-                      actions: [const SheetAction<String>(label: '下一首播放', icon: TablerIcons.player_play, key: 'next')],
-                    ).then((value) {
-                      if (value != null) {
-                        if (HomeController.to.audioServeHandler.playbackState.value.queueIndex != 0) {
-                          HomeController.to.audioServeHandler.insertQueueItem(HomeController.to.audioServeHandler.playbackState.value.queueIndex! + 1, mediaItems[index]);
-                          WidgetUtil.showToast('已添加到下一曲');
-                        } else {
-                          WidgetUtil.showToast('未知错误');
-                        }
-                      }
-                    });
-                  },
-                  icon: const Icon(
-                    TablerIcons.dots_vertical,
-                    color: Colors.grey,
-                  )),
-            ],
-          ),
-        ),
-        onTap: () {
-          HomeController.to.playByIndex(index, queueTitle, mediaItem: mediaItems);
-        },
-      ),
+      onTap: () {
+        if (queueTitle.isEmpty) {
+          WidgetUtil.showToast('id错误');
+          return;
+        }
+        HomeController.to.playByIndex(index, queueTitle, mediaItem: mediaItems);
+      },
     );
+  }
+
+  void _showSheet(context) {
+    showModalActionSheet(
+      context: context,
+      title: mediaItems[index].title,
+      message: mediaItems[index].artist,
+      actions: [
+        const SheetAction<ActionType>(label: '下一首播放', icon: TablerIcons.player_play, key: ActionType.next),
+        mediaItems[index].extras?['type'] == MediaType.local.name
+            ? const SheetAction<ActionType>(label: '编辑歌曲信息', icon: TablerIcons.edit, key: ActionType.edit)
+            : const SheetAction<ActionType>(label: '歌曲评论', icon: TablerIcons.message_2, key: ActionType.talk),
+      ],
+    ).then((value) {
+      if (value != null) {
+        switch (value) {
+          case ActionType.next:
+            _setNext();
+            break;
+          case ActionType.edit:
+            GetIt.instance<RootRouter>().push(const EditSongView().copyWith(args: mediaItems[index])).then((value) {
+              if (value != null) {
+                if (value as bool) voidCallback?.call();
+              }
+            });
+            break;
+          case ActionType.talk:
+            GetIt.instance<RootRouter>().push(const TalkView().copyWith(queryParams: {'id': mediaItems[index].id, 'type': 'song', 'name': mediaItems[index].title}));
+            break;
+        }
+      }
+    });
+  }
+
+  void _setNext() {
+    if (HomeController.to.audioServeHandler.playbackState.value.queueIndex != 0) {
+      HomeController.to.audioServeHandler.insertQueueItem(HomeController.to.audioServeHandler.playbackState.value.queueIndex! + 1, mediaItems[index]);
+      WidgetUtil.showToast('已添加到下一曲');
+    } else {
+      WidgetUtil.showToast('未知错误');
+    }
   }
 }
 
-// class SheetData{
-//   String title;
-//   String value;
-// }
+enum ActionType { next, edit, talk }
