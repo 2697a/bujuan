@@ -12,6 +12,7 @@ class FlashyNavbar extends StatelessWidget {
   final Duration animationDuration;
   final Curve animationCurve;
   final List<BoxShadow> shadows;
+  final EdgeInsetsGeometry? padding;
 
   final List<FlashyNavbarItem> items;
   final ValueChanged<int> onItemSelected;
@@ -32,7 +33,7 @@ class FlashyNavbar extends StatelessWidget {
       ),
     ],
     required this.items,
-    required this.onItemSelected,
+    required this.onItemSelected, this.padding,
   }) : super(key: key) {
     // assert(height >= 55 );
     assert(items.length >= 2 && items.length <= 5);
@@ -42,11 +43,9 @@ class FlashyNavbar extends StatelessWidget {
   Widget build(BuildContext context) {
     final bg = (backgroundColor == null) ? Theme.of(context).bottomAppBarColor : backgroundColor;
     return Container(
+      padding: padding,
       height: height,
-      decoration: BoxDecoration(
-        boxShadow: showElevation ? shadows : [],
-        // border: Border(top: BorderSide(color: Colors.grey.withOpacity(.1),width: 1.w))
-      ),
+      color: Colors.transparent,
       child: SizedBox(
         width: Get.width,
         height: height,
@@ -135,61 +134,16 @@ class _FlashyNavbarItem extends StatelessWidget {
                     child: item.icon,
                   )),
             ),
-            // AnimatedPositioned(
-            //   curve: animationCurve,
-            //   duration: animationDuration,
-            //   top: isSelected ? -2.0 * iconSize : tabBarHeight / 4,
-            //   child: Column(
-            //     mainAxisAlignment: MainAxisAlignment.center,
-            //     children: <Widget>[
-            //       SizedBox(
-            //         width: iconSize,
-            //         height: iconSize,
-            //       ),
-            //       CustomPaint(
-            //         painter: _CustomPath(backgroundColor),
-            //         child: SizedBox(
-            //           width: 80,
-            //           height: iconSize,
-            //         ),
-            //       )
-            //     ],
-            //   ),
-            // ),
-            // AnimatedAlign(
-            //     alignment: isSelected ? Alignment.center : Alignment.bottomCenter,
-            //     duration: animationDuration,
-            //     curve: animationCurve,
-            //     child: AnimatedOpacity(
-            //         opacity: isSelected ? 1.0 : 0.0,
-            //         duration: animationDuration,
-            //         child: DefaultTextStyle.merge(
-            //           style: TextStyle(
-            //             color: item.inactiveColor,
-            //             fontWeight: FontWeight.bold,
-            //             fontSize: 26.sp
-            //           ),
-            //           child: item.title,
-            //         ))),
-            // Positioned(
-            //     bottom: 0,
-            //     child: CustomPaint(
-            //       painter: _CustomPath(backgroundColor),
-            //       child: SizedBox(
-            //         width: 80,
-            //         height: iconSize,
-            //       ),
-            //     )),
             Align(
               alignment: Alignment.bottomCenter,
               child: AnimatedOpacity(
                   duration: animationDuration,
                   opacity: isSelected ? 1.0 : 0.0,
                   child: Container(
-                    width: 5,
-                    height: 5,
+                    width: 4,
+                    height: 4,
                     alignment: Alignment.bottomCenter,
-                    margin: const EdgeInsets.only(bottom: 8),
+                    margin: const EdgeInsets.only(bottom: 4),
                     decoration: BoxDecoration(
                       color: color,
                       borderRadius: BorderRadius.circular(2),

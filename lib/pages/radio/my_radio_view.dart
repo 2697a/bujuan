@@ -28,7 +28,6 @@ class _MyRadioViewState extends State<MyRadioView> {
   Widget build(BuildContext context) {
     return GestureDetector(
       child: Scaffold(
-        backgroundColor: Colors.transparent,
         appBar: MyAppBar(
           backgroundColor: Colors.transparent,
         ),
@@ -85,7 +84,7 @@ class _MyRadioViewState extends State<MyRadioView> {
           ),
         ),
         onTap: () {
-          context.router.push(const RadioDetailsView().copyWith(args: data));
+          // context.router.push(const RadioDetailsView().copyWith(args: data));
         });
   }
 }

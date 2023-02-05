@@ -31,7 +31,7 @@ class OtherUtils {
   }
 
   static Future<PaletteGenerator> getImageColorByProvider(ImageProvider imageProvider) async {
-    return await PaletteGenerator.fromImageProvider(imageProvider, size: Size(500.w, 500.w));
+    return await PaletteGenerator.fromImageProvider(imageProvider, size: const Size(300, 300));
   }
 
   static String getTimeStamp(int milliseconds) {

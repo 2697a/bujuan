@@ -1,23 +1,15 @@
-import 'dart:convert';
 
-import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:audio_service/audio_service.dart';
-import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
+import 'package:bujuan/widget/app_bar.dart';
 import 'package:bujuan/widget/request_widget/request_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
-import 'package:keframe/keframe.dart';
 
-import '../../common/constants/other.dart';
 import '../../common/netease_api/src/api/play/bean.dart';
 import '../../common/netease_api/src/dio_ext.dart';
 import '../../common/netease_api/src/netease_handler.dart';
-import '../../routes/router.gr.dart';
-import '../../widget/simple_extended_image.dart';
 import '../play_list/playlist_view.dart';
-import '../user/user_controller.dart';
 
 class TodayView extends StatefulWidget {
   const TodayView({Key? key}) : super(key: key);
@@ -37,8 +29,7 @@ class _TodayViewState extends State<TodayView> {
   Widget build(BuildContext context) {
     return GestureDetector(
       child: Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: AppBar(
+        appBar: MyAppBar(
           title: const Text('每日'),
           backgroundColor: Colors.transparent,
         ),

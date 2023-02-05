@@ -24,7 +24,7 @@ void neteaseInterceptor(
   if (option.method == 'POST' &&
       HOSTS.contains(option.uri.host) &&
       option.extra['hookRequestData']) {
-    debugPrint('$TAG   interceptor before: ${option.uri}   ${option.data}');
+    // debugPrint('$TAG   interceptor before: ${option.uri}   ${option.data}');
 
     option.contentType = Headers.formUrlEncodedContentType;
     option.headers[HttpHeaders.refererHeader] = HOST;

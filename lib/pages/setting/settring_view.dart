@@ -86,7 +86,7 @@ class _SettingViewState extends State<SettingView> {
           ),
           ListTile(
             title: Text(
-              '首页右上角图片',
+              '播放页圆形图片',
               style: TextStyle(fontSize: 30.sp),
             ),
             trailing: Obx(() => Icon(
@@ -113,6 +113,21 @@ class _SettingViewState extends State<SettingView> {
               HomeController.to.gradientBackground.value = !HomeController.to.gradientBackground.value;
               StorageUtil().setBool(gradientBackgroundSp, HomeController.to.gradientBackground.value);
             },
+          ),
+          ListTile(
+            title: Text(
+              '顶部歌词',
+              style: TextStyle(fontSize: 30.sp),
+            ),
+            trailing: Obx(() => Icon(
+              HomeController.to.topLyric.value ? TablerIcons.toggle_right : TablerIcons.toggle_left,
+              size: 56.w,
+              color: Theme.of(context).cardColor.withOpacity(HomeController.to.topLyric.value ? 0.7 : .4),
+            )),
+            onTap: () {
+              HomeController.to.topLyric.value = !HomeController.to.topLyric.value;
+              StorageUtil().setBool(topLyricSp, HomeController.to.topLyric.value);
+            },
           )
         ],
       ),
@@ -133,6 +148,21 @@ class _SettingViewState extends State<SettingView> {
               'App设置',
               style: TextStyle(fontSize: 28.sp, color: Theme.of(context).cardColor.withOpacity(.4)),
             ),
+          ),
+          ListTile(
+            title: Text(
+              '开启高音质(与会员有关)',
+              style: TextStyle(fontSize: 30.sp),
+            ),
+            trailing: Obx(() => Icon(
+              HomeController.to.high.value ? TablerIcons.toggle_right : TablerIcons.toggle_left,
+              size: 56.w,
+              color: Theme.of(context).cardColor.withOpacity(HomeController.to.high.value ? 0.7 : .4),
+            )),
+            onTap: () {
+              HomeController.to.high.value = !HomeController.to.high.value;
+              StorageUtil().setBool(highSong, HomeController.to.high.value);
+            },
           ),
           ListTile(
             title: Text(

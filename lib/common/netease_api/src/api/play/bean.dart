@@ -609,7 +609,7 @@ class PlayTrack {
   Music2? m;
   Music2? l;
   Music2? a;
-  late String cd;
+  String? cd;
   int? no;
   int? ftype;
   List<dynamic>? rtUrls;

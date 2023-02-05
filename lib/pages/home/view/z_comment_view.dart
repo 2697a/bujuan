@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
+import 'package:bujuan/pages/home/view/panel_view.dart';
 import 'package:bujuan/routes/router.gr.dart';
 import 'package:bujuan/widget/simple_extended_image.dart';
 import 'package:flutter/material.dart';
@@ -17,33 +18,35 @@ class CommentView extends GetView<HomeController> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 20.w, horizontal: 30.w),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Obx(() => Text(
-                      '热评榜',
-                      style: TextStyle(color: controller.getPlayPageTheme(context), fontSize: 44.sp),
-                    )),
-                TextButton(
-                    onPressed: () {
-                        context.router.push(const TalkView().copyWith(queryParams: {'id': controller.mediaItem.value.id, 'type': 'song','name':controller.mediaItem.value.title}));
-                    },
-                    child: Obx(() => Text(
-                      '查看更多>',
-                      style: TextStyle(color: controller.getPlayPageTheme(context), fontSize: 28.sp),
-                    )))
-              ],
+          ClassWidget(
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 20.w, horizontal: 30.w),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Obx(() => Text(
+                    '热评榜',
+                    style: TextStyle(color: controller.bodyColor.value, fontSize: 44.sp),
+                  )),
+                  TextButton(
+                      onPressed: () {
+                        // context.router.push(const TalkView().copyWith(queryParams: {'id': controller.mediaItem.value.id, 'type': 'song','name':controller.mediaItem.value.title}));
+                      },
+                      child: Obx(() => Text(
+                        '查看更多>',
+                        style: TextStyle(color: controller.bodyColor.value, fontSize: 28.sp),
+                      )))
+                ],
+              ),
             ),
           ),
-          Obx(() => ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(0),
-                itemBuilder: (context1, index) => _buildItem(controller.comments[index], context),
-                itemCount: controller.comments.length,
-              )),
+          ClassWidget(child: Obx(() => ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(0),
+            itemBuilder: (context1, index) => ClassWidget(child: _buildItem(controller.comments[index], context)),
+            itemCount: controller.comments.length,
+          ))),
         ],
       ),
     );
@@ -68,7 +71,7 @@ class CommentView extends GetView<HomeController> {
                   Expanded(
                       child: Text(
                     '${comment.user.nickname ?? ''}   (${comment.likedCount}赞)',
-                    style: TextStyle(color: controller.getPlayPageTheme(context), fontSize: 28.sp),
+                    style: TextStyle(color: controller.bodyColor.value, fontSize: 28.sp),
                   ))
                 ],
               ),
@@ -76,7 +79,7 @@ class CommentView extends GetView<HomeController> {
                 padding: EdgeInsets.only(top: 20.w, left: 80.w),
                 child: Text(
                   (comment.content ?? '').replaceAll('\n', ''),
-                  style: TextStyle(color: controller.getPlayPageTheme(context), fontSize: 24.sp),
+                  style: TextStyle(color: controller.bodyColor.value, fontSize: 24.sp),
                 ),
               ),
             ],
@@ -84,7 +87,7 @@ class CommentView extends GetView<HomeController> {
         }),
       ),
       onTap: () {
-          context.router.push(const TalkView().copyWith(queryParams: {'id': controller.mediaItem.value.id, 'type': 'song','name':controller.mediaItem.value.title}));
+          // context.router.push(const TalkView().copyWith(queryParams: {'id': controller.mediaItem.value.id, 'type': 'song','name':controller.mediaItem.value.title}));
       },
     );
   }

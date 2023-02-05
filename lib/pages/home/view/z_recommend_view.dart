@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/common/constants/enmu.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
+import 'package:bujuan/pages/home/view/panel_view.dart';
 import 'package:bujuan/widget/simple_extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -21,84 +22,85 @@ class RecommendView extends GetView<HomeController> {
   }
 
   Widget _buildBody(BuildContext context) {
-    return Obx(() => Visibility(
-          visible: controller.mediaItem.value.extras?['type'] != MediaType.local.name,
-          child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 30.w),
-            child: Column(
-              children: [
-                Container(
-                  alignment: Alignment.centerLeft,
-                  padding: EdgeInsets.only(top: 10.w, bottom: 20.w),
-                  child: Obx(() => Text(
-                        '歌手',
-                        style: TextStyle(fontSize: 36.sp, color: controller.getPlayPageTheme(context), fontWeight: FontWeight.bold),
-                        textAlign: TextAlign.left,
-                      )),
-                ),
-                _buildArtistsList(),
-                Container(
-                  alignment: Alignment.centerLeft,
-                  padding: EdgeInsets.only(top: 10.w, bottom: 20.w),
-                  child: Obx(() => Text(
-                        '专辑',
-                        style: TextStyle(fontSize: 36.sp, color: controller.getPlayPageTheme(context), fontWeight: FontWeight.bold),
-                        textAlign: TextAlign.left,
-                      )),
-                ),
-                _buildAlbum(context),
-                // Container(
-                //   alignment: Alignment.centerLeft,
-                //   padding: EdgeInsets.only(top: 10.w, bottom: 20.w),
-                //   child: Obx(() => Text(
-                //         '相似歌单',
-                //         style: TextStyle(fontSize: 36.sp, color: controller.getPlayPageTheme(context), fontWeight: FontWeight.bold),
-                //         textAlign: TextAlign.left,
-                //       )),
-                // ),
-                // _buildSimSongListView(),
-              ],
-            ),
+
+    return ClassWidget(child: Obx(() {
+      return Visibility(
+        visible: controller.mediaItem.value.extras?['type'] != MediaType.local.name,
+        child: SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: 30.w),
+          child: Column(
+            children: [
+              Container(
+                alignment: Alignment.centerLeft,
+                padding: EdgeInsets.only(top: 10.w, bottom: 20.w),
+                child: Obx(() => Text(
+                  '歌手',
+                  style: TextStyle(fontSize: 36.sp, color: controller.bodyColor.value, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.left,
+                )),
+              ),
+              ClassWidget(child: _buildArtistsList()),
+              Container(
+                alignment: Alignment.centerLeft,
+                padding: EdgeInsets.only(top: 10.w, bottom: 20.w),
+                child: Obx(() => Text(
+                  '专辑',
+                  style: TextStyle(fontSize: 36.sp, color: controller.bodyColor.value, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.left,
+                )),
+              ),
+              // ClassWidget(child: _buildAlbum(context)),
+              // Container(
+              //   alignment: Alignment.centerLeft,
+              //   padding: EdgeInsets.only(top: 10.w, bottom: 20.w),
+              //   child: Obx(() => Text(
+              //         '相似歌单',
+              //         style: TextStyle(fontSize: 36.sp, color: controller.bodyColor.value, fontWeight: FontWeight.bold),
+              //         textAlign: TextAlign.left,
+              //       )),
+              // ),
+              // _buildSimSongListView(),
+            ],
           ),
-        ));
+        ),
+      );
+    }));
   }
 
   Widget _buildArtistsList() {
+
     return Obx(() {
-      if (controller.mediaItem.value.extras == null) return const SizedBox.shrink();
-      var artists = controller.mediaItem.value.extras!['artist']?.split(' / ').map((e) => Artists.fromJson(jsonDecode(e))).toList() ?? [];
-      return ListView.builder(
+      return Visibility(visible: controller.mediaItem.value.extras!['artist'] == null,child: ListView.builder(
         itemBuilder: (context, index) => InkWell(
           child: Container(
             padding: EdgeInsets.symmetric(vertical: 20.w),
             child: Obx(() => Row(
-                  children: [
-                    Expanded(
-                        child: Text(
-                      artists[index].name ?? '',
+              children: [
+                Expanded(
+                    child: Text(
+                      (controller.mediaItem.value.extras!['artist']?.split(' / ').map((e) => Artists.fromJson(jsonDecode(e))).toList() ?? [])[index].name ?? '',
                       maxLines: 1,
-                      style: TextStyle(fontSize: 30.sp, color: controller.getPlayPageTheme(context)),
+                      style: TextStyle(fontSize: 30.sp, color: controller.bodyColor.value),
                     )),
-                    Icon(
-                      TablerIcons.chevron_right,
-                      color: controller.getPlayPageTheme(context),
-                      size: 38.sp,
-                    ),
-                  ],
-                )),
+                Icon(
+                  TablerIcons.chevron_right,
+                  color: controller.bodyColor.value,
+                  size: 38.sp,
+                ),
+              ],
+            )),
           ),
           onTap: () {
             controller.panelController.close();
-            controller.panelControllerHome.close().then((value) {
-              context.router.push(const ArtistsView().copyWith(args: artists[index]));
-            });
+            controller.panelControllerHome.close();
+            // context.router.push(const ArtistsView().copyWith(args: artists[index]));
           },
         ),
-        itemCount: artists.length,
+        itemCount: (controller.mediaItem.value.extras!['artist']?.split(' / ').map((e) => Artists.fromJson(jsonDecode(e))).toList() ?? []).length,
         shrinkWrap: true,
         padding: const EdgeInsets.all(0),
         physics: const NeverScrollableScrollPhysics(),
-      );
+      ),);
     });
   }
 
@@ -106,7 +108,7 @@ class RecommendView extends GetView<HomeController> {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 20.w),
       child: Obx(() {
-        if ((controller.mediaItem.value.album ?? '').isEmpty) return const SizedBox.shrink();
+        if ((controller.mediaItem.value.extras?['album'] ?? '').isEmpty) return const SizedBox.shrink();
         return Row(
           children: [
             SimpleExtendedImage.avatar(
@@ -119,11 +121,11 @@ class RecommendView extends GetView<HomeController> {
                 child: Text(
               Album.fromJson(jsonDecode(controller.mediaItem.value.album ?? '')).name ?? '',
               maxLines: 1,
-              style: TextStyle(fontSize: 30.sp, color: controller.getPlayPageTheme(context)),
+              style: TextStyle(fontSize: 30.sp, color: controller.bodyColor.value),
             )),
             Icon(
               TablerIcons.chevron_right,
-              color: controller.getPlayPageTheme(context),
+              color: controller.bodyColor.value,
               size: 38.sp,
             ),
           ],
@@ -165,13 +167,13 @@ class RecommendView extends GetView<HomeController> {
                     Text(
                       play.name ?? '',
                       maxLines: 1,
-                      style: TextStyle(fontSize: 30.sp, color: controller.getPlayPageTheme(context)),
+                      style: TextStyle(fontSize: 30.sp, color: controller.bodyColor.value),
                     ),
                     Padding(padding: EdgeInsets.symmetric(vertical: 4.w)),
                     Text(
                       '${play.trackCount ?? 0}',
                       maxLines: 1,
-                      style: TextStyle(fontSize: 24.sp, color: controller.getPlayPageTheme(context)),
+                      style: TextStyle(fontSize: 24.sp, color: controller.bodyColor.value),
                     )
                   ],
                 )),
@@ -180,9 +182,8 @@ class RecommendView extends GetView<HomeController> {
           )),
       onTap: () {
         controller.panelController.close();
-        controller.panelControllerHome.close().then((value) {
-          context.router.push(const PlayListView().copyWith(args: play));
-        });
+        controller.panelControllerHome.close();
+        // context.router.push(const PlayListView().copyWith(args: play));
       },
     );
   }

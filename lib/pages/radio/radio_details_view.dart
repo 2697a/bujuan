@@ -28,14 +28,13 @@ class _RadioDetailsViewState extends State<RadioDetailsView> {
   Widget build(BuildContext context) {
     return GestureDetector(
       child: Scaffold(
-        backgroundColor: Colors.transparent,
         appBar: MyAppBar(title: Text((context.routeData.args as DjRadio).name),backgroundColor: Colors.transparent,),
         body: RequestLoadMoreWidget<DjProgramListWrap, DjProgram>(
             dioMetaData: djProgramListDioMetaData((context.routeData.args as DjRadio).id),
             childBuilder: (list) {
               var mediaItems = list
                   .map((e) => MediaItem(
-                id: e.mainSong.id,
+                id: '${e.mainTrackId}',
                 title: e.mainSong.name ?? '',
                 artUri: Uri.parse(e.mainSong.album?.picUrl ?? ''),
                 artist: e.dj.nickname,
@@ -51,7 +50,7 @@ class _RadioDetailsViewState extends State<RadioDetailsView> {
                   .toList();
               return ListView.builder(
                 itemBuilder: (context, index) {
-                  return SongItem(index: index, mediaItems: mediaItems, queueTitle: '');
+                  return SongItem(index: index, mediaItems: mediaItems, queueTitle: 'radio${DateTime.now().millisecondsSinceEpoch}');
                 },
                 itemCount: list.length,
               );

@@ -35,25 +35,52 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
     _curIndex = StorageUtil().getInt(playByIndex);
     queueTitle.value = StorageUtil().getString(playQueueTitle);
     List<String> playList = StorageUtil().getStringList(playQueue);
-    if (playList.isNotEmpty) {
-      List<MediaItem> items = playList.map((e) {
-        var map = MediaItemMessage.fromMap(jsonDecode(e));
-        return MediaItem(
-          id: map.id,
-          duration: map.duration,
-          artUri: map.artUri,
-          extras: map.extras,
-          title: map.title,
-          artist: map.artist,
-          album: map.album,
-        );
-      }).toList();
-      changeQueueLists(items, init: true);
-      playbackState.add(playbackState.value.copyWith(
-        queueIndex: _curIndex,
-      ));
-      playIndex(_curIndex, playIt: false);
+    for (var e in playList) {
+      print(jsonDecode(e));
     }
+    if (playList.isEmpty) {
+      _curIndex = 0;
+      playList.add(jsonEncode(MediaItemMessage(
+        id: '1370901308',
+        album: 'Yes & No',
+        title: 'Yes & No',
+        artist: 'XYLØ',
+        duration: const Duration(milliseconds: 179043),
+        artUri: Uri.parse('https: //p2.music.126.net/2dYAbLmy-oyhwd0rg_RJOw==/109951164137810210.jpg?param=500y500'),
+        extras: {
+          'type': 'playlist',
+          'image': 'https://p2.music.126.net/2dYAbLmy-oyhwd0rg_RJOw==/109951164137810210.jpg',
+          'liked': false,
+          'artist': '''{
+            "id": "1050511",
+            "name": "XYLØ",
+          }''',
+          'album': '''{
+            'id': '79697210',
+            'name': 'Yes & No',
+            'picUrl': 'https://p2.music.126.net/2dYAbLmy-oyhwd0rg_RJOw==/109951164137810210.jpg',
+          }''',
+          'mv': 0
+        },
+      ).toMap()));
+    }
+    List<MediaItem> items = playList.map((e) {
+      var map = MediaItemMessage.fromMap(jsonDecode(e));
+      return MediaItem(
+        id: map.id,
+        duration: map.duration,
+        artUri: map.artUri,
+        extras: map.extras,
+        title: map.title,
+        artist: map.artist,
+        album: map.album,
+      );
+    }).toList();
+    changeQueueLists(items, init: true);
+    playbackState.add(playbackState.value.copyWith(
+      queueIndex: _curIndex,
+    ));
+    playIndex(_curIndex, playIt: false);
   }
 
   void _initAudioSession() async {
@@ -243,6 +270,7 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
 
   @override
   Future<void> readySongUrl({bool isNext = true, bool playIt = true}) async {
+    bool high = !playIt?StorageUtil().getBool(highSong):HomeController.to.high.value;
     // 这里是获取歌曲url
     if (queue.value.isEmpty) return;
     var song = queue.value[_curIndex];
@@ -250,8 +278,8 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
     if (song.extras?['type'] == MediaType.local.name) {
       url = song.extras?['url'];
     } else {
-      SongUrlListWrap songUrl = await NeteaseMusicApi().songUrl([song.id]);
-      print('object=====${jsonEncode(songUrl.data)}');
+      SongUrlListWrap songUrl = await NeteaseMusicApi().songUrl([song.id], br: high ? 999000 : 320000);
+      // print('object=====${jsonEncode(songUrl.data)}');
       url = (songUrl.data ?? [])[0].url ?? '';
     }
     if (url.isNotEmpty) {

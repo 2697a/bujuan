@@ -94,7 +94,7 @@ class PlayListA extends GetView<PlayListController> {
           ],
         ),
       ),
-      onTap: () => controller.playIndex(index),
+      // onTap: () => controller.playIndex(index),
     );
     // return ListTile(
     //   dense: true,

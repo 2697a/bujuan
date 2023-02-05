@@ -27,7 +27,8 @@ class _GuideViewState extends State<GuideView> with WidgetsBindingObserver {
   PageController pageController = PageController();
   Timer? _timer;
   List<BottomData>? _bottomData;
-  final BujuanAudioHandler audioServeHandler = GetIt.instance<BujuanAudioHandler>();
+
+  // final BujuanAudioHandler audioServeHandler = GetIt.instance<BujuanAudioHandler>();
   bool openSetting = false;
 
   @override
@@ -78,7 +79,7 @@ class _GuideViewState extends State<GuideView> with WidgetsBindingObserver {
         if (value == PermissionStatus.denied || value == PermissionStatus.unknown) {
           WidgetUtil.showToast('您未开启通知权限哦');
         } else {
-          if(mounted)AutoRouter.of(context).replaceNamed(Routes.home);
+          if (mounted) AutoRouter.of(context).replaceNamed(Routes.home);
         }
       });
     }

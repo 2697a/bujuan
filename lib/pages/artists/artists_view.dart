@@ -38,69 +38,71 @@ class _ArtistsViewState extends State<ArtistsView> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      child: RequestWidget<ArtistDetailAndSongListWrap>(
-          dioMetaData: artistDetailAndSongListDioMetaData(artists?.id ?? '-1'),
-          childBuilder: (artistDetails) {
-            _items
-              ..clear()
-              ..addAll(HomeController.to.song2ToMedia(artistDetails.hotSongs ?? []));
-            return Scaffold(
-              backgroundColor: Colors.transparent,
-              appBar: MyAppBar(
+    return Scaffold(
+      body: GestureDetector(
+        child: RequestWidget<ArtistDetailAndSongListWrap>(
+            dioMetaData: artistDetailAndSongListDioMetaData(artists?.id ?? '-1'),
+            childBuilder: (artistDetails) {
+              _items
+                ..clear()
+                ..addAll(HomeController.to.song2ToMedia(artistDetails.hotSongs ?? []));
+              return Scaffold(
                 backgroundColor: Colors.transparent,
-                leading: IconButton(
-                    padding: EdgeInsets.only(left: 20.w),
-                    onPressed: () => AutoRouter.of(context).pop(),
-                    icon: SimpleExtendedImage.avatar(
-                      '${artistDetails.artist.img1v1Url ?? ''}?param=100y100',
-                      width: 75.w,
-                      height: 75.w,
-                    )),
-                title: Text(artists?.name ?? ''),
-              ),
-              body: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 15.w),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                            child: Container(
-                          height: 220.w,
-                          padding: EdgeInsets.symmetric(horizontal: 10.w),
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(color: Theme.of(context).scaffoldBackgroundColor.withOpacity(.7), borderRadius: BorderRadius.circular(15.w)),
-                          child: Text(
-                            (artistDetails.artist.briefDesc ?? '').replaceAll('\n', ''),
-                            maxLines: 5,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(fontSize: 26.sp, height: 1.6),
-                          ),
-                        ))
-                      ],
-                    ),
-                    Container(
-                      alignment: Alignment.centerLeft,
-                      padding: EdgeInsets.symmetric(vertical: 15.w),
-                      child: Text(
-                        '热门单曲',
-                        style: TextStyle(fontSize: 36.sp,fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemExtent: 120.w,
-                      itemBuilder: (context, index) => _buildItem(_items[index], index),
-                      itemCount: _items.length,
-                    )
-                  ],
+                appBar: MyAppBar(
+                  backgroundColor: Colors.transparent,
+                  leading: IconButton(
+                      padding: EdgeInsets.only(left: 20.w),
+                      onPressed: () => AutoRouter.of(context).pop(),
+                      icon: SimpleExtendedImage.avatar(
+                        '${artistDetails.artist.img1v1Url ?? ''}?param=100y100',
+                        width: 75.w,
+                        height: 75.w,
+                      )),
+                  title: Text(artists?.name ?? ''),
                 ),
-              ),
-            );
-          }),
-      onHorizontalDragDown: (e) {},
+                body: SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 15.w),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                              child: Container(
+                                height: 220.w,
+                                padding: EdgeInsets.symmetric(horizontal: 10.w),
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(color: Theme.of(context).scaffoldBackgroundColor.withOpacity(.7), borderRadius: BorderRadius.circular(15.w)),
+                                child: Text(
+                                  (artistDetails.artist.briefDesc ?? '').replaceAll('\n', ''),
+                                  maxLines: 5,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(fontSize: 26.sp, height: 1.6),
+                                ),
+                              ))
+                        ],
+                      ),
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        padding: EdgeInsets.symmetric(vertical: 15.w),
+                        child: Text(
+                          '热门单曲',
+                          style: TextStyle(fontSize: 36.sp,fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemExtent: 120.w,
+                        itemBuilder: (context, index) => _buildItem(_items[index], index),
+                        itemCount: _items.length,
+                      )
+                    ],
+                  ),
+                ),
+              );
+            }),
+        onHorizontalDragDown: (e) {},
+      ),
     );
   }
 
@@ -132,7 +134,7 @@ class _ArtistsViewState extends State<ArtistsView> {
               visible: (data.extras!['mv'] ?? 0) != 0,
               child: IconButton(
                   onPressed: () {
-                    context.router.push(const MvView().copyWith(queryParams: {'mvId': data.extras?['mv'] ?? 0}));
+                    // context.router.push(const MvView().copyWith(queryParams: {'mvId': data.extras?['mv'] ?? 0}));
                   },
                   icon: const Icon(
                     TablerIcons.brand_youtube,

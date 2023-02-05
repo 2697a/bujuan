@@ -24,7 +24,7 @@ import '../../widget/request_widget/request_loadmore_view.dart';
 enum LoginStatus { login, noLogin }
 
 class UserController extends GetxController {
-  // List<Play> playlist = <Play>[].obs;
+  List<Play> playlist = <Play>[].obs;
   ScrollController userScrollController = ScrollController();
   RxDouble op = 0.0.obs;
   final List<double> colors = [1, .9, .8, .7, .6, .5, .4, .3, .2, .1, 0];
@@ -90,6 +90,7 @@ class UserController extends GetxController {
         userData.value = neteaseAccountInfoWrap;
         loginStatus.value = LoginStatus.login;
         StorageUtil().setString(loginData, jsonEncode(neteaseAccountInfoWrap.toJson()));
+        getUserPlayList();
         _getUserLikeSongIds();
       }
     } catch (e) {
@@ -119,11 +120,11 @@ class UserController extends GetxController {
   }
 
   getUserPlayList() {
-    // NeteaseMusicApi().userPlayList(userData.value.profile?.userId ?? '-1').then((MultiPlayListWrap2 multiPlayListWrap2) {
-    //   playlist
-    //     ..clear()
-    //     ..addAll(multiPlayListWrap2.playlist ?? []);
-    // });
+    NeteaseMusicApi().userPlayList(userData.value.profile?.userId ?? '-1').then((MultiPlayListWrap2 multiPlayListWrap2) {
+      playlist
+        ..clear()
+        ..addAll(multiPlayListWrap2.playlist ?? []);
+    });
   }
 
   DioMetaData userPlayListDioMetaData(String userId, {int offset = 0, int limit = 30}) {
@@ -133,7 +134,7 @@ class UserController extends GetxController {
 
   @override
   void onClose() {
-    userScrollController.dispose();
+    // userScrollController.dispose();
     super.onClose();
   }
 }

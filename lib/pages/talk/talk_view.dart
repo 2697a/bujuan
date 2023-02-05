@@ -2,11 +2,9 @@ import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/common/constants/other.dart';
 import 'package:bujuan/common/netease_api/src/netease_api.dart';
 import 'package:bujuan/widget/custom_filed.dart';
-import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
-import 'package:keframe/keframe.dart';
 
 import '../../common/netease_api/src/api/event/bean.dart';
 import '../../common/netease_api/src/dio_ext.dart';

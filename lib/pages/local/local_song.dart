@@ -8,15 +8,11 @@ import 'package:bujuan/pages/play_list/playlist_view.dart';
 import 'package:bujuan/widget/data_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:get_it/get_it.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../../widget/app_bar.dart';
-import '../../widget/simple_extended_image.dart';
-import '../home/home_controller.dart';
-import '../user/user_controller.dart';
 
 class LocalSongView extends StatefulWidget {
   const LocalSongView({Key? key}) : super(key: key);

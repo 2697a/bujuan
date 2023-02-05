@@ -676,7 +676,7 @@ PlayTrack _$PlayTrackFromJson(Map<String, dynamic> json) {
     ..m = json['m'] == null ? null : Music2.fromJson(json['m'] as Map<String, dynamic>)
     ..l = json['l'] == null ? null : Music2.fromJson(json['l'] as Map<String, dynamic>)
     ..a = json['a'] == null ? null : Music2.fromJson(json['a'] as Map<String, dynamic>)
-    ..cd = json['cd'] as String
+    ..cd = json['cd'] as String?
     ..no = json['no'] as int?
     ..ftype = json['ftype'] as int?
     ..rtUrls = json['rtUrls'] as List<dynamic>?

@@ -12,6 +12,7 @@ import 'package:bujuan/pages/setting/user_setting_view.dart';
 import 'package:bujuan/pages/talk/talk_view.dart';
 import 'package:bujuan/pages/today/today_view.dart';
 import 'package:bujuan/pages/user/user_view.dart';
+// import 'package:go_router/go_router.dart';
 
 import '../pages/artists/artists_view.dart';
 import '../pages/local/edit_song_view.dart';
@@ -104,3 +105,26 @@ abstract class _Paths {
   ],
 )
 class $RootRouter {}
+
+// final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
+// final GlobalKey<NavigatorState> _shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'shell');
+// GoRouter goRouter = GoRouter(
+//   navigatorKey: _rootNavigatorKey,
+//   initialLocation: '/a',
+//   routes: [
+//     ShellRoute(
+//       navigatorKey: _shellNavigatorKey,
+//       builder: (BuildContext context, GoRouterState state, Widget child) {
+//         return HomeView(body: child);
+//       },
+//       routes: [
+//         GoRoute(
+//           path: '/a',
+//           builder: (BuildContext context, GoRouterState state) {
+//             return const UserView();
+//           },
+//         ),
+//       ]
+//     )
+//   ],
+// );

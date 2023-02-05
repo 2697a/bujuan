@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/common/netease_api/netease_music_api.dart';
+import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/pages/index/index_controller.dart';
 import 'package:bujuan/pages/user/user_controller.dart';
 import 'package:bujuan/widget/request_widget/request_view.dart';
@@ -10,7 +11,6 @@ import 'package:get/get.dart';
 import '../../routes/router.gr.dart';
 import '../../widget/app_bar.dart';
 import '../../widget/simple_extended_image.dart';
-import '../home/home_controller.dart';
 
 class MainView extends GetView<IndexController> {
   const MainView({Key? key}) : super(key: key);
@@ -18,7 +18,6 @@ class MainView extends GetView<IndexController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
       resizeToAvoidBottomInset: false,
       appBar: MyAppBar(
         backgroundColor: Colors.transparent,
@@ -59,7 +58,7 @@ class MainView extends GetView<IndexController> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SimpleExtendedImage(
-              '${albumModel.picUrl ?? ''}?param=300y300',
+              '${albumModel.picUrl ?? ''}?param=200y200',
               cacheWidth: 400,
               width: (Get.width - 90.w) / 3,
               height: (Get.width - 90.w) / 3,

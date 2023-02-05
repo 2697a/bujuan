@@ -4,7 +4,6 @@ import 'package:bujuan/widget/request_widget/request_view.dart';
 import 'package:bujuan/widget/simple_extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get/get.dart';
 
 import '../../common/netease_api/src/api/user/bean.dart';

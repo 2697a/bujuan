@@ -29,7 +29,6 @@ class AlbumView extends GetView<IndexController> {
   Widget build(BuildContext context) {
     return GestureDetector(
       child: Scaffold(
-        backgroundColor: Colors.transparent,
         appBar: MyAppBar(
           backgroundColor: Colors.transparent,
           title: RichText(

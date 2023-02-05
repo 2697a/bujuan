@@ -58,18 +58,18 @@ class PlayListController extends GetxController {
     return mediaItems;
   }
 
-  playIndex(int index) async {
-    String title = HomeController.to.audioServeHandler.queueTitle.value;
-    if (title.isEmpty || title != queueTitle) {
-      HomeController.to.audioServeHandler.queueTitle.value = queueTitle;
-      HomeController.to.audioServeHandler
-        ..changeQueueLists(mediaItems, index: index)
-        ..playIndex(index);
-
-    } else {
-      HomeController.to.audioServeHandler.playIndex(index);
-    }
-  }
+  // playIndex(int index) async {
+  //   String title = HomeController.to.audioServeHandler.queueTitle.value;
+  //   if (title.isEmpty || title != queueTitle) {
+  //     HomeController.to.audioServeHandler.queueTitle.value = queueTitle;
+  //     HomeController.to.audioServeHandler
+  //       ..changeQueueLists(mediaItems, index: index)
+  //       ..playIndex(index);
+  //
+  //   } else {
+  //     HomeController.to.audioServeHandler.playIndex(index);
+  //   }
+  // }
 
   @override
   void onClose() {

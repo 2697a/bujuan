@@ -15,15 +15,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
-import 'package:keframe/keframe.dart';
 
 import '../../common/netease_api/src/dio_ext.dart';
 import '../../common/netease_api/src/netease_handler.dart';
 import '../../widget/app_bar.dart';
-import '../../widget/request_widget/request_loadmore_view.dart';
+import '../../widget/request_widget/request_playlist_loadmore_view.dart';
 import '../../widget/request_widget/request_view.dart';
 import '../../widget/simple_extended_image.dart';
 import '../home/home_controller.dart';
+import '../home/view/panel_view.dart';
 
 class PlayListView extends StatefulWidget {
   const PlayListView({Key? key}) : super(key: key);
@@ -34,14 +34,15 @@ class PlayListView extends StatefulWidget {
 
 class _PlayListViewState extends State<PlayListView> {
   DioMetaData playListDetailDioMetaData(String categoryId, {int subCount = 5}) {
-    var params = {'id': categoryId, 'n': 1000, 's': '$subCount', 'shareUserId': '0'};
+    var params = {'id': categoryId, 'n': 10000, 's': '$subCount', 'shareUserId': '0'};
     return DioMetaData(Uri.parse('https://music.163.com/api/v6/playlist/detail'), data: params, options: joinOptions());
   }
 
   DioMetaData songDetailDioMetaData(List<String> songIds) {
     var params = {
-      'ids': songIds,
-      'c': songIds.map((e) => jsonEncode({'id': e})).toList()
+      // 'ids': songIds,
+      // 'c': songIds.map((e) => jsonEncode({'id': e})).toList(),
+      'c': '[${songIds.map((id) => '{"id":$id}').join(',')}]',
     };
     return DioMetaData(joinUri('/api/v3/song/detail'), data: params, options: joinOptions());
   }
@@ -70,27 +71,25 @@ class _PlayListViewState extends State<PlayListView> {
   Widget build(BuildContext context) {
     return GestureDetector(
       child: Scaffold(
-        backgroundColor: Colors.transparent,
         appBar: _buildAppBar(),
         body: RequestWidget<SinglePlayListWrap>(
             dioMetaData: playListDetailDioMetaData((context.routeData.args as Play).id),
             onData: (SinglePlayListWrap s) => setState(() => singlePlayListWrap = s),
-            childBuilder: (SinglePlayListWrap data) => RequestLoadMoreWidget<SongDetailWrap, Song2>(
+            childBuilder: (SinglePlayListWrap data) => ClassStatelessWidget(child: RequestPlaylistLoadMoreWidget(
                 listKey: const ['songs'],
-                enableLoad: false,
-                dioMetaData: songDetailDioMetaData((data.playlist?.trackIds ?? []).map((e) => e.id).toList()),
-                childBuilder: (List<Song2> songs) {
-                  return SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    child: Column(
-                      children: [
-                        _buildTopItem(),
-                        Padding(padding: EdgeInsets.symmetric(vertical: 5.w)),
-                        ListWidget(mediaItem: HomeController.to.song2ToMedia(songs)),
-                      ],
+                pageSize: 200,
+                ids: (data.playlist?.trackIds ?? []).map((e) => e.id).toList(),
+                childBuilder: (List<MediaItem> songs) {
+                  return ListView.builder(
+                    itemExtent: 120.w,
+                    itemBuilder: (context, index) => SongItem(
+                      index: index,
+                      mediaItems: songs,
+                      queueTitle: (context.routeData.args as Play).id,
                     ),
+                    itemCount: songs.length,
                   );
-                })),
+                }))),
       ),
       onHorizontalDragDown: (e) {
         return;
@@ -118,7 +117,7 @@ class _PlayListViewState extends State<PlayListView> {
 
   Widget _buildTopItem() {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 20.w),
+      margin: EdgeInsets.only(left: 20.w,right: 20.w,bottom: 10.w),
       padding: EdgeInsets.only(left: 15.w, right: 15.w, top: 10.w, bottom: 25.w),
       alignment: Alignment.center,
       decoration: BoxDecoration(color: Theme.of(context).colorScheme.onSecondary.withOpacity(.8), borderRadius: BorderRadius.circular(15.w)),
@@ -145,8 +144,8 @@ class _PlayListViewState extends State<PlayListView> {
               ),
               IconButton(
                   onPressed: () {
-                    context.router.push(
-                        const TalkView().copyWith(queryParams: {'id': (context.routeData.args as Play).id, 'type': 'playlist', 'name': (context.routeData.args as Play).name}));
+                    // context.router.push(
+                    //     const TalkView().copyWith(queryParams: {'id': (context.routeData.args as Play).id, 'type': 'playlist', 'name': (context.routeData.args as Play).name}));
                   },
                   icon: const Icon(TablerIcons.message_2)),
             ],
@@ -181,9 +180,10 @@ class _ListWidgetState extends State<ListWidget> {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      shrinkWrap: true,
-      itemExtent: 120.w,
-      physics: const NeverScrollableScrollPhysics(),
+      // itemExtent: 120.w,
+      // addAutomaticKeepAlives: false,
+      // addRepaintBoundaries: false,
+      // physics: const NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) => SongItem(
         index: index,
         mediaItems: widget.mediaItem,
@@ -191,47 +191,6 @@ class _ListWidgetState extends State<ListWidget> {
       ),
       itemCount: widget.mediaItem.length,
     );
-    // return Column(
-    //   children: [
-    //     Row(
-    //       mainAxisAlignment: MainAxisAlignment.end,
-    //       children: [
-    //         IconButton(
-    //             onPressed: () {
-    //               setState(() {
-    //                 sort = !sort;
-    //               });
-    //             },
-    //             icon: const Icon(TablerIcons.sort_ascending))
-    //       ],
-    //     ),
-    //     Visibility(
-    //       visible: !sort,
-    //       replacement: SizedBox(
-    //         height: MediaQuery.of(context).size.height,
-    //         child: ReorderableListView(
-    //           onReorder: (int oldIndex, int newIndex) {
-    //             if (oldIndex < newIndex) {
-    //               newIndex -= 1;
-    //             }
-    //             setState(() {
-    //               final MediaItem item = widget.mediaItem.removeAt(oldIndex);
-    //               widget.mediaItem.insert(newIndex, item);
-    //             });
-    //           },
-    //           children: widget.mediaItem.map((e) => _buildItem(e)).toList(),
-    //         ),
-    //       ),
-    //       child: ListView.builder(
-    //         shrinkWrap: true,
-    //         itemExtent: 120.w,
-    //         physics: const NeverScrollableScrollPhysics(),
-    //         itemBuilder: (context, index) => _buildItem(widget.mediaItem[index], index: index),
-    //         itemCount: widget.mediaItem.length,
-    //       ),
-    //     )
-    //   ],
-    // );
   }
 
   // Widget proxyDecorator(Widget child, int index, Animation<double> animation) {
@@ -351,7 +310,7 @@ class SongItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      key: Key(mediaItems[index].id),
+      // key: Key(mediaItems[index].id),
       child: Container(
         padding: EdgeInsets.only(left: 30.w),
         height: 120.w,
@@ -379,7 +338,7 @@ class SongItem extends StatelessWidget {
               visible: (mediaItems[index].extras!['mv'] ?? 0) != 0,
               child: IconButton(
                   onPressed: () {
-                    context.router.push(const MvView().copyWith(queryParams: {'mvId': mediaItems[index].extras?['mv'] ?? 0}));
+                    // context.router.push(const MvView().copyWith(queryParams: {'mvId': mediaItems[index].extras?['mv'] ?? 0}));
                   },
                   icon: const Icon(
                     TablerIcons.brand_youtube,
@@ -396,10 +355,10 @@ class SongItem extends StatelessWidget {
         ),
       ),
       onTap: () {
-        if (queueTitle.isEmpty) {
-          WidgetUtil.showToast('id错误');
-          return;
-        }
+        // if (queueTitle.isEmpty) {
+        //   WidgetUtil.showToast('id错误');
+        //   return;
+        // }
         HomeController.to.playByIndex(index, queueTitle, mediaItem: mediaItems);
       },
     );

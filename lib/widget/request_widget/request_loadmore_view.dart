@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:keframe/keframe.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../common/netease_api/src/dio_ext.dart';
@@ -82,62 +83,7 @@ class RequestLoadMoreWidgetState<E, T> extends State<RequestLoadMoreWidget<E, T>
             ? const EmptyView()
             : _error
                 ? const ErrorView()
-                : SmartRefresher(
-                    physics: const BouncingScrollPhysics(),
-                    enablePullUp: widget.enableLoad,
-                    scrollController: widget.scrollController,
-                    header: WaterDropHeader(
-                      waterDropColor: Theme.of(context).colorScheme.onSecondary,
-                      refresh: CupertinoActivityIndicator(
-                        color: Theme.of(context).iconTheme.color,
-                      ),
-                      complete: RichText(
-                          text: TextSpan(children: [
-                        const WidgetSpan(
-                            child: Padding(
-                          padding: EdgeInsets.only(right: 16),
-                          child: Icon(TablerIcons.mood_unamused),
-                        )),
-                        TextSpan(text: '呼～  搞定', style: TextStyle(color: Theme.of(context).iconTheme.color))
-                      ])),
-                      idleIcon: Icon(
-                        TablerIcons.refresh,
-                        size: 15,
-                        color: Theme.of(context).cardColor,
-                      ),
-                    ),
-                    controller: _refreshController,
-                    onRefresh: () async {
-                      noMore = false;
-                      _refreshController.resetNoData();
-                      pageNum = widget.isPageNmu ? 1 : 0;
-                      if (widget.isPageNmu) {
-                        dioMetaData?.data['pageNo'] = pageNum;
-                      }
-                      if ((widget.lastField ?? '').isNotEmpty) {
-                        dioMetaData?.data[widget.lastField] = 0;
-                      }
-                      if (dioMetaData?.data['offset'] != null) {
-                        dioMetaData?.data['offset'] = pageNum;
-                      }
-                      callRefresh();
-                    },
-                    onLoading: () async {
-                      if (noMore) return;
-                      pageNum++;
-                      if (widget.isPageNmu) {
-                        dioMetaData?.data['pageNo'] = pageNum;
-                      }
-                      if ((widget.lastField ?? '').isNotEmpty) {
-                        dioMetaData?.data[widget.lastField] = map![widget.lastField];
-                      }
-                      if (dioMetaData?.data['offset'] != null) {
-                        dioMetaData?.data['offset'] = pageNum * widget.pageSize;
-                      }
-                      callRefresh();
-                    },
-                    child: widget.childBuilder(list),
-                  );
+                : widget.childBuilder(list);
   }
 
   @override
@@ -160,9 +106,10 @@ class RequestLoadMoreWidgetState<E, T> extends State<RequestLoadMoreWidget<E, T>
         }
         if (pageNum == (widget.isPageNmu ? 1 : 0)) list.clear();
         var listData = (mapData as List);
-        list.addAll(listData.map((e) => JsonConvert.fromJsonAsT<T>(e) as T).toList());
-        _empty = list.isEmpty;
-        setState(() {});
+        setState(() {
+          list.addAll(listData.map((e) => JsonConvert.fromJsonAsT<T>(e) as T).toList());
+          _empty = list.isEmpty;
+        });
         if (pageNum == (widget.isPageNmu ? 1 : 0)) {
           _refreshController.refreshCompleted();
         } else {

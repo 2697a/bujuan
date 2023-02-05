@@ -1,6 +1,7 @@
 // import 'dart:async';
 //
 // import 'package:audio_service/audio_service.dart';
+// import 'package:bujuan/common/audio_player_utils.dart';
 // import 'package:bujuan/common/constants/key.dart';
 // import 'package:bujuan/common/just_audio_modify.dart';
 //
@@ -8,6 +9,7 @@
 //
 // import 'netease_api/src/api/play/bean.dart';
 // import 'netease_api/src/netease_api.dart';
+// import 'package:just_audio_cache/just_audio_cache.dart';
 //
 // class AudioServeHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
 //   final AudioPlayer _player = AudioPlayer(); //真正去播放的实例
@@ -16,7 +18,7 @@
 //   Timer? timer;
 //
 //   AudioServeHandler() {
-//     _loadPlaylist();
+//     // _loadPlaylist();
 //     _notifyAudioHandlerAboutPlaybackEvents();
 //     _listenForCurrentSongIndexChanges();
 //     _listenForSequenceStateChanges();
@@ -29,7 +31,6 @@
 //     print('object=====开始执行定时器');
 //     timer = Timer.periodic(const Duration(minutes: 23), (timer) {
 //       print('object=====_loadPlaylist');
-//       _loadPlaylist();
 //     });
 //   }
 //
@@ -58,8 +59,8 @@
 //       mediaItems.add(MediaItem(
 //           id: e.id,
 //           duration: Duration(milliseconds: e.dt ?? 0),
-//           artUri: Uri.parse(e.al.picUrl ?? ''),
-//           extras: {'url': (songUrlListWrap.data ?? []).firstWhere((element) => element.id == e.id).url ?? '', 'image': e.al.picUrl ?? '', 'type': '', 'available': e.available},
+//           artUri: Uri.parse(e.al?.picUrl ?? ''),
+//           extras: {'url': (songUrlListWrap.data ?? []).firstWhere((element) => element.id == e.id).url ?? '', 'image': e.al?.picUrl ?? '', 'type': '', 'available': e.available},
 //           title: e.name ?? "",
 //           artist: (e.ar ?? []).map((e) => e.name).toList().join(' / ')));
 //     }
@@ -153,12 +154,6 @@
 //
 //   @override
 //   Future<void> addQueueItems(List<MediaItem> mediaItems, {String playlistId = '', int index = 0, bool isPlay = true}) async {
-//     // 管理 Just Audio
-//     // final audioSource = mediaItems.map(_createAudioSource);
-//     // Duration duration = _player.position;
-//     // _playlist
-//     //   ..clear()
-//     //   ..addAll(audioSource.toList());
 //     final mappingAudioSources = mediaItems
 //         .map((queueItem) => ResolvingAudioSource(
 //             uniqueId: queueItem.id,
@@ -170,16 +165,15 @@
 //     _playlist
 //       ..clear()
 //       ..addAll(mappingAudioSources);
-//     print('object=========addQueueItems');
-//     queueTitle.value = playlistId;
-//     updateQueue(mediaItems);
-//     // mediaItem.add(mediaItems[index]);
-//     //queue.add(mediaItems);
-//
 //     await _player.setAudioSource(_playlist);
+//     queueTitle.value = playlistId;
+//     //queue.add(mediaItems);
+//     updateQueue(mediaItems);
+//     mediaItem.add(mediaItems[index]);
 //     // print('HomeController=================${duration}');
 //     // _player.seek(duration, index: index);
-//     if (isPlay) _player.play();
+//      _player.play();
+//      _player.dynamicSet(url: '');
 //     if (playlistId.isNotEmpty) StorageUtil().setString(playQueueTitle, playlistId);
 //     // _startTime();
 //   }
@@ -190,17 +184,17 @@
 //     return data.isNotEmpty ? data[0].url ?? '' : '';
 //   }
 //
-//   @override
-//   Future<void> updateQueue(List<MediaItem> newQueue) async {
-//     final audioSource = newQueue.map(_createAudioSource);
-//     _playlist
-//       ..clear()
-//       ..addAll(audioSource.toList());
-//     await _player.setAudioSource(_playlist);
-//     queue.value.clear();
-//     final mediaItems = queue.value..addAll(newQueue);
-//     queue.add(mediaItems);
-//   }
+//   // @override
+//   // Future<void> updateQueue(List<MediaItem> newQueue) async {
+//   //   final audioSource = newQueue.map(_createAudioSource);
+//   //   _playlist
+//   //     ..clear()
+//   //     ..addAll(audioSource.toList());
+//   //   await _player.setAudioSource(_playlist);
+//   //   queue.value.clear();
+//   //   final mediaItems = queue.value..addAll(newQueue);
+//   //   queue.add(mediaItems);
+//   // }
 //
 //   UriAudioSource _createAudioSource(MediaItem mediaItem) {
 //     return AudioSource.uri(

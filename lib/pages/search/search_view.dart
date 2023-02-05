@@ -1,13 +1,11 @@
-import 'dart:convert';
-
 import 'package:audio_service/audio_service.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
+import 'package:bujuan/pages/home/view/panel_view.dart';
 import 'package:bujuan/widget/request_widget/request_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
-import 'package:keframe/keframe.dart';
 
 import '../../common/netease_api/src/api/play/bean.dart';
 import '../../common/netease_api/src/api/search/bean.dart';
@@ -79,7 +77,6 @@ class _SearchViewState extends State<SearchView> {
     return GestureDetector(
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        backgroundColor: Colors.transparent,
         appBar: MyAppBar(
           backgroundColor: Colors.transparent,
           leadingWidth: 0.w,
@@ -106,68 +103,81 @@ class _SearchViewState extends State<SearchView> {
             )
           ],
         ),
-        body: Visibility(
-            visible: searchContent.isNotEmpty,
-            replacement: RequestWidget<SearchKeyWrapX>(
-                dioMetaData: searchHotKeyDioMetaData(),
-                childBuilder: (data) => Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 30.w,vertical: 30.w),
-                      child: Wrap(
-                        children: data.result.hots
-                            .map((e) => InkWell(
-                          child: Container(
-                            margin: EdgeInsets.symmetric(horizontal: 6.w, vertical: 15.w),
-                            padding: EdgeInsets.symmetric(vertical: 5.w, horizontal: 10.w),
-                            decoration: BoxDecoration(color: Theme.of(context).colorScheme.onSecondary,borderRadius: BorderRadius.circular(30.w)),
-                            child: Text(e.first ?? '',style: TextStyle(fontSize: 26.sp),),
+        body: ClassWidget(
+            child: Visibility(
+                visible: searchContent.isNotEmpty,
+                replacement: RequestWidget<SearchKeyWrapX>(
+                    dioMetaData: searchHotKeyDioMetaData(),
+                    childBuilder: (data) => ClassWidget(
+                            child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 30.w),
+                          child: Wrap(
+                            children: data.result.hots
+                                .map((e) => InkWell(
+                                      child: Container(
+                                        margin: EdgeInsets.symmetric(horizontal: 6.w, vertical: 15.w),
+                                        padding: EdgeInsets.symmetric(vertical: 5.w, horizontal: 10.w),
+                                        decoration: BoxDecoration(color: Theme.of(context).colorScheme.onSecondary, borderRadius: BorderRadius.circular(30.w)),
+                                        child: Text(
+                                          e.first ?? '',
+                                          style: TextStyle(fontSize: 26.sp),
+                                        ),
+                                      ),
+                                      onTap: () {
+                                        _search.text = e.first ?? '';
+                                      },
+                                    ))
+                                .toList(),
                           ),
-                          onTap: (){
-                            _search.text = e.first??'';
-                          },
-                        ))
-                            .toList(),
+                        ))),
+                child: ClassWidget(
+                    child: Column(
+                  children: [
+                    Expanded(
+                        child: ClassWidget(
+                            child: PageView(
+                      controller: _pageController,
+                      onPageChanged: (index) {
+                        setState(() {
+                          _selectIndex = index;
+                        });
+                      },
+                      children: [
+                        ClassWidget(child: _buildSongSearchView()),
+                        ClassWidget(child: _buildPlayListSearchView()),
+                        ClassWidget(child: _buildAlbumSearchView()),
+                        ClassWidget(child: _buildArtistsSearchView()),
+                      ],
+                    ))),
+                    ClassWidget(
+                        child: Container(
+                      padding: EdgeInsets.only(bottom: 20.w),
+                      child: FlashyNavbar(
+                        height: 90.h,
+                        selectedIndex: _selectIndex,
+                        backgroundColor: Theme.of(context).cardColor.withOpacity(1),
+                        items: items,
+                        onItemSelected: (int index) {
+                          _pageController.jumpToPage(index);
+                        },
                       ),
-                    )),
-            child: Column(
-              children: [
-                Expanded(
-                    child: PageView(
-                  controller: _pageController,
-                  onPageChanged: (index) {
-                    setState(() {
-                      _selectIndex = index;
-                    });
-                  },
-                  children: [_buildSongSearchView(), _buildPlayListSearchView(), _buildAlbumSearchView(), _buildArtistsSearchView()],
-                )),
-                Container(
-                  padding: EdgeInsets.only(bottom: 20.w),
-                  child: FlashyNavbar(
-                    height: 90.h,
-                    selectedIndex: _selectIndex,
-                    backgroundColor: Theme.of(context).cardColor.withOpacity(1),
-                    items: items,
-                    onItemSelected: (int index) {
-                      _pageController.jumpToPage(index);
-                    },
-                  ),
-                )
-              ],
-            )),
+                    ))
+                  ],
+                )))),
       ),
       onHorizontalDragDown: (e) {},
     );
   }
 
   Widget _buildSongSearchView() {
-    return RequestLoadMoreWidget<SearchSongWrapX, Song2>(
+    return ClassWidget(child: RequestLoadMoreWidget<SearchSongWrapX, Song2>(
       dioMetaData: searchSongDioMetaData(searchContent, 1),
       childBuilder: (List<Song2> songs) {
         var list = HomeController.to.song2ToMedia(songs);
         return ListView.builder(
           itemExtent: 120.w,
           padding: EdgeInsets.symmetric(horizontal: 30.w),
-          itemBuilder: (context, index) => FrameSeparateWidget(index: index,child: InkWell(
+          itemBuilder: (context, index) => ClassWidget(child: InkWell(
             child: SizedBox(
               height: 120.w,
               child: Column(
@@ -194,22 +204,22 @@ class _SearchViewState extends State<SearchView> {
                 mediaItem: list.length > 500 ? list.sublist(0, 499) : list,
               );
             },
-          ),),
+          )),
           itemCount: list.length,
         );
       },
       listKey: const ['result', 'songs'],
-    );
+    ));
   }
 
   Widget _buildPlayListSearchView() {
     return RequestLoadMoreWidget<SearchPlaylistWrapX, Play>(
       dioMetaData: searchSongDioMetaData(searchContent, 1000),
       childBuilder: (List<Play> playlist) {
-        return ListView.builder(
+        return ClassWidget(child: ListView.builder(
           padding: EdgeInsets.symmetric(horizontal: 20.w),
           itemExtent: 120.w,
-          itemBuilder: (context, index) => FrameSeparateWidget(index: index,child: InkWell(
+          itemBuilder: (context, index) => ClassWidget(child: InkWell(
             child: SizedBox(
               height: 120.w,
               child: Row(
@@ -243,10 +253,12 @@ class _SearchViewState extends State<SearchView> {
                 ],
               ),
             ),
-            onTap: () => context.router.push(const PlayListView().copyWith(args: playlist[index])),
-          ),),
+            onTap: () {
+              // context.router.push(const PlayListView().copyWith(args: playlist[index]));
+            },
+          )),
           itemCount: playlist.length,
-        );
+        ));
       },
       listKey: const ['result', 'playlists'],
     );
@@ -259,7 +271,7 @@ class _SearchViewState extends State<SearchView> {
         return ListView.builder(
           padding: EdgeInsets.symmetric(horizontal: 20.w),
           itemExtent: 120.w,
-          itemBuilder: (context, index) => FrameSeparateWidget(index: index,child: InkWell(
+          itemBuilder: (context, index) => InkWell(
             child: SizedBox(
               height: 120.w,
               child: Row(
@@ -272,28 +284,28 @@ class _SearchViewState extends State<SearchView> {
                   ),
                   Expanded(
                       child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 15.w),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              playlist[index].name ?? '',
-                              maxLines: 1,
-                              style: TextStyle(fontSize: 28.sp),
-                            ),
-                            Padding(padding: EdgeInsets.symmetric(vertical: 3.w)),
-                            Text(
-                              '${playlist[index].artist?.name}',
-                              style: TextStyle(fontSize: 26.sp, color: Colors.grey),
-                            )
-                          ],
+                    padding: EdgeInsets.symmetric(horizontal: 15.w),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          playlist[index].name ?? '',
+                          maxLines: 1,
+                          style: TextStyle(fontSize: 28.sp),
                         ),
-                      ))
+                        Padding(padding: EdgeInsets.symmetric(vertical: 3.w)),
+                        Text(
+                          '${playlist[index].artist?.name}',
+                          style: TextStyle(fontSize: 26.sp, color: Colors.grey),
+                        )
+                      ],
+                    ),
+                  ))
                 ],
               ),
             ),
-          ),),
+          ),
           itemCount: playlist.length,
         );
       },
@@ -308,7 +320,7 @@ class _SearchViewState extends State<SearchView> {
         return ListView.builder(
           itemExtent: 120.w,
           padding: EdgeInsets.symmetric(horizontal: 20.w),
-          itemBuilder: (context, index) => FrameSeparateWidget(index: index,child: InkWell(
+          itemBuilder: (context, index) => InkWell(
             child: SizedBox(
               height: 120.w,
               child: Row(
@@ -321,31 +333,31 @@ class _SearchViewState extends State<SearchView> {
                   ),
                   Expanded(
                       child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 15.w),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              playlist[index].name ?? '',
-                              maxLines: 1,
-                              style: TextStyle(fontSize: 28.sp),
-                            ),
-                            Padding(padding: EdgeInsets.symmetric(vertical: 3.w)),
-                            Text(
-                              '${playlist[index].albumSize}',
-                              style: TextStyle(fontSize: 26.sp, color: Colors.grey),
-                            )
-                          ],
+                    padding: EdgeInsets.symmetric(horizontal: 15.w),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          playlist[index].name ?? '',
+                          maxLines: 1,
+                          style: TextStyle(fontSize: 28.sp),
                         ),
-                      ))
+                        Padding(padding: EdgeInsets.symmetric(vertical: 3.w)),
+                        Text(
+                          '${playlist[index].albumSize}',
+                          style: TextStyle(fontSize: 26.sp, color: Colors.grey),
+                        )
+                      ],
+                    ),
+                  ))
                 ],
               ),
             ),
-            onTap: (){
-              context.router.push(const ArtistsView().copyWith(args: playlist[index]));
+            onTap: () {
+              // context.router.push(const ArtistsView().copyWith(args: playlist[index]));
             },
-          ),),
+          ),
           itemCount: playlist.length,
         );
       },
