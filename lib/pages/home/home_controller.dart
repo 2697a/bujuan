@@ -227,16 +227,16 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
         return;
       }
       //赋值
-      duration.value = event;
+      // duration.value = event;
       //如果歌词列表没有滑动，根据歌词的开始时间自动滚动歌词列表
-      if (!onMove.value) {
-        int index = lyricsLineModels.indexWhere((element) => (element.startTime ?? 0) >= event.inMilliseconds && (element.endTime ?? 0) <= event.inMilliseconds);
-        if (index != -1) currLyric.value = lyricsLineModels[index > 0 ? index - 1 : index].mainText ?? '';
-        if (index != -1 && index != lastIndex) {
-          lyricScrollController.animateToItem((index > 0 ? index - 1 : index), duration: const Duration(milliseconds: 300), curve: Curves.linear);
-          lastIndex = index;
-        }
-      }
+      // if (!onMove.value) {
+      //   int index = lyricsLineModels.indexWhere((element) => (element.startTime ?? 0) >= event.inMilliseconds && (element.endTime ?? 0) <= event.inMilliseconds);
+      //   if (index != -1) currLyric.value = lyricsLineModels[index > 0 ? index - 1 : index].mainText ?? '';
+      //   if (index != -1 && index != lastIndex) {
+      //     lyricScrollController.animateToItem((index > 0 ? index - 1 : index), duration: const Duration(milliseconds: 300), curve: Curves.linear);
+      //     lastIndex = index;
+      //   }
+      // }
     });
     audioServeHandler.playbackState.listen((value) {
       playing.value = value.playing;

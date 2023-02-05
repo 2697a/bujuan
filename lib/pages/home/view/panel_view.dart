@@ -253,8 +253,8 @@ class PanelView extends GetView<HomeController> {
     return Stack(
       children: [
         Obx(() {
-          return SimpleExtendedImage(controller.mediaItem.value.extras!['image']+ '?param=500y500',fit: BoxFit.cover,height: Get.height,width: Get.width,
-            borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),);
+          return Visibility(visible: controller.panelOpenPositionThan1.value,child: SimpleExtendedImage(controller.mediaItem.value.extras!['image']+ '?param=500y500',fit: BoxFit.cover,height: Get.height,width: Get.width,
+            borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),),);
         }),
         Container(
           color: Theme.of(context).scaffoldBackgroundColor.withOpacity(.2),
