@@ -1,8 +1,10 @@
+import 'dart:ui';
+
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
-import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/pages/user/user_controller.dart';
 import 'package:bujuan/widget/mobile/flashy_navbar.dart';
+import 'package:bujuan/widget/simple_extended_image.dart';
 import 'package:bujuan/widget/weslide/panel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -24,30 +26,32 @@ class PanelView extends GetView<HomeController> {
   Widget build(BuildContext context) {
     double bottomHeight = MediaQuery.of(controller.buildContext).padding.bottom * (PlatformUtils.isIOS ? 0.4 : 0.6);
     if (bottomHeight == 0) bottomHeight = 20.w;
-    return WillPopScope(child: GestureDetector(
-      child: SlidingUpPanel(
-        controller: controller.panelController,
-        onPanelSlide: (value) {
-          controller.slidePosition.value = 1 - value;
-          if (controller.second.value != value >= 0.5) controller.second.value = value > 0.5;
-        },
-        boxShadow: const [
-          BoxShadow(
-            blurRadius: 8.0,
-            color: Color.fromRGBO(0, 0, 0, 0.05),
-          )
-        ],
-        color: Colors.transparent,
-        panel: ClassWidget(child: _buildDefaultPanel(context, bottomHeight)),
-        body: ClassWidget(child: _buildDefaultBody(context)),
-        header: ClassWidget(child: _buildBottom(bottomHeight, context)),
-        minHeight: 110.h + bottomHeight,
-        maxHeight: Get.height - controller.panelHeaderSize - MediaQuery.of(context).padding.top - 10.w,
-      ),
-      onHorizontalDragDown: (e) {
-        return;
-      },
-    ), onWillPop: () => controller.onWillPop());
+    return WillPopScope(
+        child: GestureDetector(
+          child: SlidingUpPanel(
+            controller: controller.panelController,
+            onPanelSlide: (value) {
+              controller.slidePosition.value = 1 - value;
+              if (controller.second.value != value >= 0.5) controller.second.value = value > 0.5;
+            },
+            boxShadow: const [
+              BoxShadow(
+                blurRadius: 8.0,
+                color: Color.fromRGBO(0, 0, 0, 0.05),
+              )
+            ],
+            color: Colors.transparent,
+            panel: ClassWidget(child: _buildDefaultPanel(context, bottomHeight)),
+            body: ClassWidget(child: Visibility(child: _buildDefaultBody1(context))),
+            header: ClassWidget(child: _buildBottom(bottomHeight, context)),
+            minHeight: 110.h + bottomHeight,
+            maxHeight: Get.height - controller.panelHeaderSize - MediaQuery.of(context).padding.top - 10.w,
+          ),
+          onHorizontalDragDown: (e) {
+            return;
+          },
+        ),
+        onWillPop: () => controller.onWillPop());
   }
 
   Widget _buildSlide(BuildContext context) {
@@ -234,7 +238,36 @@ class PanelView extends GetView<HomeController> {
             ),
           );
         }),
-        _buildBodyContent(context),
+        BackdropFilter(
+          /// 过滤器
+          filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
+
+          /// 必须设置一个空容器
+          child: _buildBodyContent(context),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDefaultBody1(BuildContext context) {
+    return Stack(
+      children: [
+        Obx(() {
+          return SimpleExtendedImage(controller.mediaItem.value.extras!['image']+ '?param=500y500',fit: BoxFit.cover,height: Get.height,width: Get.width,
+            borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),);
+        }),
+        Container(
+          color: Theme.of(context).scaffoldBackgroundColor.withOpacity(.2),
+        ),
+        ClipRRect(
+          borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),
+          child: BackdropFilter(
+            /// 过滤器
+            filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
+            /// 必须设置一个空容器
+            child: _buildBodyContent(context),
+          ),
+        ),
       ],
     );
   }
@@ -242,31 +275,46 @@ class PanelView extends GetView<HomeController> {
   Widget _buildDefaultPanel(BuildContext context, bottomHeight) {
     return Stack(
       children: [
-        Obx(() => Visibility(
-              replacement: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                decoration: BoxDecoration(
-                  color: controller.rx.value.dominantColor?.color ?? Colors.transparent,
-                  borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),
-                ),
-              ),
-              visible: controller.gradientBackground.value,
-              child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(colors: [
-                      controller.rx.value.dominantColor?.color ?? Colors.transparent,
-                      !controller.gradientBackground.value
-                          ? controller.rx.value.dominantColor?.color ?? Colors.transparent
-                          : controller.rx.value.lightVibrantColor?.color ??
-                              controller.rx.value.lightMutedColor?.color ??
-                              controller.rx.value.dominantColor?.color ??
-                              Colors.transparent,
-                    ], begin: Alignment.topLeft, end: Alignment.bottomCenter),
-                    borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),
-                  )),
-            )),
-        _buildPanelContent(context, bottomHeight)
+        // Obx(() {
+        //   return SimpleExtendedImage(controller.mediaItem.value.extras!['image']+ '?param=500y500',fit: BoxFit.cover,height: Get.height,width: Get.width,
+        //     borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),);
+        // }),
+        // Container(
+        //   color: Theme.of(context).scaffoldBackgroundColor.withOpacity(.2),
+        // ),
+        // Obx(() => Visibility(
+        //       replacement: AnimatedContainer(
+        //         duration: const Duration(milliseconds: 200),
+        //         decoration: BoxDecoration(
+        //           color: controller.rx.value.dominantColor?.color ?? Colors.transparent,
+        //           borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),
+        //         ),
+        //       ),
+        //       visible: controller.gradientBackground.value,
+        //       child: AnimatedContainer(
+        //           duration: const Duration(milliseconds: 200),
+        //           decoration: BoxDecoration(
+        //             gradient: LinearGradient(colors: [
+        //               controller.rx.value.dominantColor?.color ?? Colors.transparent,
+        //               !controller.gradientBackground.value
+        //                   ? controller.rx.value.dominantColor?.color ?? Colors.transparent
+        //                   : controller.rx.value.lightVibrantColor?.color ??
+        //                       controller.rx.value.lightMutedColor?.color ??
+        //                       controller.rx.value.dominantColor?.color ??
+        //                       Colors.transparent,
+        //             ], begin: Alignment.topLeft, end: Alignment.bottomCenter),
+        //             borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),
+        //           )),
+        //     )),
+        ClipRRect(
+          borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),
+          child: BackdropFilter(
+            /// 过滤器
+            filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
+            /// 必须设置一个空容器
+            child: _buildPanelContent(context, bottomHeight),
+          ),
+        ),
       ],
     );
   }
@@ -352,11 +400,15 @@ class PanelView extends GetView<HomeController> {
           );
         }),
         ClassWidget(
-            child: Obx(() => Visibility(visible: controller.isDraggable.value,replacement: SizedBox(
-              height: 100.w*7,
-            ),child: Obx(() => SizedBox(
-              height: controller.getPanelMinSize(),
-            )),))),
+            child: Obx(() => Visibility(
+                  visible: controller.isDraggable.value,
+                  replacement: SizedBox(
+                    height: 100.w * 7,
+                  ),
+                  child: Obx(() => SizedBox(
+                        height: controller.getPanelMinSize(),
+                      )),
+                ))),
         ClassWidget(
             child: Container(
           padding: EdgeInsets.symmetric(horizontal: 55.w),
@@ -441,7 +493,6 @@ class ClassStatelessWidget extends StatelessWidget {
   final Widget child;
 
   const ClassStatelessWidget({super.key, required this.child});
-
 
   @override
   Widget build(BuildContext context) {

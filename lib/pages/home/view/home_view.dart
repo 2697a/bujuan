@@ -28,27 +28,24 @@ class HomeView extends GetView<HomeController> {
     if (bottomHeight == 0) bottomHeight = 25.w;
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: ElasticDrawer(
-        mainChild: SlidingUpPanel(
-          color: Colors.transparent,
-          controller: controller.panelControllerHome,
-          onPanelSlide: (value) => controller.changeSlidePosition(value),
-          onPanelClosed: () {
-            controller.changeStatusIconColor(false);
-          },
-          onPanelOpened: () {
-            controller.changeStatusIconColor(true);
-          },
-          parallaxEnabled: true,
-          parallaxOffset: .05,
-          boxShadow: const [BoxShadow(blurRadius: 8.0, color: Color.fromRGBO(0, 0, 0, 0.15))],
-          panel: const ClassWidget(child: PanelView()),
-          body: const ClassStatelessWidget(child: BodyView()),
-          header: ClassStatelessWidget(child: _buildPanelHeader(bottomHeight, context)),
-          minHeight: controller.panelMobileMinSize + bottomHeight,
-          maxHeight: Get.height,
-        ),
-        drawerChild: const MenuView(),
+      body: SlidingUpPanel(
+        color: Colors.transparent,
+        controller: controller.panelControllerHome,
+        onPanelSlide: (value) => controller.changeSlidePosition(value),
+        onPanelClosed: () {
+          controller.changeStatusIconColor(false);
+        },
+        onPanelOpened: () {
+          controller.changeStatusIconColor(true);
+        },
+        parallaxEnabled: true,
+        parallaxOffset: .05,
+        boxShadow: const [BoxShadow(blurRadius: 8.0, color: Color.fromRGBO(0, 0, 0, 0.15))],
+        panel: const ClassWidget(child: PanelView()),
+        body: const ClassStatelessWidget(child: BodyView()),
+        header: ClassStatelessWidget(child: _buildPanelHeader(bottomHeight, context)),
+        minHeight: controller.panelMobileMinSize + bottomHeight,
+        maxHeight: Get.height,
       ),
       // body: ZoomDrawer(
       //   moveMenuScreen: false,
@@ -182,9 +179,7 @@ class HomeView extends GetView<HomeController> {
                       fit: BoxFit.cover,
                       height: controller.getImageSize(),
                       width: controller.getImageSize(),
-                      borderRadius: controller.leftImage.value
-                          ? BorderRadius.circular(controller.getImageSize() / 2)
-                          : BorderRadius.circular(controller.getImageSize() / 2 * (1 - (controller.slidePosition.value >= .8 ? .92 : controller.slidePosition.value))),
+                      borderRadius: BorderRadius.circular(controller.getImageSize() / 2 * (1 - (controller.slidePosition.value >= .8 ? .92 : controller.slidePosition.value))),
                     )),
               ),
             ],
