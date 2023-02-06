@@ -119,6 +119,7 @@ class _LocalViewState extends State<LocalView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: MyAppBar(
         backgroundColor: Colors.transparent,
         centerTitle: false,

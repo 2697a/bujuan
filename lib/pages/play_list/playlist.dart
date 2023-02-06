@@ -24,7 +24,7 @@ class PlayListA extends GetView<PlayListController> {
             width: Get.width,
           ),
           Scaffold(
-            backgroundColor: Colors.transparent,
+      backgroundColor: Colors.transparent,
             appBar: MyAppBar(
               title: const Text('Song Sheet'),
               backgroundColor: Colors.transparent,

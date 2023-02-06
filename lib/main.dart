@@ -27,11 +27,12 @@ main() async {
   HomeBinding().dependencies();
   runApp(OrientationBuilder(builder: (context, orientation) {
     return ScreenUtilInit(
-      designSize: isMobile ? const Size(750, 1334) : const Size(2160, 1406),
+      rebuildFactor: RebuildFactors.orientation,
+      designSize: orientation == Orientation.portrait ? const Size(750, 1334) : const Size(1334, 750),
       builder: (BuildContext context, Widget? child) {
+        print('object===重构页面');
         return GetMaterialApp.router(
           title: "Bujuan",
-          color: Colors.red,
           theme: AppTheme.light.copyWith(
               pageTransitionsTheme: const PageTransitionsTheme(builders: {
             TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
@@ -40,7 +41,7 @@ main() async {
               pageTransitionsTheme: const PageTransitionsTheme(builders: {
                 TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
           })),
-          showPerformanceOverlay: true,
+          // showPerformanceOverlay: true,
           // checkerboardOffscreenLayers: true,
           // checkerboardRasterCacheImages: true,
           themeMode: ThemeMode.system,

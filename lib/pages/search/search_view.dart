@@ -76,6 +76,7 @@ class _SearchViewState extends State<SearchView> {
   Widget build(BuildContext context) {
     return GestureDetector(
       child: Scaffold(
+      backgroundColor: Colors.transparent,
         resizeToAvoidBottomInset: false,
         appBar: MyAppBar(
           backgroundColor: Colors.transparent,

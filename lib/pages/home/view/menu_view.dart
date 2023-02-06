@@ -14,16 +14,14 @@ class MenuView extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-        child: Column(
+    return SafeArea(child: Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Padding(padding: EdgeInsets.symmetric(vertical: 25.w)),
         GestureDetector(
           child: Obx(() => SimpleExtendedImage.avatar(
             UserController.to.userData.value.profile?.avatarUrl ?? '',
-            width: 90.w,
+            width: 80.w,
           )),
           onTap: () {
             if (UserController.to.loginStatus.value == LoginStatus.noLogin) {
@@ -48,7 +46,7 @@ class MenuView extends GetView<HomeController> {
                     children: [
                       Padding(padding: EdgeInsets.symmetric(horizontal: 10.w)),
                       Obx(() => Icon(controller.leftMenus[index].icon,
-                          color: controller.currPathUrl.value == controller.leftMenus[index].pathUrl ? Theme.of(context).primaryColor : Theme.of(context).colorScheme.onSecondary)),
+                          color: controller.currPathUrl.value == controller.leftMenus[index].pathUrl ? Theme.of(context).primaryColor : Theme.of(context).cardColor)),
                     ],
                   ),
                 ),

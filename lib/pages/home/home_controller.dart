@@ -95,6 +95,8 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
 
   //是否播放中
   RxBool playing = false.obs;
+  //是否播放中
+  RxBool isMobile = true.obs;
 
   RxBool fm = false.obs;
 
@@ -117,6 +119,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
 
   //当前播放进度
   Rx<Duration> duration = Duration.zero.obs;
+  Duration lastDuration = Duration.zero;
 
   //第一层
   PanelController panelControllerHome = PanelController();
@@ -170,6 +173,8 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
 
   var lastPopTime = DateTime.now();
 
+  var lyricModel;
+
   bool intervalClick(int needTime) {
     // 防重复提交
     if (DateTime.now().difference(lastPopTime) > const Duration(milliseconds: 800)) {
@@ -195,6 +200,10 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   @override
   void onReady() {
     autoRouterDelegate = AutoRouterDelegate.of(buildContext);
+
+    if (leftImage.value) {
+      bodyColor.value = Theme.of(buildContext).cardColor.withOpacity(.7);
+    }
     var rng = Random();
     for (double i = 0; i < 100; i++) {
       mEffects.add({"percent": i, "size": 3 + rng.nextInt(30 - 5).toDouble()});
@@ -226,17 +235,20 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
         duration.value = Duration.zero;
         return;
       }
-      //赋值
-      // duration.value = event;
+      duration.value = event;
+      if(lastDuration.inSeconds != event.inSeconds){
+        if (!onMove.value) {
+          int index = lyricsLineModels.indexWhere((element) => (element.startTime ?? 0) >= event.inMilliseconds && (element.endTime ?? 0) <= event.inMilliseconds);
+          if (index != -1) currLyric.value = lyricsLineModels[index > 0 ? index - 1 : index].mainText ?? '';
+          if (index != -1 && index != lastIndex) {
+            lyricScrollController.animateToItem((index > 0 ? index - 1 : index), duration: const Duration(milliseconds: 500), curve: Curves.linear);
+            lastIndex = index;
+          }
+        }
+      }
+      lastDuration = event;
       //如果歌词列表没有滑动，根据歌词的开始时间自动滚动歌词列表
-      // if (!onMove.value) {
-      //   int index = lyricsLineModels.indexWhere((element) => (element.startTime ?? 0) >= event.inMilliseconds && (element.endTime ?? 0) <= event.inMilliseconds);
-      //   if (index != -1) currLyric.value = lyricsLineModels[index > 0 ? index - 1 : index].mainText ?? '';
-      //   if (index != -1 && index != lastIndex) {
-      //     lyricScrollController.animateToItem((index > 0 ? index - 1 : index), duration: const Duration(milliseconds: 300), curve: Curves.linear);
-      //     lastIndex = index;
-      //   }
-      // }
+
     });
     audioServeHandler.playbackState.listen((value) {
       playing.value = value.playing;
@@ -244,17 +256,17 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
 
     //监听路由变化
     autoRouterDelegate?.addListener(listenRouter);
-    myDrawerController.stateNotifier?.addListener(() {
-      if (myDrawerController.isOpen!()) {
-        SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-          statusBarBrightness: Get.isPlatformDarkMode ? Brightness.light : Brightness.dark,
-          statusBarIconBrightness: Get.isPlatformDarkMode ? Brightness.dark : Brightness.light,
-        ));
-      }
-      if (!myDrawerController.isOpen!()) {
-        didChangePlatformBrightness();
-      }
-    });
+    // myDrawerController.stateNotifier?.addListener(() {
+    //   if (myDrawerController.isOpen!()) {
+    //     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    //       statusBarBrightness: Get.isPlatformDarkMode ? Brightness.light : Brightness.dark,
+    //       statusBarIconBrightness: Get.isPlatformDarkMode ? Brightness.dark : Brightness.light,
+    //     ));
+    //   }
+    //   if (!myDrawerController.isOpen!()) {
+    //     didChangePlatformBrightness();
+    //   }
+    // });
     super.onReady();
   }
 
@@ -289,6 +301,9 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
 
   //获取专辑颜色
   _getAlbumColor() async {
+    if (leftImage.value) {
+      return;
+    }
     rx.value = await OtherUtils.getImageColor('${mediaItem.value.extras?['image'] ?? ''}?param=500y500');
     if (slidePosition.value == 1 || second.value) {
       changeStatusIconColor(true);
@@ -298,6 +313,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   }
 
   changeStatusIconColor(bool changed) {
+    if (leftImage.value) return;
     var color = rx.value.dominantColor?.color ?? Colors.white;
     var grayscale = (0.299 * color.red) + (0.587 * color.green) + (0.114 * color.blue);
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -330,7 +346,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
     if (grayscale <= 128 && bodyColor.value == Colors.white.withOpacity(.65)) {
       return;
     }
-    bodyColor.value = grayscale > 128 ? Colors.black.withOpacity(.5) : Colors.white.withOpacity(.65);
+    bodyColor.value = grayscale > 128 ? Colors.black.withOpacity(.6) : Colors.white.withOpacity(.8);
   }
 
   //获取相似歌单
@@ -447,11 +463,11 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
     slidePosition.value = value;
     if (value == 1) {
       if (!isDraggable.value) isDraggable.value = true;
-    }else{
+    } else {
       if (isDraggable.value) isDraggable.value = false;
     }
 
-    if (value > 0.2) {
+    if (value > 0.1) {
       if (!panelOpenPositionThan1.value) {
         panelOpenPositionThan1.value = true;
       }
@@ -529,16 +545,16 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   }
 
   //获取图片亮色背景下文字显示的颜色
-  Color getLightTextColor() {
-    return Theme.of(buildContext).iconTheme.color?.withOpacity(.8) ?? Colors.transparent;
+  Color getLightTextColor(context) {
+    return Theme.of(context).cardColor.withOpacity(.7);
   }
 
   //获取Header的padding
-  EdgeInsets getHeaderPadding() {
+  EdgeInsets getHeaderPadding(context) {
     return EdgeInsets.only(
       left: 30.w,
       right: 30.w,
-      top: (MediaQuery.of(buildContext).padding.top + 70.h * (slidePosition.value)) * (second.value ? (1 - slidePosition.value) : slidePosition.value),
+      top: (MediaQuery.of(context).padding.top + 70.h * (slidePosition.value)) * (second.value ? (1 - slidePosition.value) : slidePosition.value),
     );
   }
 
@@ -555,6 +571,10 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   double getImageSize() {
     return (panelHeaderSize * .8) * (1 + slidePosition.value * 6.77);
   }
+  //获取图片的宽高
+  double getImageSizeL() {
+    return (panelHeaderSize * .8) * (1 + slidePosition.value * 6);
+  }
 
   //获取图片离左侧的间距
   double getImageLeft() {
@@ -564,7 +584,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   // Color getPlayPageTheme(BuildContext context) {
   //   var color = rx.value.dominantColor?.color ?? Colors.white;
   //   var grayscale = (0.299 * color.red) + (0.587 * color.green) + (0.114 * color.blue);
-  //   return grayscale > 128 ? Colors.black.withOpacity(.5) : Colors.white.withOpacity(.8);
+  //   return grayscale > 128 ? Colors.black.withOpacity(.5) : Colors.white.withOpacity(.7);
   // }
 
   @override
@@ -599,7 +619,17 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   }
 
   @override
+  void didChangeMetrics() {
+    // TODO: implement didChangeMetrics
+    super.didChangeMetrics();
+    // print('objectdidChangeMetrics');
+  }
+
+  @override
   void didChangePlatformBrightness() {
+    if (leftImage.value) {
+      bodyColor.value = Get.isPlatformDarkMode ? Colors.white : Colors.black;
+    }
     if (second.value || slidePosition.value == 1) return;
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarBrightness: Get.isPlatformDarkMode ? Brightness.dark : Brightness.light,
@@ -626,5 +656,14 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
             album: e.al?.name,
             artist: (e.ar ?? []).map((e) => e.name).toList().join(' / ')))
         .toList();
+  }
+
+  changePlayUi(context) {
+    leftImage.value = !leftImage.value;
+    if (leftImage.value) {
+      bodyColor.value = Theme.of(context).cardColor.withOpacity(.7);
+    } else {
+      _getAlbumColor();
+    }
   }
 }

@@ -52,6 +52,7 @@ class LyricView extends GetView<HomeController> {
                 physics: const ClampingScrollPhysics(),
                 overAndUnderCenterOpacity: 0.6,
                 perspective: 0.00001,
+                magnification: 1,
                 onSelectedItemChanged: (index) {
                   //TODO 此处可以获取实时歌词
                 },

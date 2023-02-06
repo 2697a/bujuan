@@ -18,6 +18,7 @@ class MainView extends GetView<IndexController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.transparent,
       resizeToAvoidBottomInset: false,
       appBar: MyAppBar(
         backgroundColor: Colors.transparent,

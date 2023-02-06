@@ -383,6 +383,7 @@ class ScaffoldGradientBackground extends StatelessWidget {
         gradient: gradient,
       ),
       child: Scaffold(
+      backgroundColor: Colors.transparent,
         key: key,
         appBar: appBar,
         body: body,
@@ -396,7 +397,6 @@ class ScaffoldGradientBackground extends StatelessWidget {
         onEndDrawerChanged: onEndDrawerChanged,
         bottomNavigationBar: bottomNavigationBar,
         bottomSheet: bottomSheet,
-        backgroundColor: Colors.transparent,
         resizeToAvoidBottomInset: resizeToAvoidBottomInset,
         primary: primary,
         drawerDragStartBehavior: drawerDragStartBehavior,

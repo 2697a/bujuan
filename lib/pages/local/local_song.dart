@@ -82,6 +82,7 @@ class _LocalSongViewState extends State<LocalSongView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: MyAppBar(
         centerTitle: false,
         title: RichText(

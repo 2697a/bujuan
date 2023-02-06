@@ -29,6 +29,7 @@ class _TodayViewState extends State<TodayView> {
   Widget build(BuildContext context) {
     return GestureDetector(
       child: Scaffold(
+      backgroundColor: Colors.transparent,
         appBar: MyAppBar(
           title: const Text('每日'),
           backgroundColor: Colors.transparent,

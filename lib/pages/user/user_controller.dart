@@ -25,6 +25,7 @@ enum LoginStatus { login, noLogin }
 
 class UserController extends GetxController {
   List<Play> playlist = <Play>[].obs;
+  List<Play> playlist1 = <Play>[].obs;
   ScrollController userScrollController = ScrollController();
   RxDouble op = 0.0.obs;
   final List<double> colors = [1, .9, .8, .7, .6, .5, .4, .3, .2, .1, 0];
@@ -121,9 +122,15 @@ class UserController extends GetxController {
 
   getUserPlayList() {
     NeteaseMusicApi().userPlayList(userData.value.profile?.userId ?? '-1').then((MultiPlayListWrap2 multiPlayListWrap2) {
-      playlist
-        ..clear()
-        ..addAll(multiPlayListWrap2.playlist ?? []);
+      playlist.clear();
+      playlist1.clear();
+      for (Play value in (multiPlayListWrap2.playlist ?? [])) {
+        if (value.creator?.userId == userData.value.profile?.userId) {
+          playlist.add(value);
+        } else {
+          playlist1.add(value);
+        }
+      }
     });
   }
 

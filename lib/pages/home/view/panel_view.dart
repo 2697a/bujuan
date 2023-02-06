@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/pages/user/user_controller.dart';
 import 'package:bujuan/widget/mobile/flashy_navbar.dart';
@@ -24,7 +25,7 @@ class PanelView extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
-    double bottomHeight = MediaQuery.of(controller.buildContext).padding.bottom * (PlatformUtils.isIOS ? 0.4 : 0.6);
+    double bottomHeight = MediaQuery.of(controller.buildContext).padding.bottom * (PlatformUtils.isIOS ? 0.4 : 0.8);
     if (bottomHeight == 0) bottomHeight = 20.w;
     return WillPopScope(
         child: GestureDetector(
@@ -34,15 +35,10 @@ class PanelView extends GetView<HomeController> {
               controller.slidePosition.value = 1 - value;
               if (controller.second.value != value >= 0.5) controller.second.value = value > 0.5;
             },
-            boxShadow: const [
-              BoxShadow(
-                blurRadius: 8.0,
-                color: Color.fromRGBO(0, 0, 0, 0.05),
-              )
-            ],
+            boxShadow: const [BoxShadow(blurRadius: 8.0, color: Color.fromRGBO(0, 0, 0, 0.05))],
             color: Colors.transparent,
             panel: ClassWidget(child: _buildDefaultPanel(context, bottomHeight)),
-            body: ClassWidget(child: Visibility(child: _buildDefaultBody1(context))),
+            body: ClassWidget(child: _buildDefaultBody(context)),
             header: ClassWidget(child: _buildBottom(bottomHeight, context)),
             minHeight: 110.h + bottomHeight,
             maxHeight: Get.height - controller.panelHeaderSize - MediaQuery.of(context).padding.top - 10.w,
@@ -77,25 +73,24 @@ class PanelView extends GetView<HomeController> {
                 )),
             itemCount: controller.mEffects.length,
           )),
-          ClassWidget(
-              child: Obx(() => ProgressBar(
-                    progress: controller.duration.value,
-                    buffered: controller.duration.value,
-                    total: controller.mediaItem.value.duration ?? const Duration(seconds: 10),
-                    progressBarColor: Colors.transparent,
-                    baseBarColor: Colors.transparent,
-                    bufferedBarColor: Colors.transparent,
-                    thumbColor: controller.bodyColor.value.withOpacity(.1),
-                    barHeight: 0.w,
-                    thumbRadius: 20.w,
-                    barCapShape: BarCapShape.square,
-                    timeLabelType: TimeLabelType.remainingTime,
-                    timeLabelLocation: TimeLabelLocation.none,
-                    timeLabelTextStyle: TextStyle(color: controller.bodyColor.value, fontSize: 28.sp),
-                    onSeek: (duration) {
-                      controller.audioServeHandler.seek(duration);
-                    },
-                  )))
+          Obx(() => ProgressBar(
+                progress: controller.duration.value,
+                buffered: controller.duration.value,
+                total: controller.mediaItem.value.duration ?? const Duration(seconds: 10),
+                progressBarColor: Colors.transparent,
+                baseBarColor: Colors.transparent,
+                bufferedBarColor: Colors.transparent,
+                thumbColor: controller.bodyColor.value.withOpacity(.1),
+                barHeight: 0.w,
+                thumbRadius: 20.w,
+                barCapShape: BarCapShape.square,
+                timeLabelType: TimeLabelType.remainingTime,
+                timeLabelLocation: TimeLabelLocation.none,
+                timeLabelTextStyle: TextStyle(color: controller.bodyColor.value, fontSize: 28.sp),
+                onSeek: (duration) {
+                  controller.audioServeHandler.seek(duration);
+                },
+              ))
         ],
       ),
     );
@@ -220,30 +215,39 @@ class PanelView extends GetView<HomeController> {
     return Stack(
       children: [
         Obx(() {
-          return AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(colors: [
-                !controller.panelOpenPositionThan1.value && !controller.second.value
-                    ? Theme.of(context).bottomAppBarColor
-                    : !controller.gradientBackground.value
-                        ? controller.rx.value.dominantColor?.color ?? Colors.transparent
-                        : controller.rx.value.lightVibrantColor?.color ??
-                            controller.rx.value.lightMutedColor?.color ??
-                            controller.rx.value.dominantColor?.color ??
-                            Colors.transparent,
-                controller.rx.value.dominantColor?.color ?? Colors.transparent,
-              ], begin: Alignment.topLeft, end: Alignment.bottomCenter),
-              borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),
+          return Visibility(
+            visible: !controller.leftImage.value,
+            replacement: Container(
+              color: Colors.transparent,
+            ),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(colors: [
+                  !controller.panelOpenPositionThan1.value && !controller.second.value
+                      ? Theme.of(context).bottomAppBarColor.withOpacity(controller.leftImage.value ? 0 : .7)
+                      : !controller.gradientBackground.value
+                          ? controller.rx.value.dominantColor?.color.withOpacity(.7) ?? Colors.transparent
+                          : controller.rx.value.lightVibrantColor?.color.withOpacity(.7) ??
+                              controller.rx.value.lightMutedColor?.color.withOpacity(.7) ??
+                              controller.rx.value.dominantColor?.color.withOpacity(.7) ??
+                              Colors.transparent,
+                  controller.rx.value.dominantColor?.color.withOpacity(.7) ?? Colors.transparent,
+                ], begin: Alignment.topLeft, end: Alignment.bottomCenter),
+                borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),
+              ),
             ),
           );
         }),
-        BackdropFilter(
-          /// 过滤器
-          filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
+        ClipRRect(
+          borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),
+          child: BackdropFilter(
+            /// 过滤器
+            filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
 
-          /// 必须设置一个空容器
-          child: _buildBodyContent(context),
+            /// 必须设置一个空容器
+            child: _buildBodyContent(context),
+          ),
         ),
       ],
     );
@@ -253,8 +257,16 @@ class PanelView extends GetView<HomeController> {
     return Stack(
       children: [
         Obx(() {
-          return Visibility(visible: controller.panelOpenPositionThan1.value,child: SimpleExtendedImage(controller.mediaItem.value.extras!['image']+ '?param=500y500',fit: BoxFit.cover,height: Get.height,width: Get.width,
-            borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),),);
+          return Visibility(
+            visible: controller.panelOpenPositionThan1.value,
+            child: SimpleExtendedImage(
+              controller.mediaItem.value.extras!['image'] + '?param=500y500',
+              fit: BoxFit.cover,
+              height: Get.height,
+              width: Get.width,
+              borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),
+            ),
+          );
         }),
         Container(
           color: Theme.of(context).scaffoldBackgroundColor.withOpacity(.2),
@@ -264,6 +276,7 @@ class PanelView extends GetView<HomeController> {
           child: BackdropFilter(
             /// 过滤器
             filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
+
             /// 必须设置一个空容器
             child: _buildBodyContent(context),
           ),
@@ -311,6 +324,7 @@ class PanelView extends GetView<HomeController> {
           child: BackdropFilter(
             /// 过滤器
             filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
+
             /// 必须设置一个空容器
             child: _buildPanelContent(context, bottomHeight),
           ),
@@ -379,7 +393,7 @@ class PanelView extends GetView<HomeController> {
                         visible: (controller.mediaItem.value.extras?['mv'] ?? 0) > 0,
                         child: IconButton(
                             onPressed: () {
-                              // context.router.push(const MvView().copyWith(queryParams: {'mvId': controller.mediaItem.value.extras?['mv'] ?? 0}));
+                              context.router.push(const MvView().copyWith(queryParams: {'mvId': controller.mediaItem.value.extras?['mv'] ?? 0}));
                             },
                             icon: Icon(
                               TablerIcons.brand_youtube,
@@ -443,11 +457,11 @@ class PanelView extends GetView<HomeController> {
             children: [
               Obx(() => Text(
                     OtherUtils.getTimeStamp(controller.duration.value.inMilliseconds),
-                    style: TextStyle(color: controller.bodyColor.value, fontSize: 28.sp, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: controller.bodyColor.value, fontSize: 28.sp),
                   )),
               Obx(() => Text(
                     OtherUtils.getTimeStamp(controller.mediaItem.value.duration?.inMilliseconds ?? 0),
-                    style: TextStyle(color: controller.bodyColor.value, fontSize: 28.sp, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: controller.bodyColor.value, fontSize: 28.sp),
                   )),
             ],
           ),

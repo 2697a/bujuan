@@ -99,6 +99,7 @@ class _GuideViewState extends State<GuideView> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: Stack(
         alignment: Alignment.topRight,
         children: [

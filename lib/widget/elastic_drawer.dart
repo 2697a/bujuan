@@ -134,7 +134,7 @@ class _ElasticDrawerState extends State<ElasticDrawer>
         SizedBox.fromSize(
           size: size,
           child: Scaffold(
-            backgroundColor: widget.mainColor,
+      backgroundColor: Colors.transparent,
             body: Navigator(
               key: ElasticDrawerKey.navigator,
               onGenerateRoute: (_) =>

@@ -40,15 +40,15 @@ class RecommendView extends GetView<HomeController> {
                 )),
               ),
               ClassWidget(child: _buildArtistsList()),
-              Container(
-                alignment: Alignment.centerLeft,
-                padding: EdgeInsets.only(top: 10.w, bottom: 20.w),
-                child: Obx(() => Text(
-                  '专辑',
-                  style: TextStyle(fontSize: 36.sp, color: controller.bodyColor.value, fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.left,
-                )),
-              ),
+              // Container(
+              //   alignment: Alignment.centerLeft,
+              //   padding: EdgeInsets.only(top: 10.w, bottom: 20.w),
+              //   child: Obx(() => Text(
+              //     '专辑',
+              //     style: TextStyle(fontSize: 36.sp, color: controller.bodyColor.value, fontWeight: FontWeight.bold),
+              //     textAlign: TextAlign.left,
+              //   )),
+              // ),
               // ClassWidget(child: _buildAlbum(context)),
               // Container(
               //   alignment: Alignment.centerLeft,
@@ -68,9 +68,8 @@ class RecommendView extends GetView<HomeController> {
   }
 
   Widget _buildArtistsList() {
-
     return Obx(() {
-      return Visibility(visible: controller.mediaItem.value.extras!['artist'] == null,child: ListView.builder(
+      return Visibility(visible: controller.mediaItem.value.extras!['artist'] != null,child: ListView.builder(
         itemBuilder: (context, index) => InkWell(
           child: Container(
             padding: EdgeInsets.symmetric(vertical: 20.w),

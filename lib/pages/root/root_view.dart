@@ -12,6 +12,7 @@
 //       delegate: Get.nestedKey(null),
 //       builder: (context) {
 //         return Scaffold(
+//       backgroundColor: Colors.transparent,
 //           body: GetRouterOutlet(
 //             initialRoute: Routes.home,
 //             delegate: Get.nestedKey(null),

@@ -70,6 +70,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
+      backgroundColor: Colors.transparent,
         appBar: AppBar(
           title: const Text("Songs"),
           elevation: 2,

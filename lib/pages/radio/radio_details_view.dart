@@ -28,6 +28,7 @@ class _RadioDetailsViewState extends State<RadioDetailsView> {
   Widget build(BuildContext context) {
     return GestureDetector(
       child: Scaffold(
+      backgroundColor: Colors.transparent,
         appBar: MyAppBar(title: Text((context.routeData.args as DjRadio).name),backgroundColor: Colors.transparent,),
         body: RequestLoadMoreWidget<DjProgramListWrap, DjProgram>(
             dioMetaData: djProgramListDioMetaData((context.routeData.args as DjRadio).id),

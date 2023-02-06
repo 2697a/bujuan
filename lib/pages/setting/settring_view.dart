@@ -45,7 +45,7 @@ class _SettingViewState extends State<SettingView> {
       Map<String, dynamic> versionData = value.data..putIfAbsent('oldVersion', () => version);
       if (int.parse((versionData['version'] ?? '0').replaceAll('.', '')) > int.parse(version.replaceAll('.', ''))) {
         if (mounted) AutoRouter.of(context).push(const UpdateView().copyWith(queryParams: versionData));
-      }else{
+      } else {
         WidgetUtil.showToast('已是最新版本');
       }
     } on DioError catch (e) {
@@ -86,7 +86,7 @@ class _SettingViewState extends State<SettingView> {
           ),
           ListTile(
             title: Text(
-              '播放页圆形图片',
+              '开启高斯模糊背景(默认专辑封面)',
               style: TextStyle(fontSize: 30.sp),
             ),
             trailing: Obx(() => Icon(
@@ -95,7 +95,7 @@ class _SettingViewState extends State<SettingView> {
                   color: Theme.of(context).cardColor.withOpacity(HomeController.to.leftImage.value ? 0.7 : .4),
                 )),
             onTap: () {
-              HomeController.to.leftImage.value = !HomeController.to.leftImage.value;
+              HomeController.to.changePlayUi(context);
               StorageUtil().setBool(leftImageSp, HomeController.to.leftImage.value);
             },
           ),
@@ -120,13 +120,27 @@ class _SettingViewState extends State<SettingView> {
               style: TextStyle(fontSize: 30.sp),
             ),
             trailing: Obx(() => Icon(
-              HomeController.to.topLyric.value ? TablerIcons.toggle_right : TablerIcons.toggle_left,
-              size: 56.w,
-              color: Theme.of(context).cardColor.withOpacity(HomeController.to.topLyric.value ? 0.7 : .4),
-            )),
+                  HomeController.to.topLyric.value ? TablerIcons.toggle_right : TablerIcons.toggle_left,
+                  size: 56.w,
+                  color: Theme.of(context).cardColor.withOpacity(HomeController.to.topLyric.value ? 0.7 : .4),
+                )),
             onTap: () {
               HomeController.to.topLyric.value = !HomeController.to.topLyric.value;
               StorageUtil().setBool(topLyricSp, HomeController.to.topLyric.value);
+            },
+          ),
+          ListTile(
+            title: Text(
+              '自定义背景',
+              style: TextStyle(fontSize: 30.sp),
+            ),
+            trailing: Icon(
+              TablerIcons.radius_top_right,
+              size: 56.w,
+              color: Theme.of(context).cardColor.withOpacity(.4),
+            ),
+            onTap: () async {
+              WidgetUtil.showToast('message');
             },
           )
         ],
@@ -155,10 +169,10 @@ class _SettingViewState extends State<SettingView> {
               style: TextStyle(fontSize: 30.sp),
             ),
             trailing: Obx(() => Icon(
-              HomeController.to.high.value ? TablerIcons.toggle_right : TablerIcons.toggle_left,
-              size: 56.w,
-              color: Theme.of(context).cardColor.withOpacity(HomeController.to.high.value ? 0.7 : .4),
-            )),
+                  HomeController.to.high.value ? TablerIcons.toggle_right : TablerIcons.toggle_left,
+                  size: 56.w,
+                  color: Theme.of(context).cardColor.withOpacity(HomeController.to.high.value ? 0.7 : .4),
+                )),
             onTap: () {
               HomeController.to.high.value = !HomeController.to.high.value;
               StorageUtil().setBool(highSong, HomeController.to.high.value);

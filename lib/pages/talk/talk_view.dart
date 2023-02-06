@@ -61,6 +61,7 @@ class _TalkViewState extends State<TalkView> with SingleTickerProviderStateMixin
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: MyAppBar(
         title: Text(context.routeData.queryParams.getString('name')),
         bottom: TabBar(
@@ -152,15 +153,17 @@ class _ListWidgetState extends State<ListWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return RequestLoadMoreWidget<CommentList2Wrap, CommentItem>(
-      listKey: const ['data', 'comments'],
-      isPageNmu: true,
-      lastField: 'cursor',
-      pageSize: 20,
-      dioMetaData: commentListDioMetaData2(context.routeData.queryParams.getString('id'), context.routeData.queryParams.getString('type'), sortType: widget.type),
-      childBuilder: (List<CommentItem> comments) => ListView.builder(
-        itemBuilder: (BuildContext context, int index) => _buildItem(comments[index]),
-        itemCount: comments.length,
+    return Scaffold(
+      body: RequestLoadMoreWidget<CommentList2Wrap, CommentItem>(
+        listKey: const ['data', 'comments'],
+        isPageNmu: true,
+        lastField: 'cursor',
+        pageSize: 20,
+        dioMetaData: commentListDioMetaData2(context.routeData.queryParams.getString('id'), context.routeData.queryParams.getString('type'), sortType: widget.type),
+        childBuilder: (List<CommentItem> comments) => ListView.builder(
+          itemBuilder: (BuildContext context, int index) => _buildItem(comments[index]),
+          itemCount: comments.length,
+        ),
       ),
     );
   }

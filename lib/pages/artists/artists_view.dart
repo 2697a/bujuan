@@ -39,6 +39,7 @@ class _ArtistsViewState extends State<ArtistsView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: GestureDetector(
         child: RequestWidget<ArtistDetailAndSongListWrap>(
             dioMetaData: artistDetailAndSongListDioMetaData(artists?.id ?? '-1'),

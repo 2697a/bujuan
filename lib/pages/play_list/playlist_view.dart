@@ -19,6 +19,7 @@ import 'package:get_it/get_it.dart';
 import '../../common/netease_api/src/dio_ext.dart';
 import '../../common/netease_api/src/netease_handler.dart';
 import '../../widget/app_bar.dart';
+import '../../widget/draggable_home.dart';
 import '../../widget/request_widget/request_playlist_loadmore_view.dart';
 import '../../widget/request_widget/request_view.dart';
 import '../../widget/simple_extended_image.dart';
@@ -71,25 +72,30 @@ class _PlayListViewState extends State<PlayListView> {
   Widget build(BuildContext context) {
     return GestureDetector(
       child: Scaffold(
+        backgroundColor: Colors.transparent,
         appBar: _buildAppBar(),
         body: RequestWidget<SinglePlayListWrap>(
             dioMetaData: playListDetailDioMetaData((context.routeData.args as Play).id),
             onData: (SinglePlayListWrap s) => setState(() => singlePlayListWrap = s),
-            childBuilder: (SinglePlayListWrap data) => ClassStatelessWidget(child: RequestPlaylistLoadMoreWidget(
-                listKey: const ['songs'],
-                pageSize: 200,
-                ids: (data.playlist?.trackIds ?? []).map((e) => e.id).toList(),
-                childBuilder: (List<MediaItem> songs) {
-                  return ListView.builder(
-                    itemExtent: 120.w,
-                    itemBuilder: (context, index) => SongItem(
-                      index: index,
-                      mediaItems: songs,
-                      queueTitle: (context.routeData.args as Play).id,
-                    ),
-                    itemCount: songs.length,
-                  );
-                }))),
+            childBuilder: (SinglePlayListWrap data) => ClassStatelessWidget(
+                child: RequestPlaylistLoadMoreWidget(
+                    listKey: const ['songs'],
+                    pageSize: 200,
+                    ids: (data.playlist?.trackIds ?? []).map((e) => e.id).toList(),
+                    childBuilder: (List<MediaItem> songs) {
+                      return ListView.builder(
+                        itemExtent: 120.w,
+                        padding: const EdgeInsets.only(top: 0),
+                        // physics: const NeverScrollableScrollPhysics(),
+                        // shrinkWrap: true,
+                        itemBuilder: (context, index) => SongItem(
+                          index: index,
+                          mediaItems: songs,
+                          queueTitle: (context.routeData.args as Play).id,
+                        ),
+                        itemCount: songs.length,
+                      );
+                    }))),
       ),
       onHorizontalDragDown: (e) {
         return;
@@ -99,14 +105,6 @@ class _PlayListViewState extends State<PlayListView> {
 
   PreferredSizeWidget _buildAppBar() {
     return MyAppBar(
-      leading: IconButton(
-          padding: EdgeInsets.only(left: 20.w),
-          onPressed: () => AutoRouter.of(context).pop(),
-          icon: SimpleExtendedImage.avatar(
-            '${(context.routeData.args as Play).picUrl ?? (context.routeData.args as Play).coverImgUrl}?param=100y100',
-            width: 75.w,
-            height: 75.w,
-          )),
       title: AutoSizeText(
         (context.routeData.args as Play).name ?? '',
         maxLines: 1,
@@ -117,7 +115,7 @@ class _PlayListViewState extends State<PlayListView> {
 
   Widget _buildTopItem() {
     return Container(
-      margin: EdgeInsets.only(left: 20.w,right: 20.w,bottom: 10.w),
+      margin: EdgeInsets.only(left: 20.w, right: 20.w, bottom: 10.w),
       padding: EdgeInsets.only(left: 15.w, right: 15.w, top: 10.w, bottom: 25.w),
       alignment: Alignment.center,
       decoration: BoxDecoration(color: Theme.of(context).colorScheme.onSecondary.withOpacity(.8), borderRadius: BorderRadius.circular(15.w)),
@@ -330,7 +328,7 @@ class SongItem extends StatelessWidget {
                 Text(
                   mediaItems[index].artist ?? '',
                   maxLines: 1,
-                  style: TextStyle(fontSize: 24.sp, color: Colors.grey),
+                  style: TextStyle(fontSize: 24.sp),
                 )
               ],
             )),

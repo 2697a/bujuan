@@ -28,6 +28,7 @@ class _MyRadioViewState extends State<MyRadioView> {
   Widget build(BuildContext context) {
     return GestureDetector(
       child: Scaffold(
+      backgroundColor: Colors.transparent,
         appBar: MyAppBar(
           backgroundColor: Colors.transparent,
         ),
