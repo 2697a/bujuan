@@ -9,12 +9,17 @@ import 'package:bujuan/common/constants/enmu.dart';
 import 'package:bujuan/common/constants/other.dart';
 import 'package:bujuan/common/netease_api/netease_music_api.dart';
 import 'package:bujuan/common/netease_api/src/api/bean.dart';
+import 'package:bujuan/pages/play_list/playlist_controller.dart';
 import 'package:bujuan/pages/user/user_controller.dart';
 import 'package:bujuan/routes/router.gr.dart';
+import 'package:bujuan/widget/data_widget.dart';
+import 'package:bujuan/widget/my_get_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
+import 'package:keframe/keframe.dart';
 
 import '../../common/netease_api/src/dio_ext.dart';
 import '../../common/netease_api/src/netease_handler.dart';
@@ -26,85 +31,59 @@ import '../../widget/simple_extended_image.dart';
 import '../home/home_controller.dart';
 import '../home/view/panel_view.dart';
 
-class PlayListView extends StatefulWidget {
-  const PlayListView({Key? key}) : super(key: key);
-
-  @override
-  State<PlayListView> createState() => _PlayListViewState();
-}
-
-class _PlayListViewState extends State<PlayListView> {
-  DioMetaData playListDetailDioMetaData(String categoryId, {int subCount = 5}) {
-    var params = {'id': categoryId, 'n': 10000, 's': '$subCount', 'shareUserId': '0'};
-    return DioMetaData(Uri.parse('https://music.163.com/api/v6/playlist/detail'), data: params, options: joinOptions());
-  }
-
-  DioMetaData songDetailDioMetaData(List<String> songIds) {
-    var params = {
-      // 'ids': songIds,
-      // 'c': songIds.map((e) => jsonEncode({'id': e})).toList(),
-      'c': '[${songIds.map((id) => '{"id":$id}').join(',')}]',
-    };
-    return DioMetaData(joinUri('/api/v3/song/detail'), data: params, options: joinOptions());
-  }
-
-  SinglePlayListWrap? singlePlayListWrap;
-
-  _subscribePlayList() async {
-    ServerStatusBean serverStatusBean =
-        await NeteaseMusicApi().subscribePlayList((context.routeData.args as Play).id, subscribe: !(singlePlayListWrap?.playlist?.subscribed ?? false));
-    if (serverStatusBean.code == 200) {
-      setState(() {
-        singlePlayListWrap?.playlist?.subscribed = !(singlePlayListWrap?.playlist?.subscribed ?? false);
-      });
-      if (HomeController.to.currPathUrl.value == '/home/user') {
-        UserController.to.refreshController.callRefresh();
-      }
-    }
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
+class PlayListView extends GetView<PlayListController> {
+  const PlayListView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      child: Scaffold(
+    controller.context = context;
+    return Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: _buildAppBar(),
-        body: RequestWidget<SinglePlayListWrap>(
-            dioMetaData: playListDetailDioMetaData((context.routeData.args as Play).id),
-            onData: (SinglePlayListWrap s) => setState(() => singlePlayListWrap = s),
-            childBuilder: (SinglePlayListWrap data) => ClassStatelessWidget(
-                child: RequestPlaylistLoadMoreWidget(
-                    listKey: const ['songs'],
-                    pageSize: 200,
-                    ids: (data.playlist?.trackIds ?? []).map((e) => e.id).toList(),
-                    childBuilder: (List<MediaItem> songs) {
-                      return ListView.builder(
-                        itemExtent: 120.w,
-                        padding: const EdgeInsets.only(top: 0),
-                        // physics: const NeverScrollableScrollPhysics(),
-                        // shrinkWrap: true,
-                        itemBuilder: (context, index) => SongItem(
-                          index: index,
-                          mediaItems: songs,
-                          queueTitle: (context.routeData.args as Play).id,
-                        ),
-                        itemCount: songs.length,
-                      );
-                    }))),
-      ),
-      onHorizontalDragDown: (e) {
-        return;
-      },
-    );
+        body: MyGetView(
+            child: Obx(
+          () => Visibility(
+            visible: !controller.loading.value,
+            replacement: const LoadingView(),
+            child: CustomScrollView(
+              slivers: [
+                MySliverAppBar(
+                  backgroundColor: Colors.transparent,
+                  pinned: true,
+                  leading: IconButton(
+                      padding: EdgeInsets.only(left: 20.w),
+                      onPressed: () => AutoRouter.of(context).pop(),
+                      icon: SimpleExtendedImage.avatar(
+                        '${(context.routeData.args as Play).picUrl ?? (context.routeData.args as Play).coverImgUrl}?param=100y100',
+                        width: 75.w,
+                        height: 75.w,
+                      )),
+                  title: AutoSizeText(
+                    (context.routeData.args as Play).name ?? '',
+                    maxLines: 1,
+                  ),
+                ),
+                _buildTopItem(context),
+                Obx(() => SliverFixedExtentList(
+                      delegate: SliverChildBuilderDelegate((context, index) => SongItem(index: index, mediaItems: controller.mediaItems, queueTitle: 'queueTitle'),
+                          childCount: controller.mediaItems.length),
+                      itemExtent: 120.w,
+                    ))
+              ],
+            ),
+          ),
+        )));
   }
 
-  PreferredSizeWidget _buildAppBar() {
+  PreferredSizeWidget _buildAppBar(context) {
     return MyAppBar(
+      leading: IconButton(
+          padding: EdgeInsets.only(left: 20.w),
+          onPressed: () => AutoRouter.of(context).pop(),
+          icon: SimpleExtendedImage.avatar(
+            '${(context.routeData.args as Play).picUrl ?? (context.routeData.args as Play).coverImgUrl}?param=100y100',
+            width: 75.w,
+            height: 75.w,
+          )),
       title: AutoSizeText(
         (context.routeData.args as Play).name ?? '',
         maxLines: 1,
@@ -113,55 +92,192 @@ class _PlayListViewState extends State<PlayListView> {
     );
   }
 
-  Widget _buildTopItem() {
-    return Container(
-      margin: EdgeInsets.only(left: 20.w, right: 20.w, bottom: 10.w),
-      padding: EdgeInsets.only(left: 15.w, right: 15.w, top: 10.w, bottom: 25.w),
-      alignment: Alignment.center,
-      decoration: BoxDecoration(color: Theme.of(context).colorScheme.onSecondary.withOpacity(.8), borderRadius: BorderRadius.circular(15.w)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              IconButton(
-                  onPressed: () => _subscribePlayList(),
-                  icon: SimpleExtendedImage.avatar(
-                    '${singlePlayListWrap?.playlist?.creator?.avatarUrl ?? ''}?param=80y80',
-                    width: 80.w,
-                  )),
-              Expanded(
-                child: Text(
-                  singlePlayListWrap?.playlist?.creator?.nickname ?? '',
-                  style: TextStyle(fontSize: 28.sp),
+  Widget _buildTopItem(BuildContext context) {
+    return SliverToBoxAdapter(
+      child: Container(
+        margin: EdgeInsets.only(left: 20.w, right: 20.w, bottom: 10.w),
+        padding: EdgeInsets.only(left: 15.w, right: 15.w, top: 10.w, bottom: 25.w),
+        alignment: Alignment.center,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                IconButton(
+                    onPressed: () {},
+                    icon: SimpleExtendedImage.avatar(
+                      '${(context.routeData.args as Play).creator?.avatarUrl ?? ''}?param=80y80',
+                      width: 80.w,
+                    )),
+                Expanded(
+                  child: Text(
+                    (context.routeData.args as Play).creator?.nickname ?? '',
+                    style: TextStyle(fontSize: 28.sp),
+                  ),
                 ),
-              ),
-              Visibility(
-                visible: singlePlayListWrap?.playlist?.creator?.userId != UserController.to.userData.value.profile?.userId,
-                child: IconButton(onPressed: () => _subscribePlayList(), icon: Icon((singlePlayListWrap?.playlist?.subscribed ?? false) ? TablerIcons.hearts : TablerIcons.heart)),
-              ),
-              IconButton(
-                  onPressed: () {
-                    // context.router.push(
-                    //     const TalkView().copyWith(queryParams: {'id': (context.routeData.args as Play).id, 'type': 'playlist', 'name': (context.routeData.args as Play).name}));
-                  },
-                  icon: const Icon(TablerIcons.message_2)),
-            ],
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20.w),
-            child: Text(
-              (singlePlayListWrap?.playlist?.description ?? '暂无描述').replaceAll('\n', ''),
-              maxLines: 5,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 24.sp, height: 1.6, color: Theme.of(context).cardColor.withOpacity(.6)),
+                // Visibility(
+                //   visible: singlePlayListWrap?.playlist?.creator?.userId != UserController.to.userData.value.profile?.userId,
+                //   child: IconButton(onPressed: () => _subscribePlayList(), icon: Icon((singlePlayListWrap?.playlist?.subscribed ?? false) ? TablerIcons.hearts : TablerIcons.heart)),
+                // ),
+                IconButton(
+                    onPressed: () {
+                      // context.router.push(
+                      //     const TalkView().copyWith(queryParams: {'id': (context.routeData.args as Play).id, 'type': 'playlist', 'name': (context.routeData.args as Play).name}));
+                    },
+                    icon: const Icon(TablerIcons.message_2)),
+              ],
             ),
-          ),
-        ],
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.w),
+              child: Text(
+                ((context.routeData.args as Play).description ?? '暂无描述').replaceAll('\n', ''),
+                maxLines: 5,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontSize: 24.sp, height: 1.6, color: Theme.of(context).cardColor.withOpacity(.6)),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
+// class PlayListView extends StatefulWidget {
+//   const PlayListView({Key? key}) : super(key: key);
+//
+//   @override
+//   State<PlayListView> createState() => _PlayListViewState();
+// }
+//
+// class _PlayListViewState extends State<PlayListView> {
+//   DioMetaData playListDetailDioMetaData(String categoryId, {int subCount = 5}) {
+//     var params = {'id': categoryId, 'n': 10000, 's': '$subCount', 'shareUserId': '0'};
+//     return DioMetaData(Uri.parse('https://music.163.com/api/v6/playlist/detail'), data: params, options: joinOptions());
+//   }
+//
+//   DioMetaData songDetailDioMetaData(List<String> songIds) {
+//     var params = {
+//       // 'ids': songIds,
+//       // 'c': songIds.map((e) => jsonEncode({'id': e})).toList(),
+//       'c': '[${songIds.map((id) => '{"id":$id}').join(',')}]',
+//     };
+//     return DioMetaData(joinUri('/api/v3/song/detail'), data: params, options: joinOptions());
+//   }
+//
+//   SinglePlayListWrap? singlePlayListWrap;
+//
+//   _subscribePlayList() async {
+//     ServerStatusBean serverStatusBean =
+//         await NeteaseMusicApi().subscribePlayList((context.routeData.args as Play).id, subscribe: !(singlePlayListWrap?.playlist?.subscribed ?? false));
+//     if (serverStatusBean.code == 200) {
+//       setState(() {
+//         singlePlayListWrap?.playlist?.subscribed = !(singlePlayListWrap?.playlist?.subscribed ?? false);
+//       });
+//       if (HomeController.to.currPathUrl.value == '/home/user') {
+//         UserController.to.refreshController.callRefresh();
+//       }
+//     }
+//   }
+//
+//   @override
+//   void dispose() {
+//     super.dispose();
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return GestureDetector(
+//       child: Scaffold(
+//         backgroundColor: Colors.transparent,
+//         appBar: _buildAppBar(),
+//         body: RequestWidget<SinglePlayListWrap>(
+//             dioMetaData: playListDetailDioMetaData((context.routeData.args as Play).id),
+//             onData: (SinglePlayListWrap s) => setState(() => singlePlayListWrap = s),
+//             childBuilder: (SinglePlayListWrap data) => ClassStatelessWidget(
+//                 child: RequestPlaylistLoadMoreWidget(
+//                     listKey: const ['songs'],
+//                     pageSize: 200,
+//                     ids: (data.playlist?.trackIds ?? []).map((e) => e.id).toList(),
+//                     childBuilder: (List<MediaItem> songs) {
+//                       return ListView.builder(
+//                         itemExtent: 120.w,
+//                         padding: const EdgeInsets.only(top: 0),
+//                         // physics: const NeverScrollableScrollPhysics(),
+//                         // shrinkWrap: true,
+//                         itemBuilder: (context, index) => SongItem(
+//                           index: index,
+//                           mediaItems: songs,
+//                           queueTitle: (context.routeData.args as Play).id,
+//                         ),
+//                         itemCount: songs.length,
+//                       );
+//                     }))),
+//       ),
+//       onHorizontalDragDown: (e) {
+//         return;
+//       },
+//     );
+//   }
+//
+//   PreferredSizeWidget _buildAppBar() {
+//     return MyAppBar(
+//       title: AutoSizeText(
+//         (context.routeData.args as Play).name ?? '',
+//         maxLines: 1,
+//       ),
+//       backgroundColor: Colors.transparent,
+//     );
+//   }
+//
+//   Widget _buildTopItem() {
+//     return Container(
+//       margin: EdgeInsets.only(left: 20.w, right: 20.w, bottom: 10.w),
+//       padding: EdgeInsets.only(left: 15.w, right: 15.w, top: 10.w, bottom: 25.w),
+//       alignment: Alignment.center,
+//       decoration: BoxDecoration(color: Theme.of(context).colorScheme.onSecondary.withOpacity(.8), borderRadius: BorderRadius.circular(15.w)),
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         children: [
+//           Row(
+//             children: [
+//               IconButton(
+//                   onPressed: () => _subscribePlayList(),
+//                   icon: SimpleExtendedImage.avatar(
+//                     '${singlePlayListWrap?.playlist?.creator?.avatarUrl ?? ''}?param=80y80',
+//                     width: 80.w,
+//                   )),
+//               Expanded(
+//                 child: Text(
+//                   singlePlayListWrap?.playlist?.creator?.nickname ?? '',
+//                   style: TextStyle(fontSize: 28.sp),
+//                 ),
+//               ),
+//               Visibility(
+//                 visible: singlePlayListWrap?.playlist?.creator?.userId != UserController.to.userData.value.profile?.userId,
+//                 child: IconButton(onPressed: () => _subscribePlayList(), icon: Icon((singlePlayListWrap?.playlist?.subscribed ?? false) ? TablerIcons.hearts : TablerIcons.heart)),
+//               ),
+//               IconButton(
+//                   onPressed: () {
+//                     // context.router.push(
+//                     //     const TalkView().copyWith(queryParams: {'id': (context.routeData.args as Play).id, 'type': 'playlist', 'name': (context.routeData.args as Play).name}));
+//                   },
+//                   icon: const Icon(TablerIcons.message_2)),
+//             ],
+//           ),
+//           Padding(
+//             padding: EdgeInsets.symmetric(horizontal: 20.w),
+//             child: Text(
+//               (singlePlayListWrap?.playlist?.description ?? '暂无描述').replaceAll('\n', ''),
+//               maxLines: 5,
+//               overflow: TextOverflow.ellipsis,
+//               style: TextStyle(fontSize: 24.sp, height: 1.6, color: Theme.of(context).cardColor.withOpacity(.6)),
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
 
 class ListWidget extends StatefulWidget {
   final List<MediaItem> mediaItem;
@@ -308,7 +424,6 @@ class SongItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      // key: Key(mediaItems[index].id),
       child: Container(
         padding: EdgeInsets.only(left: 30.w),
         height: 120.w,
@@ -328,7 +443,7 @@ class SongItem extends StatelessWidget {
                 Text(
                   mediaItems[index].artist ?? '',
                   maxLines: 1,
-                  style: TextStyle(fontSize: 24.sp),
+                  style: TextStyle(fontSize: 24.sp, color: Colors.grey),
                 )
               ],
             )),
@@ -336,7 +451,7 @@ class SongItem extends StatelessWidget {
               visible: (mediaItems[index].extras!['mv'] ?? 0) != 0,
               child: IconButton(
                   onPressed: () {
-                    // context.router.push(const MvView().copyWith(queryParams: {'mvId': mediaItems[index].extras?['mv'] ?? 0}));
+                    context.router.push(const MvView().copyWith(queryParams: {'mvId': mediaItems[index].extras?['mv'] ?? 0}));
                   },
                   icon: const Icon(
                     TablerIcons.brand_youtube,

@@ -19,12 +19,12 @@ class MenuView extends GetView<HomeController> {
       children: [
         Padding(padding: EdgeInsets.symmetric(vertical: 25.w)),
         GestureDetector(
-          child: Obx(() => SimpleExtendedImage.avatar(
-            UserController.to.userData.value.profile?.avatarUrl ?? '',
+          child: SimpleExtendedImage.avatar(
+            '大三大四的',
             width: 80.w,
-          )),
+          ),
           onTap: () {
-            if (UserController.to.loginStatus.value == LoginStatus.noLogin) {
+            if (controller.loginStatus.value == LoginStatus.noLogin) {
               context.router.pushNamed(Routes.login);
               return;
             }
@@ -46,7 +46,7 @@ class MenuView extends GetView<HomeController> {
                     children: [
                       Padding(padding: EdgeInsets.symmetric(horizontal: 10.w)),
                       Obx(() => Icon(controller.leftMenus[index].icon,
-                          color: controller.currPathUrl.value == controller.leftMenus[index].pathUrl ? Theme.of(context).primaryColor : Theme.of(context).cardColor)),
+                          color: controller.currPathUrl.value == controller.leftMenus[index].pathUrl ? Theme.of(context).primaryColor : Theme.of(context).scaffoldBackgroundColor)),
                     ],
                   ),
                 ),

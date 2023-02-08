@@ -67,7 +67,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   RxInt selectIndex = 0.obs;
 
   //歌词、播放列表PageView控制器
-  PreloadPageController pageController = PreloadPageController();
+  PageController pageController = PageController();
 
   //第一层滑动高度0-1
   RxDouble slidePosition = 0.0.obs;
@@ -87,6 +87,9 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   //是否第二层
   RxBool panelOpenPositionThan1 = false.obs;
 
+  //是否第二层
+  RxBool panelOpenPositionThan8 = false.obs;
+
   //当前播放歌曲
   Rx<MediaItem> mediaItem = const MediaItem(id: '', title: '暂无', duration: Duration(seconds: 10)).obs;
 
@@ -95,6 +98,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
 
   //是否播放中
   RxBool playing = false.obs;
+
   //是否播放中
   RxBool isMobile = true.obs;
 
@@ -155,6 +159,8 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   //当前歌词下标
   int lastIndex = 0;
 
+  RxInt currLyricIndex = 0.obs;
+
   //相似歌单
   RxList<Play> simiSongs = <Play>[].obs;
 
@@ -173,8 +179,6 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
 
   var lastPopTime = DateTime.now();
 
-  var lyricModel;
-
   bool intervalClick(int needTime) {
     // 防重复提交
     if (DateTime.now().difference(lastPopTime) > const Duration(milliseconds: 800)) {
@@ -184,6 +188,11 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
       return false;
     }
   }
+
+  //用户信息
+  RxList<int> likeIds = <int>[].obs;
+  Rx<LoginStatus> loginStatus = LoginStatus.noLogin.obs;
+  Rx<NeteaseAccountInfoWrap> userData = NeteaseAccountInfoWrap().obs;
 
   //进度
   @override
@@ -199,7 +208,29 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
 
   @override
   void onReady() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _initUserData();
+      _initHomeData();
+    });
+
+    super.onReady();
+  }
+
+  _initUserData() {
+    String userDataStr = StorageUtil().getString(loginData);
+    if (userDataStr.isNotEmpty) {
+      loginStatus.value = LoginStatus.login;
+      userData.value = NeteaseAccountInfoWrap.fromJson(jsonDecode(userDataStr));
+    }
+  }
+
+
+
+  _initHomeData() {
     autoRouterDelegate = AutoRouterDelegate.of(buildContext);
+
+    //监听路由变化
+    autoRouterDelegate?.addListener(listenRouter);
 
     if (leftImage.value) {
       bodyColor.value = Theme.of(buildContext).cardColor.withOpacity(.7);
@@ -236,7 +267,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
         return;
       }
       duration.value = event;
-      if(lastDuration.inSeconds != event.inSeconds){
+      if (lastDuration.inSeconds != event.inSeconds) {
         if (!onMove.value) {
           int index = lyricsLineModels.indexWhere((element) => (element.startTime ?? 0) >= event.inMilliseconds && (element.endTime ?? 0) <= event.inMilliseconds);
           if (index != -1) currLyric.value = lyricsLineModels[index > 0 ? index - 1 : index].mainText ?? '';
@@ -248,26 +279,10 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
       }
       lastDuration = event;
       //如果歌词列表没有滑动，根据歌词的开始时间自动滚动歌词列表
-
     });
     audioServeHandler.playbackState.listen((value) {
       playing.value = value.playing;
     });
-
-    //监听路由变化
-    autoRouterDelegate?.addListener(listenRouter);
-    // myDrawerController.stateNotifier?.addListener(() {
-    //   if (myDrawerController.isOpen!()) {
-    //     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-    //       statusBarBrightness: Get.isPlatformDarkMode ? Brightness.light : Brightness.dark,
-    //       statusBarIconBrightness: Get.isPlatformDarkMode ? Brightness.dark : Brightness.light,
-    //     ));
-    //   }
-    //   if (!myDrawerController.isOpen!()) {
-    //     didChangePlatformBrightness();
-    //   }
-    // });
-    super.onReady();
   }
 
   //获取歌词
@@ -331,6 +346,13 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
           : Get.isPlatformDarkMode
               ? Brightness.light
               : Brightness.dark,
+      systemNavigationBarIconBrightness: changed
+          ? grayscale <= 128
+              ? Brightness.light
+              : Brightness.dark
+          : Get.isPlatformDarkMode
+              ? Brightness.dark
+              : Brightness.light,
     ));
     _getColor(grayscale: grayscale);
   }
@@ -346,7 +368,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
     if (grayscale <= 128 && bodyColor.value == Colors.white.withOpacity(.65)) {
       return;
     }
-    bodyColor.value = grayscale > 128 ? Colors.black.withOpacity(.6) : Colors.white.withOpacity(.8);
+    bodyColor.value = grayscale > 128 ? Colors.black.withOpacity(.6) : Colors.white.withOpacity(.75);
   }
 
   //获取相似歌单
@@ -423,7 +445,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
 
   //喜欢歌曲
   likeSong({bool? liked}) async {
-    bool isLiked = UserController.to.likeIds.contains(int.parse(mediaItem.value.id));
+    bool isLiked = likeIds.contains(int.parse(mediaItem.value.id));
     if (liked != null) {
       isLiked = liked;
     }
@@ -448,9 +470,9 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
       }
       WidgetUtil.showToast(isLiked ? '取消喜欢成功' : '喜欢成功');
       if (isLiked) {
-        UserController.to.likeIds.remove(int.parse(mediaItem.value.id));
+        likeIds.remove(int.parse(mediaItem.value.id));
       } else {
-        UserController.to.likeIds.add(int.parse(mediaItem.value.id));
+        likeIds.add(int.parse(mediaItem.value.id));
       }
     }
   }
@@ -461,19 +483,15 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
       return;
     }
     slidePosition.value = value;
-    if (value == 1) {
-      if (!isDraggable.value) isDraggable.value = true;
-    } else {
-      if (isDraggable.value) isDraggable.value = false;
-    }
-
-    if (value > 0.1) {
+    if (value > 0.5) {
       if (!panelOpenPositionThan1.value) {
         panelOpenPositionThan1.value = true;
+        changeStatusIconColor(true);
       }
     } else {
       if (panelOpenPositionThan1.value) {
         panelOpenPositionThan1.value = false;
+        changeStatusIconColor(false);
       }
     }
     // _setPlayListOffset();
@@ -532,7 +550,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
               artUri: Uri.parse('${e.album?.picUrl ?? ''}?param=500y500'),
               extras: {
                 'image': e.album?.picUrl ?? '',
-                'liked': UserController.to.likeIds.contains(int.tryParse(e.id)),
+                'liked': likeIds.contains(int.tryParse(e.id)),
                 'artist': (e.artists ?? []).map((e) => jsonEncode(e.toJson())).toList().join(' / '),
                 'type': MediaType.fm.name
               },
@@ -554,7 +572,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
     return EdgeInsets.only(
       left: 30.w,
       right: 30.w,
-      top: (MediaQuery.of(context).padding.top + 70.h * (slidePosition.value)) * (second.value ? (1 - slidePosition.value) : slidePosition.value),
+      top: (MediaQuery.of(context).padding.top + 60.h * (slidePosition.value)) * (second.value ? (1 - slidePosition.value) : slidePosition.value),
     );
   }
 
@@ -569,8 +587,9 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
 
   //获取图片的宽高
   double getImageSize() {
-    return (panelHeaderSize * .8) * (1 + slidePosition.value * 6.77);
+    return (panelHeaderSize * .75) * (1 + slidePosition.value * 7.3);
   }
+
   //获取图片的宽高
   double getImageSizeL() {
     return (panelHeaderSize * .8) * (1 + slidePosition.value * 6);
@@ -647,7 +666,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
             extras: {
               'type': MediaType.playlist.name,
               'image': e.al?.picUrl ?? '',
-              'liked': UserController.to.likeIds.contains(int.tryParse(e.id)),
+              'liked': likeIds.contains(int.tryParse(e.id)),
               'artist': (e.ar ?? []).map((e) => jsonEncode(e.toJson())).toList().join(' / '),
               'album': jsonEncode(e.al?.toJson()),
               'mv': e.mv
@@ -666,4 +685,6 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
       _getAlbumColor();
     }
   }
+
+
 }

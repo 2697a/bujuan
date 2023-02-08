@@ -4,7 +4,6 @@ import 'package:bujuan/common/constants/images.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:extended_image/extended_image.dart';
-import 'package:octo_image/octo_image.dart';
 
 class SimpleExtendedImage extends StatefulWidget {
   final String url;
@@ -113,7 +112,6 @@ class SimpleExtendedImageState extends State<SimpleExtendedImage> {
             height: widget.height,
             fit: widget.fit,
             useOldImageOnUrlChange: true,
-            colorBlendMode: BlendMode.lighten,
             placeholder: (c, u) => Image.asset(
               widget.placeholder,
               fit: BoxFit.cover,

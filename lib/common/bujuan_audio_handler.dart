@@ -6,10 +6,13 @@ import 'package:bujuan/common/constants/enmu.dart';
 import 'package:bujuan/common/constants/other.dart';
 import 'package:bujuan/common/storage.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:audio_session/audio_session.dart';
+import 'package:media_cache_manager/media_cache_manager.dart';
 import 'audio_player_handler.dart';
 import 'constants/key.dart';
+import 'package:dio/dio.dart';
 import 'constants/platform_utils.dart';
 import 'netease_api/src/api/play/bean.dart';
 import 'netease_api/src/netease_api.dart';
@@ -35,9 +38,6 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
     _curIndex = StorageUtil().getInt(playByIndex);
     queueTitle.value = StorageUtil().getString(playQueueTitle);
     List<String> playList = StorageUtil().getStringList(playQueue);
-    for (var e in playList) {
-      print(jsonDecode(e));
-    }
     if (playList.isEmpty) {
       _curIndex = 0;
       playList.add(jsonEncode(MediaItemMessage(
@@ -270,32 +270,42 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
 
   @override
   Future<void> readySongUrl({bool isNext = true, bool playIt = true}) async {
-    bool high = !playIt?StorageUtil().getBool(highSong):HomeController.to.high.value;
+    bool high = !playIt ? StorageUtil().getBool(highSong) : HomeController.to.high.value;
     // 这里是获取歌曲url
     if (queue.value.isEmpty) return;
     var song = queue.value[_curIndex];
-    String url = '';
-    if (song.extras?['type'] == MediaType.local.name) {
-      url = song.extras?['url'];
-    } else {
-      SongUrlListWrap songUrl = await NeteaseMusicApi().songUrl([song.id], br: high ? 999000 : 320000);
-      // print('object=====${jsonEncode(songUrl.data)}');
-      url = (songUrl.data ?? [])[0].url ?? '';
-    }
-    if (url.isNotEmpty) {
+    //根据缓存地址获取
+    String? url = DownloadCacheManager.getCachedFilePath(song.id);
+    //如果是本地音乐，直接取地址
+    if (song.extras?['type'] == MediaType.local.name) url = song.extras?['url'];
+    if (url != null) {
+      // print('缓存过了=========$url');
       mediaItem.add(song);
-      if (song.extras?['type'] == MediaType.local.name) {
-        playIt ? await _player.play(DeviceFileSource(url), mode: PlayerMode.mediaPlayer) : await _player.setSourceDeviceFile(url);
-      } else {
-        playIt ? await _player.play(UrlSource(url), mode: PlayerMode.mediaPlayer) : await _player.setSourceUrl(url);
-      }
+      //缓存过的或者是本地音乐
+      playIt ? await _player.play(DeviceFileSource(url), mode: PlayerMode.mediaPlayer) : await _player.setSourceDeviceFile(url);
     } else {
-      if (isNext) {
-        await skipToNext();
+      // 未缓存过
+      // 获取URL
+      SongUrlListWrap songUrl = await NeteaseMusicApi().songDownloadUrl([song.id], level: high ? 'lossless' : 'exhigh');
+      url = ((songUrl.data ?? [])[0].url ?? '').split('?')[0];
+      if (url.isNotEmpty) {
+        mediaItem.add(song);
+        playIt ? await _player.play(UrlSource(url), mode: PlayerMode.mediaPlayer) : await _player.setSourceUrl(url);
+        Downloader.downloadFile(url, song.id, onProgress: (int progress, int total) {
+          // print('object==============$progress======$total');
+        });
       } else {
-        await skipToPrevious();
+        if (isNext) {
+          await skipToNext();
+        } else {
+          await skipToPrevious();
+        }
       }
     }
+  }
+
+  downloadUrl( url){
+
   }
 
   @override

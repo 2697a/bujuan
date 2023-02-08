@@ -92,7 +92,7 @@ class RecommendView extends GetView<HomeController> {
           onTap: () {
             controller.panelController.close();
             controller.panelControllerHome.close();
-            // context.router.push(const ArtistsView().copyWith(args: artists[index]));
+            context.router.push(const ArtistsView().copyWith(args: (controller.mediaItem.value.extras!['artist']?.split(' / ').map((e) => Artists.fromJson(jsonDecode(e))).toList() ?? [])[index]));
           },
         ),
         itemCount: (controller.mediaItem.value.extras!['artist']?.split(' / ').map((e) => Artists.fromJson(jsonDecode(e))).toList() ?? []).length,

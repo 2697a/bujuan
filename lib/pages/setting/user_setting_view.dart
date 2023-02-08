@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/pages/user/user_controller.dart';
 import 'package:bujuan/widget/request_widget/request_view.dart';
 import 'package:bujuan/widget/simple_extended_image.dart';
@@ -28,7 +29,7 @@ class _UserSettingViewState extends State<UserSettingView> {
     return Scaffold(
       appBar: MyAppBar(title: const Text('个人信息'),),
       body: RequestWidget<NeteaseUserDetail>(
-        dioMetaData: userDetailDioMetaData(UserController.to.userData.value.profile?.userId ?? ''),
+        dioMetaData: userDetailDioMetaData(HomeController.to.userData.value.profile?.userId ?? ''),
         childBuilder: (userData) => Column(
           children: [
             Expanded(
@@ -70,7 +71,7 @@ class _UserSettingViewState extends State<UserSettingView> {
                             ),
                           ),
                           SimpleExtendedImage.avatar(
-                            UserController.to.userData.value.profile?.avatarUrl ?? '',
+                            HomeController.to.userData.value.profile?.avatarUrl ?? '',
                             width: 260.w,
                           ),
                         ],
@@ -79,7 +80,7 @@ class _UserSettingViewState extends State<UserSettingView> {
                   ),
                 )),
             Obx(() => Visibility(
-              visible: UserController.to.loginStatus.value == LoginStatus.login,
+              visible: HomeController.to.loginStatus.value == LoginStatus.login,
               child: GestureDetector(
                 child: SafeArea(
                     child: Container(

@@ -1,5 +1,6 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:auto_route/auto_route.dart';
+import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/pages/play_list/playlist_view.dart';
 import 'package:bujuan/widget/app_bar.dart';
 import 'package:bujuan/widget/request_widget/request_loadmore_view.dart';
@@ -44,7 +45,7 @@ class _RadioDetailsViewState extends State<RadioDetailsView> {
                 extras: {
                   'type': MediaType.playlist.name,
                   'image': e.coverUrl ?? '',
-                  'liked': UserController.to.likeIds.contains(int.tryParse(e.id)),
+                  'liked': HomeController.to.likeIds.contains(int.tryParse(e.id)),
                   'mv': 0,
                 },
               ))

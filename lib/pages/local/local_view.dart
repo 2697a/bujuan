@@ -128,7 +128,7 @@ class _LocalViewState extends State<LocalView> {
               HomeController.to.myDrawerController.open!();
             },
             icon: Obx(() => SimpleExtendedImage.avatar(
-                  UserController.to.userData.value.profile?.avatarUrl ?? '',
+                  HomeController.to.userData.value.profile?.avatarUrl ?? '',
                   width: 80.w,
                 ))),
         title: RichText(

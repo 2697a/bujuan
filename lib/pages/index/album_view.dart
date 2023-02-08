@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:audio_service/audio_service.dart';
+import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/pages/index/index_controller.dart';
 import 'package:bujuan/widget/request_widget/request_loadmore_view.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +30,7 @@ class AlbumView extends GetView<IndexController> {
   Widget build(BuildContext context) {
     return GestureDetector(
       child: Scaffold(
-      backgroundColor: Colors.transparent,
+        backgroundColor: Colors.transparent,
         appBar: MyAppBar(
           backgroundColor: Colors.transparent,
           title: RichText(
@@ -52,7 +53,7 @@ class AlbumView extends GetView<IndexController> {
                           'url': '',
                           'image': e.simpleSong.al?.picUrl ?? '',
                           'type': '',
-                          'liked': UserController.to.likeIds.contains(int.tryParse(e.simpleSong.id)),
+                          'liked': HomeController.to.likeIds.contains(int.tryParse(e.simpleSong.id)),
                           'artist': (e.simpleSong.ar ?? []).map((e) => jsonEncode(e.toJson())).toList().join(' / ')
                         },
                         title: e.simpleSong.name ?? "",
@@ -61,9 +62,13 @@ class AlbumView extends GetView<IndexController> {
                     .toList());
               return ListView.builder(
                 shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
+                itemExtent: 120.w,
                 padding: EdgeInsets.symmetric(horizontal: 20.w),
-                itemBuilder: (context, index) => SongItem(index: index, mediaItems: controller.mediaItems,queueTitle: 'cloud${DateTime.now().millisecondsSinceEpoch}',),
+                itemBuilder: (context, index) => SongItem(
+                  index: index,
+                  mediaItems: controller.mediaItems,
+                  queueTitle: 'cloud${DateTime.now().millisecondsSinceEpoch}',
+                ),
                 itemCount: controller.mediaItems.length,
               );
             }),
@@ -72,56 +77,56 @@ class AlbumView extends GetView<IndexController> {
     );
   }
 
-  // Widget _buildItem(MediaItem data, int index) {
-  //   return InkWell(
-  //     child: SizedBox(
-  //       height: 120.w,
-  //       child: Row(
-  //         children: [
-  //           SimpleExtendedImage(
-  //             '${data.extras?['image'] ?? ''}?param=200y200',
-  //             width: 85.w,
-  //             height: 85.w,
-  //             borderRadius: BorderRadius.circular(10.w),
-  //           ),
-  //           Expanded(
-  //               child: Padding(
-  //             padding: EdgeInsets.symmetric(horizontal: 15.w),
-  //             child: Column(
-  //               crossAxisAlignment: CrossAxisAlignment.start,
-  //               mainAxisAlignment: MainAxisAlignment.center,
-  //               children: [
-  //                 Text(
-  //                   data.title,
-  //                   maxLines: 1,
-  //                   style: TextStyle(fontSize: 28.sp),
-  //                 ),
-  //                 Padding(padding: EdgeInsets.symmetric(vertical: 3.w)),
-  //                 Text(
-  //                   data.artist ?? '',
-  //                   style: TextStyle(fontSize: 26.sp, color: Colors.grey),
-  //                 )
-  //               ],
-  //             ),
-  //           ))
-  //         ],
-  //       ),
-  //     ),
-  //     onTap: () => HomeController.to.playByIndex(index, 'cloudSong', mediaItem: controller.mediaItems),
-  //   );
-  //   // return ListTile(
-  //   //   dense: true,
-  //   //   contentPadding: EdgeInsets.symmetric(horizontal: 10.w),
-  //   //   leading: SimpleExtendedImage(
-  //   //     '${data.extras?['image'] ?? ''}?param=200y200',
-  //   //     width: 80.w,
-  //   //     height: 80.w,
-  //   //   ),
-  //   //   title: Text(data.title),
-  //   //   subtitle: Text(data.artist??''),
-  //   //   onTap: () {
-  //   //     controller.playIndex(index);
-  //   //   },
-  //   // );
-  // }
+// Widget _buildItem(MediaItem data, int index) {
+//   return InkWell(
+//     child: SizedBox(
+//       height: 120.w,
+//       child: Row(
+//         children: [
+//           SimpleExtendedImage(
+//             '${data.extras?['image'] ?? ''}?param=200y200',
+//             width: 85.w,
+//             height: 85.w,
+//             borderRadius: BorderRadius.circular(10.w),
+//           ),
+//           Expanded(
+//               child: Padding(
+//             padding: EdgeInsets.symmetric(horizontal: 15.w),
+//             child: Column(
+//               crossAxisAlignment: CrossAxisAlignment.start,
+//               mainAxisAlignment: MainAxisAlignment.center,
+//               children: [
+//                 Text(
+//                   data.title,
+//                   maxLines: 1,
+//                   style: TextStyle(fontSize: 28.sp),
+//                 ),
+//                 Padding(padding: EdgeInsets.symmetric(vertical: 3.w)),
+//                 Text(
+//                   data.artist ?? '',
+//                   style: TextStyle(fontSize: 26.sp, color: Colors.grey),
+//                 )
+//               ],
+//             ),
+//           ))
+//         ],
+//       ),
+//     ),
+//     onTap: () => HomeController.to.playByIndex(index, 'cloudSong', mediaItem: controller.mediaItems),
+//   );
+//   // return ListTile(
+//   //   dense: true,
+//   //   contentPadding: EdgeInsets.symmetric(horizontal: 10.w),
+//   //   leading: SimpleExtendedImage(
+//   //     '${data.extras?['image'] ?? ''}?param=200y200',
+//   //     width: 80.w,
+//   //     height: 80.w,
+//   //   ),
+//   //   title: Text(data.title),
+//   //   subtitle: Text(data.artist??''),
+//   //   onTap: () {
+//   //     controller.playIndex(index);
+//   //   },
+//   // );
+// }
 }

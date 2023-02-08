@@ -11,12 +11,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:keframe/keframe.dart';
-import 'package:preload_page_view/preload_page_view.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 import '../../../common/constants/other.dart';
 import '../../../common/constants/platform_utils.dart';
 import '../../../routes/router.gr.dart';
+import '../../../widget/my_get_view.dart';
 
 class PanelView extends GetView<HomeController> {
   const PanelView({Key? key}) : super(key: key);
@@ -27,32 +27,29 @@ class PanelView extends GetView<HomeController> {
   Widget build(BuildContext context) {
     double bottomHeight = MediaQuery.of(controller.buildContext).padding.bottom * (PlatformUtils.isIOS ? 0.4 : 0.8);
     if (bottomHeight == 0) bottomHeight = 20.w;
-    return WillPopScope(
-        child: GestureDetector(
-          child: SlidingUpPanel(
-            controller: controller.panelController,
-            onPanelSlide: (value) {
-              controller.slidePosition.value = 1 - value;
-              if (controller.second.value != value >= 0.5) controller.second.value = value > 0.5;
-            },
-            boxShadow: const [BoxShadow(blurRadius: 8.0, color: Color.fromRGBO(0, 0, 0, 0.05))],
-            color: Colors.transparent,
-            panel: ClassWidget(child: _buildDefaultPanel(context, bottomHeight)),
-            body: ClassWidget(child: _buildDefaultBody(context)),
-            header: ClassWidget(child: _buildBottom(bottomHeight, context)),
-            minHeight: 110.h + bottomHeight,
-            maxHeight: Get.height - controller.panelHeaderSize - MediaQuery.of(context).padding.top - 10.w,
-          ),
-          onHorizontalDragDown: (e) {
-            return;
-          },
-        ),
-        onWillPop: () => controller.onWillPop());
+    return MyGetView(
+      child: SlidingUpPanel(
+        controller: controller.panelController,
+        onPanelSlide: (value) {
+          controller.slidePosition.value = 1 - value;
+          if (controller.second.value != value >= 0.5) {
+            controller.second.value = value > 0.5;
+          }
+        },
+        boxShadow: const [BoxShadow(blurRadius: 8.0, color: Color.fromRGBO(0, 0, 0, 0.05))],
+        color: Colors.transparent,
+        panel: ClassWidget(child: _buildDefaultPanel(context, bottomHeight)),
+        body: ClassWidget(child: _buildDefaultBody(context)),
+        header: ClassWidget(child: _buildBottom(bottomHeight, context)),
+        minHeight: 120.w + bottomHeight,
+        maxHeight: Get.height - controller.panelHeaderSize - MediaQuery.of(context).padding.top - 10.w,
+      ),
+    );
   }
 
   Widget _buildSlide(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(left: 50.w, right: 50.w, bottom: 50.w),
+      padding: EdgeInsets.only(left: 60.w, right: 60.w, bottom: 50.w),
       height: 100.w,
       child: Stack(
         alignment: Alignment.center,
@@ -80,7 +77,7 @@ class PanelView extends GetView<HomeController> {
                 progressBarColor: Colors.transparent,
                 baseBarColor: Colors.transparent,
                 bufferedBarColor: Colors.transparent,
-                thumbColor: controller.bodyColor.value.withOpacity(.1),
+                thumbColor: controller.bodyColor.value.withOpacity(.18),
                 barHeight: 0.w,
                 thumbRadius: 20.w,
                 barCapShape: BarCapShape.square,
@@ -101,14 +98,14 @@ class PanelView extends GetView<HomeController> {
     return Expanded(
         child: ClassWidget(
             child: Padding(
-      padding: EdgeInsets.only(left: 40.w, right: 40.w),
+      padding: EdgeInsets.symmetric(horizontal: 35.w),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Obx(() => IconButton(
+          IconButton(
               onPressed: () => controller.likeSong(),
-              icon: Icon(UserController.to.likeIds.contains(int.tryParse(controller.mediaItem.value.id)) ? TablerIcons.hearts : TablerIcons.heart,
-                  size: 44.w, color: controller.bodyColor.value))),
+              icon: Obx(() => Icon(controller.likeIds.contains(int.tryParse(controller.mediaItem.value.id)) ? TablerIcons.heartbeat : TablerIcons.heart,
+                  size: 46.w, color: controller.bodyColor.value))),
           Expanded(
               child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -137,42 +134,43 @@ class PanelView extends GetView<HomeController> {
                         width: 100.h,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(80.w),
+                          border: Border.all(color: controller.bodyColor.value.withOpacity(.03), width: 5.w),
                           color: controller.bodyColor.value.withOpacity(.1),
                         ),
                         child: Icon(
                           controller.playing.value ? TablerIcons.player_pause : TablerIcons.player_play,
-                          size: 52.w,
+                          size: 54.w,
                           color: controller.bodyColor.value,
                         ),
                       )),
                   onTap: () => controller.playOrPause(),
                 ),
               ),
-              Obx(() => IconButton(
+              IconButton(
                   onPressed: () {
                     if (controller.intervalClick(1)) {
                       controller.audioServeHandler.skipToNext();
                     }
                   },
-                  icon: Icon(
-                    TablerIcons.player_skip_forward,
-                    size: 46.w,
-                    color: controller.bodyColor.value,
-                  ))),
+                  icon: Obx(() => Icon(
+                        TablerIcons.player_skip_forward,
+                        size: 46.w,
+                        color: controller.bodyColor.value,
+                      ))),
             ],
           )),
-          Obx(() => IconButton(
+          IconButton(
               onPressed: () {
                 if (controller.fm.value) {
                   return;
                 }
                 controller.changeRepeatMode();
               },
-              icon: Icon(
-                controller.getRepeatIcon(),
-                size: 43.w,
-                color: controller.bodyColor.value,
-              ))),
+              icon: Obx(() => Icon(
+                    controller.getRepeatIcon(),
+                    size: 43.w,
+                    color: controller.bodyColor.value,
+                  ))),
         ],
       ),
     )));
@@ -183,31 +181,46 @@ class PanelView extends GetView<HomeController> {
   // }
 
   Widget _buildBottom(bottomHeight, context) {
-    return Stack(
-      alignment: Alignment.topCenter,
-      children: [
-        Obx(() => Container(
-              width: 70.w,
-              height: 8.w,
-              margin: EdgeInsets.only(top: 12.w),
-              decoration: BoxDecoration(color: controller.bodyColor.value.withOpacity(.3), borderRadius: BorderRadius.circular(4.w)),
-            )),
-        Obx(() => FlashyNavbar(
-              height: 110.h,
-              selectedIndex: controller.selectIndex.value,
-              items: [
-                FlashyNavbarItem(icon: const Icon(TablerIcons.atom_2)),
-                FlashyNavbarItem(icon: const Icon(TablerIcons.playlist)),
-                FlashyNavbarItem(icon: const Icon(TablerIcons.quote)),
-                FlashyNavbarItem(icon: const Icon(TablerIcons.message_2)),
-              ],
-              onItemSelected: (index) {
-                controller.pageController.jumpToPage(index);
-                if (!controller.panelController.isPanelOpen) controller.panelController.open();
-              },
-              backgroundColor: controller.bodyColor.value,
-            )),
-      ],
+    return SizedBox(
+      height: 120.w + bottomHeight,
+      child: Stack(
+        alignment: Alignment.topCenter,
+        children: [
+          Obx(() => Container(
+                width: 70.w,
+                height: 8.w,
+                margin: EdgeInsets.only(top: 12.w),
+                decoration: BoxDecoration(color: controller.bodyColor.value.withOpacity(.3), borderRadius: BorderRadius.circular(4.w)),
+              )),
+          Obx(() => FlashyNavbar(
+                height: 120.w,
+                selectedIndex: controller.selectIndex.value,
+                items: [
+                  FlashyNavbarItem(icon: const Icon(TablerIcons.atom_2)),
+                  FlashyNavbarItem(icon: const Icon(TablerIcons.playlist)),
+                  FlashyNavbarItem(icon: const Icon(TablerIcons.quote)),
+                  FlashyNavbarItem(icon: const Icon(TablerIcons.message_2)),
+                ],
+                onItemSelected: (index) {
+                  controller.selectIndex.value = index;
+                  // controller.pageController.jumpToPage(index);
+                  if (!controller.panelController.isPanelOpen) controller.panelController.open();
+                },
+                backgroundColor: controller.bodyColor.value,
+              )),
+          Positioned(
+            bottom: 0,
+            child: GestureDetector(
+              child: Container(
+                height: MediaQuery.of(context).padding.bottom,
+                width: Get.width,
+                color: Colors.transparent,
+              ),
+              onVerticalDragEnd: (e) {},
+            ),
+          )
+        ],
+      ),
     );
   }
 
@@ -221,18 +234,18 @@ class PanelView extends GetView<HomeController> {
               color: Colors.transparent,
             ),
             child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
+              duration: const Duration(milliseconds: 300),
               decoration: BoxDecoration(
                 gradient: LinearGradient(colors: [
                   !controller.panelOpenPositionThan1.value && !controller.second.value
-                      ? Theme.of(context).bottomAppBarColor.withOpacity(controller.leftImage.value ? 0 : .7)
+                      ? Theme.of(context).bottomAppBarColor.withOpacity(controller.leftImage.value ? 0 : .6)
                       : !controller.gradientBackground.value
-                          ? controller.rx.value.dominantColor?.color.withOpacity(.7) ?? Colors.transparent
-                          : controller.rx.value.lightVibrantColor?.color.withOpacity(.7) ??
-                              controller.rx.value.lightMutedColor?.color.withOpacity(.7) ??
-                              controller.rx.value.dominantColor?.color.withOpacity(.7) ??
+                          ? controller.rx.value.dominantColor?.color.withOpacity(.6) ?? Colors.transparent
+                          : controller.rx.value.lightVibrantColor?.color.withOpacity(.6) ??
+                              controller.rx.value.lightMutedColor?.color.withOpacity(.6) ??
+                              controller.rx.value.dominantColor?.color.withOpacity(.6) ??
                               Colors.transparent,
-                  controller.rx.value.dominantColor?.color.withOpacity(.7) ?? Colors.transparent,
+                  controller.rx.value.dominantColor?.color.withOpacity(.6) ?? Colors.transparent,
                 ], begin: Alignment.topLeft, end: Alignment.bottomCenter),
                 borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),
               ),
@@ -244,7 +257,6 @@ class PanelView extends GetView<HomeController> {
           child: BackdropFilter(
             /// 过滤器
             filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
-
             /// 必须设置一个空容器
             child: _buildBodyContent(context),
           ),
@@ -297,7 +309,7 @@ class PanelView extends GetView<HomeController> {
         // ),
         // Obx(() => Visibility(
         //       replacement: AnimatedContainer(
-        //         duration: const Duration(milliseconds: 200),
+        //         duration: const Duration(milliseconds: 300),
         //         decoration: BoxDecoration(
         //           color: controller.rx.value.dominantColor?.color ?? Colors.transparent,
         //           borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),
@@ -305,7 +317,7 @@ class PanelView extends GetView<HomeController> {
         //       ),
         //       visible: controller.gradientBackground.value,
         //       child: AnimatedContainer(
-        //           duration: const Duration(milliseconds: 200),
+        //           duration: const Duration(milliseconds: 300),
         //           decoration: BoxDecoration(
         //             gradient: LinearGradient(colors: [
         //               controller.rx.value.dominantColor?.color ?? Colors.transparent,
@@ -323,7 +335,7 @@ class PanelView extends GetView<HomeController> {
           borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),
           child: BackdropFilter(
             /// 过滤器
-            filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
+            filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
 
             /// 必须设置一个空容器
             child: _buildPanelContent(context, bottomHeight),
@@ -336,16 +348,20 @@ class PanelView extends GetView<HomeController> {
   Widget _buildPanelContent(BuildContext context, bottomHeight) {
     return Padding(
       padding: EdgeInsets.only(top: 110.h + bottomHeight),
-      child: PreloadPageView.builder(
-        itemBuilder: (context, index) => controller.pages[index],
-        itemCount: controller.pages.length,
-        controller: controller.pageController,
-        physics: const NeverScrollableScrollPhysics(),
-        preloadPagesCount: controller.pages.length,
-        onPageChanged: (index) {
-          controller.selectIndex.value = index;
-        },
-      ),
+      child: Obx(() => IndexedStack(
+        index: controller.selectIndex.value,
+        children: controller.pages,
+      )),
+      // child: PageView.builder(
+      //   itemBuilder: (context, index) => controller.pages[index],
+      //   itemCount: controller.pages.length,
+      //   controller: controller.pageController,
+      //   physics: const NeverScrollableScrollPhysics(),
+      //   // preloadPagesCount: controller.pages.length,
+      //   onPageChanged: (index) {
+      //     controller.selectIndex.value = index;
+      //   },
+      // ),
     );
   }
 
@@ -414,14 +430,8 @@ class PanelView extends GetView<HomeController> {
           );
         }),
         ClassWidget(
-            child: Obx(() => Visibility(
-                  visible: controller.isDraggable.value,
-                  replacement: SizedBox(
-                    height: 100.w * 7,
-                  ),
-                  child: Obx(() => SizedBox(
-                        height: controller.getPanelMinSize(),
-                      )),
+            child: Obx(() => SizedBox(
+                  height: controller.getPanelMinSize(),
                 ))),
         ClassWidget(
             child: Container(
@@ -437,7 +447,7 @@ class PanelView extends GetView<HomeController> {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   )),
-              Padding(padding: EdgeInsets.symmetric(vertical: 3.w)),
+              Padding(padding: EdgeInsets.symmetric(vertical: 5.w)),
               Obx(() => Text(
                     (controller.mediaItem.value.artist ?? '').fixAutoLines(),
                     style: TextStyle(fontSize: 28.sp, color: controller.bodyColor.value),
@@ -451,7 +461,7 @@ class PanelView extends GetView<HomeController> {
         _buildPlayController(context),
         ClassWidget(
             child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 50.w, vertical: 20.w),
+          padding: EdgeInsets.symmetric(horizontal: 55.w, vertical: 20.w),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -471,7 +481,7 @@ class PanelView extends GetView<HomeController> {
         //功能按钮
         ClassWidget(
             child: SizedBox(
-          height: 110.h + MediaQuery.of(context).padding.bottom,
+          height: 110.w + MediaQuery.of(context).padding.bottom,
         )),
       ],
     );

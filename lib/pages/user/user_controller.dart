@@ -4,6 +4,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/common/constants/key.dart';
 import 'package:bujuan/common/constants/other.dart';
 import 'package:bujuan/common/storage.dart';
+import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/pages/user/user_view.dart';
 import 'package:bujuan/routes/router.dart';
 import 'package:bujuan/routes/router.gr.dart';
@@ -25,7 +26,7 @@ enum LoginStatus { login, noLogin }
 
 class UserController extends GetxController {
   List<Play> playlist = <Play>[].obs;
-  List<Play> playlist1 = <Play>[].obs;
+  Rx<Play> play = Play().obs;
   ScrollController userScrollController = ScrollController();
   RxDouble op = 0.0.obs;
   final List<double> colors = [1, .9, .8, .7, .6, .5, .4, .3, .2, .1, 0];
@@ -36,34 +37,16 @@ class UserController extends GetxController {
     UserItem('云盘', TablerIcons.cloud_fog, routes: Routes.cloud)
   ];
 
-  Rx<LoginStatus> loginStatus = LoginStatus.noLogin.obs;
-  RequestRefreshController refreshController = RequestRefreshController();
-  Rx<NeteaseAccountInfoWrap> userData = NeteaseAccountInfoWrap().obs;
-  RxList<int> likeIds = <int>[].obs;
-
   //进度
   @override
   void onInit() {
     super.onInit();
-    userScrollController.addListener(() {
-      if (userScrollController.position.pixels <= 130.w && op.value != 0) {
-        op.value = 0;
-      }
-      if (userScrollController.position.pixels >= 240.w && op.value < 1) {
-        op.value = 1;
-      }
-    });
   }
 
   @override
   void onReady() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      String userDataStr = StorageUtil().getString(loginData);
-      if (userDataStr.isNotEmpty) {
-        loginStatus.value = LoginStatus.login;
-        userData.value = NeteaseAccountInfoWrap.fromJson(jsonDecode(userDataStr));
-        getUserState();
-      }
+      getUserState();
       _update();
     });
   }
@@ -88,24 +71,15 @@ class UserController extends GetxController {
     try {
       NeteaseAccountInfoWrap neteaseAccountInfoWrap = await NeteaseMusicApi().loginAccountInfo();
       if (neteaseAccountInfoWrap.code == 200 && neteaseAccountInfoWrap.profile != null) {
-        userData.value = neteaseAccountInfoWrap;
-        loginStatus.value = LoginStatus.login;
+        HomeController.to.userData.value = neteaseAccountInfoWrap;
+        HomeController.to.loginStatus.value = LoginStatus.login;
         StorageUtil().setString(loginData, jsonEncode(neteaseAccountInfoWrap.toJson()));
         getUserPlayList();
         _getUserLikeSongIds();
       }
     } catch (e) {
-      loginStatus.value = LoginStatus.noLogin;
+      HomeController.to.loginStatus.value = LoginStatus.noLogin;
       WidgetUtil.showToast('获取用户资料失败，请检查网络');
-    }
-  }
-
-  _getUserLikeSongIds() async {
-    LikeSongListWrap likeSongListWrap = await NeteaseMusicApi().likeSongList(userData.value.profile?.userId ?? '-1');
-    if (likeSongListWrap.code == 200) {
-      likeIds
-        ..clear()
-        ..addAll(likeSongListWrap.ids);
     }
   }
 
@@ -116,27 +90,43 @@ class UserController extends GetxController {
         return;
       }
       StorageUtil().setString(loginData, '');
-      loginStatus.value = LoginStatus.noLogin;
+      HomeController.to.loginStatus.value = LoginStatus.noLogin;
     });
   }
 
   getUserPlayList() {
-    NeteaseMusicApi().userPlayList(userData.value.profile?.userId ?? '-1').then((MultiPlayListWrap2 multiPlayListWrap2) {
-      playlist.clear();
-      playlist1.clear();
-      for (Play value in (multiPlayListWrap2.playlist ?? [])) {
-        if (value.creator?.userId == userData.value.profile?.userId) {
-          playlist.add(value);
-        } else {
-          playlist1.add(value);
-        }
+    NeteaseMusicApi().userPlayList(HomeController.to.userData.value.profile?.userId ?? '-1').then((MultiPlayListWrap2 multiPlayListWrap2) {
+      List<Play> list = (multiPlayListWrap2.playlist ?? []);
+      if (list.isNotEmpty) {
+        play.value = list.first;
+        playlist
+          ..clear()
+          ..addAll(list..removeAt(0));
       }
+      // playlist.clear();
+      // playlist1.clear();
+      // for (Play value in (multiPlayListWrap2.playlist ?? [])) {
+      //   if (value.creator?.userId == userData.value.profile?.userId) {
+      //     playlist.add(value);
+      //   } else {
+      //     playlist1.add(value);
+      //   }
+      // }
     });
   }
 
   DioMetaData userPlayListDioMetaData(String userId, {int offset = 0, int limit = 30}) {
     var params = {'uid': userId, 'limit': limit, 'offset': offset};
     return DioMetaData(joinUri('/weapi/user/playlist'), data: params, options: joinOptions());
+  }
+
+  _getUserLikeSongIds() async {
+    LikeSongListWrap likeSongListWrap = await NeteaseMusicApi().likeSongList(HomeController.to.userData.value.profile?.userId ?? '-1');
+    if (likeSongListWrap.code == 200) {
+      HomeController.to.likeIds
+        ..clear()
+        ..addAll(likeSongListWrap.ids);
+    }
   }
 
   @override

@@ -96,7 +96,7 @@ class PanelViewL extends GetView<HomeController> {
             children: [
               Obx(() => IconButton(
                   onPressed: () => controller.likeSong(),
-                  icon: Icon(UserController.to.likeIds.contains(int.tryParse(controller.mediaItem.value.id)) ? TablerIcons.hearts : TablerIcons.heart,
+                  icon: Icon(controller.likeIds.contains(int.tryParse(controller.mediaItem.value.id)) ? TablerIcons.hearts : TablerIcons.heart,
                       size: 44.w, color: controller.bodyColor.value))),
               Expanded(
                   child: Row(
@@ -299,16 +299,16 @@ class PanelViewL extends GetView<HomeController> {
     return Container(
       width: Get.width - 80.w * 7,
       padding: EdgeInsets.only(top: 110.h + bottomHeight),
-      child: PreloadPageView.builder(
-        itemBuilder: (context, index) => controller.pages[index],
-        itemCount: controller.pages.length,
-        controller: controller.pageController,
-        physics: const NeverScrollableScrollPhysics(),
-        preloadPagesCount: controller.pages.length,
-        onPageChanged: (index) {
-          controller.selectIndex.value = index;
-        },
-      ),
+      // child: PreloadPageView.builder(
+      //   itemBuilder: (context, index) => controller.pages[index],
+      //   itemCount: controller.pages.length,
+      //   controller: controller.pageController,
+      //   physics: const NeverScrollableScrollPhysics(),
+      //   preloadPagesCount: controller.pages.length,
+      //   onPageChanged: (index) {
+      //     controller.selectIndex.value = index;
+      //   },
+      // ),
     );
   }
 

@@ -204,7 +204,7 @@ class RequestPlaylistLoadMoreWidgetState extends State<RequestPlaylistLoadMoreWi
             extras: {
               'type': MediaType.playlist.name,
               'image': e.al?.picUrl ?? '',
-              'liked': UserController.to.likeIds.contains(int.tryParse(e.id)),
+              'liked': HomeController.to.likeIds.contains(int.tryParse(e.id)),
               'artist': (e.ar ?? []).map((e) => jsonEncode(e.toJson())).toList().join(' / '),
               'mv': e.mv
             },

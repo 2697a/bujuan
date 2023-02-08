@@ -23,14 +23,14 @@ class MainView extends GetView<IndexController> {
       appBar: MyAppBar(
         backgroundColor: Colors.transparent,
         centerTitle: false,
-        leading: IconButton(
-            onPressed: () {
-              HomeController.to.myDrawerController.open!();
-            },
-            icon: Obx(() => SimpleExtendedImage.avatar(
-                  UserController.to.userData.value.profile?.avatarUrl ?? '',
-                  width: 80.w,
-                ))),
+        // leading: IconButton(
+        //     onPressed: () {
+        //       HomeController.to.myDrawerController.open!();
+        //     },
+        //     icon: Obx(() => SimpleExtendedImage.avatar(
+        //           UserController.to.userData.value.profile?.avatarUrl ?? '',
+        //           width: 80.w,
+        //         ))),
         title: RichText(
             text: TextSpan(style: TextStyle(fontSize: 42.sp, color: Colors.grey, fontWeight: FontWeight.bold), text: 'Here  ', children: [
           TextSpan(text: '推荐歌单～', style: TextStyle(color: Theme.of(context).primaryColor.withOpacity(.9))),

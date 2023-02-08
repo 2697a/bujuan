@@ -102,6 +102,11 @@ dependencies:
   audio_video_progress_bar: ^0.11.0
   adaptive_dialog: ^1.8.0+1
   liquid_swipe: ^3.0.0
+  media_cache_manager:
+    path: plugins/media_cache_manager
+  flutter_slidable: ^2.0.0
+  shrink_sidemenu: ^2.0.0+2-null-safety
+  easy_refresh: ^3.3.0+1
 #  smooth:
 #    path: plugins/flutter_smooth/packages/smooth
 
