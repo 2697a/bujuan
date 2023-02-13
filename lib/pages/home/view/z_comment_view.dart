@@ -1,24 +1,25 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
-import 'package:bujuan/pages/home/view/panel_view.dart';
 import 'package:bujuan/routes/router.gr.dart';
 import 'package:bujuan/widget/simple_extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:keframe/keframe.dart';
 
 import '../../../common/netease_api/src/api/event/bean.dart';
 
-class CommentView extends GetView<HomeController> {
+class CommentView extends GetView<Home> {
   const CommentView({super.key});
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
+      padding: EdgeInsets.symmetric(horizontal: 20.w),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ClassWidget(
+          FrameSeparateWidget(
             child: Padding(
               padding: EdgeInsets.symmetric(vertical: 20.w, horizontal: 30.w),
               child: Row(
@@ -40,11 +41,11 @@ class CommentView extends GetView<HomeController> {
               ),
             ),
           ),
-          ClassWidget(child: Obx(() => ListView.builder(
+          FrameSeparateWidget(child: Obx(() => ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             padding: const EdgeInsets.all(0),
-            itemBuilder: (context1, index) => ClassWidget(child: _buildItem(controller.comments[index], context)),
+            itemBuilder: (context1, index) => _buildItem(controller.comments[index], context),
             itemCount: controller.comments.length,
           ))),
         ],

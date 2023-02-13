@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/common/constants/key.dart';
 import 'package:bujuan/common/constants/other.dart';
 import 'package:bujuan/common/storage.dart';
@@ -9,7 +8,6 @@ import 'package:bujuan/pages/user/user_view.dart';
 import 'package:bujuan/routes/router.dart';
 import 'package:bujuan/routes/router.gr.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
@@ -20,16 +18,13 @@ import '../../common/netease_api/src/api/play/bean.dart';
 import '../../common/netease_api/src/dio_ext.dart';
 import '../../common/netease_api/src/netease_api.dart';
 import '../../common/netease_api/src/netease_handler.dart';
-import '../../widget/request_widget/request_loadmore_view.dart';
 
 enum LoginStatus { login, noLogin }
 
 class UserController extends GetxController {
   List<Play> playlist = <Play>[].obs;
   Rx<Play> play = Play().obs;
-  ScrollController userScrollController = ScrollController();
-  RxDouble op = 0.0.obs;
-  final List<double> colors = [1, .9, .8, .7, .6, .5, .4, .3, .2, .1, 0];
+  RxBool loading = true.obs;
   final List<UserItem> userItems = [
     UserItem('每日', TablerIcons.calendar, routes: Routes.today),
     UserItem('FM', TablerIcons.vinyl, routes: 'playFm'),
@@ -71,14 +66,14 @@ class UserController extends GetxController {
     try {
       NeteaseAccountInfoWrap neteaseAccountInfoWrap = await NeteaseMusicApi().loginAccountInfo();
       if (neteaseAccountInfoWrap.code == 200 && neteaseAccountInfoWrap.profile != null) {
-        HomeController.to.userData.value = neteaseAccountInfoWrap;
-        HomeController.to.loginStatus.value = LoginStatus.login;
+        Home.to.userData.value = neteaseAccountInfoWrap;
+        Home.to.loginStatus.value = LoginStatus.login;
         StorageUtil().setString(loginData, jsonEncode(neteaseAccountInfoWrap.toJson()));
         getUserPlayList();
         _getUserLikeSongIds();
       }
     } catch (e) {
-      HomeController.to.loginStatus.value = LoginStatus.noLogin;
+      Home.to.loginStatus.value = LoginStatus.noLogin;
       WidgetUtil.showToast('获取用户资料失败，请检查网络');
     }
   }
@@ -90,12 +85,12 @@ class UserController extends GetxController {
         return;
       }
       StorageUtil().setString(loginData, '');
-      HomeController.to.loginStatus.value = LoginStatus.noLogin;
+      Home.to.loginStatus.value = LoginStatus.noLogin;
     });
   }
 
   getUserPlayList() {
-    NeteaseMusicApi().userPlayList(HomeController.to.userData.value.profile?.userId ?? '-1').then((MultiPlayListWrap2 multiPlayListWrap2) {
+    NeteaseMusicApi().userPlayList(Home.to.userData.value.profile?.userId ?? '-1').then((MultiPlayListWrap2 multiPlayListWrap2) {
       List<Play> list = (multiPlayListWrap2.playlist ?? []);
       if (list.isNotEmpty) {
         play.value = list.first;
@@ -103,27 +98,14 @@ class UserController extends GetxController {
           ..clear()
           ..addAll(list..removeAt(0));
       }
-      // playlist.clear();
-      // playlist1.clear();
-      // for (Play value in (multiPlayListWrap2.playlist ?? [])) {
-      //   if (value.creator?.userId == userData.value.profile?.userId) {
-      //     playlist.add(value);
-      //   } else {
-      //     playlist1.add(value);
-      //   }
-      // }
+      loading.value = false;
     });
   }
 
-  DioMetaData userPlayListDioMetaData(String userId, {int offset = 0, int limit = 30}) {
-    var params = {'uid': userId, 'limit': limit, 'offset': offset};
-    return DioMetaData(joinUri('/weapi/user/playlist'), data: params, options: joinOptions());
-  }
-
   _getUserLikeSongIds() async {
-    LikeSongListWrap likeSongListWrap = await NeteaseMusicApi().likeSongList(HomeController.to.userData.value.profile?.userId ?? '-1');
+    LikeSongListWrap likeSongListWrap = await NeteaseMusicApi().likeSongList(Home.to.userData.value.profile?.userId ?? '-1');
     if (likeSongListWrap.code == 200) {
-      HomeController.to.likeIds
+      Home.to.likeIds
         ..clear()
         ..addAll(likeSongListWrap.ids);
     }

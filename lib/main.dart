@@ -10,6 +10,7 @@ import 'package:bujuan/pages/user/user_controller.dart';
 import 'package:bujuan/routes/router.gr.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_zoom_drawer/config.dart';
 import 'package:get/get.dart';
@@ -26,11 +27,13 @@ main() async {
   bool isMobile = PlatformUtils.isAndroid || PlatformUtils.isIOS || PlatformUtils.isFuchsia || PlatformUtils.isWeb;
   WidgetsFlutterBinding.ensureInitialized();
   await DownloadCacheManager.init();
+  await FlutterDisplayMode.setHighRefreshRate();
   await DownloadCacheManager.setExpireDate(daysToExpire: 100);
   final getIt = GetIt.instance;
   await _initAudioServer(getIt);
   final rootRouter = getIt<RootRouter>();
   HomeBinding().dependencies();
+  // debugProfileBuildsEnabled = true;
   runApp(OrientationBuilder(builder: (context, orientation) {
     return ScreenUtilInit(
       rebuildFactor: RebuildFactors.orientation,

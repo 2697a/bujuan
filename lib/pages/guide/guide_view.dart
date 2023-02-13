@@ -7,12 +7,10 @@ import 'package:bujuan/common/storage.dart';
 import 'package:bujuan/routes/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get_it/get_it.dart';
 import 'package:lottie/lottie.dart';
 import 'package:notification_permissions/notification_permissions.dart';
 import 'dart:math' as math;
 
-import '../../common/bujuan_audio_handler.dart';
 
 class GuideView extends StatefulWidget {
   const GuideView({Key? key}) : super(key: key);
@@ -42,18 +40,12 @@ class _GuideViewState extends State<GuideView> with WidgetsBindingObserver {
       });
     });
     _bottomData = [
-      BottomData('是否开启全局动效', '请观看上方图片示例', onCancel: () {
-        _jumpToPage(2);
-        StorageUtil().setBool(leftImageSp, false);
-      }, onOk: () {
-        _jumpToPage(2);
-        StorageUtil().setBool(leftImageSp, true);
-      }),
+      BottomData('title', 'subTitle'),
       BottomData('是否开启播放页渐变', '请观看上方图片示例', onCancel: () {
-        _jumpToPage(3);
+        _jumpToPage(2);
         StorageUtil().setBool(gradientBackgroundSp, false);
       }, onOk: () {
-        _jumpToPage(3);
+        _jumpToPage(2);
         StorageUtil().setBool(gradientBackgroundSp, true);
       }),
       BottomData('为了更好的为您服务', '请授予通知权限', onCancel: () {
@@ -99,7 +91,6 @@ class _GuideViewState extends State<GuideView> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
       body: Stack(
         alignment: Alignment.topRight,
         children: [
@@ -108,7 +99,7 @@ class _GuideViewState extends State<GuideView> with WidgetsBindingObserver {
             physics: const NeverScrollableScrollPhysics(),
             children: [
               _buildWelcome(),
-              _buildLeftImage(context),
+              // _buildLeftImage(context),
               _buildSolidBackground(context),
               _buildNotification(),
             ],
@@ -119,7 +110,7 @@ class _GuideViewState extends State<GuideView> with WidgetsBindingObserver {
             child: IconButton(
                 onPressed: () {
                   AutoRouter.of(context).replaceNamed(Routes.home);
-                  StorageUtil().setBool(leftImageSp, true);
+                  StorageUtil().setBool(leftImageSp, false);
                   StorageUtil().setBool(gradientBackgroundSp, true);
                 },
                 icon: Text(

@@ -1,5 +1,5 @@
+import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 class FlashyNavbar extends StatelessWidget {
@@ -56,16 +56,16 @@ class FlashyNavbar extends StatelessWidget {
             return Expanded(
               child: GestureDetector(
                 onTap: () => onItemSelected(index),
-                child: _FlashyNavbarItem(
+                child: Obx(() => _FlashyNavbarItem(
                   item: item,
                   tabBarHeight: height,
                   iconSize: iconSize,
-                  isSelected: index == selectedIndex,
+                  isSelected: index == Home.to.selectIndex.value,
                   backgroundColor: bg!,
                   color: backgroundColor!,
                   animationDuration: animationDuration,
                   animationCurve: animationCurve,
-                ),
+                )),
               ),
             );
           }).toList(),
@@ -126,30 +126,11 @@ class _FlashyNavbarItem extends StatelessWidget {
             AnimatedAlign(
               duration: animationDuration,
               alignment: Alignment.center,
-              child: AnimatedOpacity(
-                  opacity: isSelected ? 1.0 : 1.0,
-                  duration: animationDuration,
-                  child: IconTheme(
-                    data: IconThemeData(size: iconSize, color: color),
-                    child: item.icon,
-                  )),
+              child: Obx(() => IconTheme(
+                data: IconThemeData(size: iconSize, color: Home.to.bodyColor.value.withOpacity(isSelected?1:0.6)),
+                child: item.icon,
+              )),
             ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: AnimatedOpacity(
-                  duration: animationDuration,
-                  opacity: isSelected ? 1.0 : 0.0,
-                  child: Container(
-                    width: 4,
-                    height: 4,
-                    alignment: Alignment.bottomCenter,
-                    margin: const EdgeInsets.only(bottom: 4),
-                    decoration: BoxDecoration(
-                      color: color,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  )),
-            )
           ],
         ));
   }

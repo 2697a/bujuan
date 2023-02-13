@@ -83,7 +83,62 @@ class RequestLoadMoreWidgetState<E, T> extends State<RequestLoadMoreWidget<E, T>
             ? const EmptyView()
             : _error
                 ? const ErrorView()
-                : widget.childBuilder(list);
+                : SmartRefresher(
+      physics: const BouncingScrollPhysics(),
+      enablePullUp: widget.enableLoad,
+      scrollController: widget.scrollController,
+      header: WaterDropHeader(
+        waterDropColor: Theme.of(context).colorScheme.onSecondary,
+        refresh: CupertinoActivityIndicator(
+          color: Theme.of(context).iconTheme.color,
+        ),
+        complete: RichText(
+            text: TextSpan(children: [
+              const WidgetSpan(
+                  child: Padding(
+                    padding: EdgeInsets.only(right: 16),
+                    child: Icon(TablerIcons.mood_unamused),
+                  )),
+              TextSpan(text: '呼～  搞定', style: TextStyle(color: Theme.of(context).iconTheme.color))
+            ])),
+        idleIcon: Icon(
+          TablerIcons.refresh,
+          size: 15,
+          color: Theme.of(context).cardColor,
+        ),
+      ),
+      controller: _refreshController,
+      onRefresh: () async {
+        noMore = false;
+        _refreshController.resetNoData();
+        pageNum = widget.isPageNmu ? 1 : 0;
+        if (widget.isPageNmu) {
+          dioMetaData?.data['pageNo'] = pageNum;
+        }
+        if ((widget.lastField ?? '').isNotEmpty) {
+          dioMetaData?.data[widget.lastField] = 0;
+        }
+        if (dioMetaData?.data['offset'] != null) {
+          dioMetaData?.data['offset'] = pageNum;
+        }
+        callRefresh();
+      },
+      onLoading: () async {
+        if (noMore) return;
+        pageNum++;
+        if (widget.isPageNmu) {
+          dioMetaData?.data['pageNo'] = pageNum;
+        }
+        if ((widget.lastField ?? '').isNotEmpty) {
+          dioMetaData?.data[widget.lastField] = map![widget.lastField];
+        }
+        if (dioMetaData?.data['offset'] != null) {
+          dioMetaData?.data['offset'] = pageNum * widget.pageSize;
+        }
+        callRefresh();
+      },
+      child: widget.childBuilder(list),
+    );
   }
 
   @override

@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
-
 import 'package:audio_service/audio_service.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/common/constants/enmu.dart';
@@ -11,6 +10,7 @@ import 'package:bujuan/common/constants/platform_utils.dart';
 import 'package:bujuan/common/lyric_parser/parser_lrc.dart';
 import 'package:bujuan/common/netease_api/netease_music_api.dart';
 import 'package:bujuan/common/storage.dart';
+import 'package:bujuan/pages/home/view/progress_notifier.dart';
 import 'package:bujuan/pages/home/view/z_comment_view.dart';
 import 'package:bujuan/pages/home/view/z_lyric_view.dart';
 import 'package:bujuan/pages/home/view/z_playlist_view.dart';
@@ -25,7 +25,6 @@ import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:on_audio_edit/on_audio_edit.dart';
 import 'package:palette_generator/palette_generator.dart';
-import 'package:preload_page_view/preload_page_view.dart';
 
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
@@ -33,25 +32,27 @@ import '../../common/lyric_parser/lyrics_reader_model.dart';
 import '../../common/netease_api/src/api/bean.dart';
 import '../../common/bujuan_audio_handler.dart';
 import '../../routes/router.dart';
+import '../../widget/weslide/panel_play_view.dart';
 import 'view/home_view.dart';
 
 Future<PaletteGenerator> getColor(MediaItem mediaItem) async {
   return await OtherUtils.getImageColor('${mediaItem.extras?['image'] ?? ''}?param=500y500');
 }
 
-class HomeController extends SuperController with GetSingleTickerProviderStateMixin {
+class Home extends SuperController with GetSingleTickerProviderStateMixin {
   double panelHeaderSize = 100.w;
   double panelMobileMinSize = 100.w;
   final List<LeftMenu> leftMenus = [
     LeftMenu('个人中心', TablerIcons.user, Routes.user, '/home/user'),
     LeftMenu('推荐歌单', TablerIcons.smart_home, Routes.index, '/home/index'),
-    LeftMenu('本地歌曲', TablerIcons.file_music, Routes.local, '/home/local'),
-    LeftMenu('个性设置', TablerIcons.settings, Routes.setting, '/setting'),
+    // LeftMenu('本地歌曲', TablerIcons.file_music, Routes.local, '/home/local'),
+    LeftMenu('个性设置', TablerIcons.settings, Routes.setting, ''),
+    LeftMenu('捐赠', TablerIcons.coffee, Routes.coffee, ''),
   ];
 
   List<Widget> pages = [
     const RecommendView(),
-    const PlayListView(),
+    const ZPlayListView(),
     const LyricView(),
     const CommentView(),
   ];
@@ -112,8 +113,14 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   //是否开启顶部歌词
   RxBool topLyric = true.obs;
 
+  //是否开启缓存
+  RxBool cache = false.obs;
+
   //是否开启高音质
   RxBool high = false.obs;
+
+  //是否开启高音质
+  RxString background = ''.obs;
 
   //上下文
   late BuildContext buildContext;
@@ -126,7 +133,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   Duration lastDuration = Duration.zero;
 
   //第一层
-  PanelController panelControllerHome = PanelController();
+  PlayViewPanelController panelControllerHome = PlayViewPanelController();
 
   //第二层
   PanelController panelController = PanelController();
@@ -174,8 +181,8 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
 
   RxBool isAurora = false.obs;
 
-  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   Rx<Color> bodyColor = Colors.white.obs;
+
 
   var lastPopTime = DateTime.now();
 
@@ -193,12 +200,21 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   RxList<int> likeIds = <int>[].obs;
   Rx<LoginStatus> loginStatus = LoginStatus.noLogin.obs;
   Rx<NeteaseAccountInfoWrap> userData = NeteaseAccountInfoWrap().obs;
+  late AnimationController animationController;
+  GlobalKey<ScaffoldState> globalKey = GlobalKey<ScaffoldState>();
+  ProgressNotifier progressNotifier = ProgressNotifier();
 
   //进度
   @override
   void onInit() async {
+    var rng = Random();
+    for (double i = 0; i < 50; i++) {
+      mEffects.add({"percent": i, "size": 3 + rng.nextInt(30 - 5).toDouble()});
+    }
     StorageUtil().setBool(noFirstOpen, true);
     leftImage.value = StorageUtil().getBool(leftImageSp);
+    background.value = StorageUtil().getString(backgroundSp);
+    cache.value = StorageUtil().getBool(cacheSp);
     gradientBackground.value = StorageUtil().getBool(gradientBackgroundSp);
     topLyric.value = StorageUtil().getBool(topLyricSp);
     fm.value = StorageUtil().getBool(fmSp);
@@ -209,6 +225,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   @override
   void onReady() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      animationController = AnimationController(vsync: this, duration: const Duration(milliseconds: 200), value: slidePosition.value);
       _initUserData();
       _initHomeData();
     });
@@ -224,21 +241,15 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
     }
   }
 
-
-
   _initHomeData() {
     autoRouterDelegate = AutoRouterDelegate.of(buildContext);
 
     //监听路由变化
     autoRouterDelegate?.addListener(listenRouter);
 
-    if (leftImage.value) {
-      bodyColor.value = Theme.of(buildContext).cardColor.withOpacity(.7);
-    }
-    var rng = Random();
-    for (double i = 0; i < 100; i++) {
-      mEffects.add({"percent": i, "size": 3 + rng.nextInt(30 - 5).toDouble()});
-    }
+    // if (leftImage.value) {
+    //   bodyColor.value = Theme.of(buildContext).cardColor.withOpacity(.7);
+    // }
     audioServeHandler.setRepeatMode(audioServiceRepeatMode.value);
     audioServeHandler.queue.listen((value) => mediaItems
       ..clear()
@@ -246,6 +257,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
     audioServeHandler.mediaItem.listen((value) async {
       lyricsLineModels.clear();
       duration.value = Duration.zero;
+
       currLyric.value = '';
       if (value == null) return;
       mediaItem.value = value;
@@ -266,24 +278,24 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
         duration.value = Duration.zero;
         return;
       }
-      duration.value = event;
-      if (lastDuration.inSeconds != event.inSeconds) {
-        if (!onMove.value) {
-          int index = lyricsLineModels.indexWhere((element) => (element.startTime ?? 0) >= event.inMilliseconds && (element.endTime ?? 0) <= event.inMilliseconds);
-          if (index != -1) currLyric.value = lyricsLineModels[index > 0 ? index - 1 : index].mainText ?? '';
-          if (index != -1 && index != lastIndex) {
-            lyricScrollController.animateToItem((index > 0 ? index - 1 : index), duration: const Duration(milliseconds: 500), curve: Curves.linear);
-            lastIndex = index;
-          }
+      // if(lastDuration.inSeconds != event.inSeconds){
+        duration.value = event;
+      // }
+      //   lastDuration = event;
+      if (second.value && !onMove.value) {
+        int index = lyricsLineModels.indexOf(lyricsLineModels.firstWhere((element) => element.startTime! >= duration.value.inMilliseconds));
+        if (index != -1 && index != lastIndex) {
+          lyricScrollController.animateToItem((index > 0 ? index - 1 : index), duration: const Duration(milliseconds: 500), curve: Curves.linear);
+          lastIndex = index;
         }
       }
-      lastDuration = event;
-      //如果歌词列表没有滑动，根据歌词的开始时间自动滚动歌词列表
     });
     audioServeHandler.playbackState.listen((value) {
       playing.value = value.playing;
     });
   }
+
+  jumpLyric({bool animate = true}) {}
 
   //获取歌词
   _getLyric() async {
@@ -316,9 +328,9 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
 
   //获取专辑颜色
   _getAlbumColor() async {
-    if (leftImage.value) {
-      return;
-    }
+    // if (leftImage.value) {
+    //   return;
+    // }
     rx.value = await OtherUtils.getImageColor('${mediaItem.value.extras?['image'] ?? ''}?param=500y500');
     if (slidePosition.value == 1 || second.value) {
       changeStatusIconColor(true);
@@ -328,7 +340,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
   }
 
   changeStatusIconColor(bool changed) {
-    if (leftImage.value) return;
+    // if (leftImage.value) return;
     var color = rx.value.dominantColor?.color ?? Colors.white;
     var grayscale = (0.299 * color.red) + (0.587 * color.green) + (0.114 * color.blue);
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -362,23 +374,23 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
       var color = rx.value.dominantColor?.color ?? Colors.white;
       grayscale = (0.299 * color.red) + (0.587 * color.green) + (0.114 * color.blue);
     }
-    if (grayscale > 128 && bodyColor.value == Colors.black.withOpacity(.5)) {
+    if (grayscale > 128 && bodyColor.value == Colors.black.withOpacity(.7)) {
       return;
     }
-    if (grayscale <= 128 && bodyColor.value == Colors.white.withOpacity(.65)) {
+    if (grayscale <= 128 && bodyColor.value == Colors.white.withOpacity(.7)) {
       return;
     }
-    bodyColor.value = grayscale > 128 ? Colors.black.withOpacity(.6) : Colors.white.withOpacity(.75);
+    bodyColor.value = grayscale > 128 ? Colors.black.withOpacity(.6) : Colors.white.withOpacity(.7);
   }
 
   //获取相似歌单
-  _getSimiSheet() async {
-    //获取相似歌曲
-    MultiPlayListWrap songListWrap = await NeteaseMusicApi().playListSimiList(mediaItem.value.id);
-    simiSongs
-      ..clear()
-      ..addAll(songListWrap.playlists ?? []);
-  }
+  // _getSimiSheet() async {
+  //   //获取相似歌曲
+  //   MultiPlayListWrap songListWrap = await NeteaseMusicApi().playListSimiList(mediaItem.value.id);
+  //   simiSongs
+  //     ..clear()
+  //     ..addAll(songListWrap.playlists ?? []);
+  // }
 
   //获取歌曲评论
   _getSongTalk() async {
@@ -397,7 +409,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
     }
   }
 
-  static HomeController get to => Get.find();
+  static Home get to => Get.find();
 
   //改变循环模式
   changeRepeatMode() {
@@ -482,8 +494,10 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
     if (value == 2.086162576020456e-9) {
       return;
     }
+
     slidePosition.value = value;
-    if (value > 0.5) {
+    animationController.value = value;
+    if (value > 0.3) {
       if (!panelOpenPositionThan1.value) {
         panelOpenPositionThan1.value = true;
         changeStatusIconColor(true);
@@ -492,6 +506,15 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
       if (panelOpenPositionThan1.value) {
         panelOpenPositionThan1.value = false;
         changeStatusIconColor(false);
+      }
+    }
+    if (value >= 1) {
+      if (!panelOpenPositionThan8.value) {
+        panelOpenPositionThan8.value = true;
+      }
+    } else {
+      if (panelOpenPositionThan8.value) {
+        panelOpenPositionThan8.value = false;
       }
     }
     // _setPlayListOffset();
@@ -597,7 +620,7 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
 
   //获取图片离左侧的间距
   double getImageLeft() {
-    return ((Get.width - 60.w) - getImageSize()) / 2 * slidePosition.value;
+    return ((Get.width - 40.w) - getImageSize()) / 2 * slidePosition.value;
   }
 
   // Color getPlayPageTheme(BuildContext context) {
@@ -646,9 +669,9 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
 
   @override
   void didChangePlatformBrightness() {
-    if (leftImage.value) {
-      bodyColor.value = Get.isPlatformDarkMode ? Colors.white : Colors.black;
-    }
+    // if (leftImage.value) {
+    //   bodyColor.value = Get.isPlatformDarkMode ? Colors.white : Colors.black;
+    // }
     if (second.value || slidePosition.value == 1) return;
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarBrightness: Get.isPlatformDarkMode ? Brightness.dark : Brightness.light,
@@ -677,14 +700,16 @@ class HomeController extends SuperController with GetSingleTickerProviderStateMi
         .toList();
   }
 
-  changePlayUi(context) {
-    leftImage.value = !leftImage.value;
-    if (leftImage.value) {
-      bodyColor.value = Theme.of(context).cardColor.withOpacity(.7);
-    } else {
-      _getAlbumColor();
-    }
+  // changePlayUi(context) {
+  //   leftImage.value = !leftImage.value;
+  //   if (leftImage.value) {
+  //     bodyColor.value = Theme.of(context).iconTheme.color ?? Colors.transparent;
+  //   } else {
+  //     _getAlbumColor();
+  //   }
+  // }
+
+  void openDrawer() {
+    globalKey.currentState?.openDrawer();
   }
-
-
 }

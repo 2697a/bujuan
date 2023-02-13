@@ -12,7 +12,6 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import '../../common/constants/other.dart';
 import '../../common/netease_api/src/dio_ext.dart';
 import '../../common/netease_api/src/netease_handler.dart';
-import '../../routes/router.gr.dart';
 import '../../widget/app_bar.dart';
 
 class ArtistsView extends StatefulWidget {
@@ -46,7 +45,7 @@ class _ArtistsViewState extends State<ArtistsView> {
             childBuilder: (artistDetails) {
               _items
                 ..clear()
-                ..addAll(HomeController.to.song2ToMedia(artistDetails.hotSongs ?? []));
+                ..addAll(Home.to.song2ToMedia(artistDetails.hotSongs ?? []));
               return Scaffold(
                 backgroundColor: Colors.transparent,
                 appBar: MyAppBar(
@@ -151,8 +150,8 @@ class _ArtistsViewState extends State<ArtistsView> {
                     actions: [const SheetAction<String>(label: '下一首播放', icon: TablerIcons.player_play, key: 'next')],
                   ).then((value) {
                     if (value != null) {
-                      if (HomeController.to.audioServeHandler.playbackState.value.queueIndex != 0) {
-                        HomeController.to.audioServeHandler.insertQueueItem(HomeController.to.audioServeHandler.playbackState.value.queueIndex! + 1, data);
+                      if (Home.to.audioServeHandler.playbackState.value.queueIndex != 0) {
+                        Home.to.audioServeHandler.insertQueueItem(Home.to.audioServeHandler.playbackState.value.queueIndex! + 1, data);
                         WidgetUtil.showToast('已添加到下一曲');
                       } else {
                         WidgetUtil.showToast('未知错误');
@@ -167,7 +166,7 @@ class _ArtistsViewState extends State<ArtistsView> {
           ],
         ),
       ),
-      onTap: () => HomeController.to.playByIndex(index, artists?.id ?? '-1', mediaItem: _items),
+      onTap: () => Home.to.playByIndex(index, artists?.id ?? '-1', mediaItem: _items),
     );
   }
 }

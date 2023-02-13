@@ -12,14 +12,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:keframe/keframe.dart';
-import 'package:preload_page_view/preload_page_view.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 import '../../../common/constants/other.dart';
 import '../../../common/constants/platform_utils.dart';
 import '../../../routes/router.gr.dart';
 
-class PanelViewL extends GetView<HomeController> {
+class PanelViewL extends GetView<Home> {
   const PanelViewL({Key? key}) : super(key: key);
 
   //进度
@@ -87,7 +86,7 @@ class PanelViewL extends GetView<HomeController> {
 
   // height:329.h-MediaQuery.of(context).padding.top,
   Widget _buildPlayController(BuildContext context) {
-    return ClassWidget(
+    return FrameSeparateWidget(
         child: Container(
           width: Get.width - 80.w * 7,
           padding: EdgeInsets.only(left: 40.w, right: 40.w),
@@ -353,7 +352,7 @@ class PanelViewL extends GetView<HomeController> {
             _buildPlayController(context),
 
             Padding(padding: EdgeInsets.only(top: MediaQuery.of(context).padding.bottom)),
-            // _buildSlide(context),
+            _buildSlide(context),
             //功能按钮
             // ClassWidget(
             //     child: SizedBox(

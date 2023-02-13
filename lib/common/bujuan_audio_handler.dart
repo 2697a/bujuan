@@ -185,7 +185,7 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
 
   @override
   Future<void> addFmItems(List<MediaItem> mediaItems, bool isAddcurIndex) async {
-    if (HomeController.to.fm.value && _playList.length >= 3) {
+    if (Home.to.fm.value && _playList.length >= 3) {
       _playList.removeRange(0, queue.value.length - 1);
       updateQueue(_playList);
       addQueueItems(mediaItems);
@@ -197,7 +197,7 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
     _curIndex = 0;
     _playList.addAll(mediaItems);
     if (isAddcurIndex) _curIndex++;
-    if (!HomeController.to.fm.value) HomeController.to.fm.value = true;
+    if (!Home.to.fm.value) Home.to.fm.value = true;
     playIndex(_curIndex);
     List<String> playList = mediaItems
         .map((e) => jsonEncode(MediaItemMessage(
@@ -225,19 +225,19 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
   @override
   Future<void> fastForward() async {
     // updateMediaItem(mediaItem.value?.copyWith(extras: {'liked':'true'})??const MediaItem(id: 'id', title: 'title'));
-    HomeController.to.likeSong(liked: true);
+    Home.to.likeSong(liked: true);
   }
 
   //更改为喜欢按钮
   @override
   Future<void> rewind() async {
-    HomeController.to.likeSong(liked: false);
+    Home.to.likeSong(liked: false);
   }
 
   @override
   Future<void> changeQueueLists(List<MediaItem> list, {int index = 0, bool init = false}) async {
-    if (!init && HomeController.to.fm.value) {
-      HomeController.to.fm.value = false;
+    if (!init && Home.to.fm.value) {
+      Home.to.fm.value = false;
       StorageUtil().setBool(fmSp, false);
     }
     _playList
@@ -270,30 +270,47 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
 
   @override
   Future<void> readySongUrl({bool isNext = true, bool playIt = true}) async {
-    bool high = !playIt ? StorageUtil().getBool(highSong) : HomeController.to.high.value;
+    bool high = !playIt ? StorageUtil().getBool(highSong) : Home.to.high.value;
+    bool cache = !playIt ? StorageUtil().getBool(cacheSp) : Home.to.cache.value;
     // 这里是获取歌曲url
     if (queue.value.isEmpty) return;
     var song = queue.value[_curIndex];
-    //根据缓存地址获取
-    String? url = DownloadCacheManager.getCachedFilePath(song.id);
-    //如果是本地音乐，直接取地址
-    if (song.extras?['type'] == MediaType.local.name) url = song.extras?['url'];
-    if (url != null) {
-      // print('缓存过了=========$url');
-      mediaItem.add(song);
-      //缓存过的或者是本地音乐
-      playIt ? await _player.play(DeviceFileSource(url), mode: PlayerMode.mediaPlayer) : await _player.setSourceDeviceFile(url);
+    String? url;
+    if (cache && !PlatformUtils.isIOS) {
+      //根据缓存地址获取
+      url = DownloadCacheManager.getCachedFilePath(song.id);
+      //如果是本地音乐，直接取地址
+      if (song.extras?['type'] == MediaType.local.name) url = song.extras?['url'];
+      if (url != null) {
+        print('缓存过了=========$url');
+        mediaItem.add(song);
+        //缓存过的或者是本地音乐
+        playIt ? await _player.play(DeviceFileSource(url), mode: PlayerMode.mediaPlayer) : await _player.setSourceDeviceFile(url);
+      } else {
+        // 未缓存过
+        // 获取URL
+        SongUrlListWrap songUrl = await NeteaseMusicApi().songDownloadUrl([song.id], level: high ? 'lossless' : 'exhigh');
+        url = ((songUrl.data ?? [])[0].url ?? '').split('?')[0];
+        if (url.isNotEmpty) {
+          mediaItem.add(song);
+          playIt ? await _player.play(UrlSource(url), mode: PlayerMode.mediaPlayer) : await _player.setSourceUrl(url);
+          Downloader.downloadFile(url, song.id, onProgress: (int progress, int total) {
+            // print('object==============$progress======$total');
+          });
+        } else {
+          if (isNext) {
+            await skipToNext();
+          } else {
+            await skipToPrevious();
+          }
+        }
+      }
     } else {
-      // 未缓存过
-      // 获取URL
       SongUrlListWrap songUrl = await NeteaseMusicApi().songDownloadUrl([song.id], level: high ? 'lossless' : 'exhigh');
       url = ((songUrl.data ?? [])[0].url ?? '').split('?')[0];
       if (url.isNotEmpty) {
         mediaItem.add(song);
         playIt ? await _player.play(UrlSource(url), mode: PlayerMode.mediaPlayer) : await _player.setSourceUrl(url);
-        Downloader.downloadFile(url, song.id, onProgress: (int progress, int total) {
-          // print('object==============$progress======$total');
-        });
       } else {
         if (isNext) {
           await skipToNext();
@@ -304,9 +321,7 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
     }
   }
 
-  downloadUrl( url){
-
-  }
+  downloadUrl(url) {}
 
   @override
   Future<void> pause() async => await _player.pause();
@@ -323,11 +338,11 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
   Future<void> skipToNext() async {
     _setCurrIndex(next: true);
     await readySongUrl();
-    if (HomeController.to.fm.value) {
+    if (Home.to.fm.value) {
       // 如果是私人fm
       if (_curIndex == queue.value.length - 1) {
         // 判断如果是最后一首
-        HomeController.to.getFmSongList();
+        Home.to.getFmSongList();
       }
     }
   }

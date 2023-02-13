@@ -8,10 +8,9 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:bujuan/common/constants/enmu.dart';
 import 'package:bujuan/common/constants/other.dart';
 import 'package:bujuan/common/netease_api/netease_music_api.dart';
-import 'package:bujuan/common/netease_api/src/api/bean.dart';
 import 'package:bujuan/pages/play_list/playlist_controller.dart';
-import 'package:bujuan/pages/user/user_controller.dart';
 import 'package:bujuan/routes/router.gr.dart';
+import 'package:bujuan/widget/custom_filed.dart';
 import 'package:bujuan/widget/data_widget.dart';
 import 'package:bujuan/widget/my_get_view.dart';
 import 'package:flutter/material.dart';
@@ -21,15 +20,9 @@ import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:keframe/keframe.dart';
 
-import '../../common/netease_api/src/dio_ext.dart';
-import '../../common/netease_api/src/netease_handler.dart';
 import '../../widget/app_bar.dart';
-import '../../widget/draggable_home.dart';
-import '../../widget/request_widget/request_playlist_loadmore_view.dart';
-import '../../widget/request_widget/request_view.dart';
 import '../../widget/simple_extended_image.dart';
 import '../home/home_controller.dart';
-import '../home/view/panel_view.dart';
 
 class PlayListView extends GetView<PlayListController> {
   const PlayListView({super.key});
@@ -39,6 +32,7 @@ class PlayListView extends GetView<PlayListController> {
     controller.context = context;
     return Scaffold(
         backgroundColor: Colors.transparent,
+        resizeToAvoidBottomInset: false,
         body: MyGetView(
             child: Obx(
           () => Visibility(
@@ -57,39 +51,44 @@ class PlayListView extends GetView<PlayListController> {
                         width: 75.w,
                         height: 75.w,
                       )),
-                  title: AutoSizeText(
-                    (context.routeData.args as Play).name ?? '',
-                    maxLines: 1,
-                  ),
+                  title: Obx(() => Visibility(
+                        visible: !controller.search.value,
+                        replacement: CustomFiled(
+                          textEditingController: controller.textEditingController,
+                          autoFocus: true,
+                          hitText: '请输入关键字',
+                        ),
+                        child: AutoSizeText(
+                          (context.routeData.args as Play).name ?? '',
+                          maxLines: 1,
+                        ),
+                      )),
+                  actions: [
+                    IconButton(
+                        onPressed: () {
+                          controller.search.value = !controller.search.value;
+                          if(!controller.search.value) controller.textEditingController.text = '';
+                        },
+                        icon: Obx(() => Icon(!controller.search.value ? TablerIcons.search : TablerIcons.x)))
+                  ],
                 ),
                 _buildTopItem(context),
-                Obx(() => SliverFixedExtentList(
-                      delegate: SliverChildBuilderDelegate((context, index) => SongItem(index: index, mediaItems: controller.mediaItems, queueTitle: 'queueTitle'),
-                          childCount: controller.mediaItems.length),
+                Obx(() => SizeCacheWidget(
+                        child: SliverFixedExtentList(
+                      delegate: SliverChildBuilderDelegate(
+                          (context, index) => FrameSeparateWidget(
+                                index: index,
+                                child: _buildItem(controller.isSearch.value ? controller.searchItems[index] : controller.mediaItems[index], index,context),
+                              ),
+                          childCount: controller.isSearch.value ? controller.searchItems.length : controller.mediaItems.length,
+                          addAutomaticKeepAlives: false,
+                          addRepaintBoundaries: false),
                       itemExtent: 120.w,
-                    ))
+                    )))
               ],
             ),
           ),
         )));
-  }
-
-  PreferredSizeWidget _buildAppBar(context) {
-    return MyAppBar(
-      leading: IconButton(
-          padding: EdgeInsets.only(left: 20.w),
-          onPressed: () => AutoRouter.of(context).pop(),
-          icon: SimpleExtendedImage.avatar(
-            '${(context.routeData.args as Play).picUrl ?? (context.routeData.args as Play).coverImgUrl}?param=100y100',
-            width: 75.w,
-            height: 75.w,
-          )),
-      title: AutoSizeText(
-        (context.routeData.args as Play).name ?? '',
-        maxLines: 1,
-      ),
-      backgroundColor: Colors.transparent,
-    );
   }
 
   Widget _buildTopItem(BuildContext context) {
@@ -141,276 +140,71 @@ class PlayListView extends GetView<PlayListController> {
       ),
     );
   }
-}
-// class PlayListView extends StatefulWidget {
-//   const PlayListView({Key? key}) : super(key: key);
-//
-//   @override
-//   State<PlayListView> createState() => _PlayListViewState();
-// }
-//
-// class _PlayListViewState extends State<PlayListView> {
-//   DioMetaData playListDetailDioMetaData(String categoryId, {int subCount = 5}) {
-//     var params = {'id': categoryId, 'n': 10000, 's': '$subCount', 'shareUserId': '0'};
-//     return DioMetaData(Uri.parse('https://music.163.com/api/v6/playlist/detail'), data: params, options: joinOptions());
-//   }
-//
-//   DioMetaData songDetailDioMetaData(List<String> songIds) {
-//     var params = {
-//       // 'ids': songIds,
-//       // 'c': songIds.map((e) => jsonEncode({'id': e})).toList(),
-//       'c': '[${songIds.map((id) => '{"id":$id}').join(',')}]',
-//     };
-//     return DioMetaData(joinUri('/api/v3/song/detail'), data: params, options: joinOptions());
-//   }
-//
-//   SinglePlayListWrap? singlePlayListWrap;
-//
-//   _subscribePlayList() async {
-//     ServerStatusBean serverStatusBean =
-//         await NeteaseMusicApi().subscribePlayList((context.routeData.args as Play).id, subscribe: !(singlePlayListWrap?.playlist?.subscribed ?? false));
-//     if (serverStatusBean.code == 200) {
-//       setState(() {
-//         singlePlayListWrap?.playlist?.subscribed = !(singlePlayListWrap?.playlist?.subscribed ?? false);
-//       });
-//       if (HomeController.to.currPathUrl.value == '/home/user') {
-//         UserController.to.refreshController.callRefresh();
-//       }
-//     }
-//   }
-//
-//   @override
-//   void dispose() {
-//     super.dispose();
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return GestureDetector(
-//       child: Scaffold(
-//         backgroundColor: Colors.transparent,
-//         appBar: _buildAppBar(),
-//         body: RequestWidget<SinglePlayListWrap>(
-//             dioMetaData: playListDetailDioMetaData((context.routeData.args as Play).id),
-//             onData: (SinglePlayListWrap s) => setState(() => singlePlayListWrap = s),
-//             childBuilder: (SinglePlayListWrap data) => ClassStatelessWidget(
-//                 child: RequestPlaylistLoadMoreWidget(
-//                     listKey: const ['songs'],
-//                     pageSize: 200,
-//                     ids: (data.playlist?.trackIds ?? []).map((e) => e.id).toList(),
-//                     childBuilder: (List<MediaItem> songs) {
-//                       return ListView.builder(
-//                         itemExtent: 120.w,
-//                         padding: const EdgeInsets.only(top: 0),
-//                         // physics: const NeverScrollableScrollPhysics(),
-//                         // shrinkWrap: true,
-//                         itemBuilder: (context, index) => SongItem(
-//                           index: index,
-//                           mediaItems: songs,
-//                           queueTitle: (context.routeData.args as Play).id,
-//                         ),
-//                         itemCount: songs.length,
-//                       );
-//                     }))),
-//       ),
-//       onHorizontalDragDown: (e) {
-//         return;
-//       },
-//     );
-//   }
-//
-//   PreferredSizeWidget _buildAppBar() {
-//     return MyAppBar(
-//       title: AutoSizeText(
-//         (context.routeData.args as Play).name ?? '',
-//         maxLines: 1,
-//       ),
-//       backgroundColor: Colors.transparent,
-//     );
-//   }
-//
-//   Widget _buildTopItem() {
-//     return Container(
-//       margin: EdgeInsets.only(left: 20.w, right: 20.w, bottom: 10.w),
-//       padding: EdgeInsets.only(left: 15.w, right: 15.w, top: 10.w, bottom: 25.w),
-//       alignment: Alignment.center,
-//       decoration: BoxDecoration(color: Theme.of(context).colorScheme.onSecondary.withOpacity(.8), borderRadius: BorderRadius.circular(15.w)),
-//       child: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: [
-//           Row(
-//             children: [
-//               IconButton(
-//                   onPressed: () => _subscribePlayList(),
-//                   icon: SimpleExtendedImage.avatar(
-//                     '${singlePlayListWrap?.playlist?.creator?.avatarUrl ?? ''}?param=80y80',
-//                     width: 80.w,
-//                   )),
-//               Expanded(
-//                 child: Text(
-//                   singlePlayListWrap?.playlist?.creator?.nickname ?? '',
-//                   style: TextStyle(fontSize: 28.sp),
-//                 ),
-//               ),
-//               Visibility(
-//                 visible: singlePlayListWrap?.playlist?.creator?.userId != UserController.to.userData.value.profile?.userId,
-//                 child: IconButton(onPressed: () => _subscribePlayList(), icon: Icon((singlePlayListWrap?.playlist?.subscribed ?? false) ? TablerIcons.hearts : TablerIcons.heart)),
-//               ),
-//               IconButton(
-//                   onPressed: () {
-//                     // context.router.push(
-//                     //     const TalkView().copyWith(queryParams: {'id': (context.routeData.args as Play).id, 'type': 'playlist', 'name': (context.routeData.args as Play).name}));
-//                   },
-//                   icon: const Icon(TablerIcons.message_2)),
-//             ],
-//           ),
-//           Padding(
-//             padding: EdgeInsets.symmetric(horizontal: 20.w),
-//             child: Text(
-//               (singlePlayListWrap?.playlist?.description ?? '暂无描述').replaceAll('\n', ''),
-//               maxLines: 5,
-//               overflow: TextOverflow.ellipsis,
-//               style: TextStyle(fontSize: 24.sp, height: 1.6, color: Theme.of(context).cardColor.withOpacity(.6)),
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
 
-class ListWidget extends StatefulWidget {
-  final List<MediaItem> mediaItem;
-
-  const ListWidget({Key? key, required this.mediaItem}) : super(key: key);
-
-  @override
-  State<ListWidget> createState() => _ListWidgetState();
-}
-
-class _ListWidgetState extends State<ListWidget> {
-  // bool sort = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      // itemExtent: 120.w,
-      // addAutomaticKeepAlives: false,
-      // addRepaintBoundaries: false,
-      // physics: const NeverScrollableScrollPhysics(),
-      itemBuilder: (context, index) => SongItem(
-        index: index,
-        mediaItems: widget.mediaItem,
-        queueTitle: (context.routeData.args as Play).id,
+  Widget _buildItem(MediaItem mediaItem, int index,context) {
+    return ListTile(
+      title: Text(
+        mediaItem.title,
+        maxLines: 1,
       ),
-      itemCount: widget.mediaItem.length,
+      subtitle: Text(
+        mediaItem.artist ?? '',
+        maxLines: 1,
+      ),
+      trailing: IconButton(
+          onPressed: () {
+            showModalActionSheet(
+              context: context,
+              title: mediaItem.title,
+              message: mediaItem.artist,
+              actions: [const SheetAction<String>(label: '下一首播放', icon: TablerIcons.player_play, key: 'next')],
+            ).then((value) {
+              if (value != null) {
+                if (Home.to.audioServeHandler.playbackState.value.queueIndex != 0) {
+                  Home.to.audioServeHandler.insertQueueItem(Home.to.audioServeHandler.playbackState.value.queueIndex! + 1, mediaItem);
+                  WidgetUtil.showToast('已添加到下一曲');
+                } else {
+                  WidgetUtil.showToast('未知错误');
+                }
+              }
+            });
+          },
+          icon: const Icon(
+            TablerIcons.dots_vertical,
+          )),
+      onTap: () {
+        if(controller.isSearch.value){
+          index = controller.mediaItems.indexOf(mediaItem);
+        }
+        Home.to.playByIndex(index, 'queueTitle', mediaItem: controller.mediaItems);
+      },
     );
+    // return InkWell(
+    //   child: Container(
+    //     padding: EdgeInsets.only(left: 30.w),
+    //     child: Column(
+    //       crossAxisAlignment: CrossAxisAlignment.start,
+    //       mainAxisAlignment: MainAxisAlignment.center,
+    //       children: [
+    //         Text(
+    //           mediaItem.title,
+    //           maxLines: 1,
+    //           style: TextStyle(fontSize: 30.sp),
+    //         ),
+    //         const Padding(padding: EdgeInsets.symmetric(vertical: 2)),
+    //         Text(
+    //           mediaItem.artist ?? '',
+    //           maxLines: 1,
+    //           style: TextStyle(fontSize: 24.sp, color: Colors.grey),
+    //         )
+    //       ],
+    //     ),
+    //   ),
+    //   onTap: (){
+    //     HomeController.to.playByIndex(index, 'queueTitle', mediaItem: controller.mediaItems);
+    //   },
+    // );
   }
-
-  // Widget proxyDecorator(Widget child, int index, Animation<double> animation) {
-  //   final ColorScheme colorScheme = Theme.of(context).colorScheme;
-  //   final Color draggableItemColor = colorScheme.secondary;
-  //   return AnimatedBuilder(
-  //     animation: animation,
-  //     builder: (BuildContext context, Widget? child) {
-  //       final double animValue = Curves.easeInOut.transform(animation.value);
-  //       final double elevation = lerpDouble(0, 6, animValue)!;
-  //       return Material(
-  //         elevation: elevation,
-  //         color: draggableItemColor,
-  //         shadowColor: draggableItemColor,
-  //         child: child,
-  //       );
-  //     },
-  //     child: child,
-  //   );
-  // }
-
-  @override
-  void dispose() {
-    widget.mediaItem.clear();
-    super.dispose();
-  }
-
-// Widget _buildItem(MediaItem data, {int index = 0}) {
-//   return FrameSeparateWidget(
-//     index: index,
-//     child: InkWell(
-//       key: Key(data.id),
-//       child: Container(
-//         padding: EdgeInsets.symmetric(horizontal: 30.w),
-//         height: 120.w,
-//         child: Row(
-//           children: [
-//             Expanded(
-//                 child: Column(
-//               crossAxisAlignment: CrossAxisAlignment.start,
-//               mainAxisAlignment: MainAxisAlignment.center,
-//               children: [
-//                 Text(
-//                   data.title,
-//                   maxLines: 1,
-//                   style: TextStyle(fontSize: 30.sp),
-//                 ),
-//                 Padding(padding: EdgeInsets.symmetric(vertical: 3.w)),
-//                 Text(
-//                   data.artist ?? '',
-//                   maxLines: 1,
-//                   style: TextStyle(fontSize: 24.sp, color: Colors.grey),
-//                 )
-//               ],
-//             )),
-//             Visibility(
-//               visible: (data.extras!['mv'] ?? 0) != 0,
-//               child: IconButton(
-//                   onPressed: () {
-//                     context.router.push(const MvView().copyWith(queryParams: {'mvId': data.extras?['mv'] ?? 0}));
-//                   },
-//                   icon: const Icon(
-//                     TablerIcons.brand_youtube,
-//                     color: Colors.grey,
-//                   )),
-//             ),
-//             Visibility(
-//               visible: index != null,
-//               replacement: IconButton(
-//                   onPressed: () {},
-//                   icon: const Icon(
-//                     TablerIcons.arrows_move_vertical,
-//                     color: Colors.grey,
-//                   )),
-//               child: IconButton(
-//                   onPressed: () {
-//                     showModalActionSheet(
-//                       context: context,
-//                       title: data.title,
-//                       message: data.artist,
-//                       actions: [const SheetAction<String>(label: '下一首播放', icon: TablerIcons.player_play, key: 'next')],
-//                     ).then((value) {
-//                       if (value != null) {
-//                         if (HomeController.to.audioServeHandler.playbackState.value.queueIndex != 0) {
-//                           HomeController.to.audioServeHandler.insertQueueItem(HomeController.to.audioServeHandler.playbackState.value.queueIndex! + 1, data);
-//                           WidgetUtil.showToast('已添加到下一曲');
-//                         } else {
-//                           WidgetUtil.showToast('未知错误');
-//                         }
-//                       }
-//                     });
-//                   },
-//                   icon: const Icon(
-//                     TablerIcons.dots_vertical,
-//                     color: Colors.grey,
-//                   )),
-//             ),
-//           ],
-//         ),
-//       ),
-//       onTap: () {
-//         HomeController.to.playByIndex(index, (context.routeData.args as Play).id, mediaItem: widget.mediaItem);
-//       },
-//     ),
-//   );
-// }
 }
 
 class SongItem extends StatelessWidget {
@@ -427,52 +221,69 @@ class SongItem extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.only(left: 30.w),
         height: 120.w,
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Expanded(
-                child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  mediaItems[index].title,
-                  maxLines: 1,
-                  style: TextStyle(fontSize: 30.sp),
-                ),
-                Padding(padding: EdgeInsets.symmetric(vertical: 3.w)),
-                Text(
-                  mediaItems[index].artist ?? '',
-                  maxLines: 1,
-                  style: TextStyle(fontSize: 24.sp, color: Colors.grey),
-                )
-              ],
-            )),
-            Visibility(
-              visible: (mediaItems[index].extras!['mv'] ?? 0) != 0,
-              child: IconButton(
-                  onPressed: () {
-                    context.router.push(const MvView().copyWith(queryParams: {'mvId': mediaItems[index].extras?['mv'] ?? 0}));
-                  },
-                  icon: const Icon(
-                    TablerIcons.brand_youtube,
-                    color: Colors.grey,
-                  )),
+            Text(
+              mediaItems[index].title,
+              maxLines: 1,
+              style: TextStyle(fontSize: 30.sp),
             ),
-            IconButton(
-                onPressed: () => _showSheet(context),
-                icon: const Icon(
-                  TablerIcons.dots_vertical,
-                  color: Colors.grey,
-                )),
+            Padding(padding: EdgeInsets.symmetric(vertical: 3.w)),
+            Text(
+              mediaItems[index].artist ?? '',
+              maxLines: 1,
+              style: TextStyle(fontSize: 24.sp, color: Colors.grey),
+            )
           ],
         ),
+        // child: Row(
+        //   children: [
+        //     Expanded(
+        //         child: Column(
+        //       crossAxisAlignment: CrossAxisAlignment.start,
+        //       mainAxisAlignment: MainAxisAlignment.center,
+        //       children: [
+        //         Text(
+        //           mediaItems[index].title,
+        //           maxLines: 1,
+        //           style: TextStyle(fontSize: 30.sp),
+        //         ),
+        //         Padding(padding: EdgeInsets.symmetric(vertical: 3.w)),
+        //         Text(
+        //           mediaItems[index].artist ?? '',
+        //           maxLines: 1,
+        //           style: TextStyle(fontSize: 24.sp, color: Colors.grey),
+        //         )
+        //       ],
+        //     )),
+        //     Visibility(
+        //       visible: (mediaItems[index].extras!['mv'] ?? 0) != 0,
+        //       child: IconButton(
+        //           onPressed: () {
+        //             context.router.push(const MvView().copyWith(queryParams: {'mvId': mediaItems[index].extras?['mv'] ?? 0}));
+        //           },
+        //           icon: const Icon(
+        //             TablerIcons.brand_youtube,
+        //             color: Colors.grey,
+        //           )),
+        //     ),
+        //     IconButton(
+        //         onPressed: () => _showSheet(context),
+        //         icon: const Icon(
+        //           TablerIcons.dots_vertical,
+        //           color: Colors.grey,
+        //         )),
+        //   ],
+        // ),
       ),
       onTap: () {
         // if (queueTitle.isEmpty) {
         //   WidgetUtil.showToast('id错误');
         //   return;
         // }
-        HomeController.to.playByIndex(index, queueTitle, mediaItem: mediaItems);
+        Home.to.playByIndex(index, queueTitle, mediaItem: mediaItems);
       },
     );
   }
@@ -510,8 +321,8 @@ class SongItem extends StatelessWidget {
   }
 
   void _setNext() {
-    if (HomeController.to.audioServeHandler.playbackState.value.queueIndex != 0) {
-      HomeController.to.audioServeHandler.insertQueueItem(HomeController.to.audioServeHandler.playbackState.value.queueIndex! + 1, mediaItems[index]);
+    if (Home.to.audioServeHandler.playbackState.value.queueIndex != 0) {
+      Home.to.audioServeHandler.insertQueueItem(Home.to.audioServeHandler.playbackState.value.queueIndex! + 1, mediaItems[index]);
       WidgetUtil.showToast('已添加到下一曲');
     } else {
       WidgetUtil.showToast('未知错误');

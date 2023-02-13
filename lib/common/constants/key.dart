@@ -9,3 +9,5 @@ String highSong = 'HIGH_SONG';
 String fmSp = 'FM_SP';
 String noFirstOpen = 'NO_FIRST_OPEN';
 String loginData = 'LOGIN_DATA';
+String backgroundSp = 'BACKGROUND';
+String cacheSp = 'CACHE';

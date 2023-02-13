@@ -125,10 +125,10 @@ class _LocalViewState extends State<LocalView> {
         centerTitle: false,
         leading: IconButton(
             onPressed: () {
-              HomeController.to.myDrawerController.open!();
+              Home.to.myDrawerController.open!();
             },
             icon: Obx(() => SimpleExtendedImage.avatar(
-                  HomeController.to.userData.value.profile?.avatarUrl ?? '',
+                  Home.to.userData.value.profile?.avatarUrl ?? '',
                   width: 80.w,
                 ))),
         title: RichText(

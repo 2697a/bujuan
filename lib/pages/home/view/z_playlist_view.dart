@@ -5,9 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get/get.dart';
+import 'package:keframe/keframe.dart';
 
-class PlayListView extends GetView<HomeController> {
-  const PlayListView({super.key});
+class ZPlayListView extends GetView<Home> {
+  const ZPlayListView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,26 +17,35 @@ class PlayListView extends GetView<HomeController> {
 
   //播放列表
   Widget buildPlayList(BuildContext context) {
-    return ClassWidget(child: Obx(() {
+    return Obx(() {
       return Visibility(
         visible: !controller.fm.value,
-        child: ListView.builder(
+        child: SizeCacheWidget(child: Obx(() => ListView.builder(
           physics: const ClampingScrollPhysics(),
           controller: controller.playListScrollController,
-          padding: EdgeInsets.symmetric(horizontal: 30.w),
+          padding: EdgeInsets.symmetric(horizontal: 50.w),
           itemExtent: 110.w,
-          itemBuilder: (context, index) => Container(
-            margin: EdgeInsets.symmetric(horizontal: 10.w),
-            alignment: Alignment.centerLeft,
-            child: ClassStatelessWidget(child: _buildPlayListItem(controller.mediaItems[index], index, context)),
-          ),
+          itemBuilder: (context, index) => FrameSeparateWidget(index: index,child: _buildPlayListItem(controller.mediaItems[index], index, context),),
           itemCount: controller.mediaItems.length,
-        ),
+        ))),
       );
-    }));
+    });
   }
 
   Widget _buildPlayListItem(MediaItem mediaItem, int index, BuildContext context) {
+    // return ListTile(
+    //   title: Obx(() => Text(
+    //     mediaItem.title,
+    //     maxLines: 1,
+    //     style: TextStyle(color: controller.bodyColor.value),
+    //   )),
+    //   subtitle: Obx(() => Text(
+    //     mediaItem.artist ?? '',
+    //     maxLines: 1,
+    //     style: TextStyle(color: controller.bodyColor.value),
+    //   )),
+    //   onTap: () => controller.audioServeHandler.playIndex(index),
+    // );
     return InkWell(
       child: Obx(() {
         return SizedBox(

@@ -39,7 +39,7 @@ class _TodayViewState extends State<TodayView> {
             childBuilder: (playlist) {
               _mediaItem
                 ..clear()
-                ..addAll(HomeController.to.song2ToMedia((playlist.data.dailySongs ?? [])));
+                ..addAll(Home.to.song2ToMedia((playlist.data.dailySongs ?? [])));
               return ListView.builder(
                 itemExtent: 120.w,
                 itemBuilder: (context, index) => SongItem(index: index, mediaItems: _mediaItem,queueTitle: 'today${DateTime.now().millisecondsSinceEpoch}',),

@@ -9,7 +9,7 @@ class MyGetView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      child: WillPopScope(child: child, onWillPop: () => HomeController.to.onWillPop()),
+      child: WillPopScope(child: child, onWillPop: () => Home.to.onWillPop()),
       onHorizontalDragEnd: (e) {},
     );
   }

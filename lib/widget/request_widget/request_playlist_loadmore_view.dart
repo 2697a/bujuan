@@ -177,7 +177,7 @@ class RequestPlaylistLoadMoreWidgetState extends State<RequestPlaylistLoadMoreWi
       }
       if (pageNum == 0) list.clear();
       setState(() {
-        list.addAll(HomeController.to.song2ToMedia(data.songs ?? []));
+        list.addAll(Home.to.song2ToMedia(data.songs ?? []));
         _empty = list.isEmpty;
       });
       if (pageNum == 0) {
@@ -204,7 +204,7 @@ class RequestPlaylistLoadMoreWidgetState extends State<RequestPlaylistLoadMoreWi
             extras: {
               'type': MediaType.playlist.name,
               'image': e.al?.picUrl ?? '',
-              'liked': HomeController.to.likeIds.contains(int.tryParse(e.id)),
+              'liked': Home.to.likeIds.contains(int.tryParse(e.id)),
               'artist': (e.ar ?? []).map((e) => jsonEncode(e.toJson())).toList().join(' / '),
               'mv': e.mv
             },

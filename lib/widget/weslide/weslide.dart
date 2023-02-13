@@ -365,26 +365,26 @@ class _WeSlideState extends State<WeSlide> with TickerProviderStateMixin {
 
   // Get Body Animation [Paralax]
   Animation<Offset> _getAnimationOffSet({required double minSize, required double maxSize}) {
-    final _closedPercentage = (widget.panelMaxSize - minSize) / widget.panelMaxSize;
+    final closedPercentage = (widget.panelMaxSize - minSize) / widget.panelMaxSize;
 
-    final _openPercentage = (widget.panelMaxSize - maxSize) / widget.panelMaxSize;
+    final openPercentage = (widget.panelMaxSize - maxSize) / widget.panelMaxSize;
 
-    return Tween<Offset>(begin: Offset(0.0, _closedPercentage), end: Offset(0.0, _openPercentage)).animate(_ac);
+    return Tween<Offset>(begin: Offset(0.0, closedPercentage), end: Offset(0.0, openPercentage)).animate(_ac);
   }
 
   //Get Panel size
   double _getPanelSize() {
-    var _size = 0.0;
+    var size = 0.0;
     /* If footer is visible*/
     if (!widget.hideFooter && widget.footer != null) {
-      _size += widget.footerHeight;
+      size += widget.footerHeight;
     }
     /* If appbar is visible*/
     if (!widget.hideAppBar && widget.appBar != null) {
-      _size += widget.appBarHeight;
+      size += widget.appBarHeight;
     }
 
-    return _size;
+    return size;
   }
 
   /* Get panel maxsize location*/

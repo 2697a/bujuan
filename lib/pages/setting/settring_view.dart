@@ -9,6 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:media_cache_manager/core/download_cache_manager.dart';
+import 'package:media_cache_manager/core/downloader.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../common/netease_api/src/dio_ext.dart';
@@ -23,11 +26,17 @@ class SettingView extends StatefulWidget {
 
 class _SettingViewState extends State<SettingView> {
   String version = '1.0.0';
+  final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) => _getVersion());
+  }
+
+  @override
+  dispose() {
+    super.dispose();
   }
 
   _getVersion() async {
@@ -86,61 +95,79 @@ class _SettingViewState extends State<SettingView> {
           ),
           ListTile(
             title: Text(
-              '开启高斯模糊背景(默认专辑封面)',
+              '渐变播放背景(需开启智能取色)',
               style: TextStyle(fontSize: 30.sp),
             ),
             trailing: Obx(() => Icon(
-                  HomeController.to.leftImage.value ? TablerIcons.toggle_right : TablerIcons.toggle_left,
-                  size: 56.w,
-                  color: Theme.of(context).cardColor.withOpacity(HomeController.to.leftImage.value ? 0.7 : .4),
-                )),
+              Home.to.gradientBackground.value ? TablerIcons.toggle_right : TablerIcons.toggle_left,
+              size: 56.w,
+              color: Theme.of(context).cardColor.withOpacity(Home.to.gradientBackground.value ? 0.7 : .4),
+            )),
             onTap: () {
-              HomeController.to.changePlayUi(context);
-              StorageUtil().setBool(leftImageSp, HomeController.to.leftImage.value);
+              Home.to.gradientBackground.value = !Home.to.gradientBackground.value;
+              StorageUtil().setBool(gradientBackgroundSp, Home.to.gradientBackground.value);
             },
           ),
-          ListTile(
-            title: Text(
-              '渐变播放背景',
-              style: TextStyle(fontSize: 30.sp),
-            ),
-            trailing: Obx(() => Icon(
-                  HomeController.to.gradientBackground.value ? TablerIcons.toggle_right : TablerIcons.toggle_left,
-                  size: 56.w,
-                  color: Theme.of(context).cardColor.withOpacity(HomeController.to.gradientBackground.value ? 0.7 : .4),
-                )),
-            onTap: () {
-              HomeController.to.gradientBackground.value = !HomeController.to.gradientBackground.value;
-              StorageUtil().setBool(gradientBackgroundSp, HomeController.to.gradientBackground.value);
-            },
-          ),
-          ListTile(
-            title: Text(
-              '顶部歌词',
-              style: TextStyle(fontSize: 30.sp),
-            ),
-            trailing: Obx(() => Icon(
-                  HomeController.to.topLyric.value ? TablerIcons.toggle_right : TablerIcons.toggle_left,
-                  size: 56.w,
-                  color: Theme.of(context).cardColor.withOpacity(HomeController.to.topLyric.value ? 0.7 : .4),
-                )),
-            onTap: () {
-              HomeController.to.topLyric.value = !HomeController.to.topLyric.value;
-              StorageUtil().setBool(topLyricSp, HomeController.to.topLyric.value);
-            },
-          ),
+          // ListTile(
+          //   title: Text(
+          //     '播放页面根据主题颜色',
+          //     style: TextStyle(fontSize: 30.sp),
+          //   ),
+          //   trailing: Obx(() => Icon(
+          //         Home.to.leftImage.value ? TablerIcons.toggle_right : TablerIcons.toggle_left,
+          //         size: 56.w,
+          //         color: Theme.of(context).cardColor.withOpacity(Home.to.leftImage.value ? 0.7 : .4),
+          //       )),
+          //   onTap: () {
+          //     Home.to.changePlayUi(context);
+          //     StorageUtil().setBool(leftImageSp, Home.to.leftImage.value);
+          //   },
+          // ),
+          // ListTile(
+          //   title: Text(
+          //     '顶部歌词',
+          //     style: TextStyle(fontSize: 30.sp),
+          //   ),
+          //   trailing: Obx(() => Icon(
+          //         Home.to.topLyric.value ? TablerIcons.toggle_right : TablerIcons.toggle_left,
+          //         size: 56.w,
+          //         color: Theme.of(context).cardColor.withOpacity(Home.to.topLyric.value ? 0.7 : .4),
+          //       )),
+          //   onTap: () {
+          //     Home.to.topLyric.value = !Home.to.topLyric.value;
+          //     StorageUtil().setBool(topLyricSp, Home.to.topLyric.value);
+          //   },
+          // ),
           ListTile(
             title: Text(
               '自定义背景',
               style: TextStyle(fontSize: 30.sp),
             ),
             trailing: Icon(
-              TablerIcons.radius_top_right,
-              size: 56.w,
-              color: Theme.of(context).cardColor.withOpacity(.4),
+              TablerIcons.chevron_right,
+              size: 42.w,
+              color: Theme.of(context).cardColor.withOpacity(.6),
             ),
             onTap: () async {
-              WidgetUtil.showToast('message');
+              XFile? x = await _picker.pickImage(source: ImageSource.gallery, requestFullMetadata: false);
+              if (x != null && mounted) {
+                context.router.push( ImageBlur(path: x.path));
+              }
+            },
+          ),
+          ListTile(
+            title: Text(
+              '清除自定义背景',
+              style: TextStyle(fontSize: 30.sp),
+            ),
+            trailing: Icon(
+              TablerIcons.chevron_right,
+              size: 42.w,
+              color: Theme.of(context).cardColor.withOpacity(.6),
+            ),
+            onTap: () async {
+              Home.to.background.value = '';
+              StorageUtil().setString(backgroundSp, '');
             },
           )
         ],
@@ -169,15 +196,46 @@ class _SettingViewState extends State<SettingView> {
               style: TextStyle(fontSize: 30.sp),
             ),
             trailing: Obx(() => Icon(
-                  HomeController.to.high.value ? TablerIcons.toggle_right : TablerIcons.toggle_left,
+                  Home.to.high.value ? TablerIcons.toggle_right : TablerIcons.toggle_left,
                   size: 56.w,
-                  color: Theme.of(context).cardColor.withOpacity(HomeController.to.high.value ? 0.7 : .4),
+                  color: Theme.of(context).cardColor.withOpacity(Home.to.high.value ? 0.7 : .4),
                 )),
             onTap: () {
-              HomeController.to.high.value = !HomeController.to.high.value;
-              StorageUtil().setBool(highSong, HomeController.to.high.value);
+              Home.to.high.value = !Home.to.high.value;
+              StorageUtil().setBool(highSong, Home.to.high.value);
             },
           ),
+          ListTile(
+            title: Text(
+              '开启缓存',
+              style: TextStyle(fontSize: 30.sp),
+            ),
+            trailing: Obx(() => Icon(
+                  Home.to.cache.value ? TablerIcons.toggle_right : TablerIcons.toggle_left,
+                  size: 56.w,
+                  color: Theme.of(context).cardColor.withOpacity(Home.to.cache.value ? 0.7 : .4),
+                )),
+            onTap: () {
+              Home.to.cache.value = !Home.to.cache.value;
+              StorageUtil().setBool(cacheSp, Home.to.cache.value);
+            },
+          ),
+          // ListTile(
+          //   title: Text(
+          //     '清理缓存',
+          //     style: TextStyle(fontSize: 30.sp),
+          //   ),
+          //   trailing: Icon(
+          //     TablerIcons.chevron_right,
+          //     size: 42.w,
+          //     color: Theme.of(context).cardColor.withOpacity(.6),
+          //   ),
+          //   onTap: () async {
+          //     WidgetUtil.showLoadingDialog(context);
+          //     await Downloader.clearCachedFiles();
+          //     if (mounted) Navigator.of(context).pop();
+          //   },
+          // ),
           ListTile(
             title: Text(
               '检测更新',

@@ -29,7 +29,7 @@ class _UserSettingViewState extends State<UserSettingView> {
     return Scaffold(
       appBar: MyAppBar(title: const Text('个人信息'),),
       body: RequestWidget<NeteaseUserDetail>(
-        dioMetaData: userDetailDioMetaData(HomeController.to.userData.value.profile?.userId ?? ''),
+        dioMetaData: userDetailDioMetaData(Home.to.userData.value.profile?.userId ?? ''),
         childBuilder: (userData) => Column(
           children: [
             Expanded(
@@ -71,7 +71,7 @@ class _UserSettingViewState extends State<UserSettingView> {
                             ),
                           ),
                           SimpleExtendedImage.avatar(
-                            HomeController.to.userData.value.profile?.avatarUrl ?? '',
+                            Home.to.userData.value.profile?.avatarUrl ?? '',
                             width: 260.w,
                           ),
                         ],
@@ -80,7 +80,7 @@ class _UserSettingViewState extends State<UserSettingView> {
                   ),
                 )),
             Obx(() => Visibility(
-              visible: HomeController.to.loginStatus.value == LoginStatus.login,
+              visible: Home.to.loginStatus.value == LoginStatus.login,
               child: GestureDetector(
                 child: SafeArea(
                     child: Container(

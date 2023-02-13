@@ -1,4 +1,3 @@
-import 'dart:ui';
 
 import 'package:bujuan/common/constants/platform_utils.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
@@ -6,18 +5,20 @@ import 'package:bujuan/pages/home/view/body_view.dart';
 import 'package:bujuan/pages/home/view/panel_view.dart';
 import 'package:bujuan/pages/home/view/panel_view_l.dart';
 import 'package:bujuan/widget/simple_extended_image.dart';
+import 'package:bujuan/widget/slider_drawer/slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:get/get.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:keframe/keframe.dart';
 
 import '../../../widget/swipeable.dart';
 import '../../../widget/weslide/panel.dart';
-import '../../user/user_controller.dart';
+import '../../../widget/weslide/panel_play_view.dart';
 import 'menu_view.dart';
 
-class HomeView extends GetView<HomeController> {
+class HomeView extends GetView<Home> {
   final Widget? body;
 
   const HomeView({
@@ -32,6 +33,7 @@ class HomeView extends GetView<HomeController> {
     if (bottomHeight == 0) bottomHeight = 25.w;
     return Scaffold(
       resizeToAvoidBottomInset: false,
+      backgroundColor: Colors.transparent,
       body: OrientationBuilder(
           builder: (c, o) => Visibility(
                 visible: o == Orientation.portrait,
@@ -40,19 +42,13 @@ class HomeView extends GetView<HomeController> {
                   menuScreen: const MenuView(),
                   mainScreen: SlidingUpPanel(
                     color: Colors.transparent,
-                    controller: controller.panelControllerHome,
+                    // controller: controller.panelControllerHome,
                     renderPanelSheet: false,
                     // onPanelSlide: (value) => controller.changeSlidePosition(value),
-                    onPanelClosed: () {
-                      controller.changeStatusIconColor(false);
-                    },
-                    onPanelOpened: () {
-                      controller.changeStatusIconColor(true);
-                    },
                     parallaxEnabled: true,
                     parallaxOffset: .05,
                     boxShadow: const [BoxShadow(blurRadius: 8.0, color: Color.fromRGBO(0, 0, 0, 0.15))],
-                    panel: const ClassWidget(child: PanelViewL()),
+                    panel: const FrameSeparateWidget(child: PanelViewL()),
                     body: const ClassStatelessWidget(child: BodyView()),
                     header: ClassStatelessWidget(child: _buildPanelHeaderL(bottomHeight / 2, context)),
                     minHeight: controller.panelMobileMinSize + bottomHeight,
@@ -73,97 +69,101 @@ class HomeView extends GetView<HomeController> {
                 child: ZoomDrawer(
                   moveMenuScreen: false,
                   menuScreen: const MenuView(),
-                  controller: controller.myDrawerController,
-                  mainScreen: SlidingUpPanel(
+                  mainScreen: SlidingUpPlayViewPanel(
                     color: Colors.transparent,
                     controller: controller.panelControllerHome,
                     onPanelSlide: (value) => controller.changeSlidePosition(value),
-                    parallaxEnabled: true,
-                    parallaxOffset: .02,
-                    boxShadow: const [BoxShadow(blurRadius: 8.0, color: Color.fromRGBO(0, 0, 0, 0.15))],
-                    panel: const ClassWidget(child: PanelView()),
-                    body: const ClassStatelessWidget(child: BodyView()),
-                    header: ClassStatelessWidget(child: _buildPanelHeader(bottomHeight, context)),
+                    boxShadow: const [BoxShadow(blurRadius: 8.0, color: Color.fromRGBO(0, 0, 0, 0.05))],
+                    panel: const PanelView(),
+                    body: const BodyView(),
                     minHeight: controller.panelMobileMinSize + bottomHeight,
                     maxHeight: Get.height,
                   ),
-                  dragOffset: 500.w,
-                  angle: -0,
+                  dragOffset: 350.w,
+                  angle: 0,
                   menuBackgroundColor: Theme.of(context).cardColor,
                   slideWidth: Get.width * .28,
-                  mainScreenScale: .1,
-                  duration: const Duration(milliseconds: 200),
-                  reverseDuration: const Duration(milliseconds: 200),
+                  mainScreenScale: 0,
+                  // duration: const Duration(milliseconds: 200),
+                  // reverseDuration: const Duration(milliseconds: 200),
                   showShadow: true,
                   mainScreenTapClose: true,
                   menuScreenTapClose: true,
                   drawerShadowsBackgroundColor: Colors.grey,
+                  controller: controller.myDrawerController,
                 ),
               )),
     );
   }
 
   Widget _buildPanelHeader(bottomHeight, context) {
-    return Obx(() => IgnorePointer(
-          ignoring: controller.panelOpenPositionThan1.value && !controller.second.value,
-          child: Visibility(
-            replacement: GestureDetector(
-              child: _buildPanelHeaderTo(bottomHeight, context),
-              onHorizontalDragDown: (e) {},
-              onTap: () {
-                if (!controller.panelControllerHome.isPanelOpen) {
-                  controller.panelControllerHome.open();
-                } else {
-                  if (controller.panelController.isPanelOpen) controller.panelController.close();
-                }
-              },
-            ),
-            visible: controller.second.value,
-            child: GestureDetector(
-              child: _buildPanelHeaderTo(bottomHeight, context),
-              onHorizontalDragDown: (e) {},
-              onVerticalDragDown: (e) {},
-              onTap: () {
-                if (!controller.panelControllerHome.isPanelOpen) {
-                  controller.panelControllerHome.open();
-                } else {
-                  if (controller.panelController.isPanelOpen) controller.panelController.close();
-                }
-              },
-            ),
-          ),
-        ));
+    print('========_buildPanelHeader');
+    return IgnorePointer(
+      ignoring: controller.panelOpenPositionThan1.value && !controller.second.value,
+      child: Visibility(
+        replacement: GestureDetector(
+          child: _buildPanelHeaderTo(bottomHeight, context),
+          onHorizontalDragDown: (e) {},
+          onTap: () {
+            if (!controller.panelControllerHome.isPanelOpen) {
+              controller.panelControllerHome.open();
+            } else {
+              if (controller.panelController.isPanelOpen) controller.panelController.close();
+            }
+          },
+        ),
+        visible: controller.panelOpenPositionThan8.value,
+        child: GestureDetector(
+          child: _buildPanelHeaderTo(bottomHeight, context),
+          onHorizontalDragDown: (e) {},
+          onVerticalDragDown: (e) {},
+          onTap: () {
+            if (!controller.panelControllerHome.isPanelOpen) {
+              controller.panelControllerHome.open();
+            } else {
+              if (controller.panelController.isPanelOpen) controller.panelController.close();
+            }
+          },
+        ),
+      ),
+    );
   }
 
   Widget _buildPanelHeaderTo(bottomHeight, context) {
     return Stack(
       children: [
-        Swipeable(onSwipeRight: () {
-          Future.delayed(const Duration(milliseconds: 300), () {
-            controller.audioServeHandler.skipToPrevious();
-          });
-        },
+        Swipeable(
+          onSwipeRight: () {
+            Future.delayed(const Duration(milliseconds: 300), () {
+              controller.audioServeHandler.skipToPrevious();
+            });
+          },
           onSwipeLeft: () {
             Future.delayed(const Duration(milliseconds: 300), () {
               controller.audioServeHandler.skipToNext();
             });
           },
           threshold: 120.w,
-          background: const SizedBox.shrink(),child: Container(
-            color: Colors.transparent,
-            padding: controller.getHeaderPadding(context).copyWith(bottom: bottomHeight),
-            width: Get.width,
-            height: controller.getPanelMinSize() + controller.getHeaderPadding(context).top + bottomHeight,
-            child: _buildPlayBar(context),
-          ),),
+          background: const SizedBox.shrink(),
+          child: Obx(() => Container(
+                color: Colors.transparent,
+                padding: controller.getHeaderPadding(context).copyWith(bottom: bottomHeight),
+                width: Get.width,
+                height: controller.getPanelMinSize() + controller.getHeaderPadding(context).top + bottomHeight,
+                child: _buildPlayBar(context),
+              )),
+        ),
         Positioned(
           bottom: 0,
           child: GestureDetector(
-            child: Obx(() => Container(
-              color: Colors.transparent,
-              height: bottomHeight * (controller.panelOpenPositionThan1.value ? 0 : 1),
-              width: Get.width,
-            )),
+            child: Obx(() {
+              print('底部高度');
+              return Container(
+                color: Colors.transparent,
+                height: bottomHeight * (controller.panelOpenPositionThan1.value ? 0 : 1),
+                width: Get.width,
+              );
+            }),
             onVerticalDragDown: (e) {},
           ),
         )
@@ -180,11 +180,11 @@ class HomeView extends GetView<HomeController> {
           children: [
             Expanded(
                 child: Padding(
-                  padding: EdgeInsets.only(left: controller.panelHeaderSize),
-                  child: Obx(
-                        () => RichText(
-                      text: !controller.panelOpenPositionThan1.value || controller.second.value
-                          ? TextSpan(
+              padding: EdgeInsets.only(left: controller.panelHeaderSize),
+              child: Obx(
+                () => RichText(
+                  text: !controller.panelOpenPositionThan1.value || controller.second.value
+                      ? TextSpan(
                           text: '${controller.mediaItem.value.title} - ',
                           children: [
                             TextSpan(
@@ -196,26 +196,24 @@ class HomeView extends GetView<HomeController> {
                             )
                           ],
                           style: TextStyle(
-                              fontSize: 28.sp,
-                              color: controller.second.value ? controller.bodyColor.value : controller.getLightTextColor(context),
-                              fontWeight: FontWeight.w500))
-                          : const TextSpan(),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                )),
-            ClassWidget(
+                              fontSize: 28.sp, color: controller.second.value ? controller.bodyColor.value : controller.getLightTextColor(context), fontWeight: FontWeight.w500))
+                      : const TextSpan(),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            )),
+            FrameSeparateWidget(
                 child: Obx(() => Visibility(
-                  visible: !controller.panelOpenPositionThan1.value || controller.second.value,
-                  child: IconButton(
-                      onPressed: () => controller.playOrPause(),
-                      icon: Obx(() => Icon(
-                        controller.playing.value ? TablerIcons.player_pause : TablerIcons.player_play,
-                        size: controller.playing.value ? 46.w : 42.w,
-                        color: controller.second.value ? controller.bodyColor.value : controller.getLightTextColor(context),
-                      ))),
-                ))),
+                      visible: !controller.panelOpenPositionThan1.value || controller.second.value,
+                      child: IconButton(
+                          onPressed: () => controller.playOrPause(),
+                          icon: Obx(() => Icon(
+                                controller.playing.value ? TablerIcons.player_pause : TablerIcons.player_play,
+                                size: controller.playing.value ? 46.w : 42.w,
+                                color: controller.second.value ? controller.bodyColor.value : controller.getLightTextColor(context),
+                              ))),
+                    ))),
             // ClassWidget(
             //     child: Obx(() => Visibility(
             //       visible: !controller.panelOpenPositionThan1.value || controller.second.value,
@@ -229,20 +227,16 @@ class HomeView extends GetView<HomeController> {
             //     )))
           ],
         ),
-        Obx(() => Positioned(
-              left: controller.getImageLeft(),
-              child: Stack(
-                children: [
-                  SimpleExtendedImage(
-                    '${controller.mediaItem.value.extras?['image']}?param=500y500',
-                    fit: BoxFit.cover,
-                    height: controller.getImageSize(),
-                    width: controller.getImageSize(),
-                    borderRadius: BorderRadius.circular(controller.getImageSize() / 2 * (1 - controller.slidePosition.value * .88)),
-                  ),
-                ],
-              ),
-            )),
+        Positioned(
+          left: controller.getImageLeft(),
+          child: SimpleExtendedImage(
+            '${controller.mediaItem.value.extras?['image']}?param=500y500',
+            fit: BoxFit.cover,
+            height: controller.getImageSize(),
+            width: controller.getImageSize(),
+            borderRadius: BorderRadius.circular(controller.getImageSize() / 2 * (1 - controller.slidePosition.value * .88)),
+          ),
+        ),
       ],
     );
   }
@@ -348,7 +342,7 @@ class HomeView extends GetView<HomeController> {
             ],
           ),
         ),
-        ClassWidget(
+        FrameSeparateWidget(
             child: Obx(() => Visibility(
                   visible: !controller.panelOpenPositionThan1.value || controller.second.value,
                   child: IconButton(
@@ -359,7 +353,7 @@ class HomeView extends GetView<HomeController> {
                         color: controller.second.value ? controller.bodyColor.value : controller.getLightTextColor(context),
                       )),
                 ))),
-        ClassWidget(
+        FrameSeparateWidget(
             child: Obx(() => Visibility(
                   visible: !controller.panelOpenPositionThan1.value || controller.second.value,
                   child: IconButton(

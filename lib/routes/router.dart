@@ -7,6 +7,7 @@ import 'package:bujuan/pages/local/local_song.dart';
 import 'package:bujuan/pages/mv/mv_view.dart';
 import 'package:bujuan/pages/radio/my_radio_view.dart';
 import 'package:bujuan/pages/radio/radio_details_view.dart';
+import 'package:bujuan/pages/setting/coffee.dart';
 import 'package:bujuan/pages/setting/settring_view.dart';
 import 'package:bujuan/pages/setting/user_setting_view.dart';
 import 'package:bujuan/pages/talk/talk_view.dart';
@@ -20,6 +21,7 @@ import '../pages/local/local_view.dart';
 import '../pages/login/login.dart';
 import '../pages/play_list/playlist_view.dart';
 import '../pages/search/search_view.dart';
+import '../pages/setting/image_blur.dart';
 import '../pages/splash_page.dart';
 import '../pages/update/update_view.dart';
 
@@ -48,6 +50,8 @@ abstract class Routes {
   static const editSong = _Paths.editSong;
   static const localSong = _Paths.localSong;
   static const radioDetails = _Paths.radioDetails;
+  static const imageBlur = _Paths.imageBlur;
+  static const coffee = _Paths.coffee;
 }
 
 abstract class _Paths {
@@ -75,33 +79,37 @@ abstract class _Paths {
   static const update = '/update';
   static const editSong = '/editSong';
   static const localSong = 'localSong';
+  static const imageBlur = '/imageBlur';
+  static const coffee = '/coffee';
 }
 
 @MaterialAutoRouter(
   replaceInRouteName: 'Page,Route',
   routes: <AutoRoute>[
-    AutoRoute(path: Routes.home, page: HomeView, deferredLoading: true, children: [
-      AutoRoute(path: Routes.user, page: UserView, initial: true, deferredLoading: true),
-      AutoRoute(path: Routes.cloud, page: AlbumView),
-      AutoRoute(path: Routes.playlist, page: PlayListView),
-      AutoRoute(path: Routes.index, page: MainView),
-      AutoRoute(path: Routes.today, page: TodayView),
-      AutoRoute(path: Routes.search, page: SearchView),
-      AutoRoute(path: Routes.artists, page: ArtistsView),
-      AutoRoute(path: Routes.myRadio, page: MyRadioView),
-      AutoRoute(path: Routes.radioDetails, page: RadioDetailsView),
-      AutoRoute(path: Routes.local, page: LocalView),
-      AutoRoute(path: Routes.localSong, page: LocalSongView),
+    AutoRoute(path: Routes.home, page: HomeView, deferredLoading: true, fullscreenDialog: true, children: [
+      AutoRoute(path: Routes.user, page: UserView, initial: true, deferredLoading: true, fullscreenDialog: true),
+      AutoRoute(path: Routes.cloud, page: AlbumView, fullscreenDialog: true),
+      AutoRoute(path: Routes.playlist, page: PlayListView, fullscreenDialog: true),
+      AutoRoute(path: Routes.index, page: MainView, fullscreenDialog: true),
+      AutoRoute(path: Routes.today, page: TodayView, fullscreenDialog: true),
+      AutoRoute(path: Routes.search, page: SearchView, fullscreenDialog: true),
+      AutoRoute(path: Routes.artists, page: ArtistsView, fullscreenDialog: true),
+      AutoRoute(path: Routes.myRadio, page: MyRadioView, fullscreenDialog: true),
+      AutoRoute(path: Routes.radioDetails, page: RadioDetailsView, fullscreenDialog: true),
+      AutoRoute(path: Routes.local, page: LocalView, fullscreenDialog: true),
+      AutoRoute(path: Routes.localSong, page: LocalSongView, fullscreenDialog: true),
     ]),
-    AutoRoute(path: Routes.splash, page: SplashPage, initial: true, deferredLoading: true),
-    AutoRoute(path: Routes.login, page: LoginView),
-    AutoRoute(path: Routes.talk, page: TalkView),
-    AutoRoute(path: Routes.setting, page: SettingView),
-    AutoRoute(path: Routes.guide, page: GuideView),
-    AutoRoute(path: Routes.userSetting, page: UserSettingView),
-    AutoRoute(path: Routes.mv, page: MvView),
-    AutoRoute(path: Routes.update, page: UpdateView),
-    AutoRoute(path: Routes.editSong, page: EditSongView),
+    AutoRoute(path: Routes.splash, page: SplashPage, initial: true, deferredLoading: true, fullscreenDialog: true),
+    AutoRoute(path: Routes.login, page: LoginView, fullscreenDialog: true),
+    AutoRoute(path: Routes.talk, page: TalkView, fullscreenDialog: true),
+    AutoRoute(path: Routes.setting, page: SettingView, fullscreenDialog: true),
+    AutoRoute(path: Routes.guide, page: GuideView, fullscreenDialog: true),
+    AutoRoute(path: Routes.userSetting, page: UserSettingView, fullscreenDialog: true),
+    AutoRoute(path: Routes.mv, page: MvView, fullscreenDialog: true),
+    AutoRoute(path: Routes.update, page: UpdateView, fullscreenDialog: true),
+    AutoRoute(path: Routes.editSong, page: EditSongView, fullscreenDialog: true),
+    AutoRoute(path: Routes.imageBlur, page: ImageBlur, fullscreenDialog: true),
+    AutoRoute(path: Routes.coffee, page: CoffeePage, fullscreenDialog: true),
   ],
 )
 class $RootRouter {}

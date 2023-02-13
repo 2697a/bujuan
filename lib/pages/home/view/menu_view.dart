@@ -9,7 +9,7 @@ import 'package:get/get.dart';
 
 import '../../../widget/simple_extended_image.dart';
 
-class MenuView extends GetView<HomeController> {
+class MenuView extends GetView<Home> {
   const MenuView({super.key});
 
   @override
@@ -19,17 +19,17 @@ class MenuView extends GetView<HomeController> {
       children: [
         Padding(padding: EdgeInsets.symmetric(vertical: 25.w)),
         GestureDetector(
-          child: SimpleExtendedImage.avatar(
-            '大三大四的',
+          child: Obx(() => SimpleExtendedImage.avatar(
+            '${controller.userData.value.profile?.avatarUrl ?? ''}?param=300y300',
             width: 80.w,
-          ),
+          )),
           onTap: () {
             if (controller.loginStatus.value == LoginStatus.noLogin) {
               context.router.pushNamed(Routes.login);
               return;
             }
             controller.myDrawerController.close!();
-            Future.delayed(const Duration(milliseconds: 300), () {
+            Future.delayed(const Duration(milliseconds: 200), () {
               context.router.pushNamed(Routes.userSetting);
             });
           },
@@ -52,8 +52,8 @@ class MenuView extends GetView<HomeController> {
                 ),
                 onTap: () {
                   controller.myDrawerController.close!();
-                  Future.delayed(const Duration(milliseconds: 350), () {
-                    if (controller.leftMenus[index].path == Routes.setting) {
+                  Future.delayed(const Duration(milliseconds: 200), () {
+                    if (controller.leftMenus[index].pathUrl.isEmpty) {
                       context.router.pushNamed(controller.leftMenus[index].path);
                       return;
                     }

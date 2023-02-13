@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
+// import 'package:url_launcher/url_launcher.dart';
 
 class UpdateView extends StatelessWidget {
   const UpdateView({Key? key}) : super(key: key);
@@ -16,7 +17,7 @@ class UpdateView extends StatelessWidget {
       backgroundColor: Colors.transparent,
       body: SafeArea(
         left: false,
-        child: Padding(
+        child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: 15.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,

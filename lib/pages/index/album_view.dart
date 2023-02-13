@@ -53,7 +53,7 @@ class AlbumView extends GetView<IndexController> {
                           'url': '',
                           'image': e.simpleSong.al?.picUrl ?? '',
                           'type': '',
-                          'liked': HomeController.to.likeIds.contains(int.tryParse(e.simpleSong.id)),
+                          'liked': Home.to.likeIds.contains(int.tryParse(e.simpleSong.id)),
                           'artist': (e.simpleSong.ar ?? []).map((e) => jsonEncode(e.toJson())).toList().join(' / ')
                         },
                         title: e.simpleSong.name ?? "",

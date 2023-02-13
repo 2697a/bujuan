@@ -4,11 +4,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 class CustomFiled extends StatefulWidget {
-  final IconData iconData;
+  final IconData? iconData;
   final String? hitText;
   final TextStyle? hintStyle;
   final TextEditingController textEditingController;
   final bool? pass;
+  final bool? autoFocus;
   final EdgeInsets? padding;
   final EdgeInsets? margin;
   final TextInputType? textInputType;
@@ -17,7 +18,7 @@ class CustomFiled extends StatefulWidget {
 
   const CustomFiled({
     Key? key,
-    required this.iconData,
+     this.iconData,
     this.hitText,
     this.hintStyle,
     required this.textEditingController,
@@ -26,7 +27,7 @@ class CustomFiled extends StatefulWidget {
     this.onSubmitted,
     this.textInputAction,
     this.padding,
-    this.margin,
+    this.margin, this.autoFocus = false,
   }) : super(key: key);
 
   @override
@@ -46,15 +47,18 @@ class _CustomFiledState extends State<CustomFiled> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: 80.w,
       padding: widget.padding ?? EdgeInsets.symmetric(horizontal: 15.w),
-      margin: widget.margin ?? EdgeInsets.symmetric(vertical: 35.w),
+      margin: widget.margin ?? EdgeInsets.symmetric(vertical: 25.w),
       decoration: BoxDecoration(color: Theme.of(context).colorScheme.onSecondary.withOpacity(.6), borderRadius: BorderRadius.circular(50.w)),
       child: Row(
         children: [
-          Icon(
-            widget.iconData,
-            size: 42.sp,
-          ),
+          widget.iconData != null
+              ? Icon(
+                  widget.iconData,
+                  size: 42.sp,
+                )
+              : const SizedBox.shrink(),
           Expanded(
               child: TextField(
             obscureText: isPass,
@@ -63,6 +67,7 @@ class _CustomFiledState extends State<CustomFiled> {
             cursorColor: Theme.of(context).primaryColor.withOpacity(.4),
             onSubmitted: widget.onSubmitted,
             textInputAction: widget.textInputAction,
+            autofocus: widget.autoFocus??false,
             decoration: InputDecoration(
               hintText: widget.hitText ?? '',
               hintStyle: TextStyle(fontSize: 28.sp, color: Colors.grey),

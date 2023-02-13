@@ -9,7 +9,7 @@ class HomeBinding extends Bindings{
   @override
   void dependencies() {
     // Get.lazyPut(() => UserController());
-    Get.lazyPut(() => HomeController());
+    Get.lazyPut(() => Home());
     // Get.lazyPut<IndexController>(() => IndexController());
     // Get.lazyPut(() => PlayListController());
     // Get.lazyPut(() => LoginController());

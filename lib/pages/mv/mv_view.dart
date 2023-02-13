@@ -47,6 +47,7 @@ class _MvViewState extends State<MvView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: RequestWidget<MvUrlWrap>(
             dioMetaData: mvUrlDioMetaData('${context.routeData.queryParams.getInt('mvId')}'),

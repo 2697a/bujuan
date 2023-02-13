@@ -1,23 +1,20 @@
-import 'package:audio_service/audio_service.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
-import 'package:bujuan/pages/home/view/panel_view.dart';
 import 'package:bujuan/widget/request_widget/request_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:keframe/keframe.dart';
 
 import '../../common/netease_api/src/api/play/bean.dart';
 import '../../common/netease_api/src/api/search/bean.dart';
 import '../../common/netease_api/src/dio_ext.dart';
 import '../../common/netease_api/src/netease_handler.dart';
-import '../../routes/router.gr.dart';
 import '../../widget/app_bar.dart';
 import '../../widget/custom_filed.dart';
 import '../../widget/mobile/flashy_navbar.dart';
 import '../../widget/request_widget/request_loadmore_view.dart';
 import '../../widget/simple_extended_image.dart';
-import '../user/user_controller.dart';
 
 class SearchView extends StatefulWidget {
   const SearchView({Key? key}) : super(key: key);
@@ -104,12 +101,12 @@ class _SearchViewState extends State<SearchView> {
             )
           ],
         ),
-        body: ClassWidget(
+        body: FrameSeparateWidget(
             child: Visibility(
                 visible: searchContent.isNotEmpty,
                 replacement: RequestWidget<SearchKeyWrapX>(
                     dioMetaData: searchHotKeyDioMetaData(),
-                    childBuilder: (data) => ClassWidget(
+                    childBuilder: (data) => FrameSeparateWidget(
                             child: Padding(
                           padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 30.w),
                           child: Wrap(
@@ -126,16 +123,18 @@ class _SearchViewState extends State<SearchView> {
                                       ),
                                       onTap: () {
                                         _search.text = e.first ?? '';
+                                        searchContent = _search.text;
+                                        setState(() {});
                                       },
                                     ))
                                 .toList(),
                           ),
                         ))),
-                child: ClassWidget(
+                child: FrameSeparateWidget(
                     child: Column(
                   children: [
                     Expanded(
-                        child: ClassWidget(
+                        child: FrameSeparateWidget(
                             child: PageView(
                       controller: _pageController,
                       onPageChanged: (index) {
@@ -144,13 +143,13 @@ class _SearchViewState extends State<SearchView> {
                         });
                       },
                       children: [
-                        ClassWidget(child: _buildSongSearchView()),
-                        ClassWidget(child: _buildPlayListSearchView()),
-                        ClassWidget(child: _buildAlbumSearchView()),
-                        ClassWidget(child: _buildArtistsSearchView()),
+                        FrameSeparateWidget(child: _buildSongSearchView()),
+                        FrameSeparateWidget(child: _buildPlayListSearchView()),
+                        FrameSeparateWidget(child: _buildAlbumSearchView()),
+                        FrameSeparateWidget(child: _buildArtistsSearchView()),
                       ],
                     ))),
-                    ClassWidget(
+                    FrameSeparateWidget(
                         child: Container(
                       padding: EdgeInsets.only(bottom: 20.w),
                       child: FlashyNavbar(
@@ -171,14 +170,14 @@ class _SearchViewState extends State<SearchView> {
   }
 
   Widget _buildSongSearchView() {
-    return ClassWidget(child: RequestLoadMoreWidget<SearchSongWrapX, Song2>(
+    return FrameSeparateWidget(child: RequestLoadMoreWidget<SearchSongWrapX, Song2>(
       dioMetaData: searchSongDioMetaData(searchContent, 1),
       childBuilder: (List<Song2> songs) {
-        var list = HomeController.to.song2ToMedia(songs);
+        var list = Home.to.song2ToMedia(songs);
         return ListView.builder(
           itemExtent: 120.w,
           padding: EdgeInsets.symmetric(horizontal: 30.w),
-          itemBuilder: (context, index) => ClassWidget(child: InkWell(
+          itemBuilder: (context, index) => FrameSeparateWidget(child: InkWell(
             child: SizedBox(
               height: 120.w,
               child: Column(
@@ -199,7 +198,7 @@ class _SearchViewState extends State<SearchView> {
               ),
             ),
             onTap: () {
-              HomeController.to.playByIndex(
+              Home.to.playByIndex(
                 index,
                 'search${DateTime.now().millisecondsSinceEpoch}',
                 mediaItem: list.length > 500 ? list.sublist(0, 499) : list,
@@ -217,10 +216,10 @@ class _SearchViewState extends State<SearchView> {
     return RequestLoadMoreWidget<SearchPlaylistWrapX, Play>(
       dioMetaData: searchSongDioMetaData(searchContent, 1000),
       childBuilder: (List<Play> playlist) {
-        return ClassWidget(child: ListView.builder(
+        return FrameSeparateWidget(child: ListView.builder(
           padding: EdgeInsets.symmetric(horizontal: 20.w),
           itemExtent: 120.w,
-          itemBuilder: (context, index) => ClassWidget(child: InkWell(
+          itemBuilder: (context, index) => FrameSeparateWidget(child: InkWell(
             child: SizedBox(
               height: 120.w,
               child: Row(

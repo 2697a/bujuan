@@ -10,10 +10,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:bujuan/routes/router.gr.dart';
 import 'package:get/get.dart';
+import 'package:keframe/keframe.dart';
 
 import '../../../common/netease_api/src/api/play/bean.dart';
 
-class RecommendView extends GetView<HomeController> {
+class RecommendView extends GetView<Home> {
   const RecommendView({super.key});
 
   @override
@@ -22,24 +23,23 @@ class RecommendView extends GetView<HomeController> {
   }
 
   Widget _buildBody(BuildContext context) {
-
-    return ClassWidget(child: Obx(() {
+    return Obx(() {
       return Visibility(
         visible: controller.mediaItem.value.extras?['type'] != MediaType.local.name,
         child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 30.w),
+          padding: EdgeInsets.symmetric(horizontal: 50.w, vertical: 20.w),
           child: Column(
             children: [
               Container(
                 alignment: Alignment.centerLeft,
                 padding: EdgeInsets.only(top: 10.w, bottom: 20.w),
                 child: Obx(() => Text(
-                  '歌手',
-                  style: TextStyle(fontSize: 36.sp, color: controller.bodyColor.value, fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.left,
-                )),
+                      '歌手',
+                      style: TextStyle(fontSize: 36.sp, color: controller.bodyColor.value, fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.left,
+                    )),
               ),
-              ClassWidget(child: _buildArtistsList()),
+              FrameSeparateWidget(child: _buildArtistsList()),
               // Container(
               //   alignment: Alignment.centerLeft,
               //   padding: EdgeInsets.only(top: 10.w, bottom: 20.w),
@@ -64,42 +64,46 @@ class RecommendView extends GetView<HomeController> {
           ),
         ),
       );
-    }));
+    });
   }
 
   Widget _buildArtistsList() {
     return Obx(() {
-      return Visibility(visible: controller.mediaItem.value.extras!['artist'] != null,child: ListView.builder(
-        itemBuilder: (context, index) => InkWell(
-          child: Container(
-            padding: EdgeInsets.symmetric(vertical: 20.w),
-            child: Obx(() => Row(
-              children: [
-                Expanded(
-                    child: Text(
-                      (controller.mediaItem.value.extras!['artist']?.split(' / ').map((e) => Artists.fromJson(jsonDecode(e))).toList() ?? [])[index].name ?? '',
-                      maxLines: 1,
-                      style: TextStyle(fontSize: 30.sp, color: controller.bodyColor.value),
-                    )),
-                Icon(
-                  TablerIcons.chevron_right,
-                  color: controller.bodyColor.value,
-                  size: 38.sp,
-                ),
-              ],
-            )),
+      return Visibility(
+        visible: controller.mediaItem.value.extras!['artist'] != null,
+        child: ListView.builder(
+          itemBuilder: (context, index) => InkWell(
+            child: Container(
+              padding: EdgeInsets.symmetric(vertical: 20.w),
+              child: Obx(() => Row(
+                    children: [
+                      Expanded(
+                          child: Text(
+                        (controller.mediaItem.value.extras!['artist']?.split(' / ').map((e) => Artists.fromJson(jsonDecode(e))).toList() ?? [])[index].name ?? '',
+                        maxLines: 1,
+                        style: TextStyle(fontSize: 30.sp, color: controller.bodyColor.value),
+                      )),
+                      Icon(
+                        TablerIcons.chevron_right,
+                        color: controller.bodyColor.value,
+                        size: 38.sp,
+                      ),
+                    ],
+                  )),
+            ),
+            onTap: () {
+              controller.panelController.close();
+              controller.panelControllerHome.close();
+              context.router.push(const ArtistsView()
+                  .copyWith(args: (controller.mediaItem.value.extras!['artist']?.split(' / ').map((e) => Artists.fromJson(jsonDecode(e))).toList() ?? [])[index]));
+            },
           ),
-          onTap: () {
-            controller.panelController.close();
-            controller.panelControllerHome.close();
-            context.router.push(const ArtistsView().copyWith(args: (controller.mediaItem.value.extras!['artist']?.split(' / ').map((e) => Artists.fromJson(jsonDecode(e))).toList() ?? [])[index]));
-          },
+          itemCount: (controller.mediaItem.value.extras!['artist']?.split(' / ').map((e) => Artists.fromJson(jsonDecode(e))).toList() ?? []).length,
+          shrinkWrap: true,
+          padding: const EdgeInsets.all(0),
+          physics: const NeverScrollableScrollPhysics(),
         ),
-        itemCount: (controller.mediaItem.value.extras!['artist']?.split(' / ').map((e) => Artists.fromJson(jsonDecode(e))).toList() ?? []).length,
-        shrinkWrap: true,
-        padding: const EdgeInsets.all(0),
-        physics: const NeverScrollableScrollPhysics(),
-      ),);
+      );
     });
   }
 

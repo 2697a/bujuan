@@ -241,9 +241,9 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
     // prevent the panel content from being scrolled only if the widget is
     // draggable and panel scrolling is enabled
     _sc = ScrollController();
-    _sc.addListener(() {
-      if (widget.isDraggable && !_scrollingEnabled) _sc.jumpTo(0);
-    });
+    // _sc.addListener(() {
+    //   if (widget.isDraggable && !_scrollingEnabled) _sc.jumpTo(0);
+    // });
 
     widget.controller?._addState(this);
   }
@@ -257,54 +257,15 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
       children: <Widget>[
         //make the back widget take up the entire back side
         widget.body != null
-            ? AnimatedBuilder(
-                animation: _ac,
-                builder: (context, child) {
-                  return Positioned(
-                    top: widget.parallaxEnabled ? _getParallax() : 0.0,
-                    child: child ?? const SizedBox(),
-                  );
-                },
-                child: SizedBox(
-                  height: MediaQuery.of(context).size.height,
-                  width: MediaQuery.of(context).size.width,
-                  child: widget.body,
-                ),
-              )
+            ? SizedBox(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          child: widget.body,
+        )
             : Container(),
 
         //the backdrop to overlay on the body
-        !widget.backdropEnabled
-            ? Container()
-            : GestureDetector(
-                onVerticalDragEnd: widget.backdropTapClosesPanel
-                    ? (DragEndDetails dets) {
-                        // only trigger a close if the drag is towards panel close position
-                        if ((widget.slideDirection == SlideDirection.UP
-                                    ? 1
-                                    : -1) *
-                                dets.velocity.pixelsPerSecond.dy >
-                            0) _close();
-                      }
-                    : null,
-                onTap: widget.backdropTapClosesPanel ? () => _close() : null,
-                child: AnimatedBuilder(
-                    animation: _ac,
-                    builder: (context, _) {
-                      return Container(
-                        height: MediaQuery.of(context).size.height,
-                        width: MediaQuery.of(context).size.width,
-
-                        //set color to null so that touch events pass through
-                        //to the body when the panel is closed, otherwise,
-                        //if a color exists, then touch events won't go through
-                        color: _ac.value == 0.0
-                            ? null
-                            : widget.backdropColor.withOpacity(
-                                widget.backdropOpacity * _ac.value),
-                      );
-                    }),
-              ),
+        Container(),
 
         //the actual sliding part
 
@@ -318,14 +279,14 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
                     widget.minHeight,
                 margin: widget.margin,
                 padding: widget.padding,
-                decoration: widget.renderPanelSheet
-                    ? BoxDecoration(
-                  border: widget.border,
-                  borderRadius: widget.borderRadius,
-                  boxShadow: widget.boxShadow,
-                  color: widget.color,
-                )
-                    : null,
+                // decoration: widget.renderPanelSheet
+                //     ? BoxDecoration(
+                //   border: widget.border,
+                //   borderRadius: widget.borderRadius,
+                //   boxShadow: widget.boxShadow,
+                //   color: widget.color,
+                // )
+                //     : null,
                 child: child,
               );
             },
@@ -365,49 +326,6 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
                 )
                     : Container(),
 
-                // footer
-                // widget.footer != null
-                //     ? Positioned(
-                //     top: widget.slideDirection == SlideDirection.UP
-                //         ? null
-                //         : 0.0,
-                //     bottom:
-                //     widget.slideDirection == SlideDirection.DOWN
-                //         ? null
-                //         : 0.0,
-                //     child: widget.footer ?? const SizedBox())
-                //     : Container(),
-
-                // collapsed panel
-                // Positioned(
-                //   top: widget.slideDirection == SlideDirection.UP
-                //       ? 0.0
-                //       : null,
-                //   bottom: widget.slideDirection == SlideDirection.DOWN
-                //       ? 0.0
-                //       : null,
-                //   width: MediaQuery.of(context).size.width -
-                //       (widget.margin != null
-                //           ? widget.margin!.horizontal
-                //           : 0) -
-                //       (widget.padding != null
-                //           ? widget.padding!.horizontal
-                //           : 0),
-                //   child: SizedBox(
-                //     height: widget.minHeight,
-                //     child: widget.collapsed == null
-                //         ? Container()
-                //         : FadeTransition(
-                //       opacity:
-                //       Tween(begin: 1.0, end: 0.0).animate(_ac),
-                //       // if the panel is open ignore pointers (touch events) on the collapsed
-                //       // child so that way touch events go through to whatever is underneath
-                //       child: IgnorePointer(
-                //           ignoring: _isPanelOpen,
-                //           child: widget.collapsed),
-                //     ),
-                //   ),
-                // ),
               ],
             ),
           ),
@@ -539,7 +457,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
       } else {
         _ac.animateTo(
           _ac.value + visualVelocity * 0.16,
-          duration: const Duration(milliseconds: 310),
+          duration: const Duration(milliseconds: 150),
           curve: Curves.decelerate,
         );
       }
@@ -654,7 +572,7 @@ class PanelController {
   _SlidingUpPanelState? _panelState;
 
   void _addState(_SlidingUpPanelState panelState) {
-    this._panelState = panelState;
+    _panelState = panelState;
   }
 
   /// Determine if the panelController is attached to an instance

@@ -8,41 +8,54 @@ import 'package:get/get.dart';
 
 import '../../../common/constants/platform_utils.dart';
 import '../../../widget/simple_extended_image.dart';
+import 'menu_view.dart';
 
-class BodyView extends GetView<HomeController> {
+class BodyView extends GetView<Home> {
   const BodyView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     controller.buildContext = context;
-    double bottomHeight = MediaQuery.of(controller.buildContext).padding.bottom * (PlatformUtils.isIOS ? 0.4 : 0.6);
+    double bottomHeight = MediaQuery.of(controller.buildContext).padding.bottom * (PlatformUtils.isIOS ? 0.4 : 0.8);
     if (bottomHeight == 0) bottomHeight = 25.w;
     return Scaffold(
-      // backgroundColor: Colors.transparent,
+      resizeToAvoidBottomInset: false,
+      key: controller.globalKey,
+      // drawer: Drawer(
+      //   width: Get.width / 1.45,
+      //   elevation: 0,
+      //   child: const MenuView(),
+      // ),
+      // drawerScrimColor: Colors.transparent,
+      // drawerEdgeDragWidth: 500.w,
       body: Stack(
         children: [
-          Obx(() => controller.leftImage.value && controller.mediaItem.value.extras != null
-              ? SimpleExtendedImage(
-                    '${controller.mediaItem.value.extras?['image']??''}?param=500y500',
-                  // 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fc-ssl.duitang.com%2Fuploads%2Fitem%2F201812%2F08%2F20181208180816_Svj8N.thumb.1000_0.jpeg&refer=http%3A%2F%2Fc-ssl.duitang.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1678285931&t=939264ffeb3cfa36778506271162f2bd',
-                  fit: BoxFit.cover,
-                  width: Get.width,
-                  height: Get.height,
-                )
-              : const SizedBox.shrink()),
+          // Padding(
+          //   padding: EdgeInsets.only(bottom: controller.panelHeaderSize + bottomHeight),
+          //   child: const AutoRouter(),
+          // )
+          Obx(() =>Visibility(visible: controller.background.value.isNotEmpty,child: SimpleExtendedImage(
+            controller.background.value,
+            fit: BoxFit.cover,
+            width: Get.width,
+            height: Get.height,
+          ),)),
           Container(
-            color: Theme.of(context).scaffoldBackgroundColor.withOpacity(.36),
+            color: Theme.of(context).scaffoldBackgroundColor.withOpacity(.26),
           ),
-          BackdropFilter(
-            /// 过滤器
-            filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-
-            /// 必须设置一个空容器
-            child: Padding(
-              padding: EdgeInsets.only(bottom: controller.panelHeaderSize + bottomHeight),
-              child: const AutoRouter(),
-            ),
+          Padding(
+            padding: EdgeInsets.only(bottom: controller.panelHeaderSize + bottomHeight),
+            child: const AutoRouter(),
           )
+          // BackdropFilter(
+          //   /// 过滤器
+          //   filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+          //   /// 必须设置一个空容器
+          //   child: Padding(
+          //     padding: EdgeInsets.only(bottom: controller.panelHeaderSize + bottomHeight),
+          //     child: const AutoRouter(),
+          //   ),
+          // )
         ],
       ),
       //
