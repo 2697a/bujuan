@@ -5,6 +5,8 @@ import 'package:bujuan/common/bujuan_audio_handler.dart';
 import 'package:bujuan/common/constants/platform_utils.dart';
 import 'package:bujuan/pages/home/home_binding.dart';
 import 'package:bujuan/pages/index/index_controller.dart';
+import 'package:bujuan/pages/local/local_controller.dart';
+import 'package:bujuan/pages/local/netease_controller.dart';
 import 'package:bujuan/pages/play_list/playlist_controller.dart';
 import 'package:bujuan/pages/user/user_controller.dart';
 import 'package:bujuan/routes/router.gr.dart';
@@ -34,37 +36,37 @@ main() async {
   final rootRouter = getIt<RootRouter>();
   HomeBinding().dependencies();
   // debugProfileBuildsEnabled = true;
-  runApp(OrientationBuilder(builder: (context, orientation) {
-    return ScreenUtilInit(
-      rebuildFactor: RebuildFactors.orientation,
-      designSize: orientation == Orientation.portrait ? const Size(750, 1334) : const Size(1334, 750),
-      builder: (BuildContext context, Widget? child) {
-        return GetMaterialApp.router(
-          title: "Bujuan",
-          theme: AppTheme.light.copyWith(
-              pageTransitionsTheme: const PageTransitionsTheme(builders: {
-            TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
-          })),
-          darkTheme: AppTheme.dark.copyWith(
-              pageTransitionsTheme: const PageTransitionsTheme(builders: {
-            TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
-          })),
-          // showPerformanceOverlay: true,
-          // checkerboardOffscreenLayers: true,
-          // checkerboardRasterCacheImages: true,
-          themeMode: ThemeMode.system,
-          routerDelegate: rootRouter.delegate(
-            navigatorObservers: () => [MyObserver()],
-          ),
-          routeInformationParser: rootRouter.defaultRouteParser(),
-          debugShowCheckedModeBanner: false,
-          builder: (_, router) => router!,
-          // home: const SplashPage(),
-        );
-      },
-    );
-  }));
-  // SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge).then((value) => );
+  if (PlatformUtils.isAndroid) {
+    SystemUiOverlayStyle systemUiOverlayStyle = const SystemUiOverlayStyle(statusBarColor: Colors.transparent, systemNavigationBarColor: Colors.transparent,systemNavigationBarContrastEnforced: false);
+    SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
+  }
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge).then((value) => runApp(ScreenUtilInit(
+    designSize: const Size(750, 1334),
+    builder: (BuildContext context, Widget? child) {
+      return GetMaterialApp.router(
+        title: "Bujuan",
+        theme: AppTheme.light.copyWith(
+            pageTransitionsTheme: const PageTransitionsTheme(builders: {
+              TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+            })),
+        darkTheme: AppTheme.dark.copyWith(
+            pageTransitionsTheme: const PageTransitionsTheme(builders: {
+              TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+            })),
+        // showPerformanceOverlay: true,
+        // checkerboardOffscreenLayers: true,
+        // checkerboardRasterCacheImages: true,
+        themeMode: ThemeMode.system,
+        routerDelegate: rootRouter.delegate(
+          navigatorObservers: () => [MyObserver()],
+        ),
+        routeInformationParser: rootRouter.defaultRouteParser(),
+        debugShowCheckedModeBanner: false,
+        builder: (_, router) => router!,
+        // home: const SplashPage(),
+      );
+    },
+  )));
 }
 
 class MyObserver extends AutoRouterObserver {
@@ -79,8 +81,13 @@ class MyObserver extends AutoRouterObserver {
         del ? Get.delete<UserController>() : Get.lazyPut<UserController>(() => UserController());
         break;
       case 'PlayListView':
-        print('PlayListView');
         del ? Get.delete<PlayListController>() : Get.lazyPut<PlayListController>(() => PlayListController());
+        break;
+      case 'NeteaseCacheView':
+        del ? Get.delete<Netease>() : Get.lazyPut<Netease>(() => Netease());
+        break;
+      case 'LocalView':
+        del ? Get.delete<Local>() : Get.lazyPut<Local>(() => Local());
         break;
     }
   }
@@ -127,7 +134,6 @@ class MyObserver extends AutoRouterObserver {
 }
 
 Future<void> _initAudioServer(getIt) async {
-  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   getIt.registerSingleton<RootRouter>(RootRouter());
   getIt.registerSingleton<AudioPlayer>(AudioPlayer());
   getIt.registerSingleton<ZoomDrawerController>(ZoomDrawerController());
@@ -145,11 +151,4 @@ Future<void> _initAudioServer(getIt) async {
       androidNotificationIcon: 'drawable/audio_service_icon',
     ),
   ));
-  // android 状态栏为透明的沉浸
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    if (PlatformUtils.isAndroid) {
-      SystemUiOverlayStyle systemUiOverlayStyle = const SystemUiOverlayStyle(statusBarColor: Colors.transparent, systemNavigationBarColor: Colors.transparent);
-      SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
-    }
-  });
 }

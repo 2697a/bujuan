@@ -27,12 +27,14 @@ import 'package:on_audio_edit/on_audio_edit.dart';
 import 'package:palette_generator/palette_generator.dart';
 
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:slide_countdown/slide_countdown.dart';
 
 import '../../common/lyric_parser/lyrics_reader_model.dart';
 import '../../common/netease_api/src/api/bean.dart';
 import '../../common/bujuan_audio_handler.dart';
 import '../../routes/router.dart';
 import '../../widget/weslide/panel_play_view.dart';
+import '../../widget/wheel_slider.dart';
 import 'view/home_view.dart';
 
 Future<PaletteGenerator> getColor(MediaItem mediaItem) async {
@@ -45,7 +47,8 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
   final List<LeftMenu> leftMenus = [
     LeftMenu('个人中心', TablerIcons.user, Routes.user, '/home/user'),
     LeftMenu('推荐歌单', TablerIcons.smart_home, Routes.index, '/home/index'),
-    // LeftMenu('本地歌曲', TablerIcons.file_music, Routes.local, '/home/local'),
+    LeftMenu('本地歌曲', TablerIcons.file_music, Routes.local, '/home/local'),
+    // LeftMenu('alarm', TablerIcons.alarm, '', ''),
     LeftMenu('个性设置', TablerIcons.settings, Routes.setting, ''),
     LeftMenu('捐赠', TablerIcons.coffee, Routes.coffee, ''),
   ];
@@ -73,17 +76,11 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
   //第一层滑动高度0-1
   RxDouble slidePosition = 0.0.obs;
 
-  //第二层滑动高度0-1
-  RxDouble slidePosition1 = 0.0.obs;
-
   //专辑颜色数据
   Rx<PaletteGenerator> rx = PaletteGenerator.fromColors([]).obs;
 
   //是否第二层
   RxBool second = false.obs;
-
-  //是否第二层
-  RxBool isDraggable = false.obs;
 
   //是否第二层
   RxBool panelOpenPositionThan1 = false.obs;
@@ -100,12 +97,10 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
   //是否播放中
   RxBool playing = false.obs;
 
-  //是否播放中
-  RxBool isMobile = true.obs;
-
   RxBool fm = false.obs;
 
   RxBool leftImage = true.obs;
+  bool leftImageNoObs = true;
 
   //是否渐变播放背景
   RxBool gradientBackground = false.obs;
@@ -140,7 +135,6 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
 
   //循环方式
   Rx<AudioServiceRepeatMode> audioServiceRepeatMode = AudioServiceRepeatMode.all.obs;
-  Rx<AudioServiceShuffleMode> audioServiceShuffleMode = AudioServiceShuffleMode.none.obs;
 
   //进度条数组
   List<Map<dynamic, dynamic>> mEffects = [];
@@ -179,12 +173,16 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
 
   OnAudioEdit onAudioEdit = GetIt.instance<OnAudioEdit>();
 
-  RxBool isAurora = false.obs;
-
   Rx<Color> bodyColor = Colors.white.obs;
 
+  RxInt sleepMin = 0.obs;
+  int sleepMinTo = 0;
 
   var lastPopTime = DateTime.now();
+
+  var lastSleepTime = DateTime.now();
+
+  RxBool sleepSlide = false.obs;
 
   bool intervalClick(int needTime) {
     // 防重复提交
@@ -213,6 +211,7 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
     }
     StorageUtil().setBool(noFirstOpen, true);
     leftImage.value = StorageUtil().getBool(leftImageSp);
+    leftImageNoObs = leftImage.value;
     background.value = StorageUtil().getString(backgroundSp);
     cache.value = StorageUtil().getBool(cacheSp);
     gradientBackground.value = StorageUtil().getBool(gradientBackgroundSp);
@@ -279,7 +278,7 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
         return;
       }
       // if(lastDuration.inSeconds != event.inSeconds){
-        duration.value = event;
+      duration.value = event;
       // }
       //   lastDuration = event;
       if (second.value && !onMove.value) {
@@ -575,7 +574,8 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
                 'image': e.album?.picUrl ?? '',
                 'liked': likeIds.contains(int.tryParse(e.id)),
                 'artist': (e.artists ?? []).map((e) => jsonEncode(e.toJson())).toList().join(' / '),
-                'type': MediaType.fm.name
+                'type': MediaType.fm.name,
+                'size': ''
               },
               title: e.name ?? "",
               album: jsonEncode(e.album!.toJson()),
@@ -692,7 +692,8 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
               'liked': likeIds.contains(int.tryParse(e.id)),
               'artist': (e.ar ?? []).map((e) => jsonEncode(e.toJson())).toList().join(' / '),
               'album': jsonEncode(e.al?.toJson()),
-              'mv': e.mv
+              'mv': e.mv,
+              'fee': e.fee
             },
             title: e.name ?? "",
             album: e.al?.name,
@@ -712,4 +713,118 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
   void openDrawer() {
     globalKey.currentState?.openDrawer();
   }
+
+  void sleep(BuildContext context) {
+    if (lastSleepTime.add(Duration(minutes: sleepMinTo)).difference(DateTime.now()).abs().inSeconds > 0) sleepSlide.value = false;
+    sleepMin.value = sleepMinTo;
+    showDialog(
+        context: context,
+        barrierColor: Colors.black87,
+        builder: (context) => Center(
+              child: Container(
+                margin: EdgeInsets.symmetric(horizontal: 30.w),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 60.w),
+                      child: Text(
+                        '睡眠定时器',
+                        style: TextStyle(color: Colors.white, fontSize: 42.sp, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 30.w),
+                      child: Obx(() => WheelSlider(
+                            totalCount: 150,
+                            initValue: sleepMin.value,
+                            lineColor: Colors.white,
+                            pointerColor: Colors.white,
+                            isVibrate: false,
+                            perspective: 0.006,
+                            onValueChanged: (val) {
+                              sleepMin.value = val;
+                              sleepSlide.value = true;
+                            },
+                            hapticFeedbackType: HapticFeedbackType.vibrate,
+                          )),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(top: 40.w, bottom: 20.w),
+                      child: Obx(() => Text(
+                            '${sleepMin.value}分钟',
+                            style: TextStyle(color: Colors.white, fontSize: 36.sp),
+                          )),
+                    ),
+                    Obx(() => Visibility(
+                        visible: sleepMin.value != 0 && !sleepSlide.value,
+                        child: Padding(
+                          padding: EdgeInsets.only(top: 20.w, bottom: 40.w),
+                          child: SlideCountdown(
+                            decoration: const BoxDecoration(color: Colors.white),
+                            icon: const Text('剩余 '),
+                            textStyle: const TextStyle(color: Colors.black),
+                            duration: lastSleepTime.add(Duration(minutes: sleepMinTo)).difference(DateTime.now()).abs(),
+                          ),
+                        ))),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TextButton(
+                            onPressed: () {
+                              sleepMin.value = 0;
+                              sleepMinTo = 0;
+                              audioServeHandler.customAction('cancelSleep');
+                            },
+                            child: Text(
+                              '归零',
+                              style: TextStyle(color: Colors.white, fontSize: 32.sp),
+                            )),
+                        Padding(padding: EdgeInsets.symmetric(horizontal: 40.w)),
+                        TextButton(
+                            onPressed: () {
+                              sleepSlide.value = false;
+                              sleepMinTo = sleepMin.value;
+                              lastSleepTime = DateTime.now();
+                              audioServeHandler.customAction('sleep', {'time': sleepMinTo});
+                              Navigator.of(context).pop();
+                            },
+                            child: Text(
+                              '确定',
+                              style: TextStyle(color: Colors.white, fontSize: 32.sp),
+                            ))
+                      ],
+                    )
+                  ],
+                ),
+              ),
+            ));
+    // List<SleepDate> sleeps = [
+    //   SleepDate('5分钟', 5),
+    //   SleepDate('10分钟', 10),
+    //   SleepDate('15分钟', 15),
+    //   SleepDate('30分钟', 30),
+    //   SleepDate('45分钟', 45),
+    //   SleepDate('1小时', 60),
+    // ];
+    // showModalActionSheet(
+    //   context: context,
+    //   title: '睡眠定时器',
+    //   message: '音频停止时刻',
+    //   actions: sleeps.map((e) => SheetAction<SleepDate>(label: '${e.title}后停止', key: e)).toList(),
+    // ).then((value) {
+    //   if (value != null) {
+    //     WidgetUtil.showToast(value.title);
+    //     audioServeHandler.customAction('sleep', {'time': value.value});
+    //   }
+    // });
+  }
+}
+
+class SleepDate {
+  String title;
+  int value;
+
+  SleepDate(this.title, this.value);
 }

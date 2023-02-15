@@ -29,7 +29,7 @@ class HomeView extends GetView<Home> {
   @override
   Widget build(BuildContext context) {
     controller.buildContext = context;
-    double bottomHeight = MediaQuery.of(controller.buildContext).padding.bottom * (PlatformUtils.isIOS ? 0.6 : .8);
+    double bottomHeight = MediaQuery.of(controller.buildContext).padding.bottom * (PlatformUtils.isIOS ? 0.6 : .85);
     if (bottomHeight == 0) bottomHeight = 25.w;
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -79,13 +79,13 @@ class HomeView extends GetView<Home> {
                     minHeight: controller.panelMobileMinSize + bottomHeight,
                     maxHeight: Get.height,
                   ),
-                  dragOffset: 350.w,
+                  dragOffset: 360.w,
                   angle: 0,
-                  menuBackgroundColor: Theme.of(context).cardColor,
+                  menuBackgroundColor: controller.leftImageNoObs?Theme.of(context).colorScheme.onSecondary:Theme.of(context).cardColor,
                   slideWidth: Get.width * .28,
                   mainScreenScale: 0,
-                  // duration: const Duration(milliseconds: 200),
-                  // reverseDuration: const Duration(milliseconds: 200),
+                  duration: const Duration(milliseconds: 200),
+                  reverseDuration: const Duration(milliseconds: 200),
                   showShadow: true,
                   mainScreenTapClose: true,
                   menuScreenTapClose: true,

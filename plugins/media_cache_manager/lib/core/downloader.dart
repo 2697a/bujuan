@@ -7,23 +7,30 @@ import 'package:path_provider/path_provider.dart';
 abstract class Downloader {
   static CancelToken? cancelToken;
 
-  static Future<String?> downloadFile(String url, String id, {required Function(int progress, int total) onProgress}) async {
+  static Future<String?> downloadFile(String url, String id) async {
     try {
       if (cancelToken != null) {
+        print('object====取消缓存');
         cancelToken?.cancel();
         cancelToken = null;
       }
       cancelToken = CancelToken();
       final downloadDir = await _getDownloadDirectory();
+      final filePath = '${downloadDir.path}/$id';
       // String fileName = getFileNameFromURL(url, '/');
       await Dio().download(
         url,
         '${downloadDir.path}/$id',
-        onReceiveProgress: onProgress,
+        onReceiveProgress: (int progress, int total) {
+          print('object==============$progress======$total');
+          if (progress == total) {
+            print('object====哈哈哈 老子缓存完了哦');
+            DownloadCacheManager.cacheFilePath(url: id, path: filePath);
+          }
+        },
         cancelToken: cancelToken,
       );
-      final filePath = '${downloadDir.path}/$id';
-      DownloadCacheManager.cacheFilePath(url: id, path: filePath);
+
       return filePath;
     } catch (e, s) {
       if (kDebugMode) {

@@ -115,8 +115,8 @@ class PanelView extends GetView<Home> {
                         width: 105.h,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(80.w),
-                          border: Border.all(color: controller.bodyColor.value.withOpacity(controller.second.value ? 0 : .08), width: 5.w),
-                          // color: controller.bodyColor.value.withOpacity(0.1),
+                          border: Border.all(color: controller.bodyColor.value.withOpacity(controller.second.value ? 0 : .04), width: 5.w),
+                          color: controller.bodyColor.value.withOpacity(0.06),
                         ),
                         child: Icon(
                           controller.playing.value ? TablerIcons.player_pause : TablerIcons.player_play,

@@ -108,21 +108,21 @@ class _SettingViewState extends State<SettingView> {
               StorageUtil().setBool(gradientBackgroundSp, Home.to.gradientBackground.value);
             },
           ),
-          // ListTile(
-          //   title: Text(
-          //     '播放页面根据主题颜色',
-          //     style: TextStyle(fontSize: 30.sp),
-          //   ),
-          //   trailing: Obx(() => Icon(
-          //         Home.to.leftImage.value ? TablerIcons.toggle_right : TablerIcons.toggle_left,
-          //         size: 56.w,
-          //         color: Theme.of(context).cardColor.withOpacity(Home.to.leftImage.value ? 0.7 : .4),
-          //       )),
-          //   onTap: () {
-          //     Home.to.changePlayUi(context);
-          //     StorageUtil().setBool(leftImageSp, Home.to.leftImage.value);
-          //   },
-          // ),
+          ListTile(
+            title: Text(
+              '亮色侧滑背景(重启应用生效)',
+              style: TextStyle(fontSize: 30.sp),
+            ),
+            trailing: Obx(() => Icon(
+                  Home.to.leftImage.value ? TablerIcons.toggle_right : TablerIcons.toggle_left,
+                  size: 56.w,
+                  color: Theme.of(context).cardColor.withOpacity(Home.to.leftImage.value ? 0.7 : .4),
+                )),
+            onTap: () {
+              Home.to.leftImage.value = !Home.to.leftImage.value;
+              StorageUtil().setBool(leftImageSp, Home.to.leftImage.value);
+            },
+          ),
           // ListTile(
           //   title: Text(
           //     '顶部歌词',

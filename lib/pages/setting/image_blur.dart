@@ -54,13 +54,15 @@ class _ImageBlurState extends State<ImageBlur> {
           ),
           SafeArea(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  SliderTheme(data: SliderThemeData(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              SliderTheme(
+                  data: SliderThemeData(
                     thumbColor: Theme.of(context).primaryColor,
                     activeTrackColor: Theme.of(context).primaryColor,
                     inactiveTickMarkColor: Theme.of(context).primaryColor.withOpacity(.6),
-                  ), child: Slider(
+                  ),
+                  child: Slider(
                       value: blur,
                       max: 10,
                       min: 0,
@@ -69,20 +71,22 @@ class _ImageBlurState extends State<ImageBlur> {
                           blur = v;
                         });
                       })),
-                  TextButton(onPressed: () async {
+              TextButton(
+                  onPressed: () async {
                     _saveImage();
-                  }, child: Container(
+                  },
+                  child: Container(
                     alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor,
-                      borderRadius: BorderRadius.circular(35.w)
-                    ),
+                    decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: BorderRadius.circular(35.w)),
                     width: 150.w,
                     height: 70.w,
-                    child: const Text('保存',style: TextStyle(color: Colors.white,fontSize: 16),),
+                    child: const Text(
+                      '保存',
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    ),
                   ))
-                ],
-              ))
+            ],
+          ))
         ],
       ),
     );
@@ -92,9 +96,11 @@ class _ImageBlurState extends State<ImageBlur> {
     WidgetUtil.showLoadingDialog(context);
     Uint8List data = await widgetToImage();
     var directory = await getApplicationSupportDirectory();
+    File oldFile = File(Home.to.background.value);
+    if (oldFile.existsSync()) oldFile.deleteSync();
     String path = '${directory.path}/${DateTime.now().millisecondsSinceEpoch}.jpeg';
     File file = File(path);
-    if(await file.exists()){
+    if (await file.exists()) {
       file.delete();
     }
     await file.writeAsBytes(data);

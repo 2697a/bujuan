@@ -56,7 +56,8 @@ class _DataViewState<T> extends State<DataView<T>> {
 }
 
 class LoadingView extends StatelessWidget {
-  const LoadingView({Key? key}) : super(key: key);
+  final String? tips;
+  const LoadingView({Key? key, this.tips}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +71,7 @@ class LoadingView extends StatelessWidget {
           // SvgPicture.asset(AppIcons.loading,width: Get.width/2.9,),
           Lottie.asset('assets/lottie/empty_status.json', height: Get.width / 3.5, fit: BoxFit.fitHeight,
               filterQuality: FilterQuality.low),
-          Text('加载中...', style: TextStyle(fontSize: 28.sp)),
+          Text(tips??'加载中...', style: TextStyle(fontSize: 28.sp)),
         ],
       ),
     );

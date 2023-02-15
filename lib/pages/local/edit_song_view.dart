@@ -79,7 +79,6 @@ class _EditSongViewState extends State<EditSongView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
       appBar: MyAppBar(
         title: const Text('编辑歌曲信息'),
         actions: [IconButton(onPressed: () => _saveData(), icon: const Icon(TablerIcons.device_floppy))],

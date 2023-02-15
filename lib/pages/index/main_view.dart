@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
+import '../../routes/router.dart';
 import '../../routes/router.gr.dart';
 import '../../widget/app_bar.dart';
 import '../../widget/simple_extended_image.dart';
@@ -23,16 +24,20 @@ class MainView extends GetView<IndexController> {
       appBar: MyAppBar(
         backgroundColor: Colors.transparent,
         centerTitle: false,
-        // leading: IconButton(
-        //     onPressed: () {
-        //       HomeController.to.myDrawerController.open!();
-        //     },
-        //     icon: Obx(() => SimpleExtendedImage.avatar(
-        //           UserController.to.userData.value.profile?.avatarUrl ?? '',
-        //           width: 80.w,
-        //         ))),
+        leading: IconButton(
+            onPressed: () {
+              if (Home.to.loginStatus.value == LoginStatus.login) {
+                Home.to.myDrawerController.open!();
+                return;
+              }
+              AutoRouter.of(context).pushNamed(Routes.login);
+            },
+            icon: Obx(() => SimpleExtendedImage.avatar(
+              Home.to.userData.value.profile?.avatarUrl ?? '',
+              width: 80.w,
+            ))),
         title: RichText(
-            text: TextSpan(style: TextStyle(fontSize: 42.sp, color: Colors.grey, fontWeight: FontWeight.bold), text: 'Here  ', children: [
+            text: TextSpan(style: TextStyle(fontSize: 36.sp, color: Colors.grey, fontWeight: FontWeight.bold), text: 'Here  ', children: [
           TextSpan(text: '推荐歌单～', style: TextStyle(color: Theme.of(context).primaryColor.withOpacity(.9))),
         ])),
       ),

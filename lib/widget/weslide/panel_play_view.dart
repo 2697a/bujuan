@@ -6,15 +6,16 @@ Copyright: © 2020, Akshath Jain. All rights reserved.
 Licensing: More information can be found here: https://github.com/akshathjain/sliding_up_panel/blob/master/LICENSE
 */
 
+import 'dart:io';
 import 'dart:ui';
 
+import 'package:bujuan/common/constants/enmu.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
-import 'package:bujuan/pages/home/view/z_lyric_view.dart';
-import 'package:bujuan/widget/pixelate_renderer.dart';
-import 'package:bujuan/widget/simple_extended_image.dart';
+import 'package:bujuan/widget/play_more_info.dart';
 import 'package:bujuan/widget/swipeable.dart';
 import 'package:bujuan/widget/weslide/panel.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
@@ -25,7 +26,6 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get/get.dart';
 
 import '../../common/constants/images.dart';
-import '../../common/constants/other.dart';
 import '../mobile/flashy_navbar.dart';
 
 enum SlideDirection {
@@ -218,10 +218,10 @@ class SlidingUpPlayViewPanel extends StatefulWidget {
         super(key: key);
 
   @override
-  _SlidingUpPlayViewPanelState createState() => _SlidingUpPlayViewPanelState();
+  SlidingUpPlayViewPanelState createState() => SlidingUpPlayViewPanelState();
 }
 
-class _SlidingUpPlayViewPanelState extends State<SlidingUpPlayViewPanel> with TickerProviderStateMixin {
+class SlidingUpPlayViewPanelState extends State<SlidingUpPlayViewPanel> with TickerProviderStateMixin {
   late AnimationController _ac;
   late AnimationController _ac2;
 
@@ -325,26 +325,20 @@ class _SlidingUpPlayViewPanelState extends State<SlidingUpPlayViewPanel> with Ti
                               ),
                             ),
                             Obx(() {
-                              return Visibility(
-                                visible: !Home.to.leftImage.value,
-                                replacement: Container(
-                                  color: Colors.transparent,
-                                ),
-                                child: AnimatedContainer(
-                                  margin: EdgeInsets.only(top: 130.w + MediaQuery.of(context).padding.bottom, left: 20.w, right: 20.w, bottom: 30.w),
-                                  duration: const Duration(milliseconds: 150),
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(colors: [
-                                      !Home.to.gradientBackground.value
-                                          ? Home.to.rx.value.dominantColor?.color.withOpacity(.7) ?? Colors.transparent
-                                          : Home.to.rx.value.lightVibrantColor?.color.withOpacity(.7) ??
-                                              Home.to.rx.value.lightMutedColor?.color.withOpacity(.7) ??
-                                              Home.to.rx.value.dominantColor?.color.withOpacity(.7) ??
-                                              Colors.transparent,
-                                      Home.to.rx.value.dominantColor?.color.withOpacity(.7) ?? Colors.transparent,
-                                    ], begin: Alignment.topLeft, end: Alignment.bottomCenter),
-                                    borderRadius: BorderRadius.all(Radius.circular(25.w)),
-                                  ),
+                              return AnimatedContainer(
+                                margin: EdgeInsets.only(top: 130.w + MediaQuery.of(context).padding.bottom, left: 20.w, right: 20.w, bottom: 30.w),
+                                duration: const Duration(milliseconds: 150),
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(colors: [
+                                    !Home.to.gradientBackground.value
+                                        ? Home.to.rx.value.dominantColor?.color.withOpacity(.7) ?? Colors.transparent
+                                        : Home.to.rx.value.lightVibrantColor?.color.withOpacity(.7) ??
+                                            Home.to.rx.value.lightMutedColor?.color.withOpacity(.7) ??
+                                            Home.to.rx.value.dominantColor?.color.withOpacity(.7) ??
+                                            Colors.transparent,
+                                    Home.to.rx.value.dominantColor?.color.withOpacity(.7) ?? Colors.transparent,
+                                  ], begin: Alignment.topLeft, end: Alignment.bottomCenter),
+                                  borderRadius: BorderRadius.all(Radius.circular(25.w)),
                                 ),
                               );
                             }),
@@ -360,7 +354,7 @@ class _SlidingUpPlayViewPanelState extends State<SlidingUpPlayViewPanel> with Ti
                           ],
                         ),
                         header: SizedBox(
-                          height: 120.w + MediaQuery.of(context).padding.bottom,
+                          height: 130.w + MediaQuery.of(context).padding.bottom,
                           child: Stack(
                             alignment: Alignment.topCenter,
                             children: [
@@ -371,7 +365,7 @@ class _SlidingUpPlayViewPanelState extends State<SlidingUpPlayViewPanel> with Ti
                                     decoration: BoxDecoration(color: Home.to.bodyColor.value.withOpacity(.3), borderRadius: BorderRadius.circular(4.w)),
                                   )),
                               FlashyNavbar(
-                                height: 110.w + MediaQuery.of(context).padding.bottom,
+                                height: 120.w + MediaQuery.of(context).padding.bottom,
                                 selectedIndex: 0,
                                 items: [
                                   FlashyNavbarItem(icon: const Icon(TablerIcons.atom_2)),
@@ -387,22 +381,11 @@ class _SlidingUpPlayViewPanelState extends State<SlidingUpPlayViewPanel> with Ti
                                 },
                                 backgroundColor: Colors.transparent,
                               ),
-                              Positioned(
-                                bottom: 0,
-                                child: GestureDetector(
-                                  child: Container(
-                                    height: MediaQuery.of(context).padding.bottom,
-                                    width: Get.width,
-                                    color: Colors.transparent,
-                                  ),
-                                  onVerticalDragEnd: (e) {},
-                                ),
-                              )
                             ],
                           ),
                         ),
-                        maxHeight: Get.height - 110.w - MediaQuery.of(context).padding.bottom,
-                        minHeight: 110.w + MediaQuery.of(context).padding.bottom,
+                        maxHeight: Get.height - 130.w - MediaQuery.of(context).padding.bottom,
+                        minHeight: 130.w + MediaQuery.of(context).padding.bottom,
                       ),
                     )),
                 // header
@@ -489,23 +472,60 @@ class _SlidingUpPlayViewPanelState extends State<SlidingUpPlayViewPanel> with Ti
                                   );
                                 },
                                 child: Obx(() {
-                                  return CachedNetworkImage(
-                                    imageUrl: '${Home.to.mediaItem.value.extras?['image'] ?? ''}?param=500y500',
-                                    width: _imageMaxSize,
-                                    height: _imageMaxSize,
-                                    fit: BoxFit.cover,
-                                    useOldImageOnUrlChange: true,
-                                    placeholder: (c, u) => Image.asset(
-                                      placeholderImage,
+                                  return Visibility(
+                                    visible: Home.to.mediaItem.value.extras?['type'] != MediaType.local.name,
+                                    replacement: ExtendedImage.file(
+                                      File(Home.to.mediaItem.value.extras?['image'] ?? ''),
                                       width: _imageMaxSize,
                                       height: _imageMaxSize,
                                       fit: BoxFit.cover,
+                                      loadStateChanged: (state) {
+                                        Widget image;
+                                        switch (state.extendedImageLoadState) {
+                                          case LoadState.loading:
+                                            image = Image.asset(
+                                              placeholderImage,
+                                              fit: BoxFit.cover,
+                                            );
+                                            break;
+                                          case LoadState.completed:
+                                            image = ExtendedRawImage(
+                                              image: state.extendedImageInfo?.image,
+                                              width: _imageMaxSize,
+                                              height: _imageMaxSize,
+                                              fit: BoxFit.cover,
+                                            );
+                                            break;
+                                          case LoadState.failed:
+                                            image = Image.asset(
+                                              placeholderImage,
+                                              width: _imageMaxSize,
+                                              height: _imageMaxSize,
+                                              fit: BoxFit.cover,
+                                            );
+                                            break;
+                                        }
+                                        return image;
+                                      },
                                     ),
-                                    errorWidget: (c, u, e) => Image.asset(
-                                      placeholderImage,
+                                    child: CachedNetworkImage(
+                                      imageUrl: '${Home.to.mediaItem.value.extras?['image'] ?? ''}?param=500y500',
                                       width: _imageMaxSize,
                                       height: _imageMaxSize,
                                       fit: BoxFit.cover,
+                                      useOldImageOnUrlChange: true,
+                                      placeholder: (c, u) => Image.asset(
+                                        placeholderImage,
+                                        width: _imageMaxSize,
+                                        height: _imageMaxSize,
+                                        fit: BoxFit.cover,
+                                      ),
+                                      errorWidget: (c, u, e) => Image.asset(
+                                        placeholderImage,
+                                        width: _imageMaxSize,
+                                        height: _imageMaxSize,
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
                                   );
                                 }),
@@ -553,7 +573,11 @@ class _SlidingUpPlayViewPanelState extends State<SlidingUpPlayViewPanel> with Ti
                         ))),
                 IconButton(
                     onPressed: () {
-                      WidgetUtil.showToast('分享暂未开启');
+                      showDialog(
+                        context: context,
+                        builder: (context) => const PlayMoreInfo(),
+                        barrierColor: Colors.black87,
+                      );
                     },
                     icon: Obx(() => Icon(
                           TablerIcons.brand_stackoverflow,
@@ -832,9 +856,9 @@ class _SlidingUpPlayViewPanelState extends State<SlidingUpPlayViewPanel> with Ti
 }
 
 class PlayViewPanelController {
-  _SlidingUpPlayViewPanelState? _panelState;
+  SlidingUpPlayViewPanelState? _panelState;
 
-  void _addState(_SlidingUpPlayViewPanelState panelState) {
+  void _addState(SlidingUpPlayViewPanelState panelState) {
     _panelState = panelState;
   }
 

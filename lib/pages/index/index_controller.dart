@@ -1,18 +1,14 @@
-import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:bujuan/common/constants/other.dart';
 import 'package:bujuan/common/netease_api/netease_music_api.dart';
-import 'package:bujuan/common/netease_api/src/api/play/cloud_entity.dart';
-import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import 'package:just_audio/just_audio.dart';
 import '../../common/netease_api/src/dio_ext.dart';
 import '../../common/netease_api/src/netease_handler.dart';
-// import 'package:on_audio_query/on_audio_query.dart';
 
 class IndexController extends GetxController {
   // RxList<SongModel> songs = <SongModel>[].obs;
@@ -35,13 +31,32 @@ class IndexController extends GetxController {
   @override
   void onReady() async {
     super.onReady();
-    WidgetsBinding.instance.addPostFrameCallback((_) {});
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      // var status = await Permission.manageExternalStorage.status;
+      // if (!status.isGranted) {
+      //   await Permission.manageExternalStorage.request();
+      // }
+      // if (status.isGranted) {
+      //   _getCache();
+      // }
+    });
+  }
+
+  _getCache() async {
+    Directory directory = Directory('/storage/emulated/0/netease/cloudmusic/Cache/Music1');
+    List<FileSystemEntity> files = directory.listSync().where((element) => element.path.contains('uc')).toList();
+    File file = File(files[0].path);
+    print('object========${file.path}');
+    Uint8List uint8list = Uint8List.fromList(file.readAsBytesSync().map((e) => e ^ 0xa3).toList());
+    File file1 = File(files[0].path.replaceAll('.uc!', ''));
+    print('object========${file1.path}');
+    file1.createSync();
+    file1.writeAsBytes(uint8list);
   }
 
   Future<PersonalizedPlayListWrap> getSheetData() async {
     return await NeteaseMusicApi().personalizedPlaylist();
   }
-
 
   // querySong() async {
   //   List<AlbumModel> albumList = await HomeController.to.audioQuery.queryAlbums();

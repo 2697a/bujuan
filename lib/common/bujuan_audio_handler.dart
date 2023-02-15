@@ -1,4 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -6,13 +9,11 @@ import 'package:bujuan/common/constants/enmu.dart';
 import 'package:bujuan/common/constants/other.dart';
 import 'package:bujuan/common/storage.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
-import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:media_cache_manager/media_cache_manager.dart';
 import 'audio_player_handler.dart';
 import 'constants/key.dart';
-import 'package:dio/dio.dart';
 import 'constants/platform_utils.dart';
 import 'netease_api/src/api/play/bean.dart';
 import 'netease_api/src/netease_api.dart';
@@ -25,6 +26,7 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
   int _curIndex = 0; // 播放列表索引
   bool playInterrupted = false;
   AudioSession? session;
+  Timer? _sleepTimer;
 
   BujuanAudioHandler() {
     // 初始化
@@ -38,49 +40,25 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
     _curIndex = StorageUtil().getInt(playByIndex);
     queueTitle.value = StorageUtil().getString(playQueueTitle);
     List<String> playList = StorageUtil().getStringList(playQueue);
-    if (playList.isEmpty) {
-      _curIndex = 0;
-      playList.add(jsonEncode(MediaItemMessage(
-        id: '1370901308',
-        album: 'Yes & No',
-        title: 'Yes & No',
-        artist: 'XYLØ',
-        duration: const Duration(milliseconds: 179043),
-        artUri: Uri.parse('https: //p2.music.126.net/2dYAbLmy-oyhwd0rg_RJOw==/109951164137810210.jpg?param=500y500'),
-        extras: {
-          'type': 'playlist',
-          'image': 'https://p2.music.126.net/2dYAbLmy-oyhwd0rg_RJOw==/109951164137810210.jpg',
-          'liked': false,
-          'artist': '''{
-            "id": "1050511",
-            "name": "XYLØ",
-          }''',
-          'album': '''{
-            'id': '79697210',
-            'name': 'Yes & No',
-            'picUrl': 'https://p2.music.126.net/2dYAbLmy-oyhwd0rg_RJOw==/109951164137810210.jpg',
-          }''',
-          'mv': 0
-        },
-      ).toMap()));
+    if (playList.isNotEmpty) {
+      List<MediaItem> items = playList.map((e) {
+        var map = MediaItemMessage.fromMap(jsonDecode(e));
+        return MediaItem(
+          id: map.id,
+          duration: map.duration,
+          artUri: map.artUri,
+          extras: map.extras,
+          title: map.title,
+          artist: map.artist,
+          album: map.album,
+        );
+      }).toList();
+      changeQueueLists(items, init: true);
+      playbackState.add(playbackState.value.copyWith(
+        queueIndex: _curIndex,
+      ));
+      playIndex(_curIndex, playIt: false);
     }
-    List<MediaItem> items = playList.map((e) {
-      var map = MediaItemMessage.fromMap(jsonDecode(e));
-      return MediaItem(
-        id: map.id,
-        duration: map.duration,
-        artUri: map.artUri,
-        extras: map.extras,
-        title: map.title,
-        artist: map.artist,
-        album: map.album,
-      );
-    }).toList();
-    changeQueueLists(items, init: true);
-    playbackState.add(playbackState.value.copyWith(
-      queueIndex: _curIndex,
-    ));
-    playIndex(_curIndex, playIt: false);
   }
 
   void _initAudioSession() async {
@@ -276,49 +254,43 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
     if (queue.value.isEmpty) return;
     var song = queue.value[_curIndex];
     String? url;
-    if (cache && !PlatformUtils.isIOS) {
-      //根据缓存地址获取
-      url = DownloadCacheManager.getCachedFilePath(song.id);
-      //如果是本地音乐，直接取地址
-      if (song.extras?['type'] == MediaType.local.name) url = song.extras?['url'];
-      if (url != null) {
-        print('缓存过了=========$url');
-        mediaItem.add(song);
-        //缓存过的或者是本地音乐
-        playIt ? await _player.play(DeviceFileSource(url), mode: PlayerMode.mediaPlayer) : await _player.setSourceDeviceFile(url);
-      } else {
-        // 未缓存过
-        // 获取URL
-        SongUrlListWrap songUrl = await NeteaseMusicApi().songDownloadUrl([song.id], level: high ? 'lossless' : 'exhigh');
-        url = ((songUrl.data ?? [])[0].url ?? '').split('?')[0];
-        if (url.isNotEmpty) {
-          mediaItem.add(song);
-          playIt ? await _player.play(UrlSource(url), mode: PlayerMode.mediaPlayer) : await _player.setSourceUrl(url);
-          Downloader.downloadFile(url, song.id, onProgress: (int progress, int total) {
-            // print('object==============$progress======$total');
-          });
-        } else {
-          if (isNext) {
-            await skipToNext();
-          } else {
-            await skipToPrevious();
-          }
-        }
+    if (song.extras?['type'] == MediaType.local.name || song.extras?['type'] == MediaType.neteaseCache.name) url = song.extras?['url'];
+    if (url != null) {
+      mediaItem.add(song);
+      //缓存过的或者是本地音乐
+      if (song.extras?['type'] == MediaType.local.name) playIt ? await _player.play(DeviceFileSource(url)) : await _player.setSourceDeviceFile(url);
+      if (song.extras?['type'] == MediaType.neteaseCache.name) {
+        //网易云缓存的音乐要解密哦
+        Uint8List data = Uint8List.fromList(File(url).readAsBytesSync().map((e) => e ^ 0xa3).toList());
+        playIt ? await _player.play(BytesSource(data)) : await _player.setSourceBytes(data);
       }
+      return;
+    }
+    url = DownloadCacheManager.getCachedFilePath(song.id);
+    if (url != null) {
+      mediaItem.add(song);
+      playIt ? await _player.play(DeviceFileSource(url)) : await _player.setSourceDeviceFile(url);
     } else {
+      mediaItem.add(song);
       SongUrlListWrap songUrl = await NeteaseMusicApi().songDownloadUrl([song.id], level: high ? 'lossless' : 'exhigh');
       url = ((songUrl.data ?? [])[0].url ?? '').split('?')[0];
-      if (url.isNotEmpty) {
-        mediaItem.add(song);
-        playIt ? await _player.play(UrlSource(url), mode: PlayerMode.mediaPlayer) : await _player.setSourceUrl(url);
-      } else {
-        if (isNext) {
-          await skipToNext();
-        } else {
-          await skipToPrevious();
-        }
-      }
+      print('object========${jsonEncode(songUrl.toJson())}');
+      playIt ? await _player.play(UrlSource(url), mode: PlayerMode.mediaPlayer) : await _player.setSourceUrl(url);
+      if(cache) Downloader.downloadFile(url, song.id);
     }
+    // if (url.isNotEmpty) {
+    //   mediaItem.add(song);
+    //   playIt ? await _player.play(UrlSource(url), mode: PlayerMode.mediaPlayer) : await _player.setSourceUrl(url);
+    //   // Downloader.downloadFile(url, song.id, onProgress: (int progress, int total) {
+    //   //   // print('object==============$progress======$total');
+    //   // });
+    // } else {
+    //   if (isNext) {
+    //     await skipToNext();
+    //   } else {
+    //     await skipToPrevious();
+    //   }
+    // }
   }
 
   downloadUrl(url) {}
@@ -370,6 +342,24 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
   Future<void> stop() async {
     await _player.stop();
     return super.stop();
+  }
+
+  @override
+  Future customAction(String name, [Map<String, dynamic>? extras]) async {
+    if (name == 'sleep') {
+      //睡眠
+      _sleepTimer?.cancel();
+      if ((extras?['time'] ?? 0) == 0) return;
+      //记录一下当前时间
+      _sleepTimer = Timer(Duration(minutes: extras?['time'] ?? 0), () {
+        _player.pause();
+      });
+    }
+
+    //取消计时器
+    if (name == 'cancelSleep') {
+      _sleepTimer?.cancel();
+    }
   }
 
   @override

@@ -8,7 +8,6 @@ import 'package:get/get.dart';
 
 import '../../../common/constants/platform_utils.dart';
 import '../../../widget/simple_extended_image.dart';
-import 'menu_view.dart';
 
 class BodyView extends GetView<Home> {
   const BodyView({Key? key}) : super(key: key);
@@ -16,7 +15,7 @@ class BodyView extends GetView<Home> {
   @override
   Widget build(BuildContext context) {
     controller.buildContext = context;
-    double bottomHeight = MediaQuery.of(controller.buildContext).padding.bottom * (PlatformUtils.isIOS ? 0.4 : 0.8);
+    double bottomHeight = MediaQuery.of(controller.buildContext).padding.bottom * (PlatformUtils.isIOS ? 0.4 : 0.85);
     if (bottomHeight == 0) bottomHeight = 25.w;
     return Scaffold(
       resizeToAvoidBottomInset: false,

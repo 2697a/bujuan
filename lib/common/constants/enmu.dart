@@ -1,1 +1,1 @@
-enum MediaType { local, playlist, fm, radio }
+enum MediaType { local, playlist, fm, radio,neteaseCache }

@@ -14,15 +14,16 @@ class MenuView extends GetView<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(child: Column(
+    return SafeArea(
+        child: Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Padding(padding: EdgeInsets.symmetric(vertical: 25.w)),
         GestureDetector(
           child: Obx(() => SimpleExtendedImage.avatar(
-            '${controller.userData.value.profile?.avatarUrl ?? ''}?param=300y300',
-            width: 80.w,
-          )),
+                '${controller.userData.value.profile?.avatarUrl ?? ''}?param=300y300',
+                width: 90.w,
+              )),
           onTap: () {
             if (controller.loginStatus.value == LoginStatus.noLogin) {
               context.router.pushNamed(Routes.login);
@@ -36,33 +37,35 @@ class MenuView extends GetView<Home> {
         ),
         Expanded(
             child: ListView.builder(
-              padding: EdgeInsets.symmetric(vertical: 140.w),
-              itemBuilder: (context1, index) => ClassStatelessWidget(child: InkWell(
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 0.w, vertical: 32.w),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Padding(padding: EdgeInsets.symmetric(horizontal: 10.w)),
-                      Obx(() => Icon(controller.leftMenus[index].icon,
-                          color: controller.currPathUrl.value == controller.leftMenus[index].pathUrl ? Theme.of(context).primaryColor : Theme.of(context).scaffoldBackgroundColor)),
-                    ],
-                  ),
-                ),
-                onTap: () {
-                  controller.myDrawerController.close!();
-                  Future.delayed(const Duration(milliseconds: 200), () {
-                    if (controller.leftMenus[index].pathUrl.isEmpty) {
-                      context.router.pushNamed(controller.leftMenus[index].path);
-                      return;
-                    }
-                    context.router.replaceNamed(controller.leftMenus[index].path);
-                  });
-                },
-              )),
-              itemCount: controller.leftMenus.length,
-            )),
+          padding: EdgeInsets.symmetric(vertical: 140.w),
+          itemBuilder: (context1, index) => Container(
+            padding: EdgeInsets.symmetric(vertical: 12.w),
+            child: IconButton(
+              onPressed: () {
+                controller.myDrawerController.close!();
+                Future.delayed(const Duration(milliseconds: 200), () {
+                  if (controller.leftMenus[index].path.isEmpty) {
+                    Home.to.sleep(context);
+                    return;
+                  }
+                  if (controller.leftMenus[index].pathUrl.isEmpty) {
+                    context.router.pushNamed(controller.leftMenus[index].path);
+                    return;
+                  }
+                  context.router.replaceNamed(controller.leftMenus[index].path);
+                });
+              },
+              icon: Obx(() => Icon(controller.leftMenus[index].icon,
+                  size: 52.sp,
+                  color: controller.currPathUrl.value == controller.leftMenus[index].pathUrl
+                      ? Theme.of(context).primaryColor
+                      : controller.leftImageNoObs
+                          ? Theme.of(context).iconTheme.color
+                          : Theme.of(context).scaffoldBackgroundColor)),
+            ),
+          ),
+          itemCount: controller.leftMenus.length,
+        )),
       ],
     ));
   }

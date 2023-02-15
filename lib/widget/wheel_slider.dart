@@ -1,3 +1,5 @@
+library wheel_slider;
+
 import 'package:bujuan/widget/wheel_chooser.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,7 +9,7 @@ class WheelSlider extends StatefulWidget {
 
   final double horizontalListHeight, horizontalListWidth, verticalListHeight, verticalListWidth;
   final int totalCount;
-   int initValue;
+  final int initValue;
   final Function(dynamic) onValueChanged;
   final double itemSize;
   final double perspective;
@@ -20,6 +22,8 @@ class WheelSlider extends StatefulWidget {
   final double pointerHeight, pointerWidth;
   final Widget background;
   final bool isVibrate;
+  /// This is a type String, only valid inputs are "default", "light",  "medium", "heavy", "selectionClick".
+  final String hapticFeedback;
   final bool showPointer;
   final TextStyle? selectedNumberStyle, unSelectedNumberStyle;
   final List<Widget> children;
@@ -46,11 +50,13 @@ class WheelSlider extends StatefulWidget {
     this.pointerWidth = 3.0,
     this.background = const Center(),
     this.isVibrate = true,
+    HapticFeedbackType hapticFeedbackType = HapticFeedbackType.vibrate,
     this.showPointer = true,
   }) : assert(perspective <= 0.01),
         selectedNumberStyle = null, unSelectedNumberStyle = null,
         children = barUI(totalCount, horizontal, lineColor),
         currentIndex = null,
+        hapticFeedback = hapticFeedbackType.value,
         super(key: key);
 
   static List<Widget> barUI(totalCount, horizontal, lineColor) {
@@ -96,6 +102,7 @@ class WheelSlider extends StatefulWidget {
     this.pointerWidth = 3.0,
     this.background = const Center(),
     this.isVibrate = true,
+    HapticFeedbackType hapticFeedbackType = HapticFeedbackType.vibrate,
     this.showPointer = false,
     this.selectedNumberStyle = const TextStyle(fontWeight: FontWeight.bold),
     this.unSelectedNumberStyle = const TextStyle(),
@@ -108,6 +115,7 @@ class WheelSlider extends StatefulWidget {
             child: Text(index.toString(), style: index == currentIndex ? selectedNumberStyle : unSelectedNumberStyle,),
           );}
         ),
+        hapticFeedback = hapticFeedbackType.value,
         super(key: key);
 
   static bool multipleOfFive(int n) {
@@ -124,6 +132,22 @@ class WheelSlider extends StatefulWidget {
   State<WheelSlider> createState() => _WheelSliderState();
 }
 
+class HapticFeedbackType {
+  final String value;
+
+  const HapticFeedbackType._(this.value);
+
+  static const HapticFeedbackType vibrate = HapticFeedbackType._('vibrate');
+  static const HapticFeedbackType lightImpact = HapticFeedbackType._('light');
+  static const HapticFeedbackType mediumImpact = HapticFeedbackType._('medium');
+  static const HapticFeedbackType heavyImpact = HapticFeedbackType._('heavy');
+  static const HapticFeedbackType selectionClick = HapticFeedbackType._('selectionClick');
+  static List<HapticFeedbackType> values = [vibrate, lightImpact, mediumImpact, heavyImpact, selectionClick];
+
+  factory HapticFeedbackType.fromString(String input) =>
+      values.firstWhere((element) => element.value == input);
+}
+
 class _WheelSliderState extends State<WheelSlider> {
   @override
   Widget build(BuildContext context) {
@@ -136,13 +160,26 @@ class _WheelSliderState extends State<WheelSlider> {
           widget.background,
           WheelChooser.custom(
             onValueChanged: (val) async {
-              if(widget.isVibrate) await HapticFeedback.vibrate();
+              if(widget.isVibrate) {
+                if(widget.hapticFeedback == 'vibrate') {
+                  await HapticFeedback.vibrate();
+                } else if(widget.hapticFeedback == 'light') {
+                  await HapticFeedback.lightImpact();
+                } else if(widget.hapticFeedback == 'medium') {
+                  await HapticFeedback.mediumImpact();
+                } else if(widget.hapticFeedback == 'heavy') {
+                  await HapticFeedback.heavyImpact();
+                } else if(widget.hapticFeedback == 'selectionClick') {
+                  await HapticFeedback.selectionClick();
+                } else {
+                  await HapticFeedback.vibrate();
+                }
+              }
               setState(() {
                 widget.onValueChanged(val);
               });
             },
             datas: List.generate(widget.totalCount+1, (index) => index),
-            children: widget.children,
             startPosition: widget.initValue,
             horizontal: widget.horizontal,
             isInfinite: widget.isInfinite,
@@ -150,6 +187,7 @@ class _WheelSliderState extends State<WheelSlider> {
             perspective: widget.perspective,
             listWidth: widget.listWidth,
             squeeze: widget.squeeze,
+            children: widget.children,
           ),
           Visibility(
             visible: widget.showPointer,

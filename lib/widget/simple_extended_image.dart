@@ -138,6 +138,8 @@ class SimpleExtendedImageState extends State<SimpleExtendedImage> {
               case LoadState.loading:
                 image = Image.asset(
                   widget.placeholder,
+                  width: widget.width,
+                  height: widget.height,
                   fit: BoxFit.cover,
                 );
                 break;
@@ -146,11 +148,13 @@ class SimpleExtendedImageState extends State<SimpleExtendedImage> {
                   image: state.extendedImageInfo?.image,
                   width: widget.width,
                   height: widget.height,
-                  fit: widget.fit ?? BoxFit.cover,
+                  fit: BoxFit.cover,
                 );
                 break;
               case LoadState.failed:
                 image = Image.asset(
+                  width: widget.width,
+                  height: widget.height,
                   widget.placeholder,
                   fit: BoxFit.cover,
                 );

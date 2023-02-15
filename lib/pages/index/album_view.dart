@@ -66,8 +66,11 @@ class AlbumView extends GetView<IndexController> {
                 padding: EdgeInsets.symmetric(horizontal: 20.w),
                 itemBuilder: (context, index) => SongItem(
                   index: index,
-                  mediaItems: controller.mediaItems,
+                  mediaItem: controller.mediaItems[index],
                   queueTitle: 'cloud${DateTime.now().millisecondsSinceEpoch}',
+                  voidCallback: (){
+                    Home.to.playByIndex(index, 'queueTitle',mediaItem: controller.mediaItems);
+                  },
                 ),
                 itemCount: controller.mediaItems.length,
               );

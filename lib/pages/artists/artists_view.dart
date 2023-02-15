@@ -73,7 +73,7 @@ class _ArtistsViewState extends State<ArtistsView> {
                                 alignment: Alignment.center,
                                 decoration: BoxDecoration(color: Theme.of(context).scaffoldBackgroundColor.withOpacity(.7), borderRadius: BorderRadius.circular(15.w)),
                                 child: Text(
-                                  (artistDetails.artist.briefDesc ?? '').replaceAll('\n', ''),
+                                  (artistDetails.artist.picUrl ?? '').replaceAll('\n', ''),
                                   maxLines: 5,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(fontSize: 26.sp, height: 1.6),

@@ -47,8 +47,7 @@ class _CustomFiledState extends State<CustomFiled> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 80.w,
-      padding: widget.padding ?? EdgeInsets.symmetric(horizontal: 15.w),
+      padding: widget.padding ?? EdgeInsets.symmetric(horizontal: 15.w,vertical: 12.w),
       margin: widget.margin ?? EdgeInsets.symmetric(vertical: 25.w),
       decoration: BoxDecoration(color: Theme.of(context).colorScheme.onSecondary.withOpacity(.6), borderRadius: BorderRadius.circular(50.w)),
       child: Row(
@@ -73,6 +72,7 @@ class _CustomFiledState extends State<CustomFiled> {
               hintStyle: TextStyle(fontSize: 28.sp, color: Colors.grey),
               contentPadding: EdgeInsets.symmetric(vertical: 10.w, horizontal: 15.w),
               border: const UnderlineInputBorder(borderSide: BorderSide.none),
+              isDense: true
             ),
           )),
           Visibility(

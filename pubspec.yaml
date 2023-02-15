@@ -81,6 +81,8 @@ dependencies:
     path: plugins/media_cache_manager
   image_picker: ^0.8.6+1
   flutter_displaymode: ^0.5.0
+  slide_countdown: ^0.5.0
+  permission_handler: ^8.2.0
 #  image_picker: ^0.8.6+1
 #  smooth:
 #    path: plugins/flutter_smooth/packages/smooth

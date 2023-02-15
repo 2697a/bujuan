@@ -989,6 +989,22 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.11.1"
+  permission_handler:
+    dependency: "direct main"
+    description:
+      name: permission_handler
+      sha256: "4356882e9abf51aa0d56e8fb886e0d6162719f2310dd71f0b8fa7f34908b128d"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "8.3.0"
+  permission_handler_platform_interface:
+    dependency: transitive
+    description:
+      name: permission_handler_platform_interface
+      sha256: "68abbc472002b5e6dfce47fe9898c6b7d8328d58b5d2524f75e277c07a97eb84"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "3.9.0"
   petitparser:
     dependency: transitive
     description:
@@ -1170,6 +1186,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.99"
+  slide_countdown:
+    dependency: "direct main"
+    description:
+      name: slide_countdown
+      sha256: "875af3ece988a1131a43636e78912f856d516cf7fdda3db403e0d3749e4bed71"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.5.0"
   source_gen:
     dependency: transitive
     description:
@@ -1218,6 +1242,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.1.1"
+  stream_duration:
+    dependency: transitive
+    description:
+      name: stream_duration
+      sha256: "7a3a6b268dfa7a8a884cda40fbe34a67c78b91ed217c257653be93fb9e1805a3"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "3.0.0"
   stream_transform:
     dependency: transitive
     description:

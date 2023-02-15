@@ -42,7 +42,9 @@ class _TodayViewState extends State<TodayView> {
                 ..addAll(Home.to.song2ToMedia((playlist.data.dailySongs ?? [])));
               return ListView.builder(
                 itemExtent: 120.w,
-                itemBuilder: (context, index) => SongItem(index: index, mediaItems: _mediaItem,queueTitle: 'today${DateTime.now().millisecondsSinceEpoch}',),
+                itemBuilder: (context, index) => SongItem(index: index, mediaItem: _mediaItem[index],queueTitle: 'today${DateTime.now().millisecondsSinceEpoch}',voidCallback: (){
+                  Home.to.playByIndex(index, 'queueTitle',mediaItem: _mediaItem);
+                },),
                 itemCount: _mediaItem.length,
               );
             }),

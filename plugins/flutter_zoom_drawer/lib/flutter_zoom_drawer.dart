@@ -554,7 +554,7 @@ class _ZoomDrawerState extends State<ZoomDrawer>
             width: widget.menuScreenWidth ??
                 widget.slideWidth -
                     (context._screenWidth / widget.slideWidth) -
-                    50,
+                    20,
             child: widget.menuScreen,
           ),
         ),
@@ -792,7 +792,7 @@ class _ZoomDrawerState extends State<ZoomDrawer>
   }
 
   Widget _renderDefault() {
-    const _slidePercent = 15.0;
+    const _slidePercent = 10.0;
 
     return Stack(
       children: [

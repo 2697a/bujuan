@@ -205,31 +205,31 @@ class PanelViewL extends GetView<Home> {
   Widget _buildDefaultBody(BuildContext context) {
     return Stack(
       children: [
-        Obx(() {
-          return Visibility(
-            visible: !controller.leftImage.value,
-            replacement: Container(
-              color: Colors.transparent,
-            ),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(colors: [
-                  !controller.panelOpenPositionThan1.value && !controller.second.value
-                      ? Theme.of(context).bottomAppBarColor.withOpacity(controller.leftImage.value ? 0 : .6)
-                      : !controller.gradientBackground.value
-                          ? controller.rx.value.dominantColor?.color.withOpacity(.6) ?? Colors.transparent
-                          : controller.rx.value.lightVibrantColor?.color.withOpacity(.6) ??
-                              controller.rx.value.lightMutedColor?.color.withOpacity(.6) ??
-                              controller.rx.value.dominantColor?.color.withOpacity(.6) ??
-                              Colors.transparent,
-                  controller.rx.value.dominantColor?.color.withOpacity(.5) ?? Colors.transparent,
-                ], begin: Alignment.topLeft, end: Alignment.bottomCenter),
-                borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),
-              ),
-            ),
-          );
-        }),
+        // Obx(() {
+        //   return Visibility(
+        //     visible: !controller.leftImage.value,
+        //     replacement: Container(
+        //       color: Colors.transparent,
+        //     ),
+        //     child: AnimatedContainer(
+        //       duration: const Duration(milliseconds: 200),
+        //       decoration: BoxDecoration(
+        //         gradient: LinearGradient(colors: [
+        //           !controller.panelOpenPositionThan1.value && !controller.second.value
+        //               ? Theme.of(context).bottomAppBarColor.withOpacity(controller.leftImage.value ? 0 : .6)
+        //               : !controller.gradientBackground.value
+        //                   ? controller.rx.value.dominantColor?.color.withOpacity(.6) ?? Colors.transparent
+        //                   : controller.rx.value.lightVibrantColor?.color.withOpacity(.6) ??
+        //                       controller.rx.value.lightMutedColor?.color.withOpacity(.6) ??
+        //                       controller.rx.value.dominantColor?.color.withOpacity(.6) ??
+        //                       Colors.transparent,
+        //           controller.rx.value.dominantColor?.color.withOpacity(.5) ?? Colors.transparent,
+        //         ], begin: Alignment.topLeft, end: Alignment.bottomCenter),
+        //         borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),
+        //       ),
+        //     ),
+        //   );
+        // }),
         ClipRRect(
           borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),
           child: BackdropFilter(

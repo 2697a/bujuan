@@ -7,7 +7,7 @@ class WheelChooser extends StatefulWidget {
   final TextStyle? unSelectTextStyle;
   final Function(dynamic) onValueChanged;
   final List<dynamic>? datas;
-   int? startPosition;
+  final int? startPosition;
   final double itemSize;
   final double squeeze;
   final double magnification;
@@ -20,7 +20,7 @@ class WheelChooser extends StatefulWidget {
   final FixedExtentScrollController? controller;
   static const double _defaultItemSize = 48.0;
 
-  WheelChooser({
+  const WheelChooser({super.key,
     required this.onValueChanged,
     required this.datas,
     this.selectTextStyle,
@@ -88,8 +88,8 @@ class WheelChooser extends StatefulWidget {
         startPosition = initValue == null
             ? (controller == null ? 0 : null)
             : reverse
-                ? (maxValue - initValue) ~/ step
-                : (initValue - minValue) ~/ step;
+            ? (maxValue - initValue) ~/ step
+            : (initValue - minValue) ~/ step;
 
   WheelChooser.byController({
     required FixedExtentScrollController this.controller,
