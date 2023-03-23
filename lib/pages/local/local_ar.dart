@@ -53,9 +53,12 @@ class LocalAr extends StatelessWidget {
               borderRadius: BorderRadius.circular(25.w),
             ),
             Container(
+              decoration: BoxDecoration(
+                  color: Theme.of(context).scaffoldBackgroundColor.withOpacity(.8),
+                  borderRadius: BorderRadius.circular(25.w)
+              ),
               height: 60.w,
               width: (750.w - 120.w) / 3,
-              color: Theme.of(context).bottomAppBarColor.withOpacity(.8),
               padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 6.w),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

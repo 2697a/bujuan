@@ -19,42 +19,21 @@ class BodyView extends GetView<Home> {
     if (bottomHeight == 0) bottomHeight = 25.w;
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      key: controller.globalKey,
-      // drawer: Drawer(
-      //   width: Get.width / 1.45,
-      //   elevation: 0,
-      //   child: const MenuView(),
-      // ),
-      // drawerScrimColor: Colors.transparent,
-      // drawerEdgeDragWidth: 500.w,
       body: Stack(
         children: [
-          // Padding(
-          //   padding: EdgeInsets.only(bottom: controller.panelHeaderSize + bottomHeight),
-          //   child: const AutoRouter(),
-          // )
-          Obx(() =>Visibility(visible: controller.background.value.isNotEmpty,child: SimpleExtendedImage(
-            controller.background.value,
-            fit: BoxFit.cover,
-            width: Get.width,
-            height: Get.height,
-          ),)),
-          Container(
-            color: Theme.of(context).scaffoldBackgroundColor.withOpacity(.26),
-          ),
+          Obx(() => Visibility(
+                visible: controller.background.value.isNotEmpty,
+                child: SimpleExtendedImage(
+                  controller.background.value,
+                  fit: BoxFit.cover,
+                  width: Get.width,
+                  height: Get.height,
+                ),
+              )),
           Padding(
             padding: EdgeInsets.only(bottom: controller.panelHeaderSize + bottomHeight),
             child: const AutoRouter(),
           )
-          // BackdropFilter(
-          //   /// 过滤器
-          //   filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
-          //   /// 必须设置一个空容器
-          //   child: Padding(
-          //     padding: EdgeInsets.only(bottom: controller.panelHeaderSize + bottomHeight),
-          //     child: const AutoRouter(),
-          //   ),
-          // )
         ],
       ),
       //

@@ -9,8 +9,6 @@ import 'package:bujuan/common/constants/other.dart';
 import 'package:bujuan/common/constants/platform_utils.dart';
 import 'package:bujuan/common/lyric_parser/parser_lrc.dart';
 import 'package:bujuan/common/netease_api/netease_music_api.dart';
-import 'package:bujuan/common/storage.dart';
-import 'package:bujuan/pages/home/view/progress_notifier.dart';
 import 'package:bujuan/pages/home/view/z_comment_view.dart';
 import 'package:bujuan/pages/home/view/z_lyric_view.dart';
 import 'package:bujuan/pages/home/view/z_playlist_view.dart';
@@ -23,6 +21,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_zoom_drawer/config.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:on_audio_edit/on_audio_edit.dart';
 import 'package:palette_generator/palette_generator.dart';
 
@@ -48,7 +47,6 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
     LeftMenu('个人中心', TablerIcons.user, Routes.user, '/home/user'),
     LeftMenu('推荐歌单', TablerIcons.smart_home, Routes.index, '/home/index'),
     LeftMenu('本地歌曲', TablerIcons.file_music, Routes.local, '/home/local'),
-    // LeftMenu('alarm', TablerIcons.alarm, '', ''),
     LeftMenu('个性设置', TablerIcons.settings, Routes.setting, ''),
     LeftMenu('捐赠', TablerIcons.coffee, Routes.coffee, ''),
   ];
@@ -65,13 +63,11 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
   RxString currLyric = ''.obs;
 
   //歌词、播放列表PageView的下标
-  RxInt selectHomeIndex = 0.obs;
-
-  //歌词、播放列表PageView的下标
   RxInt selectIndex = 0.obs;
 
   //歌词、播放列表PageView控制器
   PageController pageController = PageController();
+  Box box = GetIt.instance<Box>();
 
   //第一层滑动高度0-1
   RxDouble slidePosition = 0.0.obs;
@@ -107,6 +103,9 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
 
   //是否开启顶部歌词
   RxBool topLyric = true.obs;
+
+  //是否开启圆形专辑
+  RxBool roundAlbum = false.obs;
 
   //是否开启缓存
   RxBool cache = false.obs;
@@ -183,6 +182,7 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
   var lastSleepTime = DateTime.now();
 
   RxBool sleepSlide = false.obs;
+  late AnimationController animationController;
 
   bool intervalClick(int needTime) {
     // 防重复提交
@@ -198,42 +198,42 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
   RxList<int> likeIds = <int>[].obs;
   Rx<LoginStatus> loginStatus = LoginStatus.noLogin.obs;
   Rx<NeteaseAccountInfoWrap> userData = NeteaseAccountInfoWrap().obs;
-  late AnimationController animationController;
-  GlobalKey<ScaffoldState> globalKey = GlobalKey<ScaffoldState>();
-  ProgressNotifier progressNotifier = ProgressNotifier();
 
   //进度
   @override
   void onInit() async {
+    animationController = AnimationController(vsync: this, value: 1.0);
     var rng = Random();
     for (double i = 0; i < 50; i++) {
       mEffects.add({"percent": i, "size": 3 + rng.nextInt(30 - 5).toDouble()});
     }
-    StorageUtil().setBool(noFirstOpen, true);
-    leftImage.value = StorageUtil().getBool(leftImageSp);
+    box.get(noFirstOpen, defaultValue: false);
+    leftImage.value = box.get(leftImageSp, defaultValue: false);
     leftImageNoObs = leftImage.value;
-    background.value = StorageUtil().getString(backgroundSp);
-    cache.value = StorageUtil().getBool(cacheSp);
-    gradientBackground.value = StorageUtil().getBool(gradientBackgroundSp);
-    topLyric.value = StorageUtil().getBool(topLyricSp);
-    fm.value = StorageUtil().getBool(fmSp);
-    high.value = StorageUtil().getBool(highSong);
+    background.value = box.get(backgroundSp, defaultValue: '');
+    cache.value = box.get(cacheSp, defaultValue: false);
+    gradientBackground.value = box.get(gradientBackgroundSp, defaultValue: true);
+    topLyric.value = box.get(topLyricSp, defaultValue: false);
+    fm.value = box.get(fmSp, defaultValue: false);
+    high.value = box.get(highSong, defaultValue: false);
+    roundAlbum.value = box.get(roundAlbumSp, defaultValue: false);
+    String repeatMode = box.get(repeatModeSp, defaultValue: 'all');
+    audioServiceRepeatMode.value = AudioServiceRepeatMode.values.firstWhereOrNull((element) => element.name == repeatMode) ?? AudioServiceRepeatMode.all;
+    // audioServeHandler.setRepeatMode(audioServiceRepeatMode.value);
     super.onInit();
   }
 
   @override
   void onReady() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      animationController = AnimationController(vsync: this, duration: const Duration(milliseconds: 200), value: slidePosition.value);
       _initUserData();
       _initHomeData();
     });
-
     super.onReady();
   }
 
   _initUserData() {
-    String userDataStr = StorageUtil().getString(loginData);
+    String userDataStr = box.get(loginData) ?? '';
     if (userDataStr.isNotEmpty) {
       loginStatus.value = LoginStatus.login;
       userData.value = NeteaseAccountInfoWrap.fromJson(jsonDecode(userDataStr));
@@ -249,14 +249,13 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
     // if (leftImage.value) {
     //   bodyColor.value = Theme.of(buildContext).cardColor.withOpacity(.7);
     // }
-    audioServeHandler.setRepeatMode(audioServiceRepeatMode.value);
+    // audioServeHandler.setRepeatMode(audioServiceRepeatMode.value);
     audioServeHandler.queue.listen((value) => mediaItems
       ..clear()
       ..addAll(value));
     audioServeHandler.mediaItem.listen((value) async {
       lyricsLineModels.clear();
       duration.value = Duration.zero;
-
       currLyric.value = '';
       if (value == null) return;
       mediaItem.value = value;
@@ -264,12 +263,11 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
       _getLyric();
       _setPlayListOffset();
       if (value.extras?['type'] == MediaType.playlist.name) {
-        // _getSimiSheet();
         _getSongTalk();
       }
     });
     //监听实时进度变化
-    AudioService.position.listen((event) {
+    AudioService.createPositionStream(minPeriod: const Duration(microseconds: 800), steps: 1000).listen((event) {
       //如果没有展示播放页面就先不监听（节省资源）
       if (!second.value && slidePosition.value != 1) return;
       //如果监听到的毫秒大于歌曲的总时长 置0并stop
@@ -281,11 +279,12 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
       duration.value = event;
       // }
       //   lastDuration = event;
-      if (second.value && !onMove.value) {
+      if (!onMove.value && lyricsLineModels.isNotEmpty) {
         int index = lyricsLineModels.indexOf(lyricsLineModels.firstWhere((element) => element.startTime! >= duration.value.inMilliseconds));
         if (index != -1 && index != lastIndex) {
           lyricScrollController.animateToItem((index > 0 ? index - 1 : index), duration: const Duration(milliseconds: 500), curve: Curves.linear);
           lastIndex = index;
+          if (topLyric.value) currLyric.value = lyricsLineModels[(index > 0 ? index - 1 : index)].mainText ?? '';
         }
       }
     });
@@ -301,9 +300,15 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
     //获取歌词
     hasTran.value = false;
     if (mediaItem.value.extras?['type'] != MediaType.local.name) {
-      SongLyricWrap songLyricWrap = await NeteaseMusicApi().songLyric(mediaItem.value.id);
-      String lyric = songLyricWrap.lrc.lyric ?? "";
-      String lyricTran = songLyricWrap.tlyric.lyric ?? "";
+      String lyric = box.get('lyric_${mediaItem.value.id}') ?? '';
+      String lyricTran = box.get('lyricTran_${mediaItem.value.id}') ?? '';
+      if (lyric.isEmpty) {
+        SongLyricWrap songLyricWrap = await NeteaseMusicApi().songLyric(mediaItem.value.id);
+        lyric = songLyricWrap.lrc.lyric ?? "";
+        lyricTran = songLyricWrap.tlyric.lyric ?? "";
+        box.put('lyric_${mediaItem.value.id}', lyric);
+        box.put('lyricTran_${mediaItem.value.id}', lyricTran);
+      }
       if (lyric.isNotEmpty) {
         var list = ParserLrc(lyric).parseLines();
         var listTran = ParserLrc(lyricTran).parseLines();
@@ -327,50 +332,52 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
 
   //获取专辑颜色
   _getAlbumColor() async {
-    // if (leftImage.value) {
-    //   return;
-    // }
-    rx.value = await OtherUtils.getImageColor('${mediaItem.value.extras?['image'] ?? ''}?param=500y500');
-    if (slidePosition.value == 1 || second.value) {
-      changeStatusIconColor(true);
-    } else {
-      _getColor();
-    }
+    OtherUtils.getImageColor('${mediaItem.value.extras?['image'] ?? ''}?param=500y500').then((value) {
+      rx.value = value;
+      if (slidePosition.value == 1 || second.value) {
+        changeStatusIconColor(true);
+      } else {
+        _getColor();
+      }
+    });
   }
 
   changeStatusIconColor(bool changed) {
     // if (leftImage.value) return;
-    var color = rx.value.dominantColor?.color ?? Colors.white;
+    var color = rx.value.darkMutedColor?.color??rx.value.darkVibrantColor?.color ??rx.value.dominantColor?.color?? Colors.white;
     var grayscale = (0.299 * color.red) + (0.587 * color.green) + (0.114 * color.blue);
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      systemNavigationBarIconBrightness: changed
+          ? grayscale >= 128
+          ? Brightness.light
+          : Brightness.dark
+          : Get.isPlatformDarkMode
+          ? Brightness.dark
+          : Brightness.light,
       statusBarBrightness: changed
-          ? grayscale > 128
+          ? grayscale >= 128
               ? Brightness.light
               : Brightness.dark
           : Get.isPlatformDarkMode
               ? Brightness.dark
               : Brightness.light,
       statusBarIconBrightness: changed
-          ? grayscale > 128
+          ? grayscale >= 128
               ? Brightness.dark
               : Brightness.light
           : Get.isPlatformDarkMode
               ? Brightness.light
               : Brightness.dark,
-      systemNavigationBarIconBrightness: changed
-          ? grayscale <= 128
-              ? Brightness.light
-              : Brightness.dark
-          : Get.isPlatformDarkMode
-              ? Brightness.dark
-              : Brightness.light,
+      statusBarColor: Colors.transparent,
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarContrastEnforced: false,
     ));
     _getColor(grayscale: grayscale);
   }
 
   _getColor({grayscale}) {
     if (grayscale == null) {
-      var color = rx.value.dominantColor?.color ?? Colors.white;
+      var color = rx.value.darkVibrantColor?.color ??rx.value.darkMutedColor?.color ??rx.value.lightVibrantColor?.color ?? Colors.white;
       grayscale = (0.299 * color.red) + (0.587 * color.green) + (0.114 * color.blue);
     }
     if (grayscale > 128 && bodyColor.value == Colors.black.withOpacity(.7)) {
@@ -379,7 +386,8 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
     if (grayscale <= 128 && bodyColor.value == Colors.white.withOpacity(.7)) {
       return;
     }
-    bodyColor.value = grayscale > 128 ? Colors.black.withOpacity(.6) : Colors.white.withOpacity(.7);
+    // bodyColor.value = rx.value.darkVibrantColor?.bodyTextColor??rx.value.darkMutedColor?.bodyTextColor??rx.value.lightVibrantColor?.bodyTextColor??Colors.white;
+    bodyColor.value = grayscale >= 128 ? Colors.black.withOpacity(.6) : Colors.white.withOpacity(.7);
   }
 
   //获取相似歌单
@@ -425,6 +433,7 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
         break;
     }
     audioServeHandler.setRepeatMode(audioServiceRepeatMode.value);
+    box.put(repeatModeSp, audioServiceRepeatMode.value.name);
   }
 
   //获取当前循环icon
@@ -495,7 +504,6 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
     }
 
     slidePosition.value = value;
-    animationController.value = value;
     if (value > 0.3) {
       if (!panelOpenPositionThan1.value) {
         panelOpenPositionThan1.value = true;
@@ -553,9 +561,7 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
     // String title = audioServeHandler.queueTitle.value;
     // if ((title.isEmpty || title != queueTitle) && (mediaItem??[]).length != mediaItems.length) {
     audioServeHandler.queueTitle.value = queueTitle;
-    audioServeHandler
-      ..changeQueueLists(mediaItem ?? [], index: index)
-      ..playIndex(index);
+    audioServeHandler.changeQueueLists(mediaItem ?? [], index: index);
     // } else {
     //   audioServeHandler.playIndex(index);
     // }
@@ -710,9 +716,6 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
   //   }
   // }
 
-  void openDrawer() {
-    globalKey.currentState?.openDrawer();
-  }
 
   void sleep(BuildContext context) {
     if (lastSleepTime.add(Duration(minutes: sleepMinTo)).difference(DateTime.now()).abs().inSeconds > 0) sleepSlide.value = false;
@@ -759,6 +762,7 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
                     ),
                     Obx(() => Visibility(
                         visible: sleepMin.value != 0 && !sleepSlide.value,
+                        replacement: const SizedBox.shrink(),
                         child: Padding(
                           padding: EdgeInsets.only(top: 20.w, bottom: 40.w),
                           child: SlideCountdown(
@@ -784,11 +788,16 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
                         Padding(padding: EdgeInsets.symmetric(horizontal: 40.w)),
                         TextButton(
                             onPressed: () {
-                              sleepSlide.value = false;
+                              if (sleepMin.value == 0) {
+                                WidgetUtil.showToast('睡眠时间不能小于0分钟');
+                                return;
+                              }
                               sleepMinTo = sleepMin.value;
                               lastSleepTime = DateTime.now();
-                              audioServeHandler.customAction('sleep', {'time': sleepMinTo});
-                              Navigator.of(context).pop();
+                              audioServeHandler.customAction('sleep', {'time': sleepMinTo * 60 - 2}).then((value) {
+                                sleepSlide.value = false;
+                                Navigator.of(context).pop();
+                              });
                             },
                             child: Text(
                               '确定',

@@ -47,47 +47,41 @@ class ZPlayListView extends GetView<Home> {
     //   onTap: () => controller.audioServeHandler.playIndex(index),
     // );
     return InkWell(
-      child: Obx(() {
-        return SizedBox(
-          width: Get.width,
-          height: 110.w,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        mediaItem.title,
-                        maxLines: 1,
-                        style: TextStyle(fontSize: 30.sp, color: controller.bodyColor.value),
-                      ),
-                      Padding(padding: EdgeInsets.symmetric(vertical: 4.w)),
-                      Text(
-                        mediaItem.artist ?? '',
-                        maxLines: 1,
-                        style: TextStyle(fontSize: 24.sp, color: controller.bodyColor.value),
-                      )
-                    ],
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Obx(() => Text(
+                    mediaItem.title,
+                    maxLines: 1,
+                    style: TextStyle(fontSize: 30.sp, color: controller.bodyColor.value),
                   )),
-              Visibility(
-                visible: controller.mediaItem.value.id == mediaItem.id,
-                child:  Icon(TablerIcons.circle_letter_p,color: controller.bodyColor.value,),
-              ),
-              Padding(padding: EdgeInsets.symmetric(horizontal: 10.w)),
-              IconButton(
-                  onPressed: () => controller.audioServeHandler.removeQueueItemAt(index),
-                  icon: Icon(
-                    TablerIcons.trash_x,
-                    color: controller.bodyColor.value,
-                    size: 42.w,
+                  Padding(padding: EdgeInsets.symmetric(vertical: 4.w)),
+                  Obx(() => Text(
+                    mediaItem.artist ?? '',
+                    maxLines: 1,
+                    style: TextStyle(fontSize: 24.sp, color: controller.bodyColor.value),
                   ))
-            ],
-          ),
-        );
-      }),
+                ],
+              )),
+          Obx(() => Visibility(
+            visible: controller.mediaItem.value.id == mediaItem.id,
+            child:  Icon(TablerIcons.circle_letter_p,color: controller.bodyColor.value,),
+          )),
+          Padding(padding: EdgeInsets.symmetric(horizontal: 10.w)),
+          IconButton(
+              onPressed: () => controller.audioServeHandler.removeQueueItemAt(index),
+              icon: Obx(() => Icon(
+                TablerIcons.trash_x,
+                color: controller.bodyColor.value,
+                size: 42.w,
+              )))
+        ],
+      ),
       onTap: () => controller.audioServeHandler.playIndex(index),
     );
   }

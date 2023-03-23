@@ -1,4 +1,3 @@
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/pages/home/view/panel_view.dart';
 import 'package:flutter/material.dart';

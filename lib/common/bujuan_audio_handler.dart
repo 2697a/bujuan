@@ -1,16 +1,20 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:audio_service/audio_service.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:bujuan/common/constants/enmu.dart';
 import 'package:bujuan/common/constants/other.dart';
-import 'package:bujuan/common/storage.dart';
+
+// import 'package:bujuan/common/storage.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:audio_session/audio_session.dart';
+import 'package:hive_flutter/adapters.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:media_cache_manager/media_cache_manager.dart';
 import 'audio_player_handler.dart';
 import 'constants/key.dart';
@@ -18,30 +22,9 @@ import 'constants/platform_utils.dart';
 import 'netease_api/src/api/play/bean.dart';
 import 'netease_api/src/netease_api.dart';
 
-class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler implements AudioPlayerHandler {
-  final _player = GetIt.instance<AudioPlayer>();
-  AudioServiceRepeatMode _audioServiceRepeatMode = AudioServiceRepeatMode.all;
-  final _playList = <MediaItem>[];
-  final _playListShut = <MediaItem>[];
-  int _curIndex = 0; // 播放列表索引
-  bool playInterrupted = false;
-  AudioSession? session;
-  Timer? _sleepTimer;
-
-  BujuanAudioHandler() {
-    // 初始化
-    _initAudioSession();
-    _loadPlaylistByStorage();
-    _notifyAudioHandlerAboutPlayStateEvents(); // 背景状态更改
-    _notifyAudioHandlerAboutPositionEvents();
-  }
-
-  void _loadPlaylistByStorage() async {
-    _curIndex = StorageUtil().getInt(playByIndex);
-    queueTitle.value = StorageUtil().getString(playQueueTitle);
-    List<String> playList = StorageUtil().getStringList(playQueue);
-    if (playList.isNotEmpty) {
-      List<MediaItem> items = playList.map((e) {
+Future<List<MediaItem>> getCachePlayList(RootIsolateData data) async {
+  BackgroundIsolateBinaryMessenger.ensureInitialized(data.rootIsolateToken);
+  List<MediaItem> items = data.playlist?.map((e) {
         var map = MediaItemMessage.fromMap(jsonDecode(e));
         return MediaItem(
           id: map.id,
@@ -52,74 +35,68 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
           artist: map.artist,
           album: map.album,
         );
-      }).toList();
-      changeQueueLists(items, init: true);
-      playbackState.add(playbackState.value.copyWith(
-        queueIndex: _curIndex,
-      ));
-      playIndex(_curIndex, playIt: false);
+      }).toList() ??
+      [];
+  return items;
+}
+
+Future<List<String>> setCachePlayList(RootIsolateData data) async {
+  BackgroundIsolateBinaryMessenger.ensureInitialized(data.rootIsolateToken);
+  return data.items
+          ?.map((e) => jsonEncode(MediaItemMessage(
+                id: e.id,
+                album: e.album,
+                title: e.title,
+                artist: e.artist,
+                duration: e.duration,
+                artUri: e.artUri,
+                extras: e.extras,
+              ).toMap()))
+          .toList() ??
+      [];
+}
+
+class RootIsolateData {
+  RootIsolateToken rootIsolateToken;
+  List<String>? playlist;
+  List<MediaItem>? items;
+
+  RootIsolateData(this.rootIsolateToken, {this.playlist, this.items});
+}
+
+class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler implements AudioPlayerHandler {
+  final _player = GetIt.instance<AudioPlayer>();
+  final Box _box = GetIt.instance<Box>();
+  RootIsolateToken rootIsolateToken = RootIsolateToken.instance!;
+  AudioServiceRepeatMode _audioServiceRepeatMode = AudioServiceRepeatMode.all;
+  final _playList = <MediaItem>[];
+  final _playListShut = <MediaItem>[];
+  int _curIndex = 0; // 播放列表索引
+  bool playInterrupted = false;
+  AudioSession? session;
+  Timer? _sleepTimer;
+
+  BujuanAudioHandler() {
+    // 初始化
+    _loadPlaylistByStorage();
+    _notifyAudioHandlerAboutPlayStateEvents(); // 背景状态更改
+    _notifyAudioHandlerAboutPositionEvents();
+  }
+
+  void _loadPlaylistByStorage() async {
+    String repeatMode = _box.get(repeatModeSp, defaultValue: 'all');
+    _audioServiceRepeatMode = AudioServiceRepeatMode.values.firstWhereOrNull((element) => element.name == repeatMode) ?? AudioServiceRepeatMode.all;
+    _curIndex = _box.get(playByIndex) ?? 0;
+    List<String> playList = _box.get(playQueue, defaultValue: <String>[]);
+    if (playList.isNotEmpty) {
+      List<MediaItem> items = await compute(getCachePlayList, RootIsolateData(rootIsolateToken, playlist: playList));
+      await changeQueueLists(items, init: true, index: _curIndex);
     }
   }
 
-  void _initAudioSession() async {
-    session = await AudioSession.instance;
-    await session?.configure(const AudioSessionConfiguration.speech());
-    _handleInterruptions(session!);
-  }
-
-  //设置音频焦点
-  void _handleInterruptions(AudioSession audioSession) {
-    // just_audio can handle interruptions for us, but we have disabled that in
-    // order to demonstrate manual configuration.
-    audioSession.becomingNoisyEventStream.listen((_) {
-      _player.pause();
-    });
-    audioSession.interruptionEventStream.listen((event) {
-      if (event.begin) {
-        switch (event.type) {
-          case AudioInterruptionType.duck:
-            if (audioSession.androidAudioAttributes!.usage == AndroidAudioUsage.game) {
-              _player.setVolume(1);
-            }
-            playInterrupted = false;
-            break;
-          case AudioInterruptionType.pause:
-          case AudioInterruptionType.unknown:
-            if (_player.state == PlayerState.playing) {
-              _player.pause();
-              playInterrupted = true;
-            }
-            break;
-        }
-      } else {
-        switch (event.type) {
-          case AudioInterruptionType.duck:
-            // _player.setVolume(min(1.0, _player.volume * 2));
-            playInterrupted = false;
-            break;
-          case AudioInterruptionType.pause:
-            if (playInterrupted) _player.resume();
-            playInterrupted = false;
-            break;
-          case AudioInterruptionType.unknown:
-            playInterrupted = false;
-            break;
-        }
-      }
-    });
-    // audioSession.devicesChangedEventStream.listen((event) {
-    // });
-  }
-
   void _notifyAudioHandlerAboutPlayStateEvents() {
-    _player.onPlayerStateChanged.listen((PlayerState playerState) async {
-      if (playerState == PlayerState.completed) {
-        await skipToNext();
-        return;
-      }
-      // playInterrupted = false;
-      final playing = playerState == PlayerState.playing;
-      if (playing) session?.setActive(true);
+    _player.playbackEventStream.listen((PlaybackEvent event) {
+      final playing = _player.playing;
       playbackState.add(playbackState.value.copyWith(
         controls: [
           PlatformUtils.isAndroid
@@ -130,19 +107,45 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
           MediaControl.skipToPrevious,
           if (playing) MediaControl.pause else MediaControl.play,
           MediaControl.skipToNext,
-          MediaControl.stop
+          MediaControl.stop,
         ],
-        systemActions: {MediaAction.playPause, MediaAction.seek, MediaAction.skipToPrevious, MediaAction.skipToNext},
-        androidCompactActionIndices: [1, 2, 3],
-        processingState: AudioProcessingState.completed,
+        systemActions: const {
+          MediaAction.seek,
+        },
+        androidCompactActionIndices: const [1, 2, 3],
+        processingState: const {
+          ProcessingState.idle: AudioProcessingState.idle,
+          ProcessingState.loading: AudioProcessingState.loading,
+          ProcessingState.buffering: AudioProcessingState.buffering,
+          ProcessingState.ready: AudioProcessingState.ready,
+          ProcessingState.completed: AudioProcessingState.completed,
+        }[_player.processingState]!,
+        shuffleMode: (_player.shuffleModeEnabled) ? AudioServiceShuffleMode.all : AudioServiceShuffleMode.none,
         playing: playing,
+        updatePosition: _player.position,
+        bufferedPosition: _player.bufferedPosition,
+        speed: _player.speed,
+        queueIndex: _curIndex,
       ));
     });
   }
 
   void _notifyAudioHandlerAboutPositionEvents() {
-    _player.onPositionChanged.listen((Duration duration) {
-      playbackState.add(playbackState.value.copyWith(updatePosition: duration, bufferedPosition: duration));
+    _player.playerStateStream.listen((state) {
+      switch (state.processingState) {
+        case ProcessingState.idle:
+          break;
+        case ProcessingState.loading:
+          break;
+        case ProcessingState.buffering:
+          break;
+        case ProcessingState.ready:
+          break;
+        case ProcessingState.completed:
+          skipToNext();
+          print('object=====下一首${_curIndex}');
+          break;
+      }
     });
   }
 
@@ -170,33 +173,16 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
     } else {
       _playList.clear();
       updateQueue(mediaItems);
-      StorageUtil().setBool(fmSp, true);
+      _box.put(fmSp, true);
     }
     _curIndex = 0;
     _playList.addAll(mediaItems);
     if (isAddcurIndex) _curIndex++;
     if (!Home.to.fm.value) Home.to.fm.value = true;
     playIndex(_curIndex);
-    List<String> playList = mediaItems
-        .map((e) => jsonEncode(MediaItemMessage(
-              id: e.id,
-              album: e.album,
-              title: e.title,
-              artist: e.artist,
-              genre: e.genre,
-              duration: e.duration,
-              artUri: e.artUri,
-              playable: e.playable,
-              displayTitle: e.displayTitle,
-              displaySubtitle: e.displaySubtitle,
-              displayDescription: e.displayDescription,
-              extras: e.extras,
-            ).toMap()))
-        .toList();
-
+    List<String> playList = await compute(setCachePlayList, RootIsolateData(rootIsolateToken, items: mediaItems));
     queueTitle.value = 'Fm';
-    StorageUtil().setStringList(playQueue, playList);
-    StorageUtil().setString(playQueueTitle, 'Fm');
+    _box.put(playQueue, playList);
   }
 
   //更改为不喜欢按钮
@@ -216,90 +202,105 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
   Future<void> changeQueueLists(List<MediaItem> list, {int index = 0, bool init = false}) async {
     if (!init && Home.to.fm.value) {
       Home.to.fm.value = false;
-      StorageUtil().setBool(fmSp, false);
+      _box.put(fmSp, false);
     }
+    _curIndex = index;
     _playList
       ..clear()
       ..addAll(list);
-    // notify system
-    updateQueue(list);
-    List<String> playList = list
-        .map((e) => jsonEncode(MediaItemMessage(
-              id: e.id,
-              album: e.album,
-              title: e.title,
-              artist: e.artist,
-              duration: e.duration,
-              artUri: e.artUri,
-              extras: e.extras,
-            ).toMap()))
-        .toList();
-    StorageUtil().setStringList(playQueue, playList);
-    if (queueTitle.value.isNotEmpty) StorageUtil().setString(playQueueTitle, queueTitle.value);
+    bool isSu = _box.get(repeatModeSp, defaultValue: 'all') == AudioServiceRepeatMode.none.name;
+    if (isSu) {
+      _playListShut
+        ..clear()
+        ..addAll(list)
+        ..shuffle();
+      await updateQueue(_playListShut);
+      String songId = list[index].id;
+      if (init) songId = _box.get(playById, defaultValue: '');
+      int indexBy = _playListShut.indexWhere((element) => element.id == songId);
+      if (indexBy != -1) {
+        _curIndex = indexBy;
+      }
+    } else {
+      await updateQueue(_playList);
+    }
+    playIndex(_curIndex, playIt: !init);
+    if (!init) {
+      List<String> playList = await compute(setCachePlayList, RootIsolateData(rootIsolateToken, items: _playList));
+      _box.put(playQueue, playList);
+    }
+    // _playList
+    //   ..clear()
+    //   ..addAll(list);
+    // // notify system
+    // await updateQueue(list);
+    // List<String> playList = await compute(setCachePlayList, RootIsolateData(rootIsolateToken, items: _playList));
+    // _box.put(playQueue, playList);
   }
 
   @override
   Future<void> playIndex(int index, {bool playIt = true}) async {
     // 接收到下标
     _curIndex = index;
+    _box.put(playByIndex, _curIndex);
     await readySongUrl(playIt: playIt);
-    StorageUtil().setInt(playByIndex, _curIndex);
   }
 
   @override
   Future<void> readySongUrl({bool isNext = true, bool playIt = true}) async {
-    bool high = !playIt ? StorageUtil().getBool(highSong) : Home.to.high.value;
-    bool cache = !playIt ? StorageUtil().getBool(cacheSp) : Home.to.cache.value;
+    bool high = !playIt ? _box.get(highSong) ?? false : Home.to.high.value;
+    bool cache = !playIt ? _box.get(cacheSp) ?? false : Home.to.cache.value;
     // 这里是获取歌曲url
     if (queue.value.isEmpty) return;
     var song = queue.value[_curIndex];
+    _box.put(playById, song.id);
     String? url;
     if (song.extras?['type'] == MediaType.local.name || song.extras?['type'] == MediaType.neteaseCache.name) url = song.extras?['url'];
     if (url != null) {
+      song.extras?.putIfAbsent('cache', () => true);
       mediaItem.add(song);
-      //缓存过的或者是本地音乐
-      if (song.extras?['type'] == MediaType.local.name) playIt ? await _player.play(DeviceFileSource(url)) : await _player.setSourceDeviceFile(url);
+      if (song.extras?['type'] == MediaType.local.name) {
+        //是本地音乐
+        await _player.setFilePath(url);
+      }
       if (song.extras?['type'] == MediaType.neteaseCache.name) {
         //网易云缓存的音乐要解密哦
-        Uint8List data = Uint8List.fromList(File(url).readAsBytesSync().map((e) => e ^ 0xa3).toList());
-        playIt ? await _player.play(BytesSource(data)) : await _player.setSourceBytes(data);
+        _player.setAudioSource(StreamSource(url, url.replaceAll('.uc!', '').split('.').last));
       }
+      if (playIt) _player.play();
       return;
     }
-    url = DownloadCacheManager.getCachedFilePath(song.id);
-    if (url != null) {
+    if (!PlatformUtils.isIOS) {
+      url = DownloadCacheManager.getCachedFilePath(song.id);
+    }
+    if (url != null && File(url).existsSync()) {
+      song.extras?.putIfAbsent('cache', () => true);
       mediaItem.add(song);
-      playIt ? await _player.play(DeviceFileSource(url)) : await _player.setSourceDeviceFile(url);
+      await _player.setFilePath(url);
+      if (playIt) _player.play();
     } else {
       mediaItem.add(song);
       SongUrlListWrap songUrl = await NeteaseMusicApi().songDownloadUrl([song.id], level: high ? 'lossless' : 'exhigh');
       url = ((songUrl.data ?? [])[0].url ?? '').split('?')[0];
-      print('object========${jsonEncode(songUrl.toJson())}');
-      playIt ? await _player.play(UrlSource(url), mode: PlayerMode.mediaPlayer) : await _player.setSourceUrl(url);
-      if(cache) Downloader.downloadFile(url, song.id);
+      if (url.isNotEmpty) {
+        await _player.setUrl(url);
+        if (playIt) _player.play();
+        if (cache && !PlatformUtils.isIOS) Downloader.downloadFile(url, song.id);
+      } else {
+        if (isNext) {
+          await skipToNext();
+        } else {
+          await skipToPrevious();
+        }
+      }
     }
-    // if (url.isNotEmpty) {
-    //   mediaItem.add(song);
-    //   playIt ? await _player.play(UrlSource(url), mode: PlayerMode.mediaPlayer) : await _player.setSourceUrl(url);
-    //   // Downloader.downloadFile(url, song.id, onProgress: (int progress, int total) {
-    //   //   // print('object==============$progress======$total');
-    //   // });
-    // } else {
-    //   if (isNext) {
-    //     await skipToNext();
-    //   } else {
-    //     await skipToPrevious();
-    //   }
-    // }
   }
-
-  downloadUrl(url) {}
 
   @override
   Future<void> pause() async => await _player.pause();
 
   @override
-  Future<void> play() async => await _player.resume();
+  Future<void> play() async => await _player.play();
 
   @override
   Future<void> seek(Duration position) async {
@@ -307,8 +308,15 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
   }
 
   @override
+  Future<void> skipToQueueItem(int index) async {
+    // TODO: implement skipToQueueItem
+    // return super.skipToQueueItem(index);
+  }
+
+  @override
   Future<void> skipToNext() async {
     _setCurrIndex(next: true);
+    print('下一首=======$_curIndex');
     await readySongUrl();
     if (Home.to.fm.value) {
       // 如果是私人fm
@@ -321,27 +329,27 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
 
   @override
   Future<void> skipToPrevious() async {
+    await stop();
     _setCurrIndex();
     await readySongUrl(isNext: false);
   }
 
   void _setCurrIndex({bool next = false}) {
     if (_audioServiceRepeatMode == AudioServiceRepeatMode.one) return;
-    if (next ? _curIndex >= _playList.length - 1 : _curIndex <= 0) {
-      next ? _curIndex = 0 : _curIndex = _playList.length - 1;
+    var list = _audioServiceRepeatMode == AudioServiceRepeatMode.none ? _playListShut : _playList;
+    if (next ? _curIndex >= list.length - 1 : _curIndex <= 0) {
+      next ? _curIndex = 0 : _curIndex = list.length - 1;
     } else {
       next ? _curIndex++ : _curIndex--;
     }
-    StorageUtil().setInt(playByIndex, _curIndex);
-    playbackState.add(playbackState.value.copyWith(
-      queueIndex: _curIndex,
-    ));
+    _box.put(playByIndex, _curIndex);
+
+    // StorageUtil().setInt(playByIndex, _curIndex);
   }
 
   @override
   Future<void> stop() async {
     await _player.stop();
-    return super.stop();
   }
 
   @override
@@ -351,8 +359,10 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
       _sleepTimer?.cancel();
       if ((extras?['time'] ?? 0) == 0) return;
       //记录一下当前时间
-      _sleepTimer = Timer(Duration(minutes: extras?['time'] ?? 0), () {
+      _sleepTimer = Timer(Duration(seconds: extras?['time'] ?? 0), () {
         _player.pause();
+        Home.to.sleepMinTo = 0;
+        Home.to.sleepSlide.value = true;
       });
     }
 
@@ -364,44 +374,29 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
 
   @override
   Future<void> setRepeatMode(AudioServiceRepeatMode repeatMode) async {
+    MediaItem m = queue.value[_curIndex];
     if (repeatMode == AudioServiceRepeatMode.none) {
       //none当作随机播放吧
       _playListShut
         ..clear()
         ..addAll(_playList)
         ..shuffle();
-      int index = _playListShut.indexWhere((element) => element.id == mediaItem.value?.id);
+      int index = _playListShut.indexWhere((element) => element.id == m.id);
       if (index != -1) _curIndex = index;
-      updateQueue(_playListShut);
+      await updateQueue(_playListShut);
     } else {
-      int index = _playList.indexWhere((element) => element.id == mediaItem.value?.id);
+      int index = _playList.indexWhere((element) => element.id == m.id);
       if (index != -1) _curIndex = index;
-      updateQueue(_playList);
+      await updateQueue(_playList);
     }
     _audioServiceRepeatMode = repeatMode;
+    // List<String> playList = await compute(setCachePlayList, RootIsolateData(rootIsolateToken, items: queue.value));
+    // _box.put(playQueue, playList);
   }
-
-  // @override
-  // Future<void> setShuffleMode(AudioServiceShuffleMode shuffleMode) async {
-  //   if (shuffleMode != AudioServiceShuffleMode.none) {
-  //     _playListShut
-  //       ..clear()
-  //       ..addAll(_playList)
-  //       ..shuffle();
-  //     int index = _playListShut.indexWhere((element) => element.id == mediaItem.value?.id);
-  //     if (index != -1) _curIndex = index;
-  //     updateQueue(_playListShut);
-  //   } else {
-  //     int index = _playList.indexWhere((element) => element.id == mediaItem.value?.id);
-  //     if (index != -1) _curIndex = index;
-  //     updateQueue(_playList);
-  //   }
-  // }
 
   @override
   Future<void> onTaskRemoved() async {
     await stop();
-    await _player.release();
     await _player.dispose();
   }
 }
@@ -501,3 +496,26 @@ class MediaItemMessage {
 }
 
 Map<String, dynamic>? castMap(Map? map) => map?.cast<String, dynamic>();
+
+class StreamSource extends StreamAudioSource {
+  String uri;
+  String fileType;
+
+  // Get the Android content uri and the corresponsing file type by using MediaStore API in android
+  StreamSource(this.uri, this.fileType);
+
+  @override
+  Future<StreamAudioResponse> request([int? start, int? end]) async {
+    // Use a method channel to read the file into a List of bytes
+    Uint8List fileBytes = Uint8List.fromList(File(uri).readAsBytesSync().map((e) => e ^ 0xa3).toList());
+
+    // Returning the stream audio response with the parameters
+    return StreamAudioResponse(
+      sourceLength: fileBytes.length,
+      contentLength: (start ?? 0) - (end ?? fileBytes.length),
+      offset: start ?? 0,
+      stream: Stream.fromIterable([fileBytes.sublist(start ?? 0, end)]),
+      contentType: fileType,
+    );
+  }
+}

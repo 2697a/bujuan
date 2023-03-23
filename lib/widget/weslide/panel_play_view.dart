@@ -11,6 +11,8 @@ import 'dart:ui';
 
 import 'package:bujuan/common/constants/enmu.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
+import 'package:bujuan/pages/home/view/panel_view.dart';
+import 'package:bujuan/widget/my_get_view.dart';
 import 'package:bujuan/widget/play_more_info.dart';
 import 'package:bujuan/widget/swipeable.dart';
 import 'package:bujuan/widget/weslide/panel.dart';
@@ -231,15 +233,17 @@ class SlidingUpPlayViewPanelState extends State<SlidingUpPlayViewPanel> with Tic
 
   bool _isPanelVisible = true;
 
-  final double _imageMinSize = 80.w;
-  final double _imageMaxSize = 628.w;
-  final double _width = 750.w;
-  final double _imageTop = 80.h;
+  double _imageMinSize = 80.w;
+  double _imageMaxSize = 628.w;
+  double _width = 750.w;
+  final double _imageTop = 90.h;
 
   @override
   void initState() {
     super.initState();
-
+    _width = Get.width;
+    _imageMaxSize = _width / 1.2;
+    _imageMinSize = _width/ 9.375;
     _ac = AnimationController(
         vsync: this,
         duration: const Duration(milliseconds: 200),
@@ -302,90 +306,65 @@ class SlidingUpPlayViewPanelState extends State<SlidingUpPlayViewPanel> with Tic
                     top: widget.slideDirection == SlideDirection.UP ? 0.0 : null,
                     bottom: widget.slideDirection == SlideDirection.DOWN ? 0.0 : null,
                     width: MediaQuery.of(context).size.width - (widget.margin != null ? widget.margin!.horizontal : 0) - (widget.padding != null ? widget.padding!.horizontal : 0),
-                    child: SizedBox(
-                      height: widget.maxHeight,
-                      child: SlidingUpPanel(
-                        color: Colors.transparent,
-                        controller: Home.to.panelController,
-                        body: widget.panel ?? Container(),
-                        onPanelSlide: (value) {
-                          _ac2.value = 1 - value;
-                          if (Home.to.second.value != value >= 0.3) {
-                            Home.to.second.value = value > 0.3;
-                          }
-                        },
-                        onPanelOpened: () {},
-                        panel: Stack(
-                          children: [
-                            Container(
-                              margin: EdgeInsets.only(top: 130.17.w + MediaQuery.of(context).padding.bottom, left: 20.1.w, right: 20.1.w, bottom: 30.2.w),
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).scaffoldBackgroundColor,
-                                borderRadius: BorderRadius.all(Radius.circular(25.w)),
+                    child: MyGetView(
+                      child: SizedBox(
+                        height: widget.maxHeight,
+                        child: SlidingUpPanel(
+                          color: Colors.transparent,
+                          controller: Home.to.panelController,
+                          body: widget.panel,
+                          onPanelSlide: (value) {
+                            _ac2.value = 1 - value;
+                            Home.to.animationController.value = _ac2.value;
+                            if (Home.to.second.value != value >= 0.3) {
+                              Home.to.second.value = value > 0.3;
+                            }
+                          },
+                          onPanelOpened: () {},
+                          panel: Container(
+                            color: Colors.transparent,
+                            padding: EdgeInsets.only(top: 130.w + MediaQuery.of(context).padding.bottom, bottom: 40.w),
+                            child: Obx(
+                              () => IndexedStack(
+                                index: Home.to.selectIndex.value,
+                                children: Home.to.pages,
                               ),
                             ),
-                            Obx(() {
-                              return AnimatedContainer(
-                                margin: EdgeInsets.only(top: 130.w + MediaQuery.of(context).padding.bottom, left: 20.w, right: 20.w, bottom: 30.w),
-                                duration: const Duration(milliseconds: 150),
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(colors: [
-                                    !Home.to.gradientBackground.value
-                                        ? Home.to.rx.value.dominantColor?.color.withOpacity(.7) ?? Colors.transparent
-                                        : Home.to.rx.value.lightVibrantColor?.color.withOpacity(.7) ??
-                                            Home.to.rx.value.lightMutedColor?.color.withOpacity(.7) ??
-                                            Home.to.rx.value.dominantColor?.color.withOpacity(.7) ??
-                                            Colors.transparent,
-                                    Home.to.rx.value.dominantColor?.color.withOpacity(.7) ?? Colors.transparent,
-                                  ], begin: Alignment.topLeft, end: Alignment.bottomCenter),
-                                  borderRadius: BorderRadius.all(Radius.circular(25.w)),
-                                ),
-                              );
-                            }),
-                            Padding(
-                              padding: EdgeInsets.only(top: 130.w + MediaQuery.of(context).padding.bottom, bottom: 40.w),
-                              child: Obx(
-                                () => IndexedStack(
-                                  index: Home.to.selectIndex.value,
-                                  children: Home.to.pages,
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                        header: SizedBox(
-                          height: 130.w + MediaQuery.of(context).padding.bottom,
-                          child: Stack(
-                            alignment: Alignment.topCenter,
-                            children: [
-                              Obx(() => Container(
-                                    width: 70.w,
-                                    height: 8.w,
-                                    margin: EdgeInsets.only(top: 12.w),
-                                    decoration: BoxDecoration(color: Home.to.bodyColor.value.withOpacity(.3), borderRadius: BorderRadius.circular(4.w)),
-                                  )),
-                              FlashyNavbar(
-                                height: 120.w + MediaQuery.of(context).padding.bottom,
-                                selectedIndex: 0,
-                                items: [
-                                  FlashyNavbarItem(icon: const Icon(TablerIcons.atom_2)),
-                                  FlashyNavbarItem(icon: const Icon(TablerIcons.playlist)),
-                                  FlashyNavbarItem(icon: const Icon(TablerIcons.quote)),
-                                  FlashyNavbarItem(icon: const Icon(TablerIcons.message_2)),
-                                ],
-                                onItemSelected: (index) {
-                                  Home.to.selectIndex.value = index;
-                                  if (Home.to.panelController.isPanelClosed) {
-                                    Home.to.panelController.open();
-                                  }
-                                },
-                                backgroundColor: Colors.transparent,
-                              ),
-                            ],
                           ),
+                          header: SizedBox(
+                            height: 130.w + MediaQuery.of(context).padding.bottom,
+                            child: Stack(
+                              alignment: Alignment.topCenter,
+                              children: [
+                                Obx(() => Container(
+                                      width: 70.w,
+                                      height: 8.w,
+                                      margin: EdgeInsets.only(top: 12.w),
+                                      decoration: BoxDecoration(color: Home.to.bodyColor.value.withOpacity(.3), borderRadius: BorderRadius.circular(4.w)),
+                                    )),
+                                FlashyNavbar(
+                                  height: 120.w + MediaQuery.of(context).padding.bottom,
+                                  selectedIndex: 0,
+                                  items: [
+                                    FlashyNavbarItem(icon: const Icon(TablerIcons.atom_2)),
+                                    FlashyNavbarItem(icon: const Icon(TablerIcons.playlist)),
+                                    FlashyNavbarItem(icon: const Icon(TablerIcons.quote)),
+                                    FlashyNavbarItem(icon: const Icon(TablerIcons.message_2)),
+                                  ],
+                                  onItemSelected: (index) {
+                                    Home.to.selectIndex.value = index;
+                                    if (Home.to.panelController.isPanelClosed) {
+                                      Home.to.panelController.open();
+                                    }
+                                  },
+                                  backgroundColor: Colors.transparent,
+                                ),
+                              ],
+                            ),
+                          ),
+                          maxHeight: Get.height - 130.w - MediaQuery.of(context).padding.bottom,
+                          minHeight: 130.w + MediaQuery.of(context).padding.bottom,
                         ),
-                        maxHeight: Get.height - 130.w - MediaQuery.of(context).padding.bottom,
-                        minHeight: 130.w + MediaQuery.of(context).padding.bottom,
                       ),
                     )),
                 // header
@@ -423,7 +402,7 @@ class SlidingUpPlayViewPanelState extends State<SlidingUpPlayViewPanel> with Tic
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Padding(padding: EdgeInsets.symmetric(horizontal: 50.w)),
+                                    Padding(padding: EdgeInsets.only(left: _imageMinSize*1.2)),
                                     Expanded(
                                         child: Obx(
                                       () => RichText(
@@ -466,7 +445,8 @@ class SlidingUpPlayViewPanelState extends State<SlidingUpPlayViewPanel> with Tic
                                     height: _imageMinSize + _ac2.value * (_imageMaxSize - _imageMinSize),
                                     width: _imageMinSize + _ac2.value * (_imageMaxSize - _imageMinSize),
                                     child: ClipRRect(
-                                      borderRadius: BorderRadius.circular((_imageMinSize + _ac2.value * (_imageMaxSize - _imageMinSize)) / 2 * (1 - _ac2.value * .88)),
+                                      borderRadius: BorderRadius.circular(
+                                          (_imageMinSize + _ac2.value * (_imageMaxSize - _imageMinSize)) / 2 * (Home.to.roundAlbum.value ? 1 : ((1 - _ac2.value * .86)))),
                                       child: child,
                                     ),
                                   );
@@ -571,6 +551,18 @@ class SlidingUpPlayViewPanelState extends State<SlidingUpPlayViewPanel> with Tic
                           TablerIcons.chevron_down,
                           color: Home.to.bodyColor.value,
                         ))),
+                Expanded(
+                  child: Obx(() => Visibility(
+                        visible: Home.to.topLyric.value,
+                        child: Obx(() => Text(
+                              Home.to.currLyric.value.fixAutoLines(),
+                              style: TextStyle(fontSize: 28.sp, color: Home.to.bodyColor.value),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
+                            )),
+                      )),
+                ),
                 IconButton(
                     onPressed: () {
                       showDialog(
@@ -582,19 +574,7 @@ class SlidingUpPlayViewPanelState extends State<SlidingUpPlayViewPanel> with Tic
                     icon: Obx(() => Icon(
                           TablerIcons.brand_stackoverflow,
                           color: Home.to.bodyColor.value,
-                        )))
-                // Expanded(
-                //   child: Obx(() => Visibility(
-                //     visible: controller.topLyric.value,
-                //     child: Obx(() => Text(
-                //       controller.currLyric.value.fixAutoLines(),
-                //       style: TextStyle(fontSize: 28.sp, color: controller.bodyColor.value),
-                //       maxLines: 1,
-                //       overflow: TextOverflow.ellipsis,
-                //       textAlign: TextAlign.center,
-                //     )),
-                //   )),
-                // ),
+                        ))),
                 // Obx(() => Visibility(
                 //   visible: (controller.mediaItem.value.extras?['mv'] ?? 0) > 0,
                 //   child: IconButton(
@@ -784,8 +764,8 @@ class SlidingUpPlayViewPanelState extends State<SlidingUpPlayViewPanel> with Tic
 
   //close the panel
   Future<void> _close() {
-    _ac2.fling(velocity: -2.871089586513999);
-    return _ac.fling(velocity: -2.871089586513999);
+    _ac2.fling(velocity: -1.871089586513999);
+    return _ac.fling(velocity: -1.871089586513999);
   }
 
   //open the panel

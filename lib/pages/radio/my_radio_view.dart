@@ -1,6 +1,7 @@
 
 import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/routes/router.gr.dart';
+import 'package:bujuan/widget/my_get_view.dart';
 import 'package:bujuan/widget/request_widget/request_loadmore_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -26,25 +27,22 @@ class _MyRadioViewState extends State<MyRadioView> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      child: Scaffold(
+    return MyGetView(child: Scaffold(
       backgroundColor: Colors.transparent,
-        appBar: MyAppBar(
-          backgroundColor: Colors.transparent,
-        ),
-        body: RequestLoadMoreWidget<DjRadioListWrap, DjRadio>(
-            listKey: const ['djRadios'],
-            dioMetaData: djRadioSubListDioMetaData(),
-            childBuilder: (List<DjRadio> list) {
-              return ListView.builder(
-                padding: EdgeInsets.symmetric(horizontal: 20.w),
-                itemBuilder: (context, index) => _buildItem(list[index]),
-                itemCount: list.length,
-              );
-            }),
+      appBar: MyAppBar(
+        backgroundColor: Colors.transparent,
       ),
-      onHorizontalDragDown: (e) {},
-    );
+      body: RequestLoadMoreWidget<DjRadioListWrap, DjRadio>(
+          listKey: const ['djRadios'],
+          dioMetaData: djRadioSubListDioMetaData(),
+          childBuilder: (List<DjRadio> list) {
+            return ListView.builder(
+              padding: EdgeInsets.symmetric(horizontal: 20.w),
+              itemBuilder: (context, index) => _buildItem(list[index]),
+              itemCount: list.length,
+            );
+          }),
+    ));
   }
 
   Widget _buildItem(DjRadio data) {

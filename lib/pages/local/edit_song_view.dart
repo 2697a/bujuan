@@ -54,18 +54,20 @@ class _EditSongViewState extends State<EditSongView> {
       WidgetUtil.showToast('歌手名称不能为空');
       return;
     }
+    WidgetUtil.showLoadingDialog(context);
     bool editAudio = await edit.editAudio(
-        (context.routeData.args as MediaItem).extras?['url'], {TagType.TITLE: _nameEdit.text, TagType.ARTIST: _artistEdit.text, TagType.LYRICS: _lyricEdit.text},
+        (context.routeData.args as MediaItem).extras?['url'], {TagType.TITLE: _nameEdit.text, TagType.ARTIST: _artistEdit.text, TagType.LYRICS: _lyricEdit.text,TagType.ALBUM:audioModel?.album},
         searchInsideFolders: true);
-    if (Home.to.audioServeHandler.queueTitle.value == 'local1') {
-      Home.to.audioServeHandler.updateMediaItem((context.routeData.args as MediaItem).copyWith(title: _nameEdit.text, artist: _artistEdit.text));
-    }
+
+    // if (Home.to.audioServeHandler.queueTitle.value == 'local1') {
+    //   Home.to.audioServeHandler.updateMediaItem((context.routeData.args as MediaItem).copyWith(title: _nameEdit.text, artist: _artistEdit.text));
+    // }
     if (editAudio) {
       WidgetUtil.showToast('修改成功');
     } else {
       WidgetUtil.showToast('修改失败');
     }
-    context.router.pop(editAudio);
+    if(mounted)context.router.pop(editAudio);
   }
 
   @override

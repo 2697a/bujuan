@@ -12,7 +12,6 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 import '../../../common/constants/other.dart';
 import '../../../common/constants/platform_utils.dart';
-import '../../../widget/my_get_view.dart';
 import '../../../widget/swipeable.dart';
 
 class PanelView extends GetView<Home> {
@@ -24,13 +23,10 @@ class PanelView extends GetView<Home> {
   Widget build(BuildContext context) {
     double bottomHeight = MediaQuery.of(controller.buildContext).padding.bottom * (PlatformUtils.isIOS ? 0.4 : 0.8);
     if (bottomHeight == 0) bottomHeight = 20.w;
-    return MyGetView(
-      child: _buildDefaultBody(context),
-    );
+    return _buildDefaultBody(context);
   }
 
   Widget _buildSlide(BuildContext context) {
-    print('_buildSlide');
     return Container(
       padding: EdgeInsets.only(left: 60.w, right: 60.w, bottom: 50.w),
       height: 100.w,
@@ -205,44 +201,64 @@ class PanelView extends GetView<Home> {
   }
 
   Widget _buildDefaultBody(BuildContext context) {
-    return Stack(
-      children: [
-        Obx(() => Visibility(
-          visible: controller.background.value.isEmpty,
-          child: Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).scaffoldBackgroundColor,
-              borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),
-            ),
+    return SizedBox(
+      height: Get.height,
+      child: Stack(
+        children: [
+          Obx(() => Visibility(
+                visible: controller.background.value.isEmpty,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),
+                  ),
+                ),
+              )),
+          Obx(() => AnimatedContainer(
+                duration: const Duration(milliseconds: 320),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(colors: [
+                    !controller.panelOpenPositionThan1.value && !controller.second.value
+                        ? Theme.of(context).scaffoldBackgroundColor.withOpacity(controller.background.value.isNotEmpty ? 0.2 : .85)
+                        : !controller.gradientBackground.value
+                            ? controller.rx.value.darkVibrantColor?.color.withOpacity(.85) ?? controller.rx.value.darkMutedColor?.color.withOpacity(.85) ?? Colors.transparent
+                            : controller.rx.value.lightVibrantColor?.color.withOpacity(.85) ?? controller.rx.value.lightVibrantColor?.color.withOpacity(.85) ?? controller.rx.value.lightMutedColor?.color.withOpacity(.85) ?? Colors.transparent,
+                    controller.rx.value.darkVibrantColor?.color.withOpacity(.85) ?? controller.rx.value.darkMutedColor?.color.withOpacity(.85) ??controller.rx.value.lightVibrantColor?.color.withOpacity(.85)??Colors.transparent,
+                  ], begin: Alignment.topLeft, end: Alignment.bottomCenter),
+                  borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),
+                ),
+              )),
+          Obx(() => Visibility(
+                visible: controller.background.value.isNotEmpty,
+                child: ClipRRect(
+                    borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),
+                    child: BackdropFilter(
+
+                        /// 过滤器
+                        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+
+                        /// 必须设置一个空容器
+                        child: Container())),
+              )),
+          AnimatedBuilder(
+            animation: controller.animationController,
+            builder: (context, child) {
+              return Positioned(
+                  height: Get.height,
+                  width: Get.width,
+                  top: -Get.height * (1- controller.animationController.value),
+                  child: AnimatedOpacity(
+                    duration: Duration.zero,
+                    opacity: controller.animationController.value,
+                    child: SizedBox(
+                      child: child,
+                    ),
+                  ));
+            },
+            child: _buildBodyContent(context),
           ),
-        )),
-        Obx(() => AnimatedContainer(
-              duration: const Duration(milliseconds: 150),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(colors: [
-                  !controller.panelOpenPositionThan1.value && !controller.second.value
-                      ? Theme.of(context).scaffoldBackgroundColor.withOpacity(.3)
-                      : !controller.gradientBackground.value
-                          ? controller.rx.value.dominantColor?.color.withOpacity(.7) ?? Colors.transparent
-                          : controller.rx.value.lightVibrantColor?.color.withOpacity(.7) ??
-                              controller.rx.value.lightMutedColor?.color.withOpacity(.7) ??
-                              controller.rx.value.dominantColor?.color.withOpacity(.7) ??
-                              Colors.transparent,
-                  controller.rx.value.dominantColor?.color.withOpacity(.7) ?? Colors.transparent,
-                ], begin: Alignment.topLeft, end: Alignment.bottomCenter),
-                borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),
-              ),
-            )),
-        Obx(() => Visibility(
-              visible: controller.background.value.isNotEmpty,
-              child: BackdropFilter(
-                  /// 过滤器
-                  filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-                  /// 必须设置一个空容器
-                  child: Container()),
-            )),
-        _buildBodyContent(context),
-      ],
+        ],
+      ),
     );
   }
 
@@ -385,21 +401,21 @@ class PanelView extends GetView<Home> {
     return Column(
       children: [
         SizedBox(
-          height: 70.h + MediaQuery.of(context).padding.top,
+          height: 90.h + MediaQuery.of(context).padding.top,
         ),
         SizedBox(
-          height: 100.w * 6.8,
+          height: Get.width / 1.15,
         ),
         Container(
           padding: EdgeInsets.symmetric(horizontal: 55.w),
-          height: 100.h,
+          height: 120.h,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Obx(() => Text(
                     controller.mediaItem.value.title.fixAutoLines(),
-                    style: TextStyle(fontSize: 40.sp, fontWeight: FontWeight.bold, color: controller.bodyColor.value),
+                    style: TextStyle(fontSize: 38.sp, fontWeight: FontWeight.bold, color: controller.bodyColor.value),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   )),
@@ -424,6 +440,13 @@ class PanelView extends GetView<Home> {
                     OtherUtils.getTimeStamp(controller.duration.value.inMilliseconds),
                     style: TextStyle(color: controller.bodyColor.value, fontSize: 28.sp),
                   )),
+              Obx(() => (controller.mediaItem.value.extras?['cache'] ?? false)
+                  ? Icon(
+                      TablerIcons.circle_check,
+                      color: controller.bodyColor.value.withOpacity(.6),
+                      size: 30.sp,
+                    )
+                  : const SizedBox.shrink()),
               Obx(() => Text(
                     OtherUtils.getTimeStamp(controller.mediaItem.value.duration?.inMilliseconds ?? 0),
                     style: TextStyle(color: controller.bodyColor.value, fontSize: 28.sp),

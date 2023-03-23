@@ -1,6 +1,6 @@
-
 import 'package:audio_service/audio_service.dart';
 import 'package:bujuan/pages/local/local_controller.dart';
+import 'package:bujuan/pages/play_list/playlist_view.dart';
 import 'package:bujuan/widget/data_widget.dart';
 import 'package:bujuan/widget/my_get_view.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +17,8 @@ class LocalSongView extends GetView<Local> {
   Widget build(BuildContext context) {
     controller.context = context;
     controller.getLocalSong();
-    return MyGetView(child: Scaffold(
+    return MyGetView(
+        child: Scaffold(
       backgroundColor: Colors.transparent,
       appBar: MyAppBar(
         backgroundColor: Colors.transparent,
@@ -27,7 +28,13 @@ class LocalSongView extends GetView<Local> {
           replacement: const LoadingView(),
           visible: !controller.loadingSong.value,
           child: ListView.builder(
-            itemBuilder: (context, index) => _buildItem(controller.songs[index], index, context),
+            itemBuilder: (context, index) => SongItem(
+              index: index,
+              mediaItem: controller.songs[index],
+              onTap: () {
+                Home.to.playByIndex(index, 'queueTitle', mediaItem: controller.songs);
+              },
+            ),
             itemExtent: 120.w,
             itemCount: controller.songs.length,
           ))),

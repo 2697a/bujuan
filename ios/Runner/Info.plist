@@ -35,6 +35,12 @@
 	</dict>
 	<key>NSAppleMusicUsageDescription</key>
 	<string>..Add a reason..</string>
+	<key>NSCameraUsageDescription</key>
+    <string>Used to demonstrate image picker plugin</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Used to capture audio for image picker plugin</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>Used to demonstrate image picker plugin</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>

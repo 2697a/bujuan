@@ -10,7 +10,7 @@ abstract class Downloader {
   static Future<String?> downloadFile(String url, String id) async {
     try {
       if (cancelToken != null) {
-        print('object====取消缓存');
+        // print('object====取消缓存');
         cancelToken?.cancel();
         cancelToken = null;
       }
@@ -22,9 +22,9 @@ abstract class Downloader {
         url,
         '${downloadDir.path}/$id',
         onReceiveProgress: (int progress, int total) {
-          print('object==============$progress======$total');
+          // print('object==============$progress======$total');
           if (progress == total) {
-            print('object====哈哈哈 老子缓存完了哦');
+            // print('object====哈哈哈 老子缓存完了哦');
             DownloadCacheManager.cacheFilePath(url: id, path: filePath);
           }
         },

@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 
 import '../../widget/app_bar.dart';
 import '../home/home_controller.dart';
+import '../play_list/playlist_view.dart';
 
 class NeteaseCacheView extends GetView<Netease> {
   const NeteaseCacheView({super.key});
@@ -22,9 +23,11 @@ class NeteaseCacheView extends GetView<Netease> {
         title: const Text('网易云缓存'),
       ),
       body: Obx(() => Visibility(visible: !controller.loading.value,
-        replacement: const LoadingView(tips: '正在解密缓存文件并写入到不倦目录内...',),
+        replacement: const LoadingView(tips: '正在解密缓存文件...',),
         child: ListView.builder(
-          itemBuilder: (context, index) => _buildItem(controller.mediaItems[index], index, context),
+          itemBuilder: (context, index) => SongItem(index: index, mediaItem: controller.mediaItems[index], onTap: (){
+            Home.to.playByIndex(index, 'queueTitle', mediaItem: controller.mediaItems);
+          },),
           itemCount: controller.mediaItems.length,
           itemExtent: 120.w,
         ),)),

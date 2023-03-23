@@ -54,7 +54,6 @@ class Netease extends GetxController {
 
 Future<List<CacheDate>> getCache(RootIsolateToken rootIsolateToken) async {
   BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);
-  NeteaseMusicApi.init();
   Directory? directoryApp = await getExternalStorageDirectory();
   if (directoryApp != null) {
     String replacePath = directoryApp.path.replaceAll('/Android/data/com.sixbugs.bujuan/files', '');

@@ -1,11 +1,14 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/common/constants/icon.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../../common/constants/other.dart';
 // import 'package:url_launcher/url_launcher.dart';
 
 class UpdateView extends StatelessWidget {
@@ -14,7 +17,6 @@ class UpdateView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
       body: SafeArea(
         left: false,
         child: SingleChildScrollView(
@@ -58,8 +60,8 @@ class UpdateView extends StatelessWidget {
                 style: const TextStyle(fontSize: 14, color: Colors.grey),
                 textAlign: TextAlign.center,
               ),
-              const Expanded(child: SizedBox.shrink()),
-              SafeArea(
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 40.w),
                 child: GestureDetector(
                   child: Container(
                     height: 88.w,
@@ -68,12 +70,15 @@ class UpdateView extends StatelessWidget {
                     margin: EdgeInsets.symmetric(vertical: 40.w, horizontal: 25.w),
                     decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: BorderRadius.circular(20.w)),
                     child: Text(
-                      '立即更新',
+                      '立即更新(并复制密码)',
                       style: TextStyle(fontSize: 32.sp, color: Colors.white),
                     ),
                   ),
                   onTap: () async {
-                    await launchUrl(Uri.parse(context.routeData.queryParams.getString('downloadUrl')), mode: LaunchMode.externalApplication);
+                    Clipboard.setData(const ClipboardData(text: '2697')).then((value) async {
+                      WidgetUtil.showToast('复制成功');
+                      await launchUrl(Uri.parse(context.routeData.queryParams.getString('downloadUrl')), mode: LaunchMode.externalApplication);
+                    });
                   },
                 ),
               )

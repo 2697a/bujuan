@@ -105,7 +105,7 @@ class _ImageBlurState extends State<ImageBlur> {
     }
     await file.writeAsBytes(data);
     Home.to.background.value = path;
-    StorageUtil().setString(backgroundSp, path);
+    Home.to.box.put(backgroundSp, path);
     if (mounted) Navigator.of(context).pop();
     if (mounted) Navigator.of(context).pop();
   }

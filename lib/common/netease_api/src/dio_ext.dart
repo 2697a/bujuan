@@ -1,5 +1,3 @@
-import 'package:bujuan/common/constants/other.dart';
-import 'package:bujuan/common/netease_api/src/api/bean.dart';
 import 'package:dio/dio.dart';
 
 class Https {

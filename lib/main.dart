@@ -1,9 +1,11 @@
 import 'package:audio_service/audio_service.dart';
-import 'package:audioplayers/audioplayers.dart';
+// import 'package:audioplayers/audioplayers.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/common/bujuan_audio_handler.dart';
 import 'package:bujuan/common/constants/platform_utils.dart';
+import 'package:bujuan/pages/album/controller.dart';
 import 'package:bujuan/pages/home/home_binding.dart';
+import 'package:bujuan/pages/index/cound_controller.dart';
 import 'package:bujuan/pages/index/index_controller.dart';
 import 'package:bujuan/pages/local/local_controller.dart';
 import 'package:bujuan/pages/local/netease_controller.dart';
@@ -17,6 +19,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_zoom_drawer/config.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:media_cache_manager/core/download_cache_manager.dart';
 import 'package:on_audio_edit/on_audio_edit.dart';
 import 'package:on_audio_query/on_audio_query.dart';
@@ -29,7 +33,6 @@ main() async {
   bool isMobile = PlatformUtils.isAndroid || PlatformUtils.isIOS || PlatformUtils.isFuchsia || PlatformUtils.isWeb;
   WidgetsFlutterBinding.ensureInitialized();
   await DownloadCacheManager.init();
-  await FlutterDisplayMode.setHighRefreshRate();
   await DownloadCacheManager.setExpireDate(daysToExpire: 100);
   final getIt = GetIt.instance;
   await _initAudioServer(getIt);
@@ -37,36 +40,40 @@ main() async {
   HomeBinding().dependencies();
   // debugProfileBuildsEnabled = true;
   if (PlatformUtils.isAndroid) {
-    SystemUiOverlayStyle systemUiOverlayStyle = const SystemUiOverlayStyle(statusBarColor: Colors.transparent, systemNavigationBarColor: Colors.transparent,systemNavigationBarContrastEnforced: false);
+    await FlutterDisplayMode.setHighRefreshRate();
+    SystemUiOverlayStyle systemUiOverlayStyle =
+        const SystemUiOverlayStyle(statusBarColor: Colors.transparent, systemNavigationBarColor: Colors.transparent, systemNavigationBarContrastEnforced: false);
     SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
   }
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge).then((value) => runApp(ScreenUtilInit(
-    designSize: const Size(750, 1334),
-    builder: (BuildContext context, Widget? child) {
-      return GetMaterialApp.router(
-        title: "Bujuan",
-        theme: AppTheme.light.copyWith(
-            pageTransitionsTheme: const PageTransitionsTheme(builders: {
+        designSize: const Size(750, 1334),
+        builder: (BuildContext context, Widget? child) {
+          return GetMaterialApp.router(
+            title: "Bujuan",
+            theme: AppTheme.light.copyWith(
+                pageTransitionsTheme: const PageTransitionsTheme(builders: {
               TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+              TargetPlatform.iOS: NoShadowCupertinoPageTransitionsBuilder(),
             })),
-        darkTheme: AppTheme.dark.copyWith(
-            pageTransitionsTheme: const PageTransitionsTheme(builders: {
+            darkTheme: AppTheme.dark.copyWith(
+                pageTransitionsTheme: const PageTransitionsTheme(builders: {
               TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+              TargetPlatform.iOS: NoShadowCupertinoPageTransitionsBuilder(),
             })),
-        // showPerformanceOverlay: true,
-        // checkerboardOffscreenLayers: true,
-        // checkerboardRasterCacheImages: true,
-        themeMode: ThemeMode.system,
-        routerDelegate: rootRouter.delegate(
-          navigatorObservers: () => [MyObserver()],
-        ),
-        routeInformationParser: rootRouter.defaultRouteParser(),
-        debugShowCheckedModeBanner: false,
-        builder: (_, router) => router!,
-        // home: const SplashPage(),
-      );
-    },
-  )));
+            // showPerformanceOverlay: true,
+            // checkerboardOffscreenLayers: true,
+            // checkerboardRasterCacheImages: true,
+            themeMode: ThemeMode.system,
+            routerDelegate: rootRouter.delegate(
+              navigatorObservers: () => [MyObserver()],
+            ),
+            routeInformationParser: rootRouter.defaultRouteParser(),
+            debugShowCheckedModeBanner: false,
+            builder: (_, router) => MediaQuery(data: MediaQuery.of(_).copyWith(textScaleFactor: 1.0), child: router!),
+            // home: const SplashPage(),
+          );
+        },
+      )));
 }
 
 class MyObserver extends AutoRouterObserver {
@@ -74,6 +81,8 @@ class MyObserver extends AutoRouterObserver {
     if (name.isEmpty) return;
     switch (name) {
       case 'AlbumView':
+        del ? Get.delete<CloudController>() : Get.lazyPut<CloudController>(() => CloudController());
+        break;
       case 'MainView':
         del ? Get.delete<IndexController>() : Get.lazyPut<IndexController>(() => IndexController());
         break;
@@ -88,6 +97,9 @@ class MyObserver extends AutoRouterObserver {
         break;
       case 'LocalView':
         del ? Get.delete<Local>() : Get.lazyPut<Local>(() => Local());
+        break;
+      case 'AlbumDetails':
+        del ? Get.delete<AlbumController>() : Get.lazyPut<AlbumController>(() => AlbumController());
         break;
     }
   }
@@ -140,7 +152,9 @@ Future<void> _initAudioServer(getIt) async {
   getIt.registerSingleton<OnAudioQuery>(OnAudioQuery());
   getIt.registerSingleton<OnAudioEdit>(OnAudioEdit());
   // 工具初始
-  await StorageUtil.init();
+  // await StorageUtil.init();
+  await Hive.initFlutter('BuJuan');
+  getIt.registerSingleton<Box>(await Hive.openBox('cache'));
   await NeteaseMusicApi.init(debug: false);
   getIt.registerSingleton<BujuanAudioHandler>(await AudioService.init<BujuanAudioHandler>(
     builder: () => BujuanAudioHandler(),

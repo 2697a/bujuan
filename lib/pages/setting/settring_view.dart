@@ -1,7 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/common/constants/key.dart';
 import 'package:bujuan/common/constants/other.dart';
-import 'package:bujuan/common/storage.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/widget/app_bar.dart';
 import 'package:dio/dio.dart';
@@ -10,8 +9,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:media_cache_manager/core/download_cache_manager.dart';
-import 'package:media_cache_manager/core/downloader.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../common/netease_api/src/dio_ext.dart';
@@ -105,7 +102,7 @@ class _SettingViewState extends State<SettingView> {
             )),
             onTap: () {
               Home.to.gradientBackground.value = !Home.to.gradientBackground.value;
-              StorageUtil().setBool(gradientBackgroundSp, Home.to.gradientBackground.value);
+              Home.to.box.put(gradientBackgroundSp, Home.to.gradientBackground.value);
             },
           ),
           ListTile(
@@ -120,24 +117,39 @@ class _SettingViewState extends State<SettingView> {
                 )),
             onTap: () {
               Home.to.leftImage.value = !Home.to.leftImage.value;
-              StorageUtil().setBool(leftImageSp, Home.to.leftImage.value);
+              Home.to.box.put(leftImageSp, Home.to.leftImage.value);
             },
           ),
-          // ListTile(
-          //   title: Text(
-          //     '顶部歌词',
-          //     style: TextStyle(fontSize: 30.sp),
-          //   ),
-          //   trailing: Obx(() => Icon(
-          //         Home.to.topLyric.value ? TablerIcons.toggle_right : TablerIcons.toggle_left,
-          //         size: 56.w,
-          //         color: Theme.of(context).cardColor.withOpacity(Home.to.topLyric.value ? 0.7 : .4),
-          //       )),
-          //   onTap: () {
-          //     Home.to.topLyric.value = !Home.to.topLyric.value;
-          //     StorageUtil().setBool(topLyricSp, Home.to.topLyric.value);
-          //   },
-          // ),
+          ListTile(
+            title: Text(
+              '顶部歌词',
+              style: TextStyle(fontSize: 30.sp),
+            ),
+            trailing: Obx(() => Icon(
+                  Home.to.topLyric.value ? TablerIcons.toggle_right : TablerIcons.toggle_left,
+                  size: 56.w,
+                  color: Theme.of(context).cardColor.withOpacity(Home.to.topLyric.value ? 0.7 : .4),
+                )),
+            onTap: () {
+              Home.to.topLyric.value = !Home.to.topLyric.value;
+              Home.to.box.put(topLyricSp, Home.to.topLyric.value);
+            },
+          ),
+          ListTile(
+            title: Text(
+              '圆形专辑',
+              style: TextStyle(fontSize: 30.sp),
+            ),
+            trailing: Obx(() => Icon(
+              Home.to.roundAlbum.value ? TablerIcons.toggle_right : TablerIcons.toggle_left,
+              size: 56.w,
+              color: Theme.of(context).cardColor.withOpacity(Home.to.roundAlbum.value ? 0.7 : .4),
+            )),
+            onTap: () {
+              Home.to.roundAlbum.value = !Home.to.roundAlbum.value;
+              Home.to.box.put(roundAlbumSp, Home.to.roundAlbum.value);
+            },
+          ),
           ListTile(
             title: Text(
               '自定义背景',
@@ -160,14 +172,47 @@ class _SettingViewState extends State<SettingView> {
               '清除自定义背景',
               style: TextStyle(fontSize: 30.sp),
             ),
+            // trailing: Icon(
+            //   TablerIcons.chevron_right,
+            //   size: 42.w,
+            //   color: Theme.of(context).cardColor.withOpacity(.6),
+            // ),
+            onTap: () async {
+              if(Home.to.background.value.isEmpty){
+                WidgetUtil.showToast('没有设置背景');
+                return;
+              }
+              Home.to.background.value = '';
+              Home.to.box.put(backgroundSp, '');
+              WidgetUtil.showToast('清除成功');
+            },
+          ),
+
+          ListTile(
+            title: Text(
+              '自定义启动图',
+              style: TextStyle(fontSize: 30.sp),
+            ),
             trailing: Icon(
               TablerIcons.chevron_right,
               size: 42.w,
               color: Theme.of(context).cardColor.withOpacity(.6),
             ),
             onTap: () async {
-              Home.to.background.value = '';
-              StorageUtil().setString(backgroundSp, '');
+              XFile? x = await _picker.pickImage(source: ImageSource.gallery, requestFullMetadata: false);
+              if (x != null && mounted) {
+                Home.to.box.put(splashBackgroundSp, x.path);
+              }
+            },
+          ),
+          ListTile(
+            title: Text(
+              '清除启动图',
+              style: TextStyle(fontSize: 30.sp),
+            ),
+            onTap: () async {
+              Home.to.box.put(splashBackgroundSp, '');
+              WidgetUtil.showToast('清除成功');
             },
           )
         ],
@@ -202,7 +247,7 @@ class _SettingViewState extends State<SettingView> {
                 )),
             onTap: () {
               Home.to.high.value = !Home.to.high.value;
-              StorageUtil().setBool(highSong, Home.to.high.value);
+              Home.to.box.put(highSong, Home.to.high.value);
             },
           ),
           ListTile(
@@ -217,7 +262,7 @@ class _SettingViewState extends State<SettingView> {
                 )),
             onTap: () {
               Home.to.cache.value = !Home.to.cache.value;
-              StorageUtil().setBool(cacheSp, Home.to.cache.value);
+              Home.to.box.put(cacheSp, Home.to.cache.value);
             },
           ),
           // ListTile(

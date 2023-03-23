@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 2.0.2+23
+version: 2.0.4+25
 
 environment:
   sdk: ">=2.17.1 <3.0.0"
@@ -36,7 +36,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   get: ^4.6.5
-  shared_preferences: ^2.0.17
+#  shared_preferences: ^2.0.17
   path: ^1.8.0
   encrypt: ^5.0.1
   path_provider: ^2.0.12
@@ -44,18 +44,16 @@ dependencies:
   extended_image: ^6.4.0
   palette_generator: ^0.3.3+2
   on_audio_query: ^2.6.1
-
   on_audio_edit:
     path: plugins/on_audio_edit
-#  just_audio: ^0.9.30
+  just_audio: ^0.9.31
   audio_service: ^0.18.9
-  audioplayers: ^3.0.1
+#  audioplayers: ^3.0.1
   audio_session: ^0.1.13
   get_it: ^7.2.0
   dio: ^4.0.6
   qr_flutter: ^4.0.0
   date_format: ^2.0.7
-  just_audio: ^0.9.31
   pretty_dio_logger: ^1.1.1
   dio_cookie_manager: ^2.0.0
   pointycastle: ^3.6.2
@@ -83,6 +81,8 @@ dependencies:
   flutter_displaymode: ^0.5.0
   slide_countdown: ^0.5.0
   permission_handler: ^8.2.0
+  hive_flutter: ^1.1.0
+  flutter_statusbarcolor_ns: ^0.5.0
 #  image_picker: ^0.8.6+1
 #  smooth:
 #    path: plugins/flutter_smooth/packages/smooth

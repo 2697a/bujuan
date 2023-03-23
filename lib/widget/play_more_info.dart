@@ -1,4 +1,5 @@
 import 'package:bujuan/common/constants/other.dart';
+import 'package:bujuan/widget/share_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
@@ -15,18 +16,35 @@ class PlayMoreInfo extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           ListTile(
-            leading: const Icon(TablerIcons.alarm,color: Colors.white,),
-            title: const Text('睡眠定时器',style: TextStyle(color: Colors.white),),
+            leading: const Icon(
+              TablerIcons.alarm,
+              color: Colors.white,
+            ),
+            title: const Text(
+              '睡眠定时器',
+              style: TextStyle(color: Colors.white),
+            ),
             onTap: () {
               Navigator.of(context).pop();
               Home.to.sleep(context);
             },
           ),
-           ListTile(
-            leading: const Icon(TablerIcons.share,color: Colors.white,),
-            title: const Text('分享',style: TextStyle(color: Colors.white),),
+          ListTile(
+            leading: const Icon(
+              TablerIcons.share,
+              color: Colors.white,
+            ),
+            title: const Text(
+              '分享',
+              style: TextStyle(color: Colors.white),
+            ),
             onTap: () {
-              WidgetUtil.showToast('分享暂未开启');
+              Navigator.of(context).pop();
+              showDialog(
+                context: context,
+                builder: (context) => const ShareView(),
+                barrierColor: Colors.black87,
+              );
             },
           )
         ],

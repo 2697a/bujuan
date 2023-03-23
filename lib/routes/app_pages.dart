@@ -1,5 +1,5 @@
 // import 'package:bujuan/pages/home/first/home_view.dart';
-// import 'package:bujuan/pages/index/album_view.dart';
+// import 'package:bujuan/pages/index/cloud_view.dart';
 // import 'package:bujuan/pages/index/index_binding.dart';
 // import 'package:bujuan/pages/index/main_view.dart';
 // import 'package:bujuan/pages/play_list/bindings.dart';

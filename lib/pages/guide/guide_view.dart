@@ -43,10 +43,10 @@ class _GuideViewState extends State<GuideView> with WidgetsBindingObserver {
       BottomData('title', 'subTitle'),
       BottomData('是否开启播放页渐变', '请观看上方图片示例', onCancel: () {
         _jumpToPage(2);
-        StorageUtil().setBool(gradientBackgroundSp, false);
+        // StorageUtil().setBool(gradientBackgroundSp, false);
       }, onOk: () {
         _jumpToPage(2);
-        StorageUtil().setBool(gradientBackgroundSp, true);
+        // StorageUtil().setBool(gradientBackgroundSp, true);
       }),
       BottomData('为了更好的为您服务', '请授予通知权限', onCancel: () {
         AutoRouter.of(context).replaceNamed(Routes.home);
@@ -110,8 +110,8 @@ class _GuideViewState extends State<GuideView> with WidgetsBindingObserver {
             child: IconButton(
                 onPressed: () {
                   AutoRouter.of(context).replaceNamed(Routes.home);
-                  StorageUtil().setBool(leftImageSp, false);
-                  StorageUtil().setBool(gradientBackgroundSp, true);
+                  // StorageUtil().setBool(leftImageSp, false);
+                  // StorageUtil().setBool(gradientBackgroundSp, true);
                 },
                 icon: Text(
                   'Skip',

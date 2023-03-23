@@ -988,21 +988,21 @@ class _MyAppBarState extends State<MyAppBar> {
       );
     }
 
-    final SystemUiOverlayStyle overlayStyle = backwardsCompatibility
-        ? _systemOverlayStyleForBrightness(
-      widget.brightness
-          ?? appBarTheme.brightness
-          ?? ThemeData.estimateBrightnessForColor(backgroundColor),
-    )
-        : widget.systemOverlayStyle
-        ?? appBarTheme.systemOverlayStyle
-        ?? defaults.systemOverlayStyle
-        ?? _systemOverlayStyleForBrightness(
-          ThemeData.estimateBrightnessForColor(backgroundColor),
-          // Make the status bar transparent for M3 so the elevation overlay
-          // color is picked up by the statusbar.
-          theme.useMaterial3 ? const Color(0x00000000) : null,
-        );
+    // final SystemUiOverlayStyle overlayStyle = backwardsCompatibility
+    //     ? _systemOverlayStyleForBrightness(
+    //   widget.brightness
+    //       ?? appBarTheme.brightness
+    //       ?? ThemeData.estimateBrightnessForColor(backgroundColor),
+    // )
+    //     : widget.systemOverlayStyle
+    //     ?? appBarTheme.systemOverlayStyle
+    //     ?? defaults.systemOverlayStyle
+    //     ?? _systemOverlayStyleForBrightness(
+    //       ThemeData.estimateBrightnessForColor(backgroundColor),
+    //       // Make the status bar transparent for M3 so the elevation overlay
+    //       // color is picked up by the statusbar.
+    //       theme.useMaterial3 ? const Color(0x00000000) : null,
+    //     );
 
     return Semantics(
       container: true,

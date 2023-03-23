@@ -1,6 +1,7 @@
 String playQueueTitle = 'PLAY_QUEUE_TITLE';
 String playQueue = 'PLAY_QUEUE';
 String playByIndex = 'PLAY_INDEX';
+String playById = 'PLAY_ID';
 String playPosition = 'PLAY_POSITION';
 String leftImageSp = 'LEFT_IMAGE';
 String gradientBackgroundSp = 'SOLID_BACK_GROUND';
@@ -10,4 +11,7 @@ String fmSp = 'FM_SP';
 String noFirstOpen = 'NO_FIRST_OPEN';
 String loginData = 'LOGIN_DATA';
 String backgroundSp = 'BACKGROUND';
+String splashBackgroundSp = 'BACKGROUND_SPLASH';
+String repeatModeSp = 'REPEAT_MODE';
 String cacheSp = 'CACHE';
+String roundAlbumSp = 'ROUND_ALBUM';

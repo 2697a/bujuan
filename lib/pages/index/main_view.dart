@@ -3,15 +3,16 @@ import 'package:bujuan/common/netease_api/netease_music_api.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/pages/index/index_controller.dart';
 import 'package:bujuan/pages/user/user_controller.dart';
-import 'package:bujuan/widget/request_widget/request_view.dart';
+import 'package:bujuan/widget/data_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 import '../../routes/router.dart';
-import '../../routes/router.gr.dart';
+import '../../routes/router.gr.dart' as gr;
 import '../../widget/app_bar.dart';
 import '../../widget/simple_extended_image.dart';
+import '../play_list/playlist_view.dart';
 
 class MainView extends GetView<IndexController> {
   const MainView({Key? key}) : super(key: key);
@@ -33,42 +34,90 @@ class MainView extends GetView<IndexController> {
               AutoRouter.of(context).pushNamed(Routes.login);
             },
             icon: Obx(() => SimpleExtendedImage.avatar(
-              Home.to.userData.value.profile?.avatarUrl ?? '',
-              width: 80.w,
-            ))),
+                  Home.to.userData.value.profile?.avatarUrl ?? '',
+                  width: 80.w,
+                ))),
         title: RichText(
             text: TextSpan(style: TextStyle(fontSize: 36.sp, color: Colors.grey, fontWeight: FontWeight.bold), text: 'Here  ', children: [
-          TextSpan(text: '推荐歌单～', style: TextStyle(color: Theme.of(context).primaryColor.withOpacity(.9))),
+          TextSpan(text: '每日发现～', style: TextStyle(color: Theme.of(context).primaryColor.withOpacity(.9))),
         ])),
       ),
-      body: RequestWidget<PersonalizedPlayListWrap>(
-          dioMetaData: controller.personalizedPlaylistDioMetaData(),
-          childBuilder: (p) => GridView.builder(
-                padding: EdgeInsets.only(left: 20.w, right: 20.w, top: 20.w),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  childAspectRatio: .73,
-                  crossAxisSpacing: 20.w,
+      body: Obx(() => Visibility(
+            visible: !controller.loading.value,
+            replacement: const LoadingView(),
+            child: CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: _buildHeader('歌单推荐', context),
                 ),
-                itemBuilder: (context, index) => _buildItem((p.result ?? [])[index], context),
-                itemCount: (p.result ?? []).length,
-              )),
+                SliverPadding(
+                  padding: EdgeInsets.symmetric(horizontal: 20.w),
+                  sliver: SliverGrid.builder(
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, childAspectRatio: .75, mainAxisSpacing: 10.0, crossAxisSpacing: 10.0),
+                      itemBuilder: (context, index) => _buildItem(controller.playlist[index], context),
+                      itemCount: controller.playlist.length,
+                      addAutomaticKeepAlives: false,
+                      addRepaintBoundaries: false),
+                ),
+                SliverToBoxAdapter(
+                  child: _buildHeader('新歌推荐', context),
+                ),
+                SliverPadding(
+                  padding: EdgeInsets.symmetric(horizontal: 20.w),
+                  sliver: SliverFixedExtentList(
+                      delegate: SliverChildBuilderDelegate(
+                          (context, index) => SongItemShowImage(
+                                index: index,
+                                mediaItem: controller.newSong[index],
+                                onTap: () {
+                                  Home.to.playByIndex(index, 'queueTitle', mediaItem: controller.newSong);
+                                },
+                              ),
+                          childCount: controller.newSong.length,
+                          addAutomaticKeepAlives: false,
+                          addRepaintBoundaries: false),
+                      itemExtent: 140.w),
+                ),
+              ],
+            ),
+          )),
+    );
+  }
+
+  Widget _buildHeader(String title, BuildContext context, {VoidCallback? onTap}) {
+    return InkWell(
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 30.w),
+        alignment: Alignment.centerLeft,
+        child: Row(
+          children: [
+            Container(
+              decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: BorderRadius.circular(6.w)),
+              width: 10.w,
+              height: 10.w,
+            ),
+            Padding(padding: EdgeInsets.symmetric(horizontal: 15.w)),
+            Text(
+              title,
+              style: TextStyle(fontSize: 34.sp, color: Theme.of(context).iconTheme.color),
+            ),
+          ],
+        ),
+      ),
+      onTap: () => onTap?.call(),
     );
   }
 
   Widget _buildItem(Play albumModel, BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 0.w),
+      padding: EdgeInsets.symmetric(horizontal: 10.w),
       child: InkWell(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SimpleExtendedImage(
-              '${albumModel.picUrl ?? ''}?param=200y200',
-              cacheWidth: 400,
-              width: (Get.width - 90.w) / 3,
-              height: (Get.width - 90.w) / 3,
-              borderRadius: BorderRadius.all(Radius.circular(20.w)),
+              '${albumModel.picUrl ?? ''}?param=230y230',
+              borderRadius: BorderRadius.all(Radius.circular(25.w)),
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,7 +128,7 @@ class MainView extends GetView<IndexController> {
                   child: Text(
                     albumModel.name ?? '',
                     style: TextStyle(fontSize: 28.sp),
-                    maxLines: 1,
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -87,7 +136,7 @@ class MainView extends GetView<IndexController> {
             ),
           ],
         ),
-        onTap: () => context.router.push(const PlayListView().copyWith(args: albumModel)),
+        onTap: () => context.router.push(const gr.PlayListView().copyWith(args: albumModel)),
       ),
     );
   }
