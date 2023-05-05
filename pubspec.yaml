@@ -40,7 +40,7 @@ dependencies:
   path: ^1.8.0
   encrypt: ^5.0.1
   path_provider: ^2.0.12
-  flutter_screenutil: ^5.6.1
+  flutter_screenutil: ^5.7.0
   extended_image: ^6.4.0
   palette_generator: ^0.3.3+2
   on_audio_query: ^2.6.1

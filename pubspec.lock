@@ -458,10 +458,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_screenutil
-      sha256: "8e049ecdc1a62c90e6bf0e9c8398ace8dde81b92889c70cfe06281d79d59113a"
+      sha256: "0a122936b450324cbdfd51be0819cc6fcebb093eb65585e9cd92263f7a1a8a39"
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "5.6.1"
+    version: "5.7.0"
   flutter_statusbarcolor_ns:
     dependency: "direct main"
     description:

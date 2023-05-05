@@ -2,8 +2,10 @@ import 'dart:ui';
 
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
+import 'package:bujuan/pages/home/view/z_playlist_view.dart';
 import 'package:bujuan/widget/mobile/flashy_navbar.dart';
 import 'package:bujuan/widget/simple_extended_image.dart';
+import 'package:bujuan/widget/weslide/panel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -22,8 +24,21 @@ class PanelView extends GetView<Home> {
   @override
   Widget build(BuildContext context) {
     double bottomHeight = MediaQuery.of(controller.buildContext).padding.bottom * (PlatformUtils.isIOS ? 0.4 : 0.8);
-    if (bottomHeight == 0) bottomHeight = 20.w;
-    return _buildDefaultBody(context);
+    if (bottomHeight == 0) bottomHeight = 30.w;
+    return SlidingUpPanel(
+      onPanelSlide: (value) {
+        controller.changeSlidePosition(1-value,status: false);
+        if (Home.to.second.value != value >= 0.001) {
+          Home.to.second.value = value > 0.001;
+        }
+      },
+      color: Colors.transparent,
+      body: _buildDefaultBody(context),
+      panel: Padding(padding: EdgeInsets.only(top: 110.w + bottomHeight),child: const ZPlayListView(),),
+      boxShadow: const [BoxShadow(blurRadius: 8.0, color: Color.fromRGBO(0, 0, 0, 0.05))],
+      maxHeight: Get.height - (controller.panelMobileMinSize + MediaQuery.of(context).padding.top + controller.panelAlbumPadding * 2),
+      minHeight: 110.w + bottomHeight,
+    );
   }
 
   Widget _buildSlide(BuildContext context) {
@@ -42,30 +57,30 @@ class PanelView extends GetView<Home> {
             addRepaintBoundaries: false,
             addSemanticIndexes: false,
             itemBuilder: (context, index) => Obx(() => Container(
-                  margin: EdgeInsets.symmetric(vertical: controller.mEffects[index]['size'] / 2, horizontal: 5.w),
-                  decoration: BoxDecoration(color: controller.bodyColor.value, borderRadius: BorderRadius.circular(4)),
-                  width: 1.8,
-                )),
+              margin: EdgeInsets.symmetric(vertical: controller.mEffects[index]['size'] / 2, horizontal: 5.w),
+              decoration: BoxDecoration(color: controller.bodyColor.value, borderRadius: BorderRadius.circular(4)),
+              width: 1.8,
+            )),
             itemCount: controller.mEffects.length,
           ),
           Obx(() => ProgressBar(
-                progress: controller.duration.value,
-                buffered: controller.duration.value,
-                total: controller.mediaItem.value.duration ?? const Duration(seconds: 10),
-                progressBarColor: Colors.transparent,
-                baseBarColor: Colors.transparent,
-                bufferedBarColor: Colors.transparent,
-                thumbColor: controller.bodyColor.value.withOpacity(.18),
-                barHeight: 0.w,
-                thumbRadius: 20.w,
-                barCapShape: BarCapShape.square,
-                timeLabelType: TimeLabelType.remainingTime,
-                timeLabelLocation: TimeLabelLocation.none,
-                timeLabelTextStyle: TextStyle(color: controller.bodyColor.value, fontSize: 28.sp),
-                onSeek: (duration) {
-                  controller.audioServeHandler.seek(duration);
-                },
-              ))
+            progress: controller.duration.value,
+            buffered: controller.duration.value,
+            total: controller.mediaItem.value.duration ?? const Duration(seconds: 10),
+            progressBarColor: Colors.transparent,
+            baseBarColor: Colors.transparent,
+            bufferedBarColor: Colors.transparent,
+            thumbColor: controller.bodyColor.value.withOpacity(.18),
+            barHeight: 0.w,
+            thumbRadius: 20.w,
+            barCapShape: BarCapShape.square,
+            timeLabelType: TimeLabelType.remainingTime,
+            timeLabelLocation: TimeLabelLocation.none,
+            timeLabelTextStyle: TextStyle(color: controller.bodyColor.value, fontSize: 28.sp),
+            onSeek: (duration) {
+              controller.audioServeHandler.seek(duration);
+            },
+          ))
         ],
       ),
     );
@@ -75,82 +90,82 @@ class PanelView extends GetView<Home> {
   Widget _buildPlayController(BuildContext context) {
     return Expanded(
         child: Padding(
-      padding: EdgeInsets.symmetric(horizontal: 35.w),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          IconButton(
-              onPressed: () => controller.likeSong(),
-              icon: Obx(() => Icon(controller.likeIds.contains(int.tryParse(controller.mediaItem.value.id)) ? TablerIcons.heartbeat : TablerIcons.heart,
-                  size: 46.w, color: controller.bodyColor.value))),
-          Expanded(
-              child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+          padding: EdgeInsets.symmetric(horizontal: 35.w),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Obx(() => IconButton(
+              IconButton(
+                  onPressed: () => controller.likeSong(),
+                  icon: Obx(() => Icon(controller.likeIds.contains(int.tryParse(controller.mediaItem.value.id)) ? TablerIcons.heartbeat : TablerIcons.heart,
+                      size: 46.w, color: controller.bodyColor.value))),
+              Expanded(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Obx(() => IconButton(
+                          onPressed: () {
+                            if (controller.fm.value) {
+                              return;
+                            }
+                            if (controller.intervalClick(1)) {
+                              controller.audioServeHandler.skipToPrevious();
+                            }
+                          },
+                          icon: Icon(
+                            TablerIcons.player_skip_back,
+                            size: 46.w,
+                            color: controller.bodyColor.value,
+                          ))),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 60.w),
+                        child: InkWell(
+                          child: Obx(() => Container(
+                            alignment: Alignment.center,
+                            padding: EdgeInsets.only(bottom: 5.h),
+                            height: 105.h,
+                            width: 105.h,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(80.w),
+                              border: Border.all(color: controller.bodyColor.value.withOpacity(.04), width: 5.w),
+                              color: controller.bodyColor.value.withOpacity(0.06),
+                            ),
+                            child: Icon(
+                              controller.playing.value ? TablerIcons.player_pause : TablerIcons.player_play,
+                              size: 54.w,
+                              color: controller.bodyColor.value,
+                            ),
+                          )),
+                          onTap: () => controller.playOrPause(),
+                        ),
+                      ),
+                      IconButton(
+                          onPressed: () {
+                            if (controller.intervalClick(1)) {
+                              controller.audioServeHandler.skipToNext();
+                            }
+                          },
+                          icon: Obx(() => Icon(
+                            TablerIcons.player_skip_forward,
+                            size: 46.w,
+                            color: controller.bodyColor.value,
+                          ))),
+                    ],
+                  )),
+              IconButton(
                   onPressed: () {
                     if (controller.fm.value) {
                       return;
                     }
-                    if (controller.intervalClick(1)) {
-                      controller.audioServeHandler.skipToPrevious();
-                    }
-                  },
-                  icon: Icon(
-                    TablerIcons.player_skip_back,
-                    size: 46.w,
-                    color: controller.bodyColor.value,
-                  ))),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 60.w),
-                child: InkWell(
-                  child: Obx(() => Container(
-                        alignment: Alignment.center,
-                        padding: EdgeInsets.only(bottom: 5.h),
-                        height: 105.h,
-                        width: 105.h,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(80.w),
-                          border: Border.all(color: controller.bodyColor.value.withOpacity(controller.second.value ? 0 : .04), width: 5.w),
-                          color: controller.bodyColor.value.withOpacity(0.06),
-                        ),
-                        child: Icon(
-                          controller.playing.value ? TablerIcons.player_pause : TablerIcons.player_play,
-                          size: 54.w,
-                          color: controller.bodyColor.value,
-                        ),
-                      )),
-                  onTap: () => controller.playOrPause(),
-                ),
-              ),
-              IconButton(
-                  onPressed: () {
-                    if (controller.intervalClick(1)) {
-                      controller.audioServeHandler.skipToNext();
-                    }
+                    controller.changeRepeatMode();
                   },
                   icon: Obx(() => Icon(
-                        TablerIcons.player_skip_forward,
-                        size: 46.w,
-                        color: controller.bodyColor.value,
-                      ))),
-            ],
-          )),
-          IconButton(
-              onPressed: () {
-                if (controller.fm.value) {
-                  return;
-                }
-                controller.changeRepeatMode();
-              },
-              icon: Obx(() => Icon(
                     controller.getRepeatIcon(),
                     size: 43.w,
                     color: controller.bodyColor.value,
                   ))),
-        ],
-      ),
-    ));
+            ],
+          ),
+        ));
   }
 
   // Widget functionWidget({required Widget child}) {
@@ -164,11 +179,11 @@ class PanelView extends GetView<Home> {
         alignment: Alignment.topCenter,
         children: [
           Obx(() => Container(
-                width: 70.w,
-                height: 8.w,
-                margin: EdgeInsets.only(top: 12.w),
-                decoration: BoxDecoration(color: controller.bodyColor.value.withOpacity(.3), borderRadius: BorderRadius.circular(4.w)),
-              )),
+            width: 70.w,
+            height: 8.w,
+            margin: EdgeInsets.only(top: 12.w),
+            decoration: BoxDecoration(color: controller.bodyColor.value.withOpacity(.3), borderRadius: BorderRadius.circular(4.w)),
+          )),
           FlashyNavbar(
             height: 120.w,
             selectedIndex: 0,
@@ -206,57 +221,48 @@ class PanelView extends GetView<Home> {
       child: Stack(
         children: [
           Obx(() => Visibility(
-                visible: controller.background.value.isEmpty,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).scaffoldBackgroundColor,
-                    borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),
-                  ),
-                ),
-              )),
+            visible: controller.background.value.isEmpty,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),
+              ),
+            ),
+          )),
           Obx(() => AnimatedContainer(
-                duration: const Duration(milliseconds: 320),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(colors: [
-                    !controller.panelOpenPositionThan1.value && !controller.second.value
-                        ? Theme.of(context).scaffoldBackgroundColor.withOpacity(controller.background.value.isNotEmpty ? 0.2 : .85)
-                        : !controller.gradientBackground.value
-                            ? controller.rx.value.darkVibrantColor?.color.withOpacity(.85) ?? controller.rx.value.darkMutedColor?.color.withOpacity(.85) ?? Colors.transparent
-                            : controller.rx.value.lightVibrantColor?.color.withOpacity(.85) ?? controller.rx.value.lightVibrantColor?.color.withOpacity(.85) ?? controller.rx.value.lightMutedColor?.color.withOpacity(.85) ?? Colors.transparent,
-                    controller.rx.value.darkVibrantColor?.color.withOpacity(.85) ?? controller.rx.value.darkMutedColor?.color.withOpacity(.85) ??controller.rx.value.lightVibrantColor?.color.withOpacity(.85)??Colors.transparent,
-                  ], begin: Alignment.topLeft, end: Alignment.bottomCenter),
-                  borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),
-                ),
-              )),
+            duration: const Duration(milliseconds: 300),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(colors: [
+                !controller.panelOpenPositionThan1.value && !controller.second.value
+                    ? Theme.of(context).scaffoldBackgroundColor.withOpacity(controller.background.value.isNotEmpty ? 0.2 : .85)
+                    : !controller.gradientBackground.value
+                    ? controller.rx.value.darkVibrantColor?.color.withOpacity(.85) ?? controller.rx.value.darkMutedColor?.color.withOpacity(.85) ?? Colors.transparent
+                    : controller.rx.value.lightVibrantColor?.color.withOpacity(.85) ??
+                    controller.rx.value.lightVibrantColor?.color.withOpacity(.85) ??
+                    controller.rx.value.lightMutedColor?.color.withOpacity(.85) ??
+                    Colors.transparent,
+                controller.rx.value.darkVibrantColor?.color.withOpacity(.85) ??
+                    controller.rx.value.darkMutedColor?.color.withOpacity(.85) ??
+                    controller.rx.value.lightVibrantColor?.color.withOpacity(.85) ??
+                    Colors.transparent,
+              ], begin: Alignment.topLeft, end: Alignment.bottomCenter),
+              borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),
+            ),
+          )),
           Obx(() => Visibility(
-                visible: controller.background.value.isNotEmpty,
-                child: ClipRRect(
-                    borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),
-                    child: BackdropFilter(
-
-                        /// 过滤器
-                        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-
-                        /// 必须设置一个空容器
-                        child: Container())),
-              )),
-          AnimatedBuilder(
-            animation: controller.animationController,
-            builder: (context, child) {
-              return Positioned(
-                  height: Get.height,
-                  width: Get.width,
-                  top: -Get.height * (1- controller.animationController.value),
-                  child: AnimatedOpacity(
-                    duration: Duration.zero,
-                    opacity: controller.animationController.value,
-                    child: SizedBox(
-                      child: child,
-                    ),
-                  ));
-            },
+            visible: controller.background.value.isNotEmpty,
+            child: ClipRRect(
+                borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),
+                child: BackdropFilter(
+                  /// 过滤器
+                    filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                    /// 必须设置一个空容器
+                    child: Container())),
+          )),
+          FadeTransition(
+            opacity: controller.animationPanel,
             child: _buildBodyContent(context),
-          ),
+          )
         ],
       ),
     );
@@ -400,35 +406,68 @@ class PanelView extends GetView<Home> {
   Widget _buildBodyContent(BuildContext context) {
     return Column(
       children: [
-        SizedBox(
-          height: 90.h + MediaQuery.of(context).padding.top,
-        ),
-        SizedBox(
-          height: Get.width / 1.15,
-        ),
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 55.w),
-          height: 120.h,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
+          margin: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+          height: controller.panelTopSize,
+          width: Get.width - controller.panelAlbumPadding * 2,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Obx(() => Text(
-                    controller.mediaItem.value.title.fixAutoLines(),
-                    style: TextStyle(fontSize: 38.sp, fontWeight: FontWeight.bold, color: controller.bodyColor.value),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  )),
-              Padding(padding: EdgeInsets.symmetric(vertical: 5.w)),
-              Obx(() => Text(
-                    (controller.mediaItem.value.artist ?? '').fixAutoLines(),
-                    style: TextStyle(fontSize: 28.sp, color: controller.bodyColor.value),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ))
+              IconButton(
+                  onPressed: () {
+                    controller.panelControllerHome.close();
+                  },
+                  icon: Obx(() => Icon(
+                    Icons.keyboard_arrow_down_sharp,
+                    color: controller.bodyColor.value,
+                  ))),
+              Expanded(child: Obx(
+                    () => RichText(
+                  text: TextSpan(
+                      text: '${Home.to.mediaItem.value.title} - ',
+                      children: [TextSpan(text: Home.to.mediaItem.value.artist ?? '', style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w500))],
+                      style:
+                      TextStyle(fontSize: 32.sp, color: controller.bodyColor.value, fontWeight: FontWeight.w500)),
+                  maxLines: 1,
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              )),
+              IconButton(
+                  onPressed: () {},
+                  icon: Obx(() => Icon(
+                    Icons.more_horiz,
+                    color: controller.bodyColor.value,
+                  ))),
             ],
           ),
         ),
+        SizedBox(
+          height: 640.w,
+        ),
+        // Container(
+        //   padding: EdgeInsets.symmetric(horizontal: 55.w),
+        //   height: 110.w,
+        //   child: Column(
+        //     mainAxisAlignment: MainAxisAlignment.center,
+        //     crossAxisAlignment: CrossAxisAlignment.center,
+        //     children: [
+        //       Obx(() => Text(
+        //             controller.mediaItem.value.title.fixAutoLines(),
+        //             style: TextStyle(fontSize: 38.sp, fontWeight: FontWeight.bold, color: controller.bodyColor.value),
+        //             maxLines: 1,
+        //             overflow: TextOverflow.ellipsis,
+        //           )),
+        //       Padding(padding: EdgeInsets.symmetric(vertical: 5.w)),
+        //       Obx(() => Text(
+        //             (controller.mediaItem.value.artist ?? '').fixAutoLines(),
+        //             style: TextStyle(fontSize: 28.sp, color: controller.bodyColor.value),
+        //             maxLines: 1,
+        //             overflow: TextOverflow.ellipsis,
+        //           ))
+        //     ],
+        //   ),
+        // ),
         // //操控区域
         _buildPlayController(context),
         Padding(
@@ -437,20 +476,20 @@ class PanelView extends GetView<Home> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Obx(() => Text(
-                    OtherUtils.getTimeStamp(controller.duration.value.inMilliseconds),
-                    style: TextStyle(color: controller.bodyColor.value, fontSize: 28.sp),
-                  )),
+                OtherUtils.getTimeStamp(controller.duration.value.inMilliseconds),
+                style: TextStyle(color: controller.bodyColor.value, fontSize: 28.sp),
+              )),
               Obx(() => (controller.mediaItem.value.extras?['cache'] ?? false)
                   ? Icon(
-                      TablerIcons.circle_check,
-                      color: controller.bodyColor.value.withOpacity(.6),
-                      size: 30.sp,
-                    )
+                TablerIcons.circle_check,
+                color: controller.bodyColor.value.withOpacity(.6),
+                size: 30.sp,
+              )
                   : const SizedBox.shrink()),
               Obx(() => Text(
-                    OtherUtils.getTimeStamp(controller.mediaItem.value.duration?.inMilliseconds ?? 0),
-                    style: TextStyle(color: controller.bodyColor.value, fontSize: 28.sp),
-                  )),
+                OtherUtils.getTimeStamp(controller.mediaItem.value.duration?.inMilliseconds ?? 0),
+                style: TextStyle(color: controller.bodyColor.value, fontSize: 28.sp),
+              )),
             ],
           ),
         ),
@@ -480,7 +519,7 @@ class PanelView extends GetView<Home> {
             }
           },
         ),
-        visible: controller.panelOpenPositionThan8.value,
+        visible: controller.panelOpenPositionThan1.value,
         child: GestureDetector(
           child: _buildPanelHeaderTo(bottomHeight, context),
           onHorizontalDragDown: (e) {},
@@ -545,11 +584,11 @@ class PanelView extends GetView<Home> {
           children: [
             Expanded(
                 child: Padding(
-              padding: EdgeInsets.only(left: controller.panelHeaderSize),
-              child: Obx(
-                () => RichText(
-                  text: !controller.panelOpenPositionThan1.value || controller.second.value
-                      ? TextSpan(
+                  padding: EdgeInsets.only(left: controller.panelHeaderSize),
+                  child: Obx(
+                        () => RichText(
+                      text: !controller.panelOpenPositionThan1.value || controller.second.value
+                          ? TextSpan(
                           text: '${controller.mediaItem.value.title} - ',
                           children: [
                             TextSpan(
@@ -562,23 +601,23 @@ class PanelView extends GetView<Home> {
                           ],
                           style: TextStyle(
                               fontSize: 28.sp, color: controller.second.value ? controller.bodyColor.value : controller.getLightTextColor(context), fontWeight: FontWeight.w500))
-                      : const TextSpan(),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            )),
+                          : const TextSpan(),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                )),
             FrameSeparateWidget(
                 child: Obx(() => Visibility(
-                      visible: !controller.panelOpenPositionThan1.value || controller.second.value,
-                      child: IconButton(
-                          onPressed: () => controller.playOrPause(),
-                          icon: Obx(() => Icon(
-                                controller.playing.value ? TablerIcons.player_pause : TablerIcons.player_play,
-                                size: controller.playing.value ? 46.w : 42.w,
-                                color: controller.second.value ? controller.bodyColor.value : controller.getLightTextColor(context),
-                              ))),
-                    ))),
+                  visible: !controller.panelOpenPositionThan1.value || controller.second.value,
+                  child: IconButton(
+                      onPressed: () => controller.playOrPause(),
+                      icon: Obx(() => Icon(
+                        controller.playing.value ? TablerIcons.player_pause : TablerIcons.player_play,
+                        size: controller.playing.value ? 46.w : 42.w,
+                        color: controller.second.value ? controller.bodyColor.value : controller.getLightTextColor(context),
+                      ))),
+                ))),
             // ClassWidget(
             //     child: Obx(() => Visibility(
             //       visible: !controller.panelOpenPositionThan1.value || controller.second.value,
@@ -593,16 +632,16 @@ class PanelView extends GetView<Home> {
           ],
         ),
         Obx(() => Container(
-              height: controller.getImageSize() + 60.h * controller.slidePosition.value,
-              padding: EdgeInsets.only(left: controller.getImageLeft(), top: 60.h * controller.slidePosition.value),
-              child: SimpleExtendedImage(
-                '${controller.mediaItem.value.extras?['image']}?param=500y500',
-                fit: BoxFit.cover,
-                height: controller.getImageSize(),
-                width: controller.getImageSize(),
-                borderRadius: BorderRadius.circular(controller.getImageSize() / 2 * (1 - controller.slidePosition.value * .88)),
-              ),
-            )),
+          height: controller.getImageSize() + 60.h * controller.slidePosition.value,
+          padding: EdgeInsets.only(left: controller.getImageLeft(), top: 60.h * controller.slidePosition.value),
+          child: SimpleExtendedImage(
+            '${controller.mediaItem.value.extras?['image']}?param=500y500',
+            fit: BoxFit.cover,
+            height: controller.getImageSize(),
+            width: controller.getImageSize(),
+            borderRadius: BorderRadius.circular(controller.getImageSize() / 2 * (1 - controller.slidePosition.value * .88)),
+          ),
+        )),
       ],
     );
   }

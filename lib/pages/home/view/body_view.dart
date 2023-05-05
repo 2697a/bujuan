@@ -1,4 +1,3 @@
-import 'dart:ui';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
@@ -36,6 +35,7 @@ class BodyView extends GetView<Home> {
           )
         ],
       ),
+
       //
       // body: Obx(
       //       () => Stack(

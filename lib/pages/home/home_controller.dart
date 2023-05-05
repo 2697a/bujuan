@@ -42,7 +42,10 @@ Future<PaletteGenerator> getColor(MediaItem mediaItem) async {
 
 class Home extends SuperController with GetSingleTickerProviderStateMixin {
   double panelHeaderSize = 100.w;
-  double panelMobileMinSize = 100.w;
+  double panelMobileMinSize = 80.w; //折叠起来时播放栏的高度
+  double panelTopSize = 140.w; //折叠起来时播放栏的高度
+  double panelAlbumPadding = 15.w; //专辑图片左右上下的边距
+
   final List<LeftMenu> leftMenus = [
     LeftMenu('个人中心', TablerIcons.user, Routes.user, '/home/user'),
     LeftMenu('推荐歌单', TablerIcons.smart_home, Routes.index, '/home/index'),
@@ -127,7 +130,7 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
   Duration lastDuration = Duration.zero;
 
   //第一层
-  PlayViewPanelController panelControllerHome = PlayViewPanelController();
+  PanelController panelControllerHome = PanelController();
 
   //第二层
   PanelController panelController = PanelController();
@@ -183,6 +186,8 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
 
   RxBool sleepSlide = false.obs;
   late AnimationController animationController;
+  late Animation<double> animation;
+  late Animation<double> animationPanel;
 
   bool intervalClick(int needTime) {
     // 防重复提交
@@ -202,7 +207,9 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
   //进度
   @override
   void onInit() async {
-    animationController = AnimationController(vsync: this, value: 1.0);
+    animationController = AnimationController(vsync: this, value: 0);
+    animation = Tween(begin: 1.0,end: 0.0).animate(animationController);
+    animationPanel = Tween(begin: 0.0,end: 1.0).animate(animationController);
     var rng = Random();
     for (double i = 0; i < 50; i++) {
       mEffects.add({"percent": i, "size": 3 + rng.nextInt(30 - 5).toDouble()});
@@ -345,24 +352,25 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
   changeStatusIconColor(bool changed) {
     // if (leftImage.value) return;
     var color = rx.value.darkMutedColor?.color??rx.value.darkVibrantColor?.color ??rx.value.dominantColor?.color?? Colors.white;
-    var grayscale = (0.299 * color.red) + (0.587 * color.green) + (0.114 * color.blue);
+    Brightness brightness = ThemeData.estimateBrightnessForColor(color);
+    print('object===================================================================================${brightness == Brightness.dark}');
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       systemNavigationBarIconBrightness: changed
-          ? grayscale >= 128
+          ? brightness == Brightness.light
           ? Brightness.light
           : Brightness.dark
           : Get.isPlatformDarkMode
           ? Brightness.dark
           : Brightness.light,
       statusBarBrightness: changed
-          ? grayscale >= 128
+          ? brightness == Brightness.dark
               ? Brightness.light
               : Brightness.dark
           : Get.isPlatformDarkMode
               ? Brightness.dark
               : Brightness.light,
       statusBarIconBrightness: changed
-          ? grayscale >= 128
+          ? brightness == Brightness.light
               ? Brightness.dark
               : Brightness.light
           : Get.isPlatformDarkMode
@@ -372,22 +380,14 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
       systemNavigationBarColor: Colors.transparent,
       systemNavigationBarContrastEnforced: false,
     ));
-    _getColor(grayscale: grayscale);
+    _getColor();
   }
 
-  _getColor({grayscale}) {
-    if (grayscale == null) {
-      var color = rx.value.darkVibrantColor?.color ??rx.value.darkMutedColor?.color ??rx.value.lightVibrantColor?.color ?? Colors.white;
-      grayscale = (0.299 * color.red) + (0.587 * color.green) + (0.114 * color.blue);
-    }
-    if (grayscale > 128 && bodyColor.value == Colors.black.withOpacity(.7)) {
-      return;
-    }
-    if (grayscale <= 128 && bodyColor.value == Colors.white.withOpacity(.7)) {
-      return;
-    }
+  _getColor() {
+    var color = rx.value.darkMutedColor?.color??rx.value.darkVibrantColor?.color ??rx.value.dominantColor?.color?? Colors.white;
+    Brightness brightness = ThemeData.estimateBrightnessForColor(color);
     // bodyColor.value = rx.value.darkVibrantColor?.bodyTextColor??rx.value.darkMutedColor?.bodyTextColor??rx.value.lightVibrantColor?.bodyTextColor??Colors.white;
-    bodyColor.value = grayscale >= 128 ? Colors.black.withOpacity(.6) : Colors.white.withOpacity(.7);
+    bodyColor.value = brightness == Brightness.light ? Colors.black.withOpacity(.6) : Colors.white.withOpacity(.7);
   }
 
   //获取相似歌单
@@ -498,24 +498,24 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
   }
 
   //改变panel位置
-  void changeSlidePosition(double value) {
+  void changeSlidePosition(double value,{bool status = true}) {
     if (value == 2.086162576020456e-9) {
       return;
     }
-
+    animationController.value = value;
     slidePosition.value = value;
     if (value > 0.3) {
       if (!panelOpenPositionThan1.value) {
         panelOpenPositionThan1.value = true;
-        changeStatusIconColor(true);
+        if(status)changeStatusIconColor(true);
       }
     } else {
       if (panelOpenPositionThan1.value) {
         panelOpenPositionThan1.value = false;
-        changeStatusIconColor(false);
+        if(status)changeStatusIconColor(false);
       }
     }
-    if (value >= 1) {
+    if (value >= .8) {
       if (!panelOpenPositionThan8.value) {
         panelOpenPositionThan8.value = true;
       }

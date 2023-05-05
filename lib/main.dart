@@ -45,35 +45,35 @@ main() async {
         const SystemUiOverlayStyle(statusBarColor: Colors.transparent, systemNavigationBarColor: Colors.transparent, systemNavigationBarContrastEnforced: false);
     SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
   }
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge).then((value) => runApp(ScreenUtilInit(
-        designSize: const Size(750, 1334),
-        builder: (BuildContext context, Widget? child) {
-          return GetMaterialApp.router(
-            title: "Bujuan",
-            theme: AppTheme.light.copyWith(
-                pageTransitionsTheme: const PageTransitionsTheme(builders: {
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge).then((value) => runApp(OrientationBuilder(builder: (BuildContext context, Orientation orientation) => ScreenUtilInit(
+    designSize: orientation == Orientation.portrait?const Size(750, 1334):const Size(2339, 1080),
+    builder: (BuildContext context, Widget? child) {
+      return GetMaterialApp.router(
+        title: "Bujuan",
+        theme: AppTheme.light.copyWith(
+            pageTransitionsTheme: const PageTransitionsTheme(builders: {
               TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
               TargetPlatform.iOS: NoShadowCupertinoPageTransitionsBuilder(),
             })),
-            darkTheme: AppTheme.dark.copyWith(
-                pageTransitionsTheme: const PageTransitionsTheme(builders: {
+        darkTheme: AppTheme.dark.copyWith(
+            pageTransitionsTheme: const PageTransitionsTheme(builders: {
               TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
               TargetPlatform.iOS: NoShadowCupertinoPageTransitionsBuilder(),
             })),
-            // showPerformanceOverlay: true,
-            // checkerboardOffscreenLayers: true,
-            // checkerboardRasterCacheImages: true,
-            themeMode: ThemeMode.system,
-            routerDelegate: rootRouter.delegate(
-              navigatorObservers: () => [MyObserver()],
-            ),
-            routeInformationParser: rootRouter.defaultRouteParser(),
-            debugShowCheckedModeBanner: false,
-            builder: (_, router) => MediaQuery(data: MediaQuery.of(_).copyWith(textScaleFactor: 1.0), child: router!),
-            // home: const SplashPage(),
-          );
-        },
-      )));
+        // showPerformanceOverlay: true,
+        // checkerboardOffscreenLayers: true,
+        // checkerboardRasterCacheImages: true,
+        themeMode: ThemeMode.system,
+        routerDelegate: rootRouter.delegate(
+          navigatorObservers: () => [MyObserver()],
+        ),
+        routeInformationParser: rootRouter.defaultRouteParser(),
+        debugShowCheckedModeBanner: false,
+        builder: (_, router) => MediaQuery(data: MediaQuery.of(_).copyWith(textScaleFactor: 1.0), child: router!),
+        // home: const SplashPage(),
+      );
+    },
+  ),)));
 }
 
 class MyObserver extends AutoRouterObserver {

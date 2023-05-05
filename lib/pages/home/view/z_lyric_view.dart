@@ -54,7 +54,6 @@ class LyricView extends GetView<Home> {
                       physics: const FixedExtentScrollPhysics(),
                       perspective: 0.0006,
                       onSelectedItemChanged: (index) {
-                        //TODO 此处可以获取实时歌词
                         controller.currLyricIndex.value = index;
                       },
                       childDelegate: ListWheelChildBuilderDelegate(
