@@ -42,15 +42,18 @@ Future<PaletteGenerator> getColor(MediaItem mediaItem) async {
 
 class Home extends SuperController with GetSingleTickerProviderStateMixin {
   double panelHeaderSize = 100.w;
-  double panelMobileMinSize = 80.w; //折叠起来时播放栏的高度
+  double panelMobileMinSize = 85.w; //折叠起来时播放栏的高度
   double panelTopSize = 140.w; //折叠起来时播放栏的高度
-  double panelAlbumPadding = 15.w; //专辑图片左右上下的边距
+  double panelAlbumPadding = 35.w; //专辑图片左右上下的边距
+
+  //是否是横屏
+  bool landscape = PlatformUtils.isMacOS || PlatformUtils.isWindows || OtherUtils.isPad() || PlatformUtils.isAndroid;
 
   final List<LeftMenu> leftMenus = [
     LeftMenu('个人中心', TablerIcons.user, Routes.user, '/home/user'),
     LeftMenu('推荐歌单', TablerIcons.smart_home, Routes.index, '/home/index'),
-    LeftMenu('本地歌曲', TablerIcons.file_music, Routes.local, '/home/local'),
-    LeftMenu('个性设置', TablerIcons.settings, Routes.setting, ''),
+    // LeftMenu('本地歌曲', TablerIcons.file_music, Routes.local, '/home/local'),
+    LeftMenu('个性设置', TablerIcons.settings, (PlatformUtils.isMacOS || PlatformUtils.isWindows || OtherUtils.isPad()) ? Routes.settingL : Routes.setting, '/home/settingL'),
     LeftMenu('捐赠', TablerIcons.coffee, Routes.coffee, ''),
   ];
 
@@ -74,6 +77,8 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
 
   //第一层滑动高度0-1
   RxDouble slidePosition = 0.0.obs;
+  //第一层滑动高度0-1
+  RxDouble slideSecondPosition = 0.0.obs;
 
   //专辑颜色数据
   Rx<PaletteGenerator> rx = PaletteGenerator.fromColors([]).obs;
@@ -207,11 +212,13 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
   //进度
   @override
   void onInit() async {
+    panelMobileMinSize = landscape ? 60.h : 85.w;
+    panelAlbumPadding = landscape ? 25.h : 15.w;
     animationController = AnimationController(vsync: this, value: 0);
-    animation = Tween(begin: 1.0,end: 0.0).animate(animationController);
-    animationPanel = Tween(begin: 0.0,end: 1.0).animate(animationController);
+    animation = Tween(begin: 1.0, end: 0.0).animate(animationController);
+    animationPanel = Tween(begin: 0.0, end: 1.0).animate(animationController);
     var rng = Random();
-    for (double i = 0; i < 50; i++) {
+    for (double i = 0; i < (landscape ? 100 : 50); i++) {
       mEffects.add({"percent": i, "size": 3 + rng.nextInt(30 - 5).toDouble()});
     }
     box.get(noFirstOpen, defaultValue: false);
@@ -276,7 +283,7 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
     //监听实时进度变化
     AudioService.createPositionStream(minPeriod: const Duration(microseconds: 800), steps: 1000).listen((event) {
       //如果没有展示播放页面就先不监听（节省资源）
-      if (!second.value && slidePosition.value != 1) return;
+      if (!landscape && !second.value && slidePosition.value != 1) return;
       //如果监听到的毫秒大于歌曲的总时长 置0并stop
       if (event.inMilliseconds > (mediaItem.value.duration?.inMilliseconds ?? 0)) {
         duration.value = Duration.zero;
@@ -351,17 +358,17 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
 
   changeStatusIconColor(bool changed) {
     // if (leftImage.value) return;
-    var color = rx.value.darkMutedColor?.color??rx.value.darkVibrantColor?.color ??rx.value.dominantColor?.color?? Colors.white;
+    var color = rx.value.darkMutedColor?.color ?? rx.value.darkVibrantColor?.color ?? rx.value.dominantColor?.color ?? Colors.white;
     Brightness brightness = ThemeData.estimateBrightnessForColor(color);
     print('object===================================================================================${brightness == Brightness.dark}');
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       systemNavigationBarIconBrightness: changed
           ? brightness == Brightness.light
-          ? Brightness.light
-          : Brightness.dark
+              ? Brightness.dark
+              : Brightness.light
           : Get.isPlatformDarkMode
-          ? Brightness.dark
-          : Brightness.light,
+              ? Brightness.light
+              : Brightness.dark,
       statusBarBrightness: changed
           ? brightness == Brightness.dark
               ? Brightness.light
@@ -384,7 +391,7 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
   }
 
   _getColor() {
-    var color = rx.value.darkMutedColor?.color??rx.value.darkVibrantColor?.color ??rx.value.dominantColor?.color?? Colors.white;
+    var color = rx.value.darkMutedColor?.color ?? rx.value.darkVibrantColor?.color ?? rx.value.dominantColor?.color ?? Colors.white;
     Brightness brightness = ThemeData.estimateBrightnessForColor(color);
     // bodyColor.value = rx.value.darkVibrantColor?.bodyTextColor??rx.value.darkMutedColor?.bodyTextColor??rx.value.lightVibrantColor?.bodyTextColor??Colors.white;
     bodyColor.value = brightness == Brightness.light ? Colors.black.withOpacity(.6) : Colors.white.withOpacity(.7);
@@ -411,7 +418,7 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
 
   listenRouter() {
     String path = autoRouterDelegate?.urlState.url ?? '';
-    if (path == '/home/user' || path == '/home/index' || path == '/home/local') {
+    if (path == '/home/user' || path == '/home/index' || path == '/home/local'|| path == '/home/settingL') {
       currPathUrl.value = path;
     }
   }
@@ -498,7 +505,7 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
   }
 
   //改变panel位置
-  void changeSlidePosition(double value,{bool status = true}) {
+  void changeSlidePosition(double value, {bool status = true}) {
     if (value == 2.086162576020456e-9) {
       return;
     }
@@ -507,12 +514,12 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
     if (value > 0.3) {
       if (!panelOpenPositionThan1.value) {
         panelOpenPositionThan1.value = true;
-        if(status)changeStatusIconColor(true);
+        if (status) changeStatusIconColor(true);
       }
     } else {
       if (panelOpenPositionThan1.value) {
         panelOpenPositionThan1.value = false;
-        if(status)changeStatusIconColor(false);
+        if (status) changeStatusIconColor(false);
       }
     }
     if (value >= .8) {
@@ -541,7 +548,7 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
 
   //当按下返回键
   Future<bool> onWillPop() async {
-    if (panelController.isPanelOpen) {
+    if (!landscape && panelController.isPanelOpen) {
       panelController.close();
       return false;
     }
@@ -549,7 +556,7 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
       panelControllerHome.close();
       return false;
     }
-    if (myDrawerController.isOpen!()) {
+    if (!landscape && myDrawerController.isOpen!()) {
       myDrawerController.close!();
       return false;
     }
@@ -715,7 +722,6 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
   //     _getAlbumColor();
   //   }
   // }
-
 
   void sleep(BuildContext context) {
     if (lastSleepTime.add(Duration(minutes: sleepMinTo)).difference(DateTime.now()).abs().inSeconds > 0) sleepSlide.value = false;

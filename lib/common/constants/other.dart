@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:bujuan/common/constants/icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -47,6 +48,11 @@ class OtherUtils {
   static String formatDate2Str(int time) {
     if (time <= 0) return '';
     return formatDate(DateTime.fromMillisecondsSinceEpoch(time), [yyyy, '-', mm, '-', dd, ' ', HH, ':', nn]);
+  }
+
+  static bool isPad(){
+      final data = MediaQueryData.fromView(PlatformDispatcher.instance.implicitView!);
+      return data.size.shortestSide >= 600;
   }
 }
 

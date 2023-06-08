@@ -739,7 +739,7 @@ class _MyAppBarState extends State<MyAppBar> {
     final bool useCloseButton = parentRoute is PageRoute<dynamic> && parentRoute.fullscreenDialog;
 
     final double toolbarHeight = widget.toolbarHeight ?? appBarTheme.toolbarHeight ?? kToolbarHeight;
-    final bool backwardsCompatibility = widget.backwardsCompatibility ?? appBarTheme.backwardsCompatibility ?? false;
+    final bool backwardsCompatibility = widget.backwardsCompatibility ??  false;
 
     final Color backgroundColor = backwardsCompatibility
         ? widget.backgroundColor
@@ -784,7 +784,6 @@ class _MyAppBarState extends State<MyAppBar> {
 
     TextStyle? toolbarTextStyle = backwardsCompatibility
         ? widget.textTheme?.bodyText2
-        ?? appBarTheme.textTheme?.bodyText2
         ?? theme.primaryTextTheme.bodyText2
         : widget.toolbarTextStyle
         ?? appBarTheme.toolbarTextStyle
@@ -792,7 +791,6 @@ class _MyAppBarState extends State<MyAppBar> {
 
     TextStyle? titleTextStyle = backwardsCompatibility
         ? widget.textTheme?.headline6
-        ?? appBarTheme.textTheme?.headline6
         ?? theme.primaryTextTheme.headline6
         : widget.titleTextStyle
         ?? appBarTheme.titleTextStyle

@@ -81,17 +81,17 @@ class NeteaseMusicApi
                   handler.next(newResponse);
                   return;
                 }
-                dio.lock();
+                // dio.lock();
                 var refreshResult = await NeteaseMusicApi()
                     .loginRefresh(dio: _initDio(Dio(), debug, false));
-                dio.unlock();
+                // dio.unlock();
                 if (refreshResult.code == RET_CODE_OK) {
                   var newResponse = await dio.fetch(requestOptions);
                   handler.next(newResponse);
                   return;
                 }
               } catch (e) {} finally {
-                dio.unlock();
+                // dio.unlock();
               }
               await NeteaseMusicApi().usc.onLogout();
             }

@@ -6,6 +6,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 
+import '../pages/home/home_controller.dart';
+
 typedef RequestChildBuilder<T> = Widget Function(T data);
 
 class DataWidget<T> extends StatefulWidget {
@@ -61,18 +63,20 @@ class LoadingView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: Get.width,
-      height: Get.height,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // SvgPicture.asset(AppIcons.loading,width: Get.width/2.9,),
-          Lottie.asset('assets/lottie/empty_status.json', height: Get.width / 3.5, fit: BoxFit.fitHeight,
-              filterQuality: FilterQuality.low),
-          Text(tips??'加载中...', style: TextStyle(fontSize: 28.sp)),
-        ],
+    return Scaffold(
+      body: SizedBox(
+        width: Get.width,
+        height: Get.height,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // SvgPicture.asset(AppIcons.loading,width: Get.width/2.9,),
+            Lottie.asset('assets/lottie/empty_status.json', height: Home.to.landscape?250.w:Get.width / 3.5, fit: BoxFit.fitHeight,
+                filterQuality: FilterQuality.low),
+            Text(tips??'加载中...', style: TextStyle(fontSize: 28.sp)),
+          ],
+        ),
       ),
     );
   }

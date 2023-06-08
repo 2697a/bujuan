@@ -38,6 +38,7 @@ abstract class Routes {
   static const details = _Paths.details;
   static const splash = _Paths.splash;
   static const setting = _Paths.setting;
+  static const settingL = _Paths.settingL;
   static const playlist = _Paths.playlist;
   static const login = _Paths.login;
   static const search = _Paths.search;
@@ -73,6 +74,7 @@ abstract class _Paths {
   static const playlist = 'playlist';
   static const details = '/details';
   static const setting = '/setting';
+  static const settingL = 'settingL';
   static const splash = '/splash';
   static const login = '/login';
   static const talk = '/talk';
@@ -114,6 +116,7 @@ abstract class _Paths {
       AutoRoute(path: Routes.localAlbum, page: LocalAlbum),
       AutoRoute(path: Routes.localAr, page: LocalAr),
       AutoRoute(path: Routes.albumDetails, page: AlbumDetails),
+      AutoRoute(path: Routes.settingL, page: SettingViewL),
     ]),
     AutoRoute(path: Routes.splash, page: SplashPage, initial: true, deferredLoading: true),
     AutoRoute(path: Routes.login, page: LoginView),

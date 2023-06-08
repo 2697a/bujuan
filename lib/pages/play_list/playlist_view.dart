@@ -1,7 +1,7 @@
 import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:auto_route/auto_route.dart';
-import 'package:auto_size_text/auto_size_text.dart';
+// import 'package:auto_size_text/auto_size_text.dart';
 import 'package:bujuan/common/constants/other.dart';
 import 'package:bujuan/common/netease_api/netease_music_api.dart';
 import 'package:bujuan/pages/play_list/playlist_controller.dart';
@@ -54,10 +54,11 @@ class PlayListView extends GetView<PlayListController> {
                           autoFocus: true,
                           hitText: '请输入关键字',
                         ),
-                        child: AutoSizeText(
-                          (context.routeData.args as Play).name ?? '',
-                          maxLines: 1,
-                        ),
+                        child: Text('data'),
+                        // child: AutoSizeText(
+                        //   (context.routeData.args as Play).name ?? '',
+                        //   maxLines: 1,
+                        // ),
                       )),
                   actions: [
                     IconButton(

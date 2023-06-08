@@ -147,12 +147,12 @@ class LoginView extends GetView<LoginController> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    QrImage(
-                      backgroundColor: Colors.white,
-                      data: controller.qrCodeUrl.value,
-                      version: QrVersions.auto,
-                      size: 400.w,
-                    ),
+                    // QrImage(
+                    //   backgroundColor: Colors.white,
+                    //   data: controller.qrCodeUrl.value,
+                    //   version: QrVersions.auto,
+                    //   size: 400.w,
+                    // ),
                     Padding(
                       padding: EdgeInsets.symmetric(vertical: 30.w),
                       child: Text(

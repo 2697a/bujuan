@@ -2,15 +2,12 @@ import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/common/netease_api/netease_music_api.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/pages/index/index_controller.dart';
-import 'package:bujuan/pages/user/user_controller.dart';
 import 'package:bujuan/widget/data_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
-import '../../routes/router.dart';
 import '../../routes/router.gr.dart' as gr;
-import '../../widget/app_bar.dart';
 import '../../widget/simple_extended_image.dart';
 import '../play_list/playlist_view.dart';
 
@@ -22,26 +19,26 @@ class MainView extends GetView<IndexController> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       resizeToAvoidBottomInset: false,
-      appBar: MyAppBar(
-        backgroundColor: Colors.transparent,
-        centerTitle: false,
-        leading: IconButton(
-            onPressed: () {
-              if (Home.to.loginStatus.value == LoginStatus.login) {
-                Home.to.myDrawerController.open!();
-                return;
-              }
-              AutoRouter.of(context).pushNamed(Routes.login);
-            },
-            icon: Obx(() => SimpleExtendedImage.avatar(
-                  Home.to.userData.value.profile?.avatarUrl ?? '',
-                  width: 80.w,
-                ))),
-        title: RichText(
-            text: TextSpan(style: TextStyle(fontSize: 36.sp, color: Colors.grey, fontWeight: FontWeight.bold), text: 'Here  ', children: [
-          TextSpan(text: '每日发现～', style: TextStyle(color: Theme.of(context).primaryColor.withOpacity(.9))),
-        ])),
-      ),
+      // appBar: MyAppBar(
+      //   backgroundColor: Colors.transparent,
+      //   centerTitle: false,
+      //   // leading: IconButton(
+      //   //     onPressed: () {
+      //   //       if (Home.to.loginStatus.value == LoginStatus.login) {
+      //   //         Home.to.myDrawerController.open!();
+      //   //         return;
+      //   //       }
+      //   //       AutoRouter.of(context).pushNamed(Routes.login);
+      //   //     },
+      //   //     icon: Obx(() => SimpleExtendedImage.avatar(
+      //   //           Home.to.userData.value.profile?.avatarUrl ?? '',
+      //   //           width: 80.w,
+      //   //         ))),
+      //   title: RichText(
+      //       text: TextSpan(style: TextStyle(fontSize: 36.sp, color: Colors.grey, fontWeight: FontWeight.bold), text: 'Here  ', children: [
+      //     TextSpan(text: '每日发现～', style: TextStyle(color: Theme.of(context).primaryColor.withOpacity(.9))),
+      //   ])),
+      // ),
       body: Obx(() => Visibility(
             visible: !controller.loading.value,
             replacement: const LoadingView(),
@@ -51,9 +48,9 @@ class MainView extends GetView<IndexController> {
                   child: _buildHeader('歌单推荐', context),
                 ),
                 SliverPadding(
-                  padding: EdgeInsets.symmetric(horizontal: 20.w),
+                  padding: EdgeInsets.symmetric(horizontal: 80.w),
                   sliver: SliverGrid.builder(
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, childAspectRatio: .75, mainAxisSpacing: 10.0, crossAxisSpacing: 10.0),
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 6, childAspectRatio: .75, mainAxisSpacing: 10.0, crossAxisSpacing: 10.0),
                       itemBuilder: (context, index) => _buildItem(controller.playlist[index], context),
                       itemCount: controller.playlist.length,
                       addAutomaticKeepAlives: false,
@@ -63,7 +60,7 @@ class MainView extends GetView<IndexController> {
                   child: _buildHeader('新歌推荐', context),
                 ),
                 SliverPadding(
-                  padding: EdgeInsets.symmetric(horizontal: 20.w),
+                  padding: EdgeInsets.symmetric(horizontal: 80.w),
                   sliver: SliverFixedExtentList(
                       delegate: SliverChildBuilderDelegate(
                           (context, index) => SongItemShowImage(
@@ -87,7 +84,7 @@ class MainView extends GetView<IndexController> {
   Widget _buildHeader(String title, BuildContext context, {VoidCallback? onTap}) {
     return InkWell(
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 30.w),
+        padding: EdgeInsets.symmetric(horizontal: 80.w, vertical: 30.w),
         alignment: Alignment.centerLeft,
         child: Row(
           children: [

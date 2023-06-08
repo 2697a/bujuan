@@ -1,10 +1,13 @@
 import 'package:audio_service/audio_service.dart';
+
 // import 'package:audioplayers/audioplayers.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/common/bujuan_audio_handler.dart';
+import 'package:bujuan/common/constants/other.dart';
 import 'package:bujuan/common/constants/platform_utils.dart';
 import 'package:bujuan/pages/album/controller.dart';
 import 'package:bujuan/pages/home/home_binding.dart';
+import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/pages/index/cound_controller.dart';
 import 'package:bujuan/pages/index/index_controller.dart';
 import 'package:bujuan/pages/local/local_controller.dart';
@@ -21,59 +24,98 @@ import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:media_cache_manager/core/download_cache_manager.dart';
+// import 'package:macos_window_utils/window_manipulator.dart';
+
+// import 'package:media_cache_manager/core/download_cache_manager.dart';
 import 'package:on_audio_edit/on_audio_edit.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:window_manager/window_manager.dart';
 
 import 'common/constants/colors.dart';
 import 'common/netease_api/src/netease_api.dart';
+
 import 'common/storage.dart';
 
 main() async {
   bool isMobile = PlatformUtils.isAndroid || PlatformUtils.isIOS || PlatformUtils.isFuchsia || PlatformUtils.isWeb;
   WidgetsFlutterBinding.ensureInitialized();
-  await DownloadCacheManager.init();
-  await DownloadCacheManager.setExpireDate(daysToExpire: 100);
+  if(PlatformUtils.isMacOS){
+    // await WindowManipulator.initialize();
+    // await WindowManipulator.makeTitlebarTransparent();
+    // await WindowManipulator.hideTitle();
+    // await WindowManipulator.enableFullSizeContentView();
+    // await WindowManipulator.disableZoomButton();
+
+  }
+  if(PlatformUtils.isWindows || PlatformUtils.isMacOS){
+    await windowManager.ensureInitialized();
+
+    WindowOptions windowOptions = const WindowOptions(
+      size: Size(1080, 720),
+      minimumSize: Size(1080, 720),
+      // fullScreen: true,
+      center: true,
+      backgroundColor: Colors.transparent,
+      skipTaskbar: false,
+      titleBarStyle: TitleBarStyle.hidden,
+    );
+    windowManager.waitUntilReadyToShow(windowOptions, () async {
+      // await windowManager.setResizable(false);
+      await windowManager.show();
+      await windowManager.focus();
+    });
+  }
+  // await DownloadCacheManager.init();
+  // await DownloadCacheManager.setExpireDate(daysToExpire: 100);
   final getIt = GetIt.instance;
   await _initAudioServer(getIt);
   final rootRouter = getIt<RootRouter>();
-  HomeBinding().dependencies();
   // debugProfileBuildsEnabled = true;
+  bool land = PlatformUtils.isMacOS || PlatformUtils.isWindows || OtherUtils.isPad()||PlatformUtils.isAndroid;
   if (PlatformUtils.isAndroid) {
     await FlutterDisplayMode.setHighRefreshRate();
     SystemUiOverlayStyle systemUiOverlayStyle =
         const SystemUiOverlayStyle(statusBarColor: Colors.transparent, systemNavigationBarColor: Colors.transparent, systemNavigationBarContrastEnforced: false);
     SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
   }
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge).then((value) => runApp(OrientationBuilder(builder: (BuildContext context, Orientation orientation) => ScreenUtilInit(
-    designSize: orientation == Orientation.portrait?const Size(750, 1334):const Size(2339, 1080),
-    builder: (BuildContext context, Widget? child) {
-      return GetMaterialApp.router(
-        title: "Bujuan",
-        theme: AppTheme.light.copyWith(
-            pageTransitionsTheme: const PageTransitionsTheme(builders: {
-              TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
-              TargetPlatform.iOS: NoShadowCupertinoPageTransitionsBuilder(),
-            })),
-        darkTheme: AppTheme.dark.copyWith(
-            pageTransitionsTheme: const PageTransitionsTheme(builders: {
-              TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
-              TargetPlatform.iOS: NoShadowCupertinoPageTransitionsBuilder(),
-            })),
-        // showPerformanceOverlay: true,
-        // checkerboardOffscreenLayers: true,
-        // checkerboardRasterCacheImages: true,
-        themeMode: ThemeMode.system,
-        routerDelegate: rootRouter.delegate(
-          navigatorObservers: () => [MyObserver()],
-        ),
-        routeInformationParser: rootRouter.defaultRouteParser(),
-        debugShowCheckedModeBanner: false,
-        builder: (_, router) => MediaQuery(data: MediaQuery.of(_).copyWith(textScaleFactor: 1.0), child: router!),
-        // home: const SplashPage(),
-      );
-    },
-  ),)));
+  if(land){
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight
+    ]);
+  }
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge).then((value) => runApp(ScreenUtilInit(
+        designSize: !land ? const Size(750, 1334) : const Size(2339, 1080),
+    minTextAdapt: true,
+    splitScreenMode: true,
+        builder: (BuildContext context, Widget? child) {
+          HomeBinding().dependencies();
+          return GetMaterialApp.router(
+            title: "Bujuan",
+            theme: AppTheme.light.copyWith(
+                pageTransitionsTheme: const PageTransitionsTheme(builders: {
+                  TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+                  TargetPlatform.macOS: FadeUpwardsPageTransitionsBuilder(),
+                })),
+            darkTheme: AppTheme.dark.copyWith(
+                pageTransitionsTheme: const PageTransitionsTheme(builders: {
+                  TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+                  TargetPlatform.macOS: FadeUpwardsPageTransitionsBuilder(),
+                })),
+            // showPerformanceOverlay: true,
+            // checkerboardOffscreenLayers: true,
+            // checkerboardRasterCacheImages: true,
+            themeMode: ThemeMode.system,
+            routerDelegate: rootRouter.delegate(
+              navigatorObservers: () => [MyObserver()],
+            ),
+            routeInformationParser: rootRouter.defaultRouteParser(),
+            debugShowCheckedModeBanner: false,
+            builder: (_, router) => MediaQuery(data: MediaQuery.of(_).copyWith(textScaleFactor: 1.0), child: router!),
+            // home: const SplashPage(),
+          );
+        },
+      )));
 }
 
 class MyObserver extends AutoRouterObserver {

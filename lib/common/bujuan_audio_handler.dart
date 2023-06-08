@@ -15,7 +15,7 @@ import 'package:get_it/get_it.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:media_cache_manager/media_cache_manager.dart';
+// import 'package:media_cache_manager/media_cache_manager.dart';
 import 'audio_player_handler.dart';
 import 'constants/key.dart';
 import 'constants/platform_utils.dart';
@@ -271,7 +271,7 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
       return;
     }
     if (!PlatformUtils.isIOS) {
-      url = DownloadCacheManager.getCachedFilePath(song.id);
+      // url = DownloadCacheManager.getCachedFilePath(song.id);
     }
     if (url != null && File(url).existsSync()) {
       song.extras?.putIfAbsent('cache', () => true);
@@ -285,7 +285,7 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
       if (url.isNotEmpty) {
         await _player.setUrl(url);
         if (playIt) _player.play();
-        if (cache && !PlatformUtils.isIOS) Downloader.downloadFile(url, song.id);
+        // if (cache && !PlatformUtils.isIOS) Downloader.downloadFile(url, song.id);
       } else {
         if (isNext) {
           await skipToNext();

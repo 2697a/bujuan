@@ -12,6 +12,7 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get/get.dart';
 import 'package:keframe/keframe.dart';
 import '../../common/constants/key.dart';
+import '../../common/netease_api/src/api/play/bean.dart';
 import '../../routes/router.dart';
 import '../../routes/router.gr.dart' as gr;
 import '../../widget/draggable_home.dart';
@@ -20,6 +21,16 @@ import '../home/view/panel_view.dart';
 
 class UserView extends GetView<UserController> {
   const UserView({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    controller.context = context;
+    return Home.to.landscape ? const UserViewL() : const UserViewP();
+  }
+}
+
+class UserViewP extends GetView<UserController> {
+  const UserViewP({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -65,10 +76,11 @@ class UserView extends GetView<UserController> {
                 body: [
                   FrameSeparateWidget(
                       child: GridView.count(
-                    padding: const EdgeInsets.only(top: 10),
+                    padding: const EdgeInsets.only(top: 0),
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     crossAxisCount: 4,
+                    childAspectRatio: .75,
                     //设置内边距
                     //设置横向间距
                     crossAxisSpacing: 40,
@@ -159,6 +171,269 @@ class UserView extends GetView<UserController> {
       ),
     );
   }
+
+  Widget _buildMeInfo(context) {
+    return SafeArea(
+        child: GestureDetector(
+      child: Container(
+        padding: EdgeInsets.only(left: 30.w, top: 30.w, right: 30.w),
+        margin: EdgeInsets.only(bottom: 16.w, top: 120.w),
+        height: 240.w,
+        child: Stack(
+          alignment: Alignment.centerRight,
+          children: [
+            AnimatedScale(
+              scale: 1.13,
+              duration: Duration.zero,
+              child: SvgPicture.asset(
+                AppIcons.meTop,
+                height: 240.w,
+                fit: BoxFit.fitHeight,
+              ),
+            ),
+            SizedBox(
+              width: Get.width,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Hi', style: TextStyle(fontSize: 52.sp, color: Colors.grey, fontWeight: FontWeight.bold)),
+                  Padding(padding: EdgeInsets.symmetric(vertical: 8.w)),
+                  Obx(() => Text('${Home.to.loginStatus.value == LoginStatus.login ? Home.to.userData.value.profile?.nickname : '请登录'}～',
+                      style: TextStyle(fontSize: 52.sp, color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold))),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+      onTap: () {
+        if (Home.to.loginStatus.value == LoginStatus.login) {
+          return;
+        }
+        AutoRouter.of(context).pushNamed(Routes.login);
+      },
+    ));
+  }
+}
+
+class UserViewL extends GetView<UserController> {
+  const UserViewL({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    controller.context = context;
+    return Obx(() => Visibility(
+        visible: Home.to.loginStatus.value == LoginStatus.login,
+        replacement: FrameSeparateWidget(child: _buildMeInfo(context)),
+        child: Obx(() => Visibility(
+              visible: !controller.loading.value,
+              replacement: const LoadingView(),
+              child: Padding(
+                padding: EdgeInsets.only(top: 40.w),
+                child: CustomScrollView(
+                  slivers: [
+                    SliverPadding(padding: EdgeInsets.symmetric(horizontal: 80.w),sliver: SliverToBoxAdapter(
+                      child: Container(
+                        padding: EdgeInsets.all(20.w),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            InkWell(
+                              child: Obx(() => Column(
+                                children: [
+                                  SimpleExtendedImage(
+                                    '${controller.play.value.coverImgUrl ?? ''}?param=500y500',
+                                    width: 340.w,
+                                    height: 340.w,
+                                    borderRadius: BorderRadius.all(Radius.circular(25.w)),
+                                  ),
+                                  Padding(padding: EdgeInsets.only(top: 10.w),child: Obx(() => Text(
+                                    controller.play.value.name ?? '',
+                                    style: TextStyle(fontSize: 36.sp),
+                                  )),),
+                                ],
+                              )),
+                              onTap: (){
+                                context.router.push(const gr.PlayListView().copyWith(args: controller.play.value));
+                              },
+                            ),
+
+                            Expanded(child: GridView.count(
+                              padding: const EdgeInsets.only(top: 0),
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              crossAxisCount: 4,
+                              //设置内边距
+                              //设置横向间距
+                              //设置主轴间距
+                              mainAxisSpacing: 10,
+                              children: controller.userItems
+                                  .map((e) => Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  IconButton(
+                                    onPressed: () {
+                                      if ((e.routes ?? '') == 'playFm') {
+                                        Home.to.audioServeHandler.setRepeatMode(AudioServiceRepeatMode.all);
+                                        Home.to.audioServiceRepeatMode.value = AudioServiceRepeatMode.all;
+                                        Home.to.box.put(repeatModeSp, AudioServiceRepeatMode.all.name);
+                                        Home.to.getFmSongList();
+                                        return;
+                                      }
+                                      AutoRouter.of(context).pushNamed(e.routes ?? '');
+                                    },
+                                    icon: Icon(e.iconData),
+                                    iconSize: 72.w,
+                                  ),
+                                  Text(
+                                    e.title,
+                                    style: TextStyle(fontSize: 26.sp),
+                                  )
+                                ],
+                              ))
+                                  .toList(),
+                            ))
+                          ],
+                        ),
+                      ),
+                    ),),
+                    // SliverToBoxAdapter(
+                    //     child: Padding(
+                    //   padding: EdgeInsets.symmetric(horizontal: 80.w),
+                    //   child: ListTile(
+                    //     leading: SizedBox(
+                    //       width: 200.w,
+                    //       height: 200.w,
+                    //       child: Obx(() => SimpleExtendedImage.avatar(
+                    //             '${controller.play.value.coverImgUrl ?? ''}?param=1500y1500',
+                    //             width: 200.w,
+                    //             height: 200.w,
+                    //           )),
+                    //     ),
+                    //     title: Obx(() => Text(
+                    //           controller.play.value.name ?? '',
+                    //           maxLines: 1,
+                    //           style: const TextStyle(fontWeight: FontWeight.bold),
+                    //         )),
+                    //     subtitle: Obx(() => Text(
+                    //           '${controller.play.value.trackCount ?? 0} 首',
+                    //           style: TextStyle(fontSize: 26.sp),
+                    //         )),
+                    //     onTap: () => context.router.push(const gr.PlayListView().copyWith(args: controller.play.value)),
+                    //   ),
+                    // )),
+                    SliverToBoxAdapter(
+                      child: _buildHeader('我的歌单', context),
+                    ),
+                    SliverPadding(
+                      padding: EdgeInsets.symmetric(horizontal: 80.w),
+                      sliver: SliverGrid.builder(
+
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 6, childAspectRatio: .75, mainAxisSpacing: 10.0, crossAxisSpacing: 10.0),
+                          itemBuilder: (context, index) => _buildItem(controller.playlist[index], context),
+                          itemCount: controller.playlist.length,
+                          addAutomaticKeepAlives: false,
+                          addRepaintBoundaries: false),
+                    ),
+                  ],
+                  // child: Column(
+                  //   children: [
+                  //     FrameSeparateWidget(child: _buildHeader('喜欢的音乐', context)),
+                  //     FrameSeparateWidget(
+                  //         child: ListTile(
+                  //           leading: Obx(() => SimpleExtendedImage(
+                  //             '${controller.play.value.coverImgUrl ?? ''}?param=300y300',
+                  //             width: 100.w,
+                  //             height: 100.w,
+                  //             borderRadius: BorderRadius.circular(100.w),
+                  //           )),
+                  //           title: Obx(() => Text(
+                  //             controller.play.value.name ?? '',
+                  //             maxLines: 1,
+                  //             style: TextStyle(fontSize: 30.sp, fontWeight: FontWeight.bold),
+                  //           )),
+                  //           subtitle: Obx(() => Text(
+                  //             '${controller.play.value.trackCount ?? 0} 首',
+                  //             style: TextStyle(fontSize: 26.sp),
+                  //           )),
+                  //           onTap: () => context.router.push(const gr.PlayListView().copyWith(args: controller.play.value)),
+                  //         )),
+                  //     FrameSeparateWidget(child: _buildHeader('我的歌单', context)),
+                  //     FrameSeparateWidget(
+                  //         child: Obx(() => ListView.builder(
+                  //           padding: EdgeInsets.symmetric(horizontal: 20.w),
+                  //           shrinkWrap: true,
+                  //           addRepaintBoundaries: false,
+                  //           addAutomaticKeepAlives: false,
+                  //           physics: const NeverScrollableScrollPhysics(),
+                  //           itemBuilder: (content, index) => PlayListItem(index: index, play: controller.playlist[index]),
+                  //           itemCount: controller.playlist.length,
+                  //           itemExtent: 120.w,
+                  //         ))),
+                  //   ],
+                  // ),
+                ),
+              ),
+            ))));
+  }
+
+  Widget _buildHeader(String title, BuildContext context, {VoidCallback? onTap}) {
+    return InkWell(
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 80.w, vertical: 30.w),
+        alignment: Alignment.centerLeft,
+        child: Row(
+          children: [
+            Container(
+              decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: BorderRadius.circular(6.w)),
+              width: 10.w,
+              height: 10.w,
+            ),
+            Padding(padding: EdgeInsets.symmetric(horizontal: 15.w)),
+            Text(
+              title,
+              style: TextStyle(fontSize: 34.sp, color: Theme.of(context).iconTheme.color),
+            ),
+          ],
+        ),
+      ),
+      onTap: () => onTap?.call(),
+    );
+  }
+
+  Widget _buildItem(Play albumModel, BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 10.w),
+      child: InkWell(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SimpleExtendedImage(
+              '${albumModel.coverImgUrl ?? ''}?param=230y230',
+              borderRadius: BorderRadius.all(Radius.circular(25.w)),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 2.w),
+                  child: Text(
+                    albumModel.name ?? '',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        onTap: () => context.router.push(const gr.PlayListView().copyWith(args: albumModel)),
+      ),
+    );
+  }
+
 
   Widget _buildMeInfo(context) {
     return SafeArea(

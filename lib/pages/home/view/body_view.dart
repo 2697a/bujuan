@@ -18,19 +18,20 @@ class BodyView extends GetView<Home> {
     if (bottomHeight == 0) bottomHeight = 25.w;
     return Scaffold(
       resizeToAvoidBottomInset: false,
+      backgroundColor: Home.to.landscape?Colors.transparent:null,
       body: Stack(
         children: [
           Obx(() => Visibility(
                 visible: controller.background.value.isNotEmpty,
                 child: SimpleExtendedImage(
-                  controller.background.value,
+                  controller.background.value ?? '',
                   fit: BoxFit.cover,
                   width: Get.width,
                   height: Get.height,
                 ),
               )),
           Padding(
-            padding: EdgeInsets.only(bottom: controller.panelHeaderSize + bottomHeight),
+            padding: EdgeInsets.only(bottom: controller.panelMobileMinSize+controller.panelAlbumPadding*2),
             child: const AutoRouter(),
           )
         ],
@@ -73,15 +74,69 @@ class BodyView extends GetView<Home> {
     );
   }
 }
-
-class HomeWidget extends StatelessWidget {
-  const HomeWidget({Key? key}) : super(key: key);
+class BodyViewL extends GetView<Home> {
+  const BodyViewL({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: Colors.transparent,
-      body: AutoRouter(),
+    controller.buildContext = context;
+    double bottomHeight = MediaQuery.of(controller.buildContext).padding.bottom * (PlatformUtils.isIOS ? 0.4 : 0.85);
+    if (bottomHeight == 0) bottomHeight = 25.w;
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      backgroundColor: Home.to.landscape?Colors.transparent:null,
+      body: Stack(
+        children: [
+          Obx(() => Visibility(
+            visible: controller.background.value.isNotEmpty,
+            child: SimpleExtendedImage(
+              Home.to.mediaItem.value.extras?['image'] ?? '',
+              fit: BoxFit.cover,
+              width: Get.width,
+              height: Get.height,
+            ),
+          )),
+          Padding(
+            padding: EdgeInsets.only(bottom: controller.panelMobileMinSize+controller.panelAlbumPadding*2),
+            child: const AutoRouter(),
+          )
+        ],
+      ),
+
+      //
+      // body: Obx(
+      //       () => Stack(
+      //     alignment: Alignment.topRight,
+      //     children: [
+      //       Positioned(
+      //         top: -210.w,
+      //         right: -200.w,
+      //         child: Aurora(
+      //           size: 800.w,
+      //           colors: [
+      //             controller.rx.value.lightVibrantColor?.color ?? Colors.transparent,
+      //             controller.rx.value.dominantColor?.color ?? Colors.transparent,
+      //           ],
+      //           blur: 400,
+      //         ),
+      //       ),
+      //       Visibility(
+      //         visible: controller.leftImage.value,
+      //         child: Positioned(
+      //           top: -40.w,
+      //           right: -75.w,
+      //           child: Lottie.asset(
+      //             'assets/lottie/vr_animation.json',
+      //             width: Get.width / 1.6,
+      //             fit: BoxFit.fitWidth,
+      //             // filterQuality: FilterQuality.low,
+      //           ),
+      //         ),
+      //       ),
+      //       const AutoRouter(),
+      //     ],
+      //   ),
+      // ),
     );
   }
 }

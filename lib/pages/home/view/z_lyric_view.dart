@@ -41,7 +41,7 @@ class LyricView extends GetView<Home> {
               },
               child: SizeCacheWidget(
                   child: Obx(() => ClickableListWheelScrollView(
-                    itemHeight: controller.hasTran.value ? 210.w : 90.w,
+                    itemHeight: controller.hasTran.value ? 300.w : 140.w,
                     itemCount: controller.lyricsLineModels.length,
                     onItemTapCallback: (index) {
                       //点击歌词
@@ -49,7 +49,7 @@ class LyricView extends GetView<Home> {
                     },
                     scrollController: controller.lyricScrollController,
                     child: ListWheelScrollView.useDelegate(
-                      itemExtent: controller.hasTran.value ?  210.w : 120.w,
+                      itemExtent: controller.hasTran.value ? 300.w : 140.w,
                       controller: controller.lyricScrollController,
                       physics: const FixedExtentScrollPhysics(),
                       perspective: 0.0006,
@@ -59,14 +59,14 @@ class LyricView extends GetView<Home> {
                       childDelegate: ListWheelChildBuilderDelegate(
                         builder: (context, index) => FrameSeparateWidget(index:index,child: Obx(() => Container(
                           width: Get.width,
-                          height: controller.hasTran.value ? 220.w : 120.w,
+                          height: controller.hasTran.value ? 300.w : 140.w,
                           alignment: Alignment.center,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Obx(() => Text(
                                 controller.lyricsLineModels[index].mainText ?? '',
-                                style: TextStyle(fontSize: controller.hasTran.value ? 34.sp : 36.sp, color: controller.bodyColor.value.withOpacity(controller.currLyricIndex.value == index?0.8:.4)),
+                                style: TextStyle(fontSize: controller.hasTran.value ? 52.sp : 52.sp, color: controller.bodyColor.value.withOpacity(controller.currLyricIndex.value == index?0.8:.4)),
                                 textAlign: TextAlign.center,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
@@ -79,7 +79,7 @@ class LyricView extends GetView<Home> {
                                   visible: controller.hasTran.value,
                                   child: Obx(() => Text(controller.lyricsLineModels[index].extText ?? '',
                                       style: TextStyle(
-                                        fontSize: 28.sp,
+                                        fontSize: 42.sp,
                                         color: controller.bodyColor.value.withOpacity(controller.currLyricIndex.value == index?0.8:.4),
                                       ),
                                       textAlign: TextAlign.center,

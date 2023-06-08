@@ -1,34 +1,86 @@
 PODS:
-  - assets_audio_player (0.0.1):
+  - audio_service (0.14.1):
     - FlutterMacOS
-  - assets_audio_player_web (0.0.1):
+  - audio_session (0.0.1):
+    - FlutterMacOS
+  - dynamic_color (0.0.2):
     - FlutterMacOS
   - FlutterMacOS (1.0.0)
-  - path_provider_macos (0.0.1):
+  - FMDB (2.7.5):
+    - FMDB/standard (= 2.7.5)
+  - FMDB/standard (2.7.5)
+  - just_audio (0.0.1):
+    - FlutterMacOS
+  - package_info_plus (0.0.1):
+    - FlutterMacOS
+  - path_provider_foundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
+  - screen_retriever (0.0.1):
+    - FlutterMacOS
+  - sqflite (0.0.2):
+    - FlutterMacOS
+    - FMDB (>= 2.7.5)
+  - url_launcher_macos (0.0.1):
+    - FlutterMacOS
+  - window_manager (0.2.0):
     - FlutterMacOS
 
 DEPENDENCIES:
-  - assets_audio_player (from `Flutter/ephemeral/.symlinks/plugins/assets_audio_player/macos`)
-  - assets_audio_player_web (from `Flutter/ephemeral/.symlinks/plugins/assets_audio_player_web/macos`)
+  - audio_service (from `Flutter/ephemeral/.symlinks/plugins/audio_service/macos`)
+  - audio_session (from `Flutter/ephemeral/.symlinks/plugins/audio_session/macos`)
+  - dynamic_color (from `Flutter/ephemeral/.symlinks/plugins/dynamic_color/macos`)
   - FlutterMacOS (from `Flutter/ephemeral`)
-  - path_provider_macos (from `Flutter/ephemeral/.symlinks/plugins/path_provider_macos/macos`)
+  - just_audio (from `Flutter/ephemeral/.symlinks/plugins/just_audio/macos`)
+  - package_info_plus (from `Flutter/ephemeral/.symlinks/plugins/package_info_plus/macos`)
+  - path_provider_foundation (from `Flutter/ephemeral/.symlinks/plugins/path_provider_foundation/darwin`)
+  - screen_retriever (from `Flutter/ephemeral/.symlinks/plugins/screen_retriever/macos`)
+  - sqflite (from `Flutter/ephemeral/.symlinks/plugins/sqflite/macos`)
+  - url_launcher_macos (from `Flutter/ephemeral/.symlinks/plugins/url_launcher_macos/macos`)
+  - window_manager (from `Flutter/ephemeral/.symlinks/plugins/window_manager/macos`)
+
+SPEC REPOS:
+  trunk:
+    - FMDB
 
 EXTERNAL SOURCES:
-  assets_audio_player:
-    :path: Flutter/ephemeral/.symlinks/plugins/assets_audio_player/macos
-  assets_audio_player_web:
-    :path: Flutter/ephemeral/.symlinks/plugins/assets_audio_player_web/macos
+  audio_service:
+    :path: Flutter/ephemeral/.symlinks/plugins/audio_service/macos
+  audio_session:
+    :path: Flutter/ephemeral/.symlinks/plugins/audio_session/macos
+  dynamic_color:
+    :path: Flutter/ephemeral/.symlinks/plugins/dynamic_color/macos
   FlutterMacOS:
     :path: Flutter/ephemeral
-  path_provider_macos:
-    :path: Flutter/ephemeral/.symlinks/plugins/path_provider_macos/macos
+  just_audio:
+    :path: Flutter/ephemeral/.symlinks/plugins/just_audio/macos
+  package_info_plus:
+    :path: Flutter/ephemeral/.symlinks/plugins/package_info_plus/macos
+  path_provider_foundation:
+    :path: Flutter/ephemeral/.symlinks/plugins/path_provider_foundation/darwin
+  screen_retriever:
+    :path: Flutter/ephemeral/.symlinks/plugins/screen_retriever/macos
+  sqflite:
+    :path: Flutter/ephemeral/.symlinks/plugins/sqflite/macos
+  url_launcher_macos:
+    :path: Flutter/ephemeral/.symlinks/plugins/url_launcher_macos/macos
+  window_manager:
+    :path: Flutter/ephemeral/.symlinks/plugins/window_manager/macos
 
 SPEC CHECKSUMS:
-  assets_audio_player: be2578e6f11dd4d183412e97143673c3c4cb2e8a
-  assets_audio_player_web: 917101123b6db8f73156835c0fa266c11340ff15
-  FlutterMacOS: 57701585bf7de1b3fc2bb61f6378d73bbdea8424
-  path_provider_macos: 3c0c3b4b0d4a76d2bf989a913c2de869c5641a19
+  audio_service: b88ff778e0e3915efd4cd1a5ad6f0beef0c950a9
+  audio_session: dea1f41890dbf1718f04a56f1d6150fd50039b72
+  dynamic_color: 2eaa27267de1ca20d879fbd6e01259773fb1670f
+  FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
+  FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
+  just_audio: 9b67ca7b97c61cfc9784ea23cd8cc55eb226d489
+  package_info_plus: 02d7a575e80f194102bef286361c6c326e4c29ce
+  path_provider_foundation: 37748e03f12783f9de2cb2c4eadfaa25fe6d4852
+  screen_retriever: 59634572a57080243dd1bf715e55b6c54f241a38
+  sqflite: a5789cceda41d54d23f31d6de539d65bb14100ea
+  url_launcher_macos: c04e4fa86382d4f94f6b38f14625708be3ae52e2
+  window_manager: 3a1844359a6295ab1e47659b1a777e36773cd6e8
 
-PODFILE CHECKSUM: 6eac6b3292e5142cfc23bdeb71848a40ec51c14c
+PODFILE CHECKSUM: 500e4707112a5f11963bc198135953cdebb6d50c
 
 COCOAPODS: 1.11.3
