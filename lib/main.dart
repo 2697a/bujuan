@@ -24,9 +24,6 @@ import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:just_audio/just_audio.dart';
-// import 'package:macos_window_utils/window_manipulator.dart';
-
-// import 'package:media_cache_manager/core/download_cache_manager.dart';
 import 'package:on_audio_edit/on_audio_edit.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:window_manager/window_manager.dart';
@@ -34,33 +31,20 @@ import 'package:window_manager/window_manager.dart';
 import 'common/constants/colors.dart';
 import 'common/netease_api/src/netease_api.dart';
 
-import 'common/storage.dart';
 
 main() async {
-  bool isMobile = PlatformUtils.isAndroid || PlatformUtils.isIOS || PlatformUtils.isFuchsia || PlatformUtils.isWeb;
   WidgetsFlutterBinding.ensureInitialized();
-  if(PlatformUtils.isMacOS){
-    // await WindowManipulator.initialize();
-    // await WindowManipulator.makeTitlebarTransparent();
-    // await WindowManipulator.hideTitle();
-    // await WindowManipulator.enableFullSizeContentView();
-    // await WindowManipulator.disableZoomButton();
-
-  }
   if(PlatformUtils.isWindows || PlatformUtils.isMacOS){
     await windowManager.ensureInitialized();
-
     WindowOptions windowOptions = const WindowOptions(
       size: Size(1080, 720),
       minimumSize: Size(1080, 720),
-      // fullScreen: true,
       center: true,
       backgroundColor: Colors.transparent,
       skipTaskbar: false,
       titleBarStyle: TitleBarStyle.hidden,
     );
     windowManager.waitUntilReadyToShow(windowOptions, () async {
-      // await windowManager.setResizable(false);
       await windowManager.show();
       await windowManager.focus();
     });
@@ -71,7 +55,7 @@ main() async {
   await _initAudioServer(getIt);
   final rootRouter = getIt<RootRouter>();
   // debugProfileBuildsEnabled = true;
-  bool land = PlatformUtils.isMacOS || PlatformUtils.isWindows || OtherUtils.isPad()||PlatformUtils.isAndroid;
+  bool land = PlatformUtils.isMacOS || PlatformUtils.isWindows || OtherUtils.isPad();
   if (PlatformUtils.isAndroid) {
     await FlutterDisplayMode.setHighRefreshRate();
     SystemUiOverlayStyle systemUiOverlayStyle =

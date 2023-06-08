@@ -47,7 +47,7 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
   double panelAlbumPadding = 35.w; //专辑图片左右上下的边距
 
   //是否是横屏
-  bool landscape = PlatformUtils.isMacOS || PlatformUtils.isWindows || OtherUtils.isPad() || PlatformUtils.isAndroid;
+  bool landscape = PlatformUtils.isMacOS || PlatformUtils.isWindows || OtherUtils.isPad();
 
   final List<LeftMenu> leftMenus = [
     LeftMenu('个人中心', TablerIcons.user, Routes.user, '/home/user'),
