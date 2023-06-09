@@ -10,7 +10,6 @@ import 'package:bujuan/widget/request_widget/request_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:keframe/keframe.dart';
 
 import '../../common/netease_api/src/dio_ext.dart';
 import '../../common/netease_api/src/netease_handler.dart';
@@ -142,21 +141,17 @@ class _ArtistsViewState extends State<ArtistsView> with SingleTickerProviderStat
           _items
             ..clear()
             ..addAll(Home.to.song2ToMedia(artistDetails.songs ?? []));
-          return SizeCacheWidget(
-              child: ListView.builder(
-                itemExtent: 130.w,
-                itemBuilder: (context, index) => FrameSeparateWidget(
-                  index: index,
-                  child: SongItem(
-                    index: index,
-                    mediaItem: _items[index],
-                    onTap: () {
-                      Home.to.playByIndex(index, 'queueTitle', mediaItem: _items);
-                    },
-                  ),
-                ),
-                itemCount: _items.length,
-              ));
+          return ListView.builder(
+            itemExtent: 130.w,
+            itemBuilder: (context, index) => SongItem(
+              index: index,
+              mediaItem: _items[index],
+              onTap: () {
+                Home.to.playByIndex(index, 'queueTitle', mediaItem: _items);
+              },
+            ),
+            itemCount: _items.length,
+          );
         });
   }
 
@@ -168,10 +163,7 @@ class _ArtistsViewState extends State<ArtistsView> with SingleTickerProviderStat
         return ListView.builder(
           padding: EdgeInsets.symmetric(horizontal: 20.w),
           itemExtent: 130.w,
-          itemBuilder: (context, index) => FrameSeparateWidget(
-            index: index,
-            child: AlbumItem(index: index, album: playlist[index]),
-          ),
+          itemBuilder: (context, index) => AlbumItem(index: index, album: playlist[index]),
           itemCount: playlist.length,
         );
       },

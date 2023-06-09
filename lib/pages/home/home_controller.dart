@@ -103,8 +103,6 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
 
   RxBool fm = false.obs;
 
-  RxBool leftImage = true.obs;
-  bool leftImageNoObs = true;
 
   //是否渐变播放背景
   RxBool gradientBackground = false.obs;
@@ -191,7 +189,6 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
 
   RxBool sleepSlide = false.obs;
   late AnimationController animationController;
-  late Animation<double> animation;
   late Animation<double> animationPanel;
 
   bool intervalClick(int needTime) {
@@ -212,18 +209,15 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
   //进度
   @override
   void onInit() async {
-    panelMobileMinSize = landscape ? 60.h : 85.w;
-    panelAlbumPadding = landscape ? 25.h : 15.w;
+    panelMobileMinSize = landscape ? 55.h : 85.w;
+    panelAlbumPadding = landscape ? 28.h : 15.w;
     animationController = AnimationController(vsync: this, value: 0);
-    animation = Tween(begin: 1.0, end: 0.0).animate(animationController);
     animationPanel = Tween(begin: 0.0, end: 1.0).animate(animationController);
     var rng = Random();
     for (double i = 0; i < (landscape ? 100 : 50); i++) {
       mEffects.add({"percent": i, "size": 3 + rng.nextInt(30 - 5).toDouble()});
     }
     box.get(noFirstOpen, defaultValue: false);
-    leftImage.value = box.get(leftImageSp, defaultValue: false);
-    leftImageNoObs = leftImage.value;
     background.value = box.get(backgroundSp, defaultValue: '');
     cache.value = box.get(cacheSp, defaultValue: false);
     gradientBackground.value = box.get(gradientBackgroundSp, defaultValue: true);

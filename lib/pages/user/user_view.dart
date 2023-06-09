@@ -10,7 +10,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get/get.dart';
-import 'package:keframe/keframe.dart';
 import '../../common/constants/key.dart';
 import '../../common/netease_api/src/api/play/bean.dart';
 import '../../routes/router.dart';
@@ -37,7 +36,7 @@ class UserViewP extends GetView<UserController> {
     controller.context = context;
     return Obx(() => Visibility(
         visible: Home.to.loginStatus.value == LoginStatus.login,
-        replacement: FrameSeparateWidget(child: _buildMeInfo(context)),
+        replacement: _buildMeInfo(context),
         child: Obx(() => Visibility(
               visible: !controller.loading.value,
               replacement: const LoadingView(),
@@ -74,8 +73,7 @@ class UserViewP extends GetView<UserController> {
                   TextSpan(text: '${Home.to.userData.value.profile?.nickname}～', style: TextStyle(color: Theme.of(context).primaryColor.withOpacity(.9))),
                 ]))),
                 body: [
-                  FrameSeparateWidget(
-                      child: GridView.count(
+                  GridView.count(
                     padding: const EdgeInsets.only(top: 0),
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
@@ -88,62 +86,60 @@ class UserViewP extends GetView<UserController> {
                     mainAxisSpacing: 10,
                     children: controller.userItems
                         .map((e) => Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                IconButton(
-                                  onPressed: () {
-                                    if ((e.routes ?? '') == 'playFm') {
-                                      Home.to.audioServeHandler.setRepeatMode(AudioServiceRepeatMode.all);
-                                      Home.to.audioServiceRepeatMode.value = AudioServiceRepeatMode.all;
-                                      Home.to.box.put(repeatModeSp, AudioServiceRepeatMode.all.name);
-                                      Home.to.getFmSongList();
-                                      return;
-                                    }
-                                    AutoRouter.of(context).pushNamed(e.routes ?? '');
-                                  },
-                                  icon: Icon(e.iconData),
-                                  iconSize: 52.w,
-                                ),
-                                Text(
-                                  e.title,
-                                  style: TextStyle(fontSize: 26.sp),
-                                )
-                              ],
-                            ))
-                        .toList(),
-                  )),
-                  FrameSeparateWidget(child: _buildHeader('喜欢的音乐', context)),
-                  FrameSeparateWidget(
-                      child: ListTile(
-                    leading: Obx(() => SimpleExtendedImage(
-                          '${controller.play.value.coverImgUrl ?? ''}?param=200y200',
-                          width: 100.w,
-                          height: 100.w,
-                          borderRadius: BorderRadius.circular(100.w),
-                        )),
-                    title: Obx(() => Text(
-                          controller.play.value.name ?? '',
-                          maxLines: 1,
-                          style: TextStyle(fontSize: 30.sp, fontWeight: FontWeight.bold),
-                        )),
-                    subtitle: Obx(() => Text(
-                          '${controller.play.value.trackCount ?? 0} 首',
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            if ((e.routes ?? '') == 'playFm') {
+                              Home.to.audioServeHandler.setRepeatMode(AudioServiceRepeatMode.all);
+                              Home.to.audioServiceRepeatMode.value = AudioServiceRepeatMode.all;
+                              Home.to.box.put(repeatModeSp, AudioServiceRepeatMode.all.name);
+                              Home.to.getFmSongList();
+                              return;
+                            }
+                            AutoRouter.of(context).pushNamed(e.routes ?? '');
+                          },
+                          icon: Icon(e.iconData),
+                          iconSize: 52.w,
+                        ),
+                        Text(
+                          e.title,
                           style: TextStyle(fontSize: 26.sp),
-                        )),
+                        )
+                      ],
+                    ))
+                        .toList(),
+                  ),
+                  _buildHeader('喜欢的音乐', context),
+                  ListTile(
+                    leading: Obx(() => SimpleExtendedImage(
+                      '${controller.play.value.coverImgUrl ?? ''}?param=200y200',
+                      width: 100.w,
+                      height: 100.w,
+                      borderRadius: BorderRadius.circular(100.w),
+                    )),
+                    title: Obx(() => Text(
+                      controller.play.value.name ?? '',
+                      maxLines: 1,
+                      style: TextStyle(fontSize: 30.sp, fontWeight: FontWeight.bold),
+                    )),
+                    subtitle: Obx(() => Text(
+                      '${controller.play.value.trackCount ?? 0} 首',
+                      style: TextStyle(fontSize: 26.sp),
+                    )),
                     onTap: () => context.router.push(const gr.PlayListView().copyWith(args: controller.play.value)),
+                  ),
+                  _buildHeader('我的歌单', context),
+                  Obx(() => ListView.builder(
+                    padding: EdgeInsets.symmetric(horizontal: 20.w),
+                    shrinkWrap: true,
+                    addRepaintBoundaries: false,
+                    addAutomaticKeepAlives: false,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemBuilder: (content, index) => PlayListItem(index: index, play: controller.playlist[index]),
+                    itemCount: controller.playlist.length,
+                    itemExtent: 120.w,
                   )),
-                  FrameSeparateWidget(child: _buildHeader('我的歌单', context)),
-                  FrameSeparateWidget(
-                      child: Obx(() => ListView.builder(
-                            padding: EdgeInsets.symmetric(horizontal: 20.w),
-                            shrinkWrap: true,
-                            addRepaintBoundaries: false,
-                            addAutomaticKeepAlives: false,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemBuilder: (content, index) => PlayListItem(index: index, play: controller.playlist[index]),
-                            itemCount: controller.playlist.length,
-                            itemExtent: 120.w,
-                          ))),
                 ],
                 headerWidget: _buildMeInfo(context),
               ),
@@ -224,7 +220,7 @@ class UserViewL extends GetView<UserController> {
     controller.context = context;
     return Obx(() => Visibility(
         visible: Home.to.loginStatus.value == LoginStatus.login,
-        replacement: FrameSeparateWidget(child: _buildMeInfo(context)),
+        replacement: _buildMeInfo(context),
         child: Obx(() => Visibility(
               visible: !controller.loading.value,
               replacement: const LoadingView(),

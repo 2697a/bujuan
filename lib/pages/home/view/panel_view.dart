@@ -10,7 +10,6 @@ import 'package:bujuan/widget/weslide/panel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:keframe/keframe.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 import '../../../common/constants/other.dart';
@@ -615,17 +614,16 @@ class PanelView extends GetView<Home> {
                 ),
               ),
             )),
-            FrameSeparateWidget(
-                child: Obx(() => Visibility(
-                      visible: !controller.panelOpenPositionThan1.value || controller.second.value,
-                      child: IconButton(
-                          onPressed: () => controller.playOrPause(),
-                          icon: Obx(() => Icon(
-                                controller.playing.value ? TablerIcons.player_pause : TablerIcons.player_play,
-                                size: controller.playing.value ? 46.w : 42.w,
-                                color: controller.second.value ? controller.bodyColor.value : controller.getLightTextColor(context),
-                              ))),
-                    ))),
+            Obx(() => Visibility(
+              visible: !controller.panelOpenPositionThan1.value || controller.second.value,
+              child: IconButton(
+                  onPressed: () => controller.playOrPause(),
+                  icon: Obx(() => Icon(
+                    controller.playing.value ? TablerIcons.player_pause : TablerIcons.player_play,
+                    size: controller.playing.value ? 46.w : 42.w,
+                    color: controller.second.value ? controller.bodyColor.value : controller.getLightTextColor(context),
+                  ))),
+            )),
             // ClassWidget(
             //     child: Obx(() => Visibility(
             //       visible: !controller.panelOpenPositionThan1.value || controller.second.value,
@@ -710,7 +708,6 @@ class PanelViewL extends GetView<Home> {
     );
   }
 
-  // height:329.h-MediaQuery.of(context).padding.top,
   Widget _buildPlayController(BuildContext context) {
     return Expanded(
         child: Container(
@@ -1255,17 +1252,16 @@ class PanelViewL extends GetView<Home> {
                 ),
               ),
             )),
-            FrameSeparateWidget(
-                child: Obx(() => Visibility(
-                      visible: !controller.panelOpenPositionThan1.value || controller.second.value,
-                      child: IconButton(
-                          onPressed: () => controller.playOrPause(),
-                          icon: Obx(() => Icon(
-                                controller.playing.value ? TablerIcons.player_pause : TablerIcons.player_play,
-                                size: controller.playing.value ? 46.w : 42.w,
-                                color: controller.second.value ? controller.bodyColor.value : controller.getLightTextColor(context),
-                              ))),
-                    ))),
+            Obx(() => Visibility(
+              visible: !controller.panelOpenPositionThan1.value || controller.second.value,
+              child: IconButton(
+                  onPressed: () => controller.playOrPause(),
+                  icon: Obx(() => Icon(
+                    controller.playing.value ? TablerIcons.player_pause : TablerIcons.player_play,
+                    size: controller.playing.value ? 46.w : 42.w,
+                    color: controller.second.value ? controller.bodyColor.value : controller.getLightTextColor(context),
+                  ))),
+            )),
             // ClassWidget(
             //     child: Obx(() => Visibility(
             //       visible: !controller.panelOpenPositionThan1.value || controller.second.value,

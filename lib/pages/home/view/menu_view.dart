@@ -59,9 +59,7 @@ class MenuView extends GetView<Home> {
                   size: 52.sp,
                   color: controller.currPathUrl.value == controller.leftMenus[index].pathUrl
                       ? Theme.of(context).primaryColor
-                      : controller.leftImageNoObs
-                          ? Theme.of(context).iconTheme.color
-                          : Theme.of(context).scaffoldBackgroundColor)),
+                      : Theme.of(context).iconTheme.color)),
             ),
           ),
           itemCount: controller.leftMenus.length,

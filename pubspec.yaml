@@ -48,8 +48,6 @@ dependencies:
     path: plugins/on_audio_edit
   just_audio: ^0.9.34
   audio_service: ^0.18.10
-#  audioplayers: ^3.0.1
-#  audio_session: ^0.1.16
   get_it: ^7.6.0
   dio: ^5.2.0
   qr_flutter: ^4.1.0
@@ -63,12 +61,10 @@ dependencies:
   url_launcher: ^6.0.14
   flutter_zoom_drawer:
     path: plugins/flutter_zoom_drawer
-  keframe: ^3.0.0
   auto_route: ^5.0.4
   flutter_svg: ^2.0.6
   fluttertoast: ^8.2.2
   cached_network_image: ^3.2.3
-#  auto_size_text: ^3.0.0
   lottie: ^2.4.0
   pull_to_refresh: ^2.0.0
   notification_permissions: ^0.6.1
@@ -85,10 +81,6 @@ dependencies:
 #  macos_window_utils:
 #    path: plugins/macos_window_utils
   window_manager: ^0.3.4
-#  flutter_statusbarcolor_ns: ^0.5.0
-#  image_picker: ^0.8.6+1
-#  smooth:
-#    path: plugins/flutter_smooth/packages/smooth
 
 
 dev_dependencies:

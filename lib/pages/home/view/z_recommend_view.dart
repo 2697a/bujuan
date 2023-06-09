@@ -9,7 +9,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:bujuan/routes/router.gr.dart';
 import 'package:get/get.dart';
-import 'package:keframe/keframe.dart';
 
 import '../../../common/netease_api/src/api/play/bean.dart';
 
@@ -38,7 +37,7 @@ class RecommendView extends GetView<Home> {
                       textAlign: TextAlign.left,
                     )),
               ),
-              FrameSeparateWidget(child: _buildArtistsList()),
+              _buildArtistsList(),
               // Container(
               //   alignment: Alignment.centerLeft,
               //   padding: EdgeInsets.only(top: 10.w, bottom: 20.w),

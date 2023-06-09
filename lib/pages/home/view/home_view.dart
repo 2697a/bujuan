@@ -79,7 +79,7 @@ class HomeView extends GetView<Home> {
                 ),
                 dragOffset: 360.w,
                 angle: 0,
-                menuBackgroundColor: controller.leftImageNoObs ? Theme.of(context).colorScheme.onSecondary : Theme.of(context).cardColor,
+                menuBackgroundColor: Theme.of(context).cardColor,
                 slideWidth: Get.width * .24,
                 mainScreenScale: 0,
                 duration: const Duration(milliseconds: 200),

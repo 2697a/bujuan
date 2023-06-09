@@ -4,7 +4,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
-import 'package:keframe/keframe.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../common/netease_api/src/dio_ext.dart';

@@ -5,7 +5,6 @@ import 'package:bujuan/widget/simple_extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:keframe/keframe.dart';
 
 import '../../../common/netease_api/src/api/event/bean.dart';
 
@@ -19,35 +18,33 @@ class CommentView extends GetView<Home> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          FrameSeparateWidget(
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 20.w, horizontal: 30.w),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Obx(() => Text(
-                    '热评榜',
-                    style: TextStyle(color: controller.bodyColor.value, fontSize: 44.sp),
-                  )),
-                  TextButton(
-                      onPressed: () {
-                        context.router.push(const TalkView().copyWith(queryParams: {'id': controller.mediaItem.value.id, 'type': 'song','name':controller.mediaItem.value.title}));
-                      },
-                      child: Obx(() => Text(
-                        '查看更多>',
-                        style: TextStyle(color: controller.bodyColor.value, fontSize: 28.sp),
-                      )))
-                ],
-              ),
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 20.w, horizontal: 30.w),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Obx(() => Text(
+                  '热评榜',
+                  style: TextStyle(color: controller.bodyColor.value, fontSize: 44.sp),
+                )),
+                TextButton(
+                    onPressed: () {
+                      context.router.push(const TalkView().copyWith(queryParams: {'id': controller.mediaItem.value.id, 'type': 'song','name':controller.mediaItem.value.title}));
+                    },
+                    child: Obx(() => Text(
+                      '查看更多>',
+                      style: TextStyle(color: controller.bodyColor.value, fontSize: 28.sp),
+                    )))
+              ],
             ),
           ),
-          FrameSeparateWidget(child: Obx(() => ListView.builder(
+          Obx(() => ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             padding: const EdgeInsets.all(0),
             itemBuilder: (context1, index) => _buildItem(controller.comments[index], context),
             itemCount: controller.comments.length,
-          ))),
+          )),
         ],
       ),
     );

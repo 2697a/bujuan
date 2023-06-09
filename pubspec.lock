@@ -37,10 +37,10 @@ packages:
     dependency: transitive
     description:
       name: archive
-      sha256: d6347d54a2d8028e0437e3c099f66fdb8ae02c4720c1e7534c9f24c10351f85d
+      sha256: "0c8368c9b3f0abbc193b9d6133649a614204b528982bebc7026372d61677ce3a"
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "3.3.6"
+    version: "3.3.7"
   args:
     dependency: transitive
     description:
@@ -695,14 +695,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.4.8"
-  keframe:
-    dependency: "direct main"
-    description:
-      name: keframe
-      sha256: a84add1826c54cd68e6095dbcc00cdd84fd4d97820712bfc8e1d06f41b0bfac3
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "3.0.0"
   lints:
     dependency: transitive
     description:

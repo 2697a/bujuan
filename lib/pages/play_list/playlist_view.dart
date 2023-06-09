@@ -1,7 +1,6 @@
 import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:auto_route/auto_route.dart';
-// import 'package:auto_size_text/auto_size_text.dart';
 import 'package:bujuan/common/constants/other.dart';
 import 'package:bujuan/common/netease_api/netease_music_api.dart';
 import 'package:bujuan/pages/play_list/playlist_controller.dart';
@@ -13,7 +12,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get/get.dart';
-import 'package:keframe/keframe.dart';
 
 import '../../widget/app_bar.dart';
 import '../../widget/simple_extended_image.dart';
@@ -70,27 +68,23 @@ class PlayListView extends GetView<PlayListController> {
                   ],
                 ),
                 _buildTopItem(context),
-                Obx(() => SizeCacheWidget(
-                        child: SliverFixedExtentList(
-                      delegate: SliverChildBuilderDelegate(
-                          (context, index) => FrameSeparateWidget(
-                                index: index,
-                                child: SongItem(
-                                  index: index,
-                                  mediaItem: controller.isSearch.value ? controller.searchItems[index] : controller.mediaItems[index],
-                                  onTap: () {
-                                    if (controller.isSearch.value) {
-                                      index = controller.mediaItems.indexOf(controller.searchItems[index]);
-                                    }
-                                    Home.to.playByIndex(index, 'queueTitle', mediaItem: controller.mediaItems);
-                                  },
-                                ),
-                              ),
-                          childCount: controller.isSearch.value ? controller.searchItems.length : controller.mediaItems.length,
-                          addAutomaticKeepAlives: false,
-                          addRepaintBoundaries: false),
-                      itemExtent: 130.w,
-                    )))
+                Obx(() => SliverFixedExtentList(
+                  delegate: SliverChildBuilderDelegate(
+                          (context, index) => SongItem(
+                        index: index,
+                        mediaItem: controller.isSearch.value ? controller.searchItems[index] : controller.mediaItems[index],
+                        onTap: () {
+                          if (controller.isSearch.value) {
+                            index = controller.mediaItems.indexOf(controller.searchItems[index]);
+                          }
+                          Home.to.playByIndex(index, 'queueTitle', mediaItem: controller.mediaItems);
+                        },
+                      ),
+                      childCount: controller.isSearch.value ? controller.searchItems.length : controller.mediaItems.length,
+                      addAutomaticKeepAlives: false,
+                      addRepaintBoundaries: false),
+                  itemExtent: 130.w,
+                ))
               ],
             ),
           ),

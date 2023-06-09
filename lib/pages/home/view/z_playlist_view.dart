@@ -1,11 +1,9 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
-import 'package:bujuan/pages/home/view/panel_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get/get.dart';
-import 'package:keframe/keframe.dart';
 
 class ZPlayListView extends GetView<Home> {
   const ZPlayListView({super.key});
@@ -20,14 +18,14 @@ class ZPlayListView extends GetView<Home> {
     return Obx(() {
       return Visibility(
         visible: !controller.fm.value,
-        child: SizeCacheWidget(child: Obx(() => ListView.builder(
+        child: Obx(() => ListView.builder(
           physics: const ClampingScrollPhysics(),
           controller: controller.playListScrollController,
           padding: EdgeInsets.symmetric(horizontal: 50.w),
           itemExtent: 110.w,
-          itemBuilder: (context, index) => FrameSeparateWidget(index: index,child: _buildPlayListItem(controller.mediaItems[index], index, context),),
+          itemBuilder: (context, index) => _buildPlayListItem(controller.mediaItems[index], index, context),
           itemCount: controller.mediaItems.length,
-        ))),
+        )),
       );
     });
   }
