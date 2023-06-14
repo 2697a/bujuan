@@ -82,6 +82,7 @@ dependencies:
 #    path: plugins/macos_window_utils
   window_manager: ^0.3.4
   flutter_rust_bridge: ^1.77.1
+  ffi: ^2.0.2
 
 
 dev_dependencies:
@@ -96,6 +97,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
+  ffigen: ^8.0.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

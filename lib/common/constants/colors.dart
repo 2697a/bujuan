@@ -64,7 +64,7 @@ class AppTheme {
   static const max = Colors.green;
   static const empty = Colors.grey;
 
-  //main red accent
+  //rust red accent
   //TODO change red
   static const red = Colors.red;
   static const onRed = Colors.white;

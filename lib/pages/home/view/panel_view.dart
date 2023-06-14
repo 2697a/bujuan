@@ -23,15 +23,15 @@ class PanelView extends GetView<Home> {
 
   @override
   Widget build(BuildContext context) {
-    double bottomHeight = MediaQuery.of(controller.buildContext).padding.bottom * (PlatformUtils.isIOS ? 0.4 : 0.8);
+    double bottomHeight = MediaQuery.of(controller.buildContext).padding.bottom * (PlatformUtils.isIOS ? 0.4 : 0.9);
     if (bottomHeight == 0) bottomHeight = 30.w;
     return SlidingUpPanel(
       controller: controller.panelController,
       onPanelSlide: (value) {
         controller.changeSlidePosition(1 - value, status: false);
         controller.slideSecondPosition.value = value;
-        if (value >= 0.001) {
-          controller.second.value = value >= 0.001;
+        if (controller.second.value != value >= 0.01) {
+          controller.second.value = value > 0.01;
         }
       },
       color: Colors.transparent,
@@ -40,6 +40,7 @@ class PanelView extends GetView<Home> {
         padding: EdgeInsets.only(top: 110.w + bottomHeight),
         child: const ZPlayListView(),
       ),
+      header: _buildBottom(bottomHeight, context),
       boxShadow: const [BoxShadow(blurRadius: 8.0, color: Color.fromRGBO(0, 0, 0, 0.05))],
       maxHeight: Get.height - (controller.panelMobileMinSize + MediaQuery.of(context).padding.top + controller.panelAlbumPadding * 2),
       minHeight: 110.w + bottomHeight,
@@ -228,43 +229,30 @@ class PanelView extends GetView<Home> {
           Obx(() => Visibility(
                 visible: controller.background.value.isEmpty,
                 child: Container(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).scaffoldBackgroundColor,
-                    borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),
-                  ),
+                  decoration: BoxDecoration(color: Theme.of(context).scaffoldBackgroundColor),
                 ),
               )),
           Obx(() => AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(colors: [
-                    !controller.panelOpenPositionThan1.value
-                        ? Theme.of(context).scaffoldBackgroundColor.withOpacity(controller.background.value.isNotEmpty ? 0.2 : .85)
-                        : !controller.gradientBackground.value
-                            ? controller.rx.value.darkVibrantColor?.color.withOpacity(.85) ?? controller.rx.value.darkMutedColor?.color.withOpacity(.85) ?? Colors.transparent
-                            : controller.rx.value.lightVibrantColor?.color.withOpacity(.85) ??
-                                controller.rx.value.lightVibrantColor?.color.withOpacity(.85) ??
-                                controller.rx.value.lightMutedColor?.color.withOpacity(.85) ??
-                                Colors.transparent,
-                    controller.rx.value.darkVibrantColor?.color.withOpacity(.85) ??
-                        controller.rx.value.darkMutedColor?.color.withOpacity(.85) ??
-                        controller.rx.value.lightVibrantColor?.color.withOpacity(.85) ??
-                        Colors.transparent,
-                  ], begin: Alignment.topLeft, end: Alignment.bottomCenter),
-                  borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),
-                ),
+                    gradient: LinearGradient(colors: [
+                  !controller.panelOpenPositionThan1.value && !controller.second.value
+                      ? Theme.of(context).scaffoldBackgroundColor.withOpacity(controller.background.value.isNotEmpty ? 0.2 : .85)
+                      : !controller.gradientBackground.value
+                          ? controller.rx.value.darkVibrantColor?.color.withOpacity(.85) ?? controller.rx.value.darkMutedColor?.color.withOpacity(.85) ?? Colors.transparent
+                          : controller.rx.value.lightVibrantColor?.color.withOpacity(.85) ??
+                              controller.rx.value.lightVibrantColor?.color.withOpacity(.85) ??
+                              controller.rx.value.lightMutedColor?.color.withOpacity(.85) ??
+                              Colors.transparent,
+                  controller.rx.value.darkVibrantColor?.color.withOpacity(.85) ??
+                      controller.rx.value.darkMutedColor?.color.withOpacity(.85) ??
+                      controller.rx.value.lightVibrantColor?.color.withOpacity(.85) ??
+                      Colors.transparent,
+                ], begin: Alignment.topLeft, end: Alignment.bottomCenter)),
               )),
           Obx(() => Visibility(
                 visible: controller.background.value.isNotEmpty,
-                child: ClipRRect(
-                    borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),
-                    child: BackdropFilter(
-
-                        /// 过滤器
-                        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-
-                        /// 必须设置一个空容器
-                        child: Container())),
+                child: BackdropFilter(filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12), child: Container()),
               )),
           FadeTransition(
             opacity: controller.animationPanel,
@@ -275,206 +263,42 @@ class PanelView extends GetView<Home> {
     );
   }
 
-  Widget _buildDefaultBody1(BuildContext context) {
-    return Stack(
-      children: [
-        Obx(() {
-          return Visibility(
-            visible: controller.panelOpenPositionThan1.value,
-            child: SimpleExtendedImage(
-              controller.mediaItem.value.extras!['image'] + '?param=500y500',
-              fit: BoxFit.cover,
-              height: Get.height,
-              width: Get.width,
-              borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),
-            ),
-          );
-        }),
-
-        // Container(
-        //   color: Theme.of(context).scaffoldBackgroundColor.withOpacity(.2),
-        // ),
-        // ClipRRect(
-        //   borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),
-        //   child: BackdropFilter(
-        //     /// 过滤器
-        //     filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
-        //
-        //     /// 必须设置一个空容器
-        //     child: _buildBodyContent(context),
-        //   ),
-        // ),
-      ],
-    );
-  }
-
-  Widget _buildDefaultPanel(BuildContext context, bottomHeight) {
-    return Stack(
-      children: [
-        // Obx(() {
-        //   return SimpleExtendedImage(controller.mediaItem.value.extras!['image']+ '?param=500y500',fit: BoxFit.cover,height: Get.height,width: Get.width,
-        //     borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),);
-        // }),
-        // Container(
-        //   color: Theme.of(context).scaffoldBackgroundColor.withOpacity(.2),
-        // ),
-        // Obx(() => Visibility(
-        //       replacement: AnimatedContainer(
-        //         duration: const Duration(milliseconds: 300),
-        //         decoration: BoxDecoration(
-        //           color: controller.rx.value.dominantColor?.color ?? Colors.transparent,
-        //           borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),
-        //         ),
-        //       ),
-        //       visible: controller.gradientBackground.value,
-        //       child: AnimatedContainer(
-        //           duration: const Duration(milliseconds: 300),
-        //           decoration: BoxDecoration(
-        //             gradient: LinearGradient(colors: [
-        //               controller.rx.value.dominantColor?.color ?? Colors.transparent,
-        //               !controller.gradientBackground.value
-        //                   ? controller.rx.value.dominantColor?.color ?? Colors.transparent
-        //                   : controller.rx.value.lightVibrantColor?.color ??
-        //                       controller.rx.value.lightMutedColor?.color ??
-        //                       controller.rx.value.dominantColor?.color ??
-        //                       Colors.transparent,
-        //             ], begin: Alignment.topLeft, end: Alignment.bottomCenter),
-        //             borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),
-        //           )),
-        //     )),
-        // ClipRRect(
-        //   borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),
-        //   child: BackdropFilter(
-        //     /// 过滤器
-        //     filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
-        //
-        //     /// 必须设置一个空容器
-        //     child: _buildPanelContent(context, bottomHeight),
-        //   ),
-        // ),
-        // BackdropFilter(
-        //   /// 过滤器
-        //   filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
-        //
-        //   /// 必须设置一个空容器
-        //   child: _buildPanelContent(context, bottomHeight),
-        // ),
-        // FrameSeparateWidget(child:  Obx(() {
-        //   return Visibility(
-        //     visible: !controller.leftImage.value,
-        //     replacement: Container(
-        //       color: Colors.transparent,
-        //     ),
-        //     child: AnimatedContainer(
-        //       duration: const Duration(milliseconds: 300),
-        //       decoration: BoxDecoration(
-        //         gradient: LinearGradient(colors: [
-        //           !controller.panelOpenPositionThan1.value && !controller.second.value
-        //               ? Theme.of(context).bottomAppBarColor.withOpacity(controller.leftImage.value ? 0 : .7)
-        //               : !controller.gradientBackground.value
-        //               ? controller.rx.value.dominantColor?.color.withOpacity(.7) ?? Colors.transparent
-        //               : controller.rx.value.lightVibrantColor?.color.withOpacity(.7) ??
-        //               controller.rx.value.lightMutedColor?.color.withOpacity(.7) ??
-        //               controller.rx.value.dominantColor?.color.withOpacity(.7) ??
-        //               Colors.transparent,
-        //           controller.rx.value.dominantColor?.color.withOpacity(.7) ?? Colors.transparent,
-        //         ], begin: Alignment.topLeft, end: Alignment.bottomCenter),
-        //         borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),
-        //       ),
-        //     ),
-        //   );
-        // })),
-        _buildPanelContent(context, bottomHeight),
-      ],
-    );
-  }
-
-  Widget _buildPanelContent(BuildContext context, bottomHeight) {
-    return Container();
-    // return Padding(
-    //   padding: EdgeInsets.only(top: 120.w + bottomHeight),
-    //   child: Obx(() => IndexedStack(
-    //   index: controller.selectIndex.value,
-    // children: controller.pages,
-    // ),),
-    // child: PageView.builder(
-    //   itemBuilder: (context, index) => controller.pages[index],
-    //   itemCount: controller.pages.length,
-    //   controller: controller.pageController,
-    //   physics: const NeverScrollableScrollPhysics(),
-    //   // preloadPagesCount: controller.pages.length,
-    //   onPageChanged: (index) {
-    //     controller.selectIndex.value = index;
-    //   },
-    // ),
-    // );
-  }
-
   Widget _buildBodyContent(BuildContext context) {
     return Column(
       children: [
-        Container(
-          margin: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-          height: controller.panelTopSize,
-          width: Get.width - controller.panelAlbumPadding * 2,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              IconButton(
-                  onPressed: () {
-                    controller.panelControllerHome.close();
-                  },
-                  icon: Obx(() => Icon(
-                        Icons.keyboard_arrow_down_sharp,
-                        color: controller.bodyColor.value,
-                      ))),
-              Expanded(
-                  child: Obx(
-                () => RichText(
-                  text: TextSpan(
-                      text: '${Home.to.mediaItem.value.title} - ',
-                      children: [TextSpan(text: Home.to.mediaItem.value.artist ?? '', style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w500))],
-                      style: TextStyle(fontSize: 32.sp, color: controller.bodyColor.value, fontWeight: FontWeight.w500)),
-                  maxLines: 1,
-                  textAlign: TextAlign.center,
-                  overflow: TextOverflow.ellipsis,
+        GestureDetector(
+          child: Container(
+            margin: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+            height: controller.panelTopSize,
+            width: Get.width - controller.panelAlbumPadding * 2,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  onPressed: () => controller.panelControllerHome.close(),
+                  icon: Obx(() => Icon(Icons.keyboard_arrow_down_sharp, color: controller.bodyColor.value)),
                 ),
-              )),
-              IconButton(
-                  onPressed: () {},
-                  icon: Obx(() => Icon(
-                        Icons.more_horiz,
-                        color: controller.bodyColor.value,
-                      ))),
-            ],
+                Expanded(
+                    child: Obx(
+                  () => RichText(
+                    text: TextSpan(
+                        text: '${Home.to.mediaItem.value.title} - ',
+                        children: [TextSpan(text: Home.to.mediaItem.value.artist ?? '', style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w500))],
+                        style: TextStyle(fontSize: 32.sp, color: controller.bodyColor.value, fontWeight: FontWeight.w500)),
+                    maxLines: 1,
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                )),
+                IconButton(onPressed: () {}, icon: Obx(() => Icon(Icons.more_horiz, color: controller.bodyColor.value))),
+              ],
+            ),
           ),
+          onVerticalDragEnd: (e) {},
         ),
         SizedBox(
           height: 640.w,
         ),
-        // Container(
-        //   padding: EdgeInsets.symmetric(horizontal: 55.w),
-        //   height: 110.w,
-        //   child: Column(
-        //     mainAxisAlignment: MainAxisAlignment.center,
-        //     crossAxisAlignment: CrossAxisAlignment.center,
-        //     children: [
-        //       Obx(() => Text(
-        //             controller.mediaItem.value.title.fixAutoLines(),
-        //             style: TextStyle(fontSize: 38.sp, fontWeight: FontWeight.bold, color: controller.bodyColor.value),
-        //             maxLines: 1,
-        //             overflow: TextOverflow.ellipsis,
-        //           )),
-        //       Padding(padding: EdgeInsets.symmetric(vertical: 5.w)),
-        //       Obx(() => Text(
-        //             (controller.mediaItem.value.artist ?? '').fixAutoLines(),
-        //             style: TextStyle(fontSize: 28.sp, color: controller.bodyColor.value),
-        //             maxLines: 1,
-        //             overflow: TextOverflow.ellipsis,
-        //           ))
-        //     ],
-        //   ),
-        // ),
         // //操控区域
         _buildPlayController(context),
         Padding(
@@ -509,9 +333,6 @@ class PanelView extends GetView<Home> {
       ],
     );
   }
-
-
-
 }
 
 class PanelViewL extends GetView<Home> {
@@ -526,7 +347,7 @@ class PanelViewL extends GetView<Home> {
 
   Widget _buildSlide(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: controller.panelAlbumPadding*4),
+      padding: EdgeInsets.symmetric(horizontal: controller.panelAlbumPadding * 4),
       height: 50.w,
       child: Stack(
         alignment: Alignment.center,
@@ -572,7 +393,7 @@ class PanelViewL extends GetView<Home> {
   Widget _buildPlayController(BuildContext context) {
     return Expanded(
         child: Container(
-      padding: EdgeInsets.symmetric(horizontal: controller.panelAlbumPadding*4),
+      padding: EdgeInsets.symmetric(horizontal: controller.panelAlbumPadding * 4),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -711,12 +532,15 @@ class PanelViewL extends GetView<Home> {
           //         ),
           //       ),
           //     )),
-          Obx(() => Visibility(visible: controller.panelOpenPositionThan1.value,child: SimpleExtendedImage(
-            Home.to.mediaItem.value.extras?['image'] ?? '',
-            fit: BoxFit.cover,
-            width: Get.width,
-            height: Get.height,
-          ),)),
+          Obx(() => Visibility(
+                visible: controller.panelOpenPositionThan1.value,
+                child: SimpleExtendedImage(
+                  Home.to.mediaItem.value.extras?['image'] ?? '',
+                  fit: BoxFit.cover,
+                  width: Get.width,
+                  height: Get.height,
+                ),
+              )),
           Obx(() => AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
                 decoration: BoxDecoration(
@@ -731,10 +555,10 @@ class PanelViewL extends GetView<Home> {
                                 Colors.transparent,
                     !controller.panelOpenPositionThan1.value
                         ? Theme.of(context).scaffoldBackgroundColor.withOpacity(.6)
-                        :controller.rx.value.darkVibrantColor?.color.withOpacity(.6) ??
-                        controller.rx.value.darkMutedColor?.color.withOpacity(.6) ??
-                        controller.rx.value.lightVibrantColor?.color.withOpacity(.6) ??
-                        Colors.transparent,
+                        : controller.rx.value.darkVibrantColor?.color.withOpacity(.6) ??
+                            controller.rx.value.darkMutedColor?.color.withOpacity(.6) ??
+                            controller.rx.value.lightVibrantColor?.color.withOpacity(.6) ??
+                            Colors.transparent,
                   ], begin: Alignment.topLeft, end: Alignment.bottomRight),
                   // borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),
                 ),
@@ -749,23 +573,26 @@ class PanelViewL extends GetView<Home> {
                         filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
 
                         /// 必须设置一个空容器
-                        child: Container(
-                        ))),
+                        child: Container())),
               )),
           FadeTransition(
             opacity: controller.animationPanel,
             child: Row(
               children: [
                 Expanded(
-                    child:Column(
-                      children: [
-                        SizedBox(height: 750.w + controller.panelMobileMinSize),
-                        _buildPlayController(context),
-                        _buildSlide(context),
-                        Padding(padding: EdgeInsets.symmetric(vertical: controller.panelMobileMinSize/2))
-                      ],
-                    )),
-                 Expanded( child: Padding(padding: EdgeInsets.symmetric(horizontal: 30.w,vertical: 40.w),child: const LyricView(),))
+                    child: Column(
+                  children: [
+                    SizedBox(height: 750.w + controller.panelMobileMinSize),
+                    _buildPlayController(context),
+                    _buildSlide(context),
+                    Padding(padding: EdgeInsets.symmetric(vertical: controller.panelMobileMinSize / 2))
+                  ],
+                )),
+                Expanded(
+                    child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 40.w),
+                  child: const LyricView(),
+                ))
               ],
             ),
           )
@@ -1008,7 +835,6 @@ class PanelViewL extends GetView<Home> {
       ],
     );
   }
-
 }
 
 class BottomItem {

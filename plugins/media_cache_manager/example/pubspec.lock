@@ -10,7 +10,7 @@ packages:
     source: hosted
     version: "2.11.0"
   better_player:
-    dependency: "direct main"
+    dependency: "direct rust"
     description:
       name: better_player
       sha256: f2e5d57ea49fb7c4d93838d23846ca5ddf78af6f946e103aeacf2afdd01909b3
@@ -58,7 +58,7 @@ packages:
     source: hosted
     version: "0.17.2"
   cupertino_icons:
-    dependency: "direct main"
+    dependency: "direct rust"
     description:
       name: cupertino_icons
       sha256: e35129dc44c9118cee2a5603506d823bab99c68393879edb440e0090d07586be
@@ -98,7 +98,7 @@ packages:
     source: hosted
     version: "6.1.4"
   flutter:
-    dependency: "direct main"
+    dependency: "direct rust"
     description: flutter
     source: sdk
     version: "0.0.0"
@@ -201,7 +201,7 @@ packages:
     source: hosted
     version: "0.2.0"
   media_cache_manager:
-    dependency: "direct main"
+    dependency: "direct rust"
     description:
       path: ".."
       relative: true

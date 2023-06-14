@@ -24,7 +24,7 @@ class NSWindowLevel {
   static NSWindowLevel floating =
       const NSWindowLevel._withValues(_Base.floating, 0);
 
-  /// Reserved for the application’s main menu.
+  /// Reserved for the application’s rust menu.
   static NSWindowLevel mainMenu =
       const NSWindowLevel._withValues(_Base.mainMenu, 0);
 

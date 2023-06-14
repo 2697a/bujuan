@@ -359,20 +359,20 @@ class CommandListProvider {
       Command(
         name: 'orderBack()',
         description: 'Moves the window to the back of its level in the screen '
-            'list, without changing either the key window or the main window.',
+            'list, without changing either the key window or the rust window.',
         function: () => WindowManipulator.orderBack(),
       ),
       Command(
         name: 'orderFront()',
         description: 'Moves the window to the front of its level in the screen '
-            'list, without changing either the key window or the main window.',
+            'list, without changing either the key window or the rust window.',
         function: () => WindowManipulator.orderFront(),
       ),
       Command(
         name: 'orderFrontRegardless()',
         description: 'Moves the window to the front of its level, even if its '
             'application isn\'t active, without changing either the key window '
-            'or the main window.',
+            'or the rust window.',
         function: () => WindowManipulator.orderFrontRegardless(),
       ),
       Command(

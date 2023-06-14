@@ -124,10 +124,10 @@ abstract class NSWindowDelegate {
 
   // === Managing Main Status ===
 
-  /// Tells the delegate that the window has become main.
+  /// Tells the delegate that the window has become rust.
   void windowDidBecomeMain() {}
 
-  /// Tells the delegate that the window has resigned main window status.
+  /// Tells the delegate that the window has resigned rust window status.
   void windowDidResignMain() {}
 
   // === Managing Field Editors ===

@@ -27,13 +27,11 @@ class FlashyNavbar extends StatelessWidget {
     this.animationDuration = const Duration(milliseconds: 300),
     this.animationCurve = Curves.linear,
     this.shadows = const [
-      BoxShadow(
-        color: Colors.transparent,
-        blurRadius: 0,
-      ),
+      BoxShadow(color: Colors.transparent, blurRadius: 0),
     ],
     required this.items,
-    required this.onItemSelected, this.padding,
+    required this.onItemSelected,
+    this.padding,
   }) : super(key: key) {
     // assert(height >= 55 );
     assert(items.length >= 2 && items.length <= 5);
@@ -57,15 +55,15 @@ class FlashyNavbar extends StatelessWidget {
               child: GestureDetector(
                 onTap: () => onItemSelected(index),
                 child: Obx(() => _FlashyNavbarItem(
-                  item: item,
-                  tabBarHeight: height,
-                  iconSize: iconSize,
-                  isSelected: index == Home.to.selectIndex.value,
-                  backgroundColor: bg!,
-                  color: backgroundColor!,
-                  animationDuration: animationDuration,
-                  animationCurve: animationCurve,
-                )),
+                      item: item,
+                      tabBarHeight: height,
+                      iconSize: iconSize,
+                      isSelected: index == Home.to.selectIndex.value,
+                      backgroundColor: bg!,
+                      color: backgroundColor!,
+                      animationDuration: animationDuration,
+                      animationCurve: animationCurve,
+                    )),
               ),
             );
           }).toList(),
@@ -77,6 +75,7 @@ class FlashyNavbar extends StatelessWidget {
 
 class FlashyNavbarItem {
   final Icon icon;
+
   // final Text title;
 
   Color activeColor;
@@ -85,8 +84,8 @@ class FlashyNavbarItem {
   FlashyNavbarItem({
     required this.icon,
     // required this.title,
-    this.activeColor =  Colors.black,
-    this.inactiveColor =  Colors.grey,
+    this.activeColor = Colors.black,
+    this.inactiveColor = Colors.grey,
   });
 }
 
@@ -110,13 +109,14 @@ class _FlashyNavbarItem extends StatelessWidget {
       required this.backgroundColor,
       required this.animationDuration,
       required this.animationCurve,
-      required this.iconSize, required this.color})
+      required this.iconSize,
+      required this.color})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.transparent,
+        color: Colors.transparent,
         height: double.maxFinite,
         width: double.maxFinite,
         child: Stack(
@@ -127,9 +127,9 @@ class _FlashyNavbarItem extends StatelessWidget {
               duration: animationDuration,
               alignment: Alignment.center,
               child: Obx(() => IconTheme(
-                data: IconThemeData(size: iconSize, color: Home.to.bodyColor.value.withOpacity(isSelected?1:0.6)),
-                child: item.icon,
-              )),
+                    data: IconThemeData(size: iconSize, color: Home.to.bodyColor.value.withOpacity(isSelected ? 1 : 0.6)),
+                    child: item.icon,
+                  )),
             ),
           ],
         ));

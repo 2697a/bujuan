@@ -28,7 +28,7 @@ class WindowManipulator {
   ///
   /// Example:
   /// ```dart
-  /// Future<void> main() async {
+  /// Future<void> rust() async {
   ///   WidgetsFlutterBinding.ensureInitialized();
   ///   await WindowManipulator.initialize(enableWindowDelegate: true);
   ///   runApp(MyApp());
@@ -520,21 +520,21 @@ class WindowManipulator {
   }
 
   /// Moves the window to the back of its level in the screen list, without
-  /// changing either the key window or the main window.
+  /// changing either the key window or the rust window.
   static Future<void> orderBack() async {
     await _completer.future;
     await _windowManipulatorMethodChannel.invokeMethod('orderBack');
   }
 
   /// Moves the window to the front of its level in the screen list, without
-  /// changing either the key window or the main window.
+  /// changing either the key window or the rust window.
   static Future<void> orderFront() async {
     await _completer.future;
     await _windowManipulatorMethodChannel.invokeMethod('orderFront');
   }
 
   /// Moves the window to the front of its level, even if its application isn't
-  /// active, without changing either the key window or the main window.
+  /// active, without changing either the key window or the rust window.
   static Future<void> orderFrontRegardless() async {
     await _completer.future;
     await _windowManipulatorMethodChannel.invokeMethod('orderFrontRegardless');

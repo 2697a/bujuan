@@ -29,7 +29,7 @@ android {
     compileSdkVersion 31
 
     sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
+        main.java.srcDirs += 'src/rust/kotlin'
     }
 
     lintOptions {

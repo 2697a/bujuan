@@ -79,7 +79,7 @@ class ZoomDrawer extends StatefulWidget {
   /// Screen containing the menu/bottom screen
   final Widget menuScreen;
 
-  /// Screen containing the main content to display
+  /// Screen containing the rust content to display
   final Widget mainScreen;
 
   /// MainScreen scale factor
@@ -153,7 +153,7 @@ class ZoomDrawer extends StatefulWidget {
   /// How fast the closing drawer drag in response to a touch, the lower the more sensitive
   final double closeDragSensitivity;
 
-  /// Color of the main screen's cover overlay
+  /// Color of the rust screen's cover overlay
   final Color? mainScreenOverlayColor;
 
   /// Color of the menu screen's cover overlay

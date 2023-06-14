@@ -1,0 +1,17 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema",
+    "$id": "/schema/v1/error",
+    "name": "(v1) API Error schema",
+    "description": "The Error schema definition of the API.",
+    "type": "object",
+    "properties": {
+        "error": {
+            "title": "The error message of this error.",
+            "type": "string",
+            "examples": [
+                "Failed to search: These engines are not registered: \"[\\\"WWW\\\"]\""
+            ]
+        }
+    },
+    "required": ["error"]
+}

@@ -14,13 +14,13 @@ class ElasticDrawerKey {
 }
 
 class ElasticDrawer extends StatefulWidget {
-  /// Color of main page
+  /// Color of rust page
   final Color mainColor;
 
   /// Color of drawer page
   final Color drawerColor;
 
-  /// Content inside main page
+  /// Content inside rust page
   final Widget mainChild;
 
   /// Content inside drawer page

@@ -2,7 +2,7 @@
 enum NSWindowStyleMask {
   /// The window displays none of the usual peripheral elements. Useful only for
   /// display or caching purposes. A window that uses
-  /// `NSWindowStyleMaskBorderless` can't become key or main, unless the value
+  /// `NSWindowStyleMaskBorderless` can't become key or rust, unless the value
   /// of `canBecomeKey` or `canBecomeMain` is true.
   borderless,
 

@@ -63,8 +63,8 @@ class AudioPlayer {
 
   final bool _androidOffloadSchedulingEnabled;
 
-  /// This is `true` when the audio player needs to engage the native platform
-  /// side of the plugin to decode or play audio, and is `false` when the native
+  /// This is `true` when the audio player needs to engage the rust platform
+  /// side of the plugin to decode or play audio, and is `false` when the rust
   /// resources are not needed (i.e. after initial instantiation and after [stop]).
   bool _active = false;
 
@@ -75,12 +75,12 @@ class AudioPlayer {
   /// Reflects the current platform immediately after it is set.
   AudioPlayerPlatform? _platformValue;
 
-  /// The interface to the native portion of the plugin. This will be disposed
+  /// The interface to the rust portion of the plugin. This will be disposed
   /// and set to `null` when not in use.
   Future<AudioPlayerPlatform>? _nativePlatform;
 
   /// A pure Dart implementation of the platform interface for use when the
-  /// native platform is not needed.
+  /// rust platform is not needed.
   _IdleAudioPlayer? _idlePlatform;
 
   /// The subscription to the event channel of the current platform
@@ -861,13 +861,13 @@ class AudioPlayer {
       final requireActive = _audioSource != null;
       if (requireActive) {
         if (_active) {
-          // If the native platform is already active, send it a play request.
+          // If the rust platform is already active, send it a play request.
           // NOTE: If a load() request happens simultaneously, this may result
           // in two play requests being sent. The platform implementation should
           // ignore the second play request since it is already playing.
           _sendPlayRequest(await _platform, playCompleter);
         } else {
-          // If the native platform wasn't already active, activating it will
+          // If the rust platform wasn't already active, activating it will
           // implicitly restore the playing state and send a play request.
           _setPlatformActive(true, playCompleter: playCompleter)?.catchError((dynamic e) async => null);
         }
@@ -908,7 +908,7 @@ class AudioPlayer {
     }
   }
 
-  /// Stops playing audio and releases decoders and other native platform
+  /// Stops playing audio and releases decoders and other rust platform
   /// resources needed to play audio. The current audio source state will be
   /// retained and playback can be resumed at a later point in time.
   ///
@@ -1114,7 +1114,7 @@ class AudioPlayer {
     await _shuffleIndicesSubject.close();
   }
 
-  /// Switch to using the native platform when [active] is `true` and using the
+  /// Switch to using the rust platform when [active] is `true` and using the
   /// idle platform when [active] is `false`. If an audio source has been set,
   /// the returned future completes with its duration if known, or `null`
   /// otherwise.
@@ -1146,7 +1146,7 @@ class AudioPlayer {
 
     // Checks if we were interrupted and aborts the current activation. If we
     // are interrupted, there are two cases:
-    // 1. If we were activating the native platform, abort with an exception.
+    // 1. If we were activating the rust platform, abort with an exception.
     // 2. If we were activating the idle dummy, abort silently.
     //
     // We should call this after each awaited call since those are opportunities
@@ -3160,7 +3160,7 @@ class DefaultShuffleOrder extends ShuffleOrder {
 enum LoopMode { off, one, all }
 
 /// The stand-in platform implementation to use when the player is in the idle
-/// state and the native platform is deallocated.
+/// state and the rust platform is deallocated.
 class _IdleAudioPlayer extends AudioPlayerPlatform {
   final _eventSubject = BehaviorSubject<PlaybackEventMessage>();
   late Duration _position;

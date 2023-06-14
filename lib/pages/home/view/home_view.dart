@@ -140,7 +140,7 @@ class HomeView extends GetView<Home> {
                               text: '${Home.to.mediaItem.value.title} - ',
                               children: [TextSpan(text: Home.to.mediaItem.value.artist ?? '', style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w500))],
                               style: TextStyle(
-                                  fontSize: 32.sp, color:Theme.of(context).iconTheme.color, fontWeight: FontWeight.w500)),
+                                  fontSize: 32.sp, color: controller.second.value ? controller.bodyColor.value : controller.getLightTextColor(context), fontWeight: FontWeight.w500)),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -149,6 +149,7 @@ class HomeView extends GetView<Home> {
                   onPressed: () => controller.playOrPause(),
                   icon: Obx(() => Icon(
                         controller.playing.value ? Icons.pause : Icons.play_arrow,
+                    color: controller.second.value ? controller.bodyColor.value : controller.getLightTextColor(context),
                       )))
             ],
           ),

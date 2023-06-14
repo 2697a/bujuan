@@ -8,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'home_screen.dart';
 
-// void main() {
+// void rust() {
 //   runApp(const MyApp());
 // }
 //
@@ -156,7 +156,7 @@ import 'home_screen.dart';
 * ---------------------------------------------------------
 * */
 
-// void main() async {
+// void rust() async {
 //   WidgetsFlutterBinding.ensureInitialized();
 //   await EasyLocalization.ensureInitialized();
 //

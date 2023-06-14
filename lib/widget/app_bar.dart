@@ -1254,10 +1254,10 @@ class MySliverAppBar extends StatefulWidget {
   ///
   /// Returns a [MySliverAppBar] configured with appropriate defaults
   /// for a medium top app bar as defined in Material 3. It starts fully
-  /// expanded with the title in an area underneath the main row of icons.
+  /// expanded with the title in an area underneath the rust row of icons.
   /// When the [CustomScrollView] is scrolled, the title will be scrolled
-  /// under the main row. When it is fully collapsed, a smaller version of the
-  /// title will fade in on the main row. The reverse will happen if it is
+  /// under the rust row. When it is fully collapsed, a smaller version of the
+  /// title will fade in on the rust row. The reverse will happen if it is
   /// expanded again.
   ///
   /// {@tool dartpad}
@@ -1355,10 +1355,10 @@ class MySliverAppBar extends StatefulWidget {
   ///
   /// Returns a [MySliverAppBar] configured with appropriate defaults
   /// for a large top app bar as defined in Material 3. It starts fully
-  /// expanded with the title in an area underneath the main row of icons.
+  /// expanded with the title in an area underneath the rust row of icons.
   /// When the [CustomScrollView] is scrolled, the title will be scrolled
-  /// under the main row. When it is fully collapsed, a smaller version of the
-  /// title will fade in on the main row. The reverse will happen if it is
+  /// under the rust row. When it is fully collapsed, a smaller version of the
+  /// title will fade in on the rust row. The reverse will happen if it is
   /// expanded again.
   ///
   /// {@tool dartpad}

@@ -46,7 +46,7 @@ android {
     }
 
     sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
+        main.java.srcDirs += 'src/rust/kotlin'
     }
 
     defaultConfig {
@@ -95,4 +95,33 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'org.altbeacon:android-beacon-library:2.19.3'
+}
+[
+        Debug: null,
+        Profile: '--release',
+        Release: '--release'
+].each {
+    def taskPostfix = it.key
+    def profileMode = it.value
+    tasks.whenTaskAdded { task ->
+        if (task.name == "javaPreCompile$taskPostfix") {
+            task.dependsOn "cargoBuild$taskPostfix"
+        }
+    }
+    tasks.register("cargoBuild$taskPostfix", Exec) {
+        workingDir "../../native/native"
+        environment ANDROID_NDK_HOME: "$ANDROID_NDK"
+        commandLine 'cargo', 'ndk',
+                // the 2 ABIs below are used by real Android devices
+                '-t', 'armeabi-v7a',
+                '-t', 'arm64-v8a',
+                // the below 2 ABIs are usually used for Android simulators,
+                // add or remove these ABIs as needed.
+//                '-t', 'x86',
+//                '-t', 'x86_64',
+                '-o', '../../android/app/src/main/jniLibs', 'build'
+        if (profileMode != null) {
+            args profileMode
+        }
+    }
 }

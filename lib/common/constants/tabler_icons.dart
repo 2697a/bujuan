@@ -5342,7 +5342,7 @@
 //       TablerIcon("brand-loom", TablerIcons.brandLoom),
 //       TablerIcon("brand-netbeans", TablerIcons.brandNetbeans),
 //       TablerIcon("brand-php", TablerIcons.brandPhp),
-//       TablerIcon("brand-react-native", TablerIcons.brandReactNative),
+//       TablerIcon("brand-react-rust", TablerIcons.brandReactNative),
 //       TablerIcon("brand-sublime-text", TablerIcons.brandSublimeText),
 //       TablerIcon("brand-uber", TablerIcons.brandUber),
 //       TablerIcon("brand-visual-studio", TablerIcons.brandVisualStudio),

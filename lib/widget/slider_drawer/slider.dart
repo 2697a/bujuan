@@ -38,7 +38,7 @@ class SliderDrawer extends StatefulWidget {
   ///
   final Widget slider;
 
-  /// [Widget] main screen widget
+  /// [Widget] rust screen widget
   ///
   final Widget child;
 

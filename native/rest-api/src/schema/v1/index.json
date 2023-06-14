@@ -1,0 +1,24 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema",
+    "$id": "/schema/v1/index",
+    "title": "Ping API Schema",
+    "description": "The schema definition of the ping API.",
+    "type": "object",
+    "properties": {
+        "success": {
+            "title": "Check if this API can handle requests.",
+            "type": "boolean",
+            "examples": [
+                true
+            ]
+        },
+        "version": {
+            "title": "The version of the API.",
+            "type": "string",
+            "examples": [
+                "1.0.0"
+            ]
+        }
+    },
+    "required": ["success", "version"]
+}

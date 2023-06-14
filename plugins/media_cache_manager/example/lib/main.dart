@@ -3,7 +3,7 @@
 // import 'package:flutter/material.dart';
 // import 'package:media_cache_manager/media_cache_manager.dart';
 //
-// void main() async {
+// void rust() async {
 //   WidgetsFlutterBinding.ensureInitialized();
 //   await DownloadCacheManager.setExpireDate(daysToExpire: 1);
 //   runApp(const MyApp());

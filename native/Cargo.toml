@@ -1,0 +1,29 @@
+[workspace]
+members = [
+    # Core
+    "engine-base",
+    "types",
+
+    # Utilities
+    "api-utils",
+    "crypto",
+    "selector",
+    "request",
+    "test-utils",
+
+    # Engines
+    "engines/*",
+
+    # Demo
+    "engine-demo",
+    "native",
+
+    # N-API
+    "napi",
+
+    # REST API
+    "rest-api",
+]
+
+[profile.release]
+lto = "thin"

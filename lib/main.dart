@@ -1,13 +1,12 @@
 import 'package:audio_service/audio_service.dart';
 
-// import 'package:audioplayers/audioplayers.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/common/bujuan_audio_handler.dart';
 import 'package:bujuan/common/constants/other.dart';
 import 'package:bujuan/common/constants/platform_utils.dart';
+import 'package:bujuan/ffi.dart';
 import 'package:bujuan/pages/album/controller.dart';
 import 'package:bujuan/pages/home/home_binding.dart';
-import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/pages/index/cound_controller.dart';
 import 'package:bujuan/pages/index/index_controller.dart';
 import 'package:bujuan/pages/local/local_controller.dart';
@@ -49,6 +48,7 @@ main() async {
       await windowManager.focus();
     });
   }
+  print('object=========${await api.aaa(songName: '将军', artistsName: '周杰伦')}');
   // await DownloadCacheManager.init();
   // await DownloadCacheManager.setExpireDate(daysToExpire: 100);
   final getIt = GetIt.instance;
