@@ -1,0 +1,23 @@
+# See: https://dart.dev/tools/pub/pubspec
+name: model_viewer_plus_example
+description: >-
+  Demonstrates how to use the ModelViewer widget.
+homepage: https://github.com/drydart/model_viewer_plus.dart/tree/master/example
+repository: https://github.com/drydart/model_viewer_plus.dart
+issue_tracker: https://github.com/drydart/model_viewer_plus.dart/issues
+dependencies:
+  flutter:
+    sdk: flutter
+  model_viewer_plus:
+    path: ../
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.1
+environment:
+  sdk: ">=2.12.0 <4.0.0"
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/Astronaut.glb
+publish_to: none

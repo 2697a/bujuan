@@ -54,7 +54,6 @@ main() async {
   final getIt = GetIt.instance;
   await _initAudioServer(getIt);
   final rootRouter = getIt<RootRouter>();
-  // debugProfileBuildsEnabled = true;
   bool land = PlatformUtils.isMacOS || PlatformUtils.isWindows || OtherUtils.isPad();
   if (PlatformUtils.isAndroid) {
     await FlutterDisplayMode.setHighRefreshRate();
@@ -78,7 +77,7 @@ main() async {
             title: "Bujuan",
             theme: AppTheme.light.copyWith(
                 pageTransitionsTheme: const PageTransitionsTheme(builders: {
-                  TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+                  TargetPlatform.android: NoShadowCupertinoPageTransitionsBuilder(),
                   TargetPlatform.macOS: FadeUpwardsPageTransitionsBuilder(),
                 })),
             darkTheme: AppTheme.dark.copyWith(
@@ -96,7 +95,6 @@ main() async {
             routeInformationParser: rootRouter.defaultRouteParser(),
             debugShowCheckedModeBanner: false,
             builder: (_, router) => MediaQuery(data: MediaQuery.of(_).copyWith(textScaleFactor: 1.0), child: router!),
-            // home: const SplashPage(),
           );
         },
       )));
@@ -177,8 +175,6 @@ Future<void> _initAudioServer(getIt) async {
   getIt.registerSingleton<ZoomDrawerController>(ZoomDrawerController());
   getIt.registerSingleton<OnAudioQuery>(OnAudioQuery());
   getIt.registerSingleton<OnAudioEdit>(OnAudioEdit());
-  // 工具初始
-  // await StorageUtil.init();
   await Hive.initFlutter('BuJuan');
   getIt.registerSingleton<Box>(await Hive.openBox('cache'));
   await NeteaseMusicApi.init(debug: false);

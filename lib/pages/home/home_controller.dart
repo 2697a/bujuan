@@ -32,7 +32,6 @@ import '../../common/lyric_parser/lyrics_reader_model.dart';
 import '../../common/netease_api/src/api/bean.dart';
 import '../../common/bujuan_audio_handler.dart';
 import '../../routes/router.dart';
-import '../../widget/weslide/panel_play_view.dart';
 import '../../widget/wheel_slider.dart';
 import 'view/home_view.dart';
 
@@ -77,6 +76,7 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
 
   //第一层滑动高度0-1
   RxDouble slidePosition = 0.0.obs;
+
   //第一层滑动高度0-1
   RxDouble slideSecondPosition = 0.0.obs;
 
@@ -102,7 +102,6 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
   RxBool playing = false.obs;
 
   RxBool fm = false.obs;
-
 
   //是否渐变播放背景
   RxBool gradientBackground = false.obs;
@@ -209,8 +208,8 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
   //进度
   @override
   void onInit() async {
-    panelMobileMinSize = landscape ? 55.h : 85.w;
-    panelAlbumPadding = landscape ? 28.h : 15.w;
+    panelMobileMinSize = landscape ? 60.h : 85.w;
+    panelAlbumPadding = landscape ? 22.h : 15.w;
     animationController = AnimationController(vsync: this, value: 0);
     animationPanel = Tween(begin: 0.0, end: 1.0).animate(animationController);
     var rng = Random();
@@ -412,7 +411,7 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
 
   listenRouter() {
     String path = autoRouterDelegate?.urlState.url ?? '';
-    if (path == '/home/user' || path == '/home/index' || path == '/home/local'|| path == '/home/settingL') {
+    if (path == '/home/user' || path == '/home/index' || path == '/home/local' || path == '/home/settingL') {
       currPathUrl.value = path;
     }
   }
@@ -505,7 +504,7 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
     }
     animationController.value = value;
     slidePosition.value = value;
-    if (value > 0.3) {
+    if (value > 0.1) {
       if (!panelOpenPositionThan1.value) {
         panelOpenPositionThan1.value = true;
         if (status) changeStatusIconColor(true);
@@ -559,13 +558,8 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
 
   //播放歌曲根据下标
   playByIndex(int index, String queueTitle, {List<MediaItem>? mediaItem}) async {
-    // String title = audioServeHandler.queueTitle.value;
-    // if ((title.isEmpty || title != queueTitle) && (mediaItem??[]).length != mediaItems.length) {
     audioServeHandler.queueTitle.value = queueTitle;
     audioServeHandler.changeQueueLists(mediaItem ?? [], index: index);
-    // } else {
-    //   audioServeHandler.playIndex(index);
-    // }
   }
 
   getFmSongList() async {
@@ -596,45 +590,6 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
   Color getLightTextColor(context) {
     return Theme.of(context).cardColor.withOpacity(.7);
   }
-
-  //获取Header的padding
-  EdgeInsets getHeaderPadding(context) {
-    return EdgeInsets.only(
-      left: 30.w,
-      right: 30.w,
-      top: (MediaQuery.of(context).padding.top + 60.h * (slidePosition.value)) * (second.value ? (1 - slidePosition.value) : slidePosition.value),
-    );
-  }
-
-  getHomeBottomPadding() {
-    return (panelHeaderSize * .5);
-  }
-
-  //外层panel的高度和颜色
-  double getPanelMinSize() {
-    return panelHeaderSize * (1 + slidePosition.value * 6);
-  }
-
-  //获取图片的宽高
-  double getImageSize() {
-    return (panelHeaderSize * .75) * (1 + slidePosition.value * 7.3);
-  }
-
-  //获取图片的宽高
-  double getImageSizeL() {
-    return (panelHeaderSize * .8) * (1 + slidePosition.value * 6);
-  }
-
-  //获取图片离左侧的间距
-  double getImageLeft() {
-    return ((Get.width - 40.w) - getImageSize()) / 2 * slidePosition.value;
-  }
-
-  // Color getPlayPageTheme(BuildContext context) {
-  //   var color = rx.value.dominantColor?.color ?? Colors.white;
-  //   var grayscale = (0.299 * color.red) + (0.587 * color.green) + (0.114 * color.blue);
-  //   return grayscale > 128 ? Colors.black.withOpacity(.5) : Colors.white.withOpacity(.7);
-  // }
 
   @override
   void onClose() {

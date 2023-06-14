@@ -38,19 +38,17 @@ class HomeView extends GetView<Home> {
                     Expanded(
                         child: Column(
                       children: [
-                        SafeArea(child: Container(
-                          decoration: BoxDecoration(
-                              border: Border(bottom: BorderSide(color: Colors.grey.withOpacity(.2),width: .6.w))
-                          ),
+                        SafeArea(
+                            child: Container(
+                          decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.grey.withOpacity(.2), width: .6.w))),
                           height: 85.h,
                           child: Row(
                             children: [
                               Padding(padding: EdgeInsets.symmetric(horizontal: 40.w)),
                               RichText(
                                   text: TextSpan(style: TextStyle(fontSize: 42.sp, color: Colors.grey, fontWeight: FontWeight.bold), text: 'Here  ', children: [
-                                    TextSpan(text: 'BuJuan～', style: TextStyle(color: Theme.of(context).primaryColor.withOpacity(.9))),
-                                  ])),
-
+                                TextSpan(text: 'BuJuan～', style: TextStyle(color: Theme.of(context).primaryColor.withOpacity(.9))),
+                              ])),
                             ],
                           ),
                         )),
@@ -94,21 +92,13 @@ class HomeView extends GetView<Home> {
 
   Widget _buildHeader(context, bottomHeight) {
     return Obx(() => IgnorePointer(
-          ignoring: controller.panelOpenPositionThan8.value||controller.second.value,
+          ignoring: controller.panelOpenPositionThan8.value || controller.second.value,
           child: AnimatedBuilder(
             animation: controller.animationController,
             builder: (context, child) {
-              return controller.second.value?GestureDetector(
-                child: Container(
-                  alignment: Alignment.centerLeft,
-                  padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top *controller.slideSecondPosition.value),
-                  child: child,
-                ),
-                onVerticalDragEnd: (e){},
-                onHorizontalDragEnd: (e){},
-              ):Container(
+              return Container(
                 alignment: Alignment.centerLeft,
-                padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top *controller.slideSecondPosition.value),
+                padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top * controller.slideSecondPosition.value),
                 child: child,
               );
             },
@@ -150,7 +140,7 @@ class HomeView extends GetView<Home> {
                               text: '${Home.to.mediaItem.value.title} - ',
                               children: [TextSpan(text: Home.to.mediaItem.value.artist ?? '', style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w500))],
                               style: TextStyle(
-                                  fontSize: 32.sp, color: Home.to.second.value ? Home.to.bodyColor.value : Home.to.getLightTextColor(context), fontWeight: FontWeight.w500)),
+                                  fontSize: 32.sp, color:Theme.of(context).iconTheme.color, fontWeight: FontWeight.w500)),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),

@@ -13,6 +13,7 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:palette_generator/palette_generator.dart';
 
 import '../../common/netease_api/src/api/login/bean.dart';
 import '../../common/netease_api/src/api/play/bean.dart';
@@ -24,6 +25,7 @@ enum LoginStatus { login, noLogin }
 class UserController extends GetxController {
   List<Play> playlist = <Play>[].obs;
   Rx<Play> play = Play().obs;
+   Rx<PaletteGenerator> palette = PaletteGenerator.fromColors([]).obs;
   RxBool loading = true.obs;
   late BuildContext context;
   final List<UserItem> userItems = [
@@ -79,7 +81,7 @@ class UserController extends GetxController {
         Home.to.box.put(loginData, jsonEncode(neteaseAccountInfoWrap.toJson()));
         getUserPlayList();
         _getUserLikeSongIds();
-      }else{
+      } else {
         WidgetUtil.showToast('登录失效,请重新登录');
         Home.to.loginStatus.value = LoginStatus.noLogin;
       }
@@ -101,10 +103,11 @@ class UserController extends GetxController {
   }
 
   getUserPlayList() {
-    NeteaseMusicApi().userPlayList(Home.to.userData.value.profile?.userId ?? '-1').then((MultiPlayListWrap2 multiPlayListWrap2) {
+    NeteaseMusicApi().userPlayList(Home.to.userData.value.profile?.userId ?? '-1').then((MultiPlayListWrap2 multiPlayListWrap2) async {
       List<Play> list = (multiPlayListWrap2.playlist ?? []);
       if (list.isNotEmpty) {
         play.value = list.first;
+        palette.value = await OtherUtils.getImageColor('${play.value.coverImgUrl ?? ''}?param=500y500');
         playlist
           ..clear()
           ..addAll(list..removeAt(0));

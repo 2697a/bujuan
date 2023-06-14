@@ -81,6 +81,7 @@ dependencies:
 #  macos_window_utils:
 #    path: plugins/macos_window_utils
   window_manager: ^0.3.4
+  flutter_rust_bridge: ^1.77.1
 
 
 dev_dependencies:

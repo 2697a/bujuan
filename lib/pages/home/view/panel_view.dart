@@ -238,7 +238,7 @@ class PanelView extends GetView<Home> {
                 duration: const Duration(milliseconds: 300),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(colors: [
-                    !controller.panelOpenPositionThan1.value && !controller.second.value
+                    !controller.panelOpenPositionThan1.value
                         ? Theme.of(context).scaffoldBackgroundColor.withOpacity(controller.background.value.isNotEmpty ? 0.2 : .85)
                         : !controller.gradientBackground.value
                             ? controller.rx.value.darkVibrantColor?.color.withOpacity(.85) ?? controller.rx.value.darkMutedColor?.color.withOpacity(.85) ?? Colors.transparent
@@ -510,147 +510,8 @@ class PanelView extends GetView<Home> {
     );
   }
 
-  Widget _buildPanelHeader(bottomHeight, context) {
-    print('========_buildPanelHeader');
-    return IgnorePointer(
-      ignoring: controller.panelOpenPositionThan1.value && !controller.second.value,
-      child: Visibility(
-        replacement: GestureDetector(
-          child: _buildPanelHeaderTo(bottomHeight, context),
-          onHorizontalDragDown: (e) {},
-          onTap: () {
-            if (!controller.panelControllerHome.isPanelOpen) {
-              controller.panelControllerHome.open();
-            } else {
-              if (controller.panelController.isPanelOpen) controller.panelController.close();
-            }
-          },
-        ),
-        visible: controller.panelOpenPositionThan1.value,
-        child: GestureDetector(
-          child: _buildPanelHeaderTo(bottomHeight, context),
-          onHorizontalDragDown: (e) {},
-          onVerticalDragDown: (e) {},
-          onTap: () {
-            if (!controller.panelControllerHome.isPanelOpen) {
-              controller.panelControllerHome.open();
-            } else {
-              if (controller.panelController.isPanelOpen) controller.panelController.close();
-            }
-          },
-        ),
-      ),
-    );
-  }
 
-  Widget _buildPanelHeaderTo(bottomHeight, context) {
-    return Stack(
-      children: [
-        Swipeable(
-          onSwipeRight: () {
-            Future.delayed(const Duration(milliseconds: 300), () {
-              controller.audioServeHandler.skipToPrevious();
-            });
-          },
-          onSwipeLeft: () {
-            Future.delayed(const Duration(milliseconds: 300), () {
-              controller.audioServeHandler.skipToNext();
-            });
-          },
-          threshold: 120.w,
-          background: const SizedBox.shrink(),
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20.w),
-            child: _buildPlayBar(context),
-          ),
-        ),
-        Positioned(
-          bottom: 0,
-          child: GestureDetector(
-            child: Obx(() {
-              print('底部高度');
-              return Container(
-                color: Colors.transparent,
-                height: bottomHeight * (controller.panelOpenPositionThan1.value ? 0 : 1),
-                width: Get.width,
-              );
-            }),
-            onVerticalDragDown: (e) {},
-          ),
-        )
-      ],
-    );
-  }
 
-  Widget _buildPlayBar(BuildContext context) {
-    return Stack(
-      alignment: Alignment.centerLeft,
-      children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Expanded(
-                child: Padding(
-              padding: EdgeInsets.only(left: controller.panelHeaderSize),
-              child: Obx(
-                () => RichText(
-                  text: !controller.panelOpenPositionThan1.value || controller.second.value
-                      ? TextSpan(
-                          text: '${controller.mediaItem.value.title} - ',
-                          children: [
-                            TextSpan(
-                              text: controller.mediaItem.value.artist ?? '',
-                              style: TextStyle(
-                                  fontSize: 22.sp,
-                                  color: controller.second.value ? controller.bodyColor.value : controller.getLightTextColor(context),
-                                  fontWeight: FontWeight.w500),
-                            )
-                          ],
-                          style: TextStyle(
-                              fontSize: 28.sp, color: controller.second.value ? controller.bodyColor.value : controller.getLightTextColor(context), fontWeight: FontWeight.w500))
-                      : const TextSpan(),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            )),
-            Obx(() => Visibility(
-              visible: !controller.panelOpenPositionThan1.value || controller.second.value,
-              child: IconButton(
-                  onPressed: () => controller.playOrPause(),
-                  icon: Obx(() => Icon(
-                    controller.playing.value ? TablerIcons.player_pause : TablerIcons.player_play,
-                    size: controller.playing.value ? 46.w : 42.w,
-                    color: controller.second.value ? controller.bodyColor.value : controller.getLightTextColor(context),
-                  ))),
-            )),
-            // ClassWidget(
-            //     child: Obx(() => Visibility(
-            //       visible: !controller.panelOpenPositionThan1.value || controller.second.value,
-            //       child: IconButton(
-            //           onPressed: () => controller.likeSong(),
-            //           icon: Obx(() => Icon(
-            //             controller.likeIds.contains(int.tryParse(controller.mediaItem.value.id)) ? TablerIcons.heartbeat : TablerIcons.heart,
-            //             size: 46.w,
-            //             color: controller.second.value ? controller.bodyColor.value : controller.getLightTextColor(context),
-            //           ))),
-            //     )))
-          ],
-        ),
-        Obx(() => Container(
-              height: controller.getImageSize() + 60.h * controller.slidePosition.value,
-              padding: EdgeInsets.only(left: controller.getImageLeft(), top: 60.h * controller.slidePosition.value),
-              child: SimpleExtendedImage(
-                '${controller.mediaItem.value.extras?['image']}?param=500y500',
-                fit: BoxFit.cover,
-                height: controller.getImageSize(),
-                width: controller.getImageSize(),
-                borderRadius: BorderRadius.circular(controller.getImageSize() / 2 * (1 - controller.slidePosition.value * .88)),
-              ),
-            )),
-      ],
-    );
-  }
 }
 
 class PanelViewL extends GetView<Home> {
@@ -850,18 +711,18 @@ class PanelViewL extends GetView<Home> {
           //         ),
           //       ),
           //     )),
-          Obx(() => SimpleExtendedImage(
+          Obx(() => Visibility(visible: controller.panelOpenPositionThan1.value,child: SimpleExtendedImage(
             Home.to.mediaItem.value.extras?['image'] ?? '',
             fit: BoxFit.cover,
             width: Get.width,
             height: Get.height,
-          )),
+          ),)),
           Obx(() => AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(colors: [
                     !controller.panelOpenPositionThan1.value
-                        ? Theme.of(context).scaffoldBackgroundColor.withOpacity(.95)
+                        ? Theme.of(context).scaffoldBackgroundColor.withOpacity(.25)
                         : !controller.gradientBackground.value
                             ? controller.rx.value.darkVibrantColor?.color.withOpacity(.6) ?? controller.rx.value.darkMutedColor?.color.withOpacity(.6) ?? Colors.transparent
                             : controller.rx.value.lightVibrantColor?.color.withOpacity(.6) ??
@@ -1148,147 +1009,6 @@ class PanelViewL extends GetView<Home> {
     );
   }
 
-  Widget _buildPanelHeader(bottomHeight, context) {
-    print('========_buildPanelHeader');
-    return IgnorePointer(
-      ignoring: controller.panelOpenPositionThan1.value && !controller.second.value,
-      child: Visibility(
-        replacement: GestureDetector(
-          child: _buildPanelHeaderTo(bottomHeight, context),
-          onHorizontalDragDown: (e) {},
-          onTap: () {
-            if (!controller.panelControllerHome.isPanelOpen) {
-              controller.panelControllerHome.open();
-            } else {
-              if (controller.panelController.isPanelOpen) controller.panelController.close();
-            }
-          },
-        ),
-        visible: controller.panelOpenPositionThan1.value,
-        child: GestureDetector(
-          child: _buildPanelHeaderTo(bottomHeight, context),
-          onHorizontalDragDown: (e) {},
-          onVerticalDragDown: (e) {},
-          onTap: () {
-            if (!controller.panelControllerHome.isPanelOpen) {
-              controller.panelControllerHome.open();
-            } else {
-              if (controller.panelController.isPanelOpen) controller.panelController.close();
-            }
-          },
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPanelHeaderTo(bottomHeight, context) {
-    return Stack(
-      children: [
-        Swipeable(
-          onSwipeRight: () {
-            Future.delayed(const Duration(milliseconds: 300), () {
-              controller.audioServeHandler.skipToPrevious();
-            });
-          },
-          onSwipeLeft: () {
-            Future.delayed(const Duration(milliseconds: 300), () {
-              controller.audioServeHandler.skipToNext();
-            });
-          },
-          threshold: 120.w,
-          background: const SizedBox.shrink(),
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20.w),
-            child: _buildPlayBar(context),
-          ),
-        ),
-        Positioned(
-          bottom: 0,
-          child: GestureDetector(
-            child: Obx(() {
-              print('底部高度');
-              return Container(
-                color: Colors.transparent,
-                height: bottomHeight * (controller.panelOpenPositionThan1.value ? 0 : 1),
-                width: Get.width,
-              );
-            }),
-            onVerticalDragDown: (e) {},
-          ),
-        )
-      ],
-    );
-  }
-
-  Widget _buildPlayBar(BuildContext context) {
-    return Stack(
-      alignment: Alignment.centerLeft,
-      children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Expanded(
-                child: Padding(
-              padding: EdgeInsets.only(left: controller.panelHeaderSize),
-              child: Obx(
-                () => RichText(
-                  text: !controller.panelOpenPositionThan1.value || controller.second.value
-                      ? TextSpan(
-                          text: '${controller.mediaItem.value.title} - ',
-                          children: [
-                            TextSpan(
-                              text: controller.mediaItem.value.artist ?? '',
-                              style: TextStyle(
-                                  fontSize: 22.sp,
-                                  color: controller.second.value ? controller.bodyColor.value : controller.getLightTextColor(context),
-                                  fontWeight: FontWeight.w500),
-                            )
-                          ],
-                          style: TextStyle(
-                              fontSize: 28.sp, color: controller.second.value ? controller.bodyColor.value : controller.getLightTextColor(context), fontWeight: FontWeight.w500))
-                      : const TextSpan(),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            )),
-            Obx(() => Visibility(
-              visible: !controller.panelOpenPositionThan1.value || controller.second.value,
-              child: IconButton(
-                  onPressed: () => controller.playOrPause(),
-                  icon: Obx(() => Icon(
-                    controller.playing.value ? TablerIcons.player_pause : TablerIcons.player_play,
-                    size: controller.playing.value ? 46.w : 42.w,
-                    color: controller.second.value ? controller.bodyColor.value : controller.getLightTextColor(context),
-                  ))),
-            )),
-            // ClassWidget(
-            //     child: Obx(() => Visibility(
-            //       visible: !controller.panelOpenPositionThan1.value || controller.second.value,
-            //       child: IconButton(
-            //           onPressed: () => controller.likeSong(),
-            //           icon: Obx(() => Icon(
-            //             controller.likeIds.contains(int.tryParse(controller.mediaItem.value.id)) ? TablerIcons.heartbeat : TablerIcons.heart,
-            //             size: 46.w,
-            //             color: controller.second.value ? controller.bodyColor.value : controller.getLightTextColor(context),
-            //           ))),
-            //     )))
-          ],
-        ),
-        Obx(() => Container(
-              height: controller.getImageSize() + 60.h * controller.slidePosition.value,
-              padding: EdgeInsets.only(left: controller.getImageLeft(), top: 60.h * controller.slidePosition.value),
-              child: SimpleExtendedImage(
-                '${controller.mediaItem.value.extras?['image']}?param=500y500',
-                fit: BoxFit.cover,
-                height: controller.getImageSize(),
-                width: controller.getImageSize(),
-                borderRadius: BorderRadius.circular(controller.getImageSize() / 2 * (1 - controller.slidePosition.value * .88)),
-              ),
-            )),
-      ],
-    );
-  }
 }
 
 class BottomItem {

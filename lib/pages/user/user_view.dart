@@ -86,60 +86,60 @@ class UserViewP extends GetView<UserController> {
                     mainAxisSpacing: 10,
                     children: controller.userItems
                         .map((e) => Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        IconButton(
-                          onPressed: () {
-                            if ((e.routes ?? '') == 'playFm') {
-                              Home.to.audioServeHandler.setRepeatMode(AudioServiceRepeatMode.all);
-                              Home.to.audioServiceRepeatMode.value = AudioServiceRepeatMode.all;
-                              Home.to.box.put(repeatModeSp, AudioServiceRepeatMode.all.name);
-                              Home.to.getFmSongList();
-                              return;
-                            }
-                            AutoRouter.of(context).pushNamed(e.routes ?? '');
-                          },
-                          icon: Icon(e.iconData),
-                          iconSize: 52.w,
-                        ),
-                        Text(
-                          e.title,
-                          style: TextStyle(fontSize: 26.sp),
-                        )
-                      ],
-                    ))
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                IconButton(
+                                  onPressed: () {
+                                    if ((e.routes ?? '') == 'playFm') {
+                                      Home.to.audioServeHandler.setRepeatMode(AudioServiceRepeatMode.all);
+                                      Home.to.audioServiceRepeatMode.value = AudioServiceRepeatMode.all;
+                                      Home.to.box.put(repeatModeSp, AudioServiceRepeatMode.all.name);
+                                      Home.to.getFmSongList();
+                                      return;
+                                    }
+                                    AutoRouter.of(context).pushNamed(e.routes ?? '');
+                                  },
+                                  icon: Icon(e.iconData),
+                                  iconSize: 52.w,
+                                ),
+                                Text(
+                                  e.title,
+                                  style: TextStyle(fontSize: 26.sp),
+                                )
+                              ],
+                            ))
                         .toList(),
                   ),
                   _buildHeader('喜欢的音乐', context),
                   ListTile(
                     leading: Obx(() => SimpleExtendedImage(
-                      '${controller.play.value.coverImgUrl ?? ''}?param=200y200',
-                      width: 100.w,
-                      height: 100.w,
-                      borderRadius: BorderRadius.circular(100.w),
-                    )),
+                          '${controller.play.value.coverImgUrl ?? ''}?param=200y200',
+                          width: 100.w,
+                          height: 100.w,
+                          borderRadius: BorderRadius.circular(100.w),
+                        )),
                     title: Obx(() => Text(
-                      controller.play.value.name ?? '',
-                      maxLines: 1,
-                      style: TextStyle(fontSize: 30.sp, fontWeight: FontWeight.bold),
-                    )),
+                          controller.play.value.name ?? '',
+                          maxLines: 1,
+                          style: TextStyle(fontSize: 30.sp, fontWeight: FontWeight.bold),
+                        )),
                     subtitle: Obx(() => Text(
-                      '${controller.play.value.trackCount ?? 0} 首',
-                      style: TextStyle(fontSize: 26.sp),
-                    )),
+                          '${controller.play.value.trackCount ?? 0} 首',
+                          style: TextStyle(fontSize: 26.sp),
+                        )),
                     onTap: () => context.router.push(const gr.PlayListView().copyWith(args: controller.play.value)),
                   ),
                   _buildHeader('我的歌单', context),
                   Obx(() => ListView.builder(
-                    padding: EdgeInsets.symmetric(horizontal: 20.w),
-                    shrinkWrap: true,
-                    addRepaintBoundaries: false,
-                    addAutomaticKeepAlives: false,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemBuilder: (content, index) => PlayListItem(index: index, play: controller.playlist[index]),
-                    itemCount: controller.playlist.length,
-                    itemExtent: 120.w,
-                  )),
+                        padding: EdgeInsets.symmetric(horizontal: 20.w),
+                        shrinkWrap: true,
+                        addRepaintBoundaries: false,
+                        addAutomaticKeepAlives: false,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemBuilder: (content, index) => PlayListItem(index: index, play: controller.playlist[index]),
+                        itemCount: controller.playlist.length,
+                        itemExtent: 120.w,
+                      )),
                 ],
                 headerWidget: _buildMeInfo(context),
               ),
@@ -224,152 +224,202 @@ class UserViewL extends GetView<UserController> {
         child: Obx(() => Visibility(
               visible: !controller.loading.value,
               replacement: const LoadingView(),
-              child: Padding(
-                padding: EdgeInsets.only(top: 40.w),
-                child: CustomScrollView(
-                  slivers: [
-                    SliverPadding(padding: EdgeInsets.symmetric(horizontal: 80.w),sliver: SliverToBoxAdapter(
-                      child: Container(
-                        padding: EdgeInsets.all(20.w),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            InkWell(
-                              child: Obx(() => Column(
-                                children: [
-                                  SimpleExtendedImage(
-                                    '${controller.play.value.coverImgUrl ?? ''}?param=500y500',
-                                    width: 340.w,
-                                    height: 340.w,
-                                    borderRadius: BorderRadius.all(Radius.circular(25.w)),
-                                  ),
-                                  Padding(padding: EdgeInsets.only(top: 10.w),child: Obx(() => Text(
-                                    controller.play.value.name ?? '',
-                                    style: TextStyle(fontSize: 36.sp),
-                                  )),),
-                                ],
-                              )),
-                              onTap: (){
-                                context.router.push(const gr.PlayListView().copyWith(args: controller.play.value));
-                              },
+              child: CustomScrollView(
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: Obx(() => Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(colors: [
+                          Theme.of(context).scaffoldBackgroundColor,
+                          controller.palette.value.lightMutedColor?.color.withOpacity(.3) ?? Colors.transparent,
+                          controller.palette.value.dominantColor?.color.withOpacity(.3) ?? Colors.transparent
+                        ]),
+                        borderRadius: BorderRadius.circular(25.w),
+                      ),
+                      margin: EdgeInsets.symmetric(horizontal: 80.w),
+                      height: 500.w,
+                      child: Row(
+                        children: [
+                          Padding(padding: EdgeInsets.symmetric(horizontal: 40.w)),
+                          InkWell(
+                            child: SimpleExtendedImage(
+                              '${controller.play.value.coverImgUrl ?? ''}?param=500y500',
+                              width: 400.w,
+                              height: 400.w,
+                              borderRadius: BorderRadius.circular(25.w),
+                              // borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), bottomLeft: Radius.circular(25.w)),
                             ),
-
-                            Expanded(child: GridView.count(
-                              padding: const EdgeInsets.only(top: 0),
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              crossAxisCount: 4,
-                              //设置内边距
-                              //设置横向间距
-                              //设置主轴间距
-                              mainAxisSpacing: 10,
-                              children: controller.userItems
-                                  .map((e) => Column(
+                            onTap: () {
+                              context.router.push(const gr.PlayListView().copyWith(args: controller.play.value));
+                            },
+                          ),
+                          Expanded(
+                              child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  IconButton(
-                                    onPressed: () {
-                                      if ((e.routes ?? '') == 'playFm') {
-                                        Home.to.audioServeHandler.setRepeatMode(AudioServiceRepeatMode.all);
-                                        Home.to.audioServiceRepeatMode.value = AudioServiceRepeatMode.all;
-                                        Home.to.box.put(repeatModeSp, AudioServiceRepeatMode.all.name);
-                                        Home.to.getFmSongList();
-                                        return;
-                                      }
-                                      AutoRouter.of(context).pushNamed(e.routes ?? '');
-                                    },
-                                    icon: Icon(e.iconData),
-                                    iconSize: 72.w,
-                                  ),
-                                  Text(
-                                    e.title,
-                                    style: TextStyle(fontSize: 26.sp),
+                                  Obx(() => Text(
+                                    controller.play.value.name ?? '',
+                                    style: TextStyle(color: controller.palette.value.dominantColor?.bodyTextColor, fontSize: 54.sp),
+                                  )),
+                                  Padding(padding: EdgeInsets.symmetric(vertical: 20.w)),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                    children: controller.userItems
+                                        .map((e) => Column(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        IconButton(
+                                          onPressed: () {
+                                            if ((e.routes ?? '') == 'playFm') {
+                                              Home.to.audioServeHandler.setRepeatMode(AudioServiceRepeatMode.all);
+                                              Home.to.audioServiceRepeatMode.value = AudioServiceRepeatMode.all;
+                                              Home.to.box.put(repeatModeSp, AudioServiceRepeatMode.all.name);
+                                              Home.to.getFmSongList();
+                                              return;
+                                            }
+                                            AutoRouter.of(context).pushNamed(e.routes ?? '');
+                                          },
+                                          icon: Icon(e.iconData),
+                                          color: controller.palette.value.dominantColor?.bodyTextColor,
+                                          iconSize: 72.w,
+                                        ),
+                                        Text(
+                                          e.title,
+                                          style: TextStyle(fontSize: 26.sp, color: controller.palette.value.dominantColor?.bodyTextColor),
+                                        )
+                                      ],
+                                    ))
+                                        .toList(),
                                   )
                                 ],
-                              ))
-                                  .toList(),
-                            ))
-                          ],
-                        ),
+                              )),
+                        ],
                       ),
-                    ),),
-                    // SliverToBoxAdapter(
-                    //     child: Padding(
-                    //   padding: EdgeInsets.symmetric(horizontal: 80.w),
-                    //   child: ListTile(
-                    //     leading: SizedBox(
-                    //       width: 200.w,
-                    //       height: 200.w,
-                    //       child: Obx(() => SimpleExtendedImage.avatar(
-                    //             '${controller.play.value.coverImgUrl ?? ''}?param=1500y1500',
-                    //             width: 200.w,
-                    //             height: 200.w,
-                    //           )),
-                    //     ),
-                    //     title: Obx(() => Text(
-                    //           controller.play.value.name ?? '',
-                    //           maxLines: 1,
-                    //           style: const TextStyle(fontWeight: FontWeight.bold),
-                    //         )),
-                    //     subtitle: Obx(() => Text(
-                    //           '${controller.play.value.trackCount ?? 0} 首',
-                    //           style: TextStyle(fontSize: 26.sp),
-                    //         )),
-                    //     onTap: () => context.router.push(const gr.PlayListView().copyWith(args: controller.play.value)),
-                    //   ),
-                    // )),
-                    SliverToBoxAdapter(
-                      child: _buildHeader('我的歌单', context),
-                    ),
-                    SliverPadding(
-                      padding: EdgeInsets.symmetric(horizontal: 80.w),
-                      sliver: SliverGrid.builder(
-
-                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 6, childAspectRatio: .75, mainAxisSpacing: 10.0, crossAxisSpacing: 10.0),
-                          itemBuilder: (context, index) => _buildItem(controller.playlist[index], context),
-                          itemCount: controller.playlist.length,
-                          addAutomaticKeepAlives: false,
-                          addRepaintBoundaries: false),
-                    ),
-                  ],
-                  // child: Column(
-                  //   children: [
-                  //     FrameSeparateWidget(child: _buildHeader('喜欢的音乐', context)),
-                  //     FrameSeparateWidget(
-                  //         child: ListTile(
-                  //           leading: Obx(() => SimpleExtendedImage(
-                  //             '${controller.play.value.coverImgUrl ?? ''}?param=300y300',
-                  //             width: 100.w,
-                  //             height: 100.w,
-                  //             borderRadius: BorderRadius.circular(100.w),
-                  //           )),
-                  //           title: Obx(() => Text(
-                  //             controller.play.value.name ?? '',
-                  //             maxLines: 1,
-                  //             style: TextStyle(fontSize: 30.sp, fontWeight: FontWeight.bold),
-                  //           )),
-                  //           subtitle: Obx(() => Text(
-                  //             '${controller.play.value.trackCount ?? 0} 首',
-                  //             style: TextStyle(fontSize: 26.sp),
-                  //           )),
-                  //           onTap: () => context.router.push(const gr.PlayListView().copyWith(args: controller.play.value)),
-                  //         )),
-                  //     FrameSeparateWidget(child: _buildHeader('我的歌单', context)),
-                  //     FrameSeparateWidget(
-                  //         child: Obx(() => ListView.builder(
-                  //           padding: EdgeInsets.symmetric(horizontal: 20.w),
-                  //           shrinkWrap: true,
-                  //           addRepaintBoundaries: false,
-                  //           addAutomaticKeepAlives: false,
-                  //           physics: const NeverScrollableScrollPhysics(),
-                  //           itemBuilder: (content, index) => PlayListItem(index: index, play: controller.playlist[index]),
-                  //           itemCount: controller.playlist.length,
-                  //           itemExtent: 120.w,
-                  //         ))),
-                  //   ],
+                    )),
+                  ),
+                  // SliverPadding(
+                  //   padding: EdgeInsets.symmetric(horizontal: 80.w),
+                  //   sliver: SliverToBoxAdapter(
+                  //     child: Container(
+                  //       padding: EdgeInsets.all(20.w),
+                  //       child: Row(
+                  //         crossAxisAlignment: CrossAxisAlignment.center,
+                  //         children: [
+                  //           InkWell(
+                  //             child: Obx(() => Column(
+                  //                   children: [
+                  //                     SimpleExtendedImage(
+                  //                       '${controller.play.value.coverImgUrl ?? ''}?param=500y500',
+                  //                       width: 340.w,
+                  //                       height: 340.w,
+                  //                       borderRadius: BorderRadius.all(Radius.circular(25.w)),
+                  //                     ),
+                  //                     Padding(
+                  //                       padding: EdgeInsets.only(top: 10.w),
+                  //                       child: Obx(() => Text(
+                  //                             controller.play.value.name ?? '',
+                  //                             style: TextStyle(fontSize: 36.sp),
+                  //                           )),
+                  //                     ),
+                  //                   ],
+                  //                 )),
+                  //             onTap: () {
+                  //               context.router.push(const gr.PlayListView().copyWith(args: controller.play.value));
+                  //             },
+                  //           ),
+                  //           Expanded(
+                  //               child: GridView.count(
+                  //             padding: const EdgeInsets.only(top: 0),
+                  //             shrinkWrap: true,
+                  //             physics: const NeverScrollableScrollPhysics(),
+                  //             crossAxisCount: 4,
+                  //             //设置内边距
+                  //             //设置横向间距
+                  //             //设置主轴间距
+                  //             mainAxisSpacing: 10,
+                  //             children: controller.userItems
+                  //                 .map((e) => Column(
+                  //                       crossAxisAlignment: CrossAxisAlignment.center,
+                  //                       mainAxisAlignment: MainAxisAlignment.center,
+                  //                       children: [
+                  //                         IconButton(
+                  //                           onPressed: () {
+                  //                             if ((e.routes ?? '') == 'playFm') {
+                  //                               Home.to.audioServeHandler.setRepeatMode(AudioServiceRepeatMode.all);
+                  //                               Home.to.audioServiceRepeatMode.value = AudioServiceRepeatMode.all;
+                  //                               Home.to.box.put(repeatModeSp, AudioServiceRepeatMode.all.name);
+                  //                               Home.to.getFmSongList();
+                  //                               return;
+                  //                             }
+                  //                             AutoRouter.of(context).pushNamed(e.routes ?? '');
+                  //                           },
+                  //                           icon: Icon(e.iconData),
+                  //                           iconSize: 72.w,
+                  //                         ),
+                  //                         Text(
+                  //                           e.title,
+                  //                           style: TextStyle(fontSize: 26.sp),
+                  //                         )
+                  //                       ],
+                  //                     ))
+                  //                 .toList(),
+                  //           ))
+                  //         ],
+                  //       ),
+                  //     ),
+                  //   ),
                   // ),
-                ),
+                  SliverToBoxAdapter(
+                    child: _buildHeader('我的歌单', context),
+                  ),
+                  SliverPadding(
+                    padding: EdgeInsets.symmetric(horizontal: 80.w),
+                    sliver: SliverGrid.builder(
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 6, childAspectRatio: .75, mainAxisSpacing: 10.0, crossAxisSpacing: 10.0),
+                        itemBuilder: (context, index) => _buildItem(controller.playlist[index], context),
+                        itemCount: controller.playlist.length,
+                        addAutomaticKeepAlives: false,
+                        addRepaintBoundaries: false),
+                  ),
+                ],
+                // child: Column(
+                //   children: [
+                //     FrameSeparateWidget(child: _buildHeader('喜欢的音乐', context)),
+                //     FrameSeparateWidget(
+                //         child: ListTile(
+                //           leading: Obx(() => SimpleExtendedImage(
+                //             '${controller.play.value.coverImgUrl ?? ''}?param=300y300',
+                //             width: 100.w,
+                //             height: 100.w,
+                //             borderRadius: BorderRadius.circular(100.w),
+                //           )),
+                //           title: Obx(() => Text(
+                //             controller.play.value.name ?? '',
+                //             maxLines: 1,
+                //             style: TextStyle(fontSize: 30.sp, fontWeight: FontWeight.bold),
+                //           )),
+                //           subtitle: Obx(() => Text(
+                //             '${controller.play.value.trackCount ?? 0} 首',
+                //             style: TextStyle(fontSize: 26.sp),
+                //           )),
+                //           onTap: () => context.router.push(const gr.PlayListView().copyWith(args: controller.play.value)),
+                //         )),
+                //     FrameSeparateWidget(child: _buildHeader('我的歌单', context)),
+                //     FrameSeparateWidget(
+                //         child: Obx(() => ListView.builder(
+                //           padding: EdgeInsets.symmetric(horizontal: 20.w),
+                //           shrinkWrap: true,
+                //           addRepaintBoundaries: false,
+                //           addAutomaticKeepAlives: false,
+                //           physics: const NeverScrollableScrollPhysics(),
+                //           itemBuilder: (content, index) => PlayListItem(index: index, play: controller.playlist[index]),
+                //           itemCount: controller.playlist.length,
+                //           itemExtent: 120.w,
+                //         ))),
+                //   ],
+                // ),
               ),
             ))));
   }
@@ -429,7 +479,6 @@ class UserViewL extends GetView<UserController> {
       ),
     );
   }
-
 
   Widget _buildMeInfo(context) {
     return SafeArea(
