@@ -1,6 +1,6 @@
 
 
-<img src="macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_256.png" alt="app_icon_256" style="zoom: 50%;" />
+<img align="center" src="macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_256.png" alt="app_icon_256" style="zoom: 50%;" />
 
 <h1 align="center">bujuan</h1>
 
@@ -8,27 +8,25 @@
 
 
 
-#### MacOS (适配中)
+#### MacOS (适配中)	
 
-​	![](images/957.png)
+![](images/957.png)
 
 
 
 #### Android & IOS (UI一致)
 
+| <img src="images/956.jpeg" alt="956" style="zoom:20%;" /> | <img src="images/954.jpeg" alt="954" style="zoom:20%;" /> | <img src="images/955.jpeg" alt="955" style="zoom:20%;" /> |
+| --------------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------------- |
 
 
-<p  align="center" style="display: flex;justify-content: space-between">
-<img src="images/956.jpeg" alt="956" style="zoom:20%;" />
-<img src="images/954.jpeg" alt="954" style="zoom:20%;" />
-<img src="images/955.jpeg" alt="955" style="zoom:20%;" />
-</p>
+
 
 
 
 
 ## 功能介绍
-- 采用flutter开发，可打包编译为所有平台，采用Skia作为2D渲染引擎，采用Dart语言作为运行，性能可媲美原生。
+- 采用flutter开发，可打包编译为所有平台，采用Skia作为2D渲染引擎，Dart语言作为运行，性能可媲美原生。
 
 - 集成Rust版[UnblockNeteaseMusic](https://github.com/UnblockNeteaseMusic/server-rust),可以获取灰色歌曲音源。
 
