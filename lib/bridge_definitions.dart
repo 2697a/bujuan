@@ -9,27 +9,8 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 import 'package:uuid/uuid.dart';
 
 abstract class Native {
-  Future<Platform> platform({dynamic hint});
-
-  FlutterRustBridgeTaskConstMeta get kPlatformConstMeta;
-
-  Future<bool> rustReleaseMode({dynamic hint});
-
-  FlutterRustBridgeTaskConstMeta get kRustReleaseModeConstMeta;
-
-  Future<String> aaa(
+  Future<String> getUnblockNeteaseMusicUrl(
       {required String songName, required String artistsName, dynamic hint});
 
-  FlutterRustBridgeTaskConstMeta get kAaaConstMeta;
-}
-
-enum Platform {
-  Unknown,
-  Android,
-  Ios,
-  Windows,
-  Unix,
-  MacIntel,
-  MacApple,
-  Wasm,
+  FlutterRustBridgeTaskConstMeta get kGetUnblockNeteaseMusicUrlConstMeta;
 }

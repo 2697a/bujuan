@@ -22,7 +22,6 @@ import 'package:flutter_zoom_drawer/config.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:on_audio_edit/on_audio_edit.dart';
 import 'package:palette_generator/palette_generator.dart';
 
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
@@ -175,7 +174,6 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
   //路由相关
   AutoRouterDelegate? autoRouterDelegate;
 
-  OnAudioEdit onAudioEdit = GetIt.instance<OnAudioEdit>();
 
   Rx<Color> bodyColor = Colors.white.obs;
 
@@ -330,10 +328,6 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
           lyricsLineModels.addAll(list);
         }
       }
-    } else {
-      AudioModel audioModel = await onAudioEdit.readAudio(mediaItem.value.extras?['url']);
-      var list = ParserLrc(audioModel.lyrics ?? '').parseLines();
-      lyricsLineModels.addAll(list);
     }
   }
 

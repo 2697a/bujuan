@@ -43,9 +43,6 @@ dependencies:
   flutter_screenutil: ^5.8.4
   extended_image: ^8.0.2
   palette_generator: ^0.3.3+2
-  on_audio_query: ^2.9.0
-  on_audio_edit:
-    path: plugins/on_audio_edit
   just_audio: ^0.9.34
   audio_service: ^0.18.10
   get_it: ^7.6.0

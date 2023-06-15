@@ -3,8 +3,6 @@ import 'package:bujuan/pages/guide/guide_view.dart';
 import 'package:bujuan/pages/home/view/home_view.dart';
 import 'package:bujuan/pages/index/cloud_view.dart';
 import 'package:bujuan/pages/index/main_view.dart';
-import 'package:bujuan/pages/local/local_song.dart';
-import 'package:bujuan/pages/local/netease_cache.dart';
 import 'package:bujuan/pages/mv/mv_view.dart';
 import 'package:bujuan/pages/radio/my_radio_view.dart';
 import 'package:bujuan/pages/radio/radio_details_view.dart';
@@ -14,14 +12,9 @@ import 'package:bujuan/pages/setting/user_setting_view.dart';
 import 'package:bujuan/pages/talk/talk_view.dart';
 import 'package:bujuan/pages/today/today_view.dart';
 import 'package:bujuan/pages/user/user_view.dart';
-// import 'package:go_router/go_router.dart';
 
 import '../pages/album/album_details.dart';
 import '../pages/artists/artists_view.dart';
-import '../pages/local/edit_song_view.dart';
-import '../pages/local/local_album.dart';
-import '../pages/local/local_ar.dart';
-import '../pages/local/local_view.dart';
 import '../pages/login/login.dart';
 import '../pages/play_list/playlist_view.dart';
 import '../pages/search/search_view.dart';
@@ -110,11 +103,6 @@ abstract class _Paths {
       AutoRoute(path: Routes.artists, page: ArtistsView),
       AutoRoute(path: Routes.myRadio, page: MyRadioView),
       AutoRoute(path: Routes.radioDetails, page: RadioDetailsView),
-      AutoRoute(path: Routes.local, page: LocalView),
-      AutoRoute(path: Routes.localSong, page: LocalSongView),
-      AutoRoute(path: Routes.neteaseCache, page: NeteaseCacheView),
-      AutoRoute(path: Routes.localAlbum, page: LocalAlbum),
-      AutoRoute(path: Routes.localAr, page: LocalAr),
       AutoRoute(path: Routes.albumDetails, page: AlbumDetails),
       AutoRoute(path: Routes.settingL, page: SettingViewL),
     ]),
@@ -126,7 +114,6 @@ abstract class _Paths {
     AutoRoute(path: Routes.userSetting, page: UserSettingView),
     AutoRoute(path: Routes.mv, page: MvView),
     AutoRoute(path: Routes.update, page: UpdateView),
-    AutoRoute(path: Routes.editSong, page: EditSongView),
     AutoRoute(path: Routes.imageBlur, page: ImageBlur),
     AutoRoute(path: Routes.coffee, page: CoffeePage),
   ],

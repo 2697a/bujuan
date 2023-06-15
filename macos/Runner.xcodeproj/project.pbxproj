@@ -52,11 +52,11 @@
 			remoteGlobalIDString = CA60C8E514042969E816930C;
 			remoteInfo = "native-staticlib";
 		};
-		820C45E92A39BF1D0061B096 /* PBXContainerItemProxy */ = {
+		829C54022A3B1B2300DADB65 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A38F8B98299579880018A868 /* native.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = CA608ED3C39F2E20855F7E6C;
+			remoteGlobalIDString = CA6037EFE50731B8588F85D9;
 			remoteInfo = "native-cdylib";
 		};
 /* End PBXContainerItemProxy section */
@@ -93,7 +93,7 @@
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
 		90F2E6E79A218A7046887984 /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
 		9740EEB21CF90195004384FC /* Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
-		A38F8B98299579880018A868 /* native.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = native.xcodeproj; path = ../native/native/native.xcodeproj; sourceTree = "<group>"; };
+		A38F8B98299579880018A868 /* native.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = native.xcodeproj; path = ../rust/native/native.xcodeproj; sourceTree = "<group>"; };
 		A9C3E762C45029F80BD13A50 /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D09422914CB5AFF05C3F72C0 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -190,8 +190,8 @@
 		A38F8B99299579880018A868 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				820C45E42A39BEC60061B096 /* native.dylib */,
 				820C45E62A39BEC60061B096 /* libnative_static.a */,
+				820C45E42A39BEC60061B096 /* native.dylib */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -222,7 +222,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				820C45EA2A39BF1D0061B096 /* PBXTargetDependency */,
+				829C54032A3B1B2300DADB65 /* PBXTargetDependency */,
 				33CC11202044C79F0003C045 /* PBXTargetDependency */,
 			);
 			name = Runner;
@@ -409,10 +409,10 @@
 			target = 33CC111A2044C6BA0003C045 /* Flutter Assemble */;
 			targetProxy = 33CC111F2044C79F0003C045 /* PBXContainerItemProxy */;
 		};
-		820C45EA2A39BF1D0061B096 /* PBXTargetDependency */ = {
+		829C54032A3B1B2300DADB65 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "native-cdylib";
-			targetProxy = 820C45E92A39BF1D0061B096 /* PBXContainerItemProxy */;
+			targetProxy = 829C54022A3B1B2300DADB65 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

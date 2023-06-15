@@ -185,7 +185,6 @@ class SongItem extends StatelessWidget {
                     }
                     break;
                   case ActionType.edit:
-                    context.router.push(const gr.EditSongView().copyWith(args: mediaItem));
                     break;
                   case ActionType.talk:
                     context.router.push(const gr.TalkView().copyWith(queryParams: {'id': mediaItem.id, 'type': 'song','name':mediaItem.title}));
@@ -263,7 +262,6 @@ class SongItemShowImage extends StatelessWidget {
                     }
                     break;
                   case ActionType.edit:
-                    context.router.push(const gr.EditSongView().copyWith(args: mediaItem));
                     break;
                   case ActionType.talk:
                     context.router.push(const gr.TalkView().copyWith(queryParams: {'id': mediaItem.id, 'type': 'song','name':mediaItem.title}));

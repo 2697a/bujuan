@@ -50,7 +50,7 @@ packages:
     source: hosted
     version: "1.17.1"
   cupertino_icons:
-    dependency: "direct rust"
+    dependency: "direct main"
     description:
       name: cupertino_icons
       sha256: e35129dc44c9118cee2a5603506d823bab99c68393879edb440e0090d07586be
@@ -58,7 +58,7 @@ packages:
     source: hosted
     version: "1.0.5"
   easy_localization:
-    dependency: "direct rust"
+    dependency: "direct main"
     description:
       name: easy_localization
       sha256: "30ebf25448ffe169e0bd9bc4b5da94faa8398967a2ad2ca09f438be8b6953645"
@@ -98,17 +98,17 @@ packages:
     source: hosted
     version: "6.1.4"
   flutter:
-    dependency: "direct rust"
+    dependency: "direct main"
     description: flutter
     source: sdk
     version: "0.0.0"
   flutter_localizations:
-    dependency: "direct rust"
+    dependency: "direct main"
     description: flutter
     source: sdk
     version: "0.0.0"
   flutter_platform_widgets:
-    dependency: "direct rust"
+    dependency: "direct main"
     description:
       name: flutter_platform_widgets
       sha256: "81c7d0510532db7616927e75a1733d63c5f7791ca1908c83361165b18b191f5f"
@@ -126,7 +126,7 @@ packages:
     source: sdk
     version: "0.0.0"
   flutter_zoom_drawer:
-    dependency: "direct rust"
+    dependency: "direct main"
     description:
       path: ".."
       relative: true
@@ -237,7 +237,7 @@ packages:
     source: hosted
     version: "4.2.4"
   provider:
-    dependency: "direct rust"
+    dependency: "direct main"
     description:
       name: provider
       sha256: cdbe7530b12ecd9eb455bdaa2fcb8d4dad22e80b8afb4798b41479d5ce26847f
@@ -245,7 +245,7 @@ packages:
     source: hosted
     version: "6.0.5"
   shared_preferences:
-    dependency: "direct rust"
+    dependency: "direct main"
     description:
       name: shared_preferences
       sha256: "5949029e70abe87f75cfe59d17bf5c397619c4b74a099b10116baeb34786fad9"

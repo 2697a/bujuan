@@ -46,7 +46,7 @@ android {
     }
 
     sourceSets {
-        main.java.srcDirs += 'src/rust/kotlin'
+        main.java.srcDirs += 'src/main/kotlin'
     }
 
     defaultConfig {
@@ -109,7 +109,7 @@ dependencies {
         }
     }
     tasks.register("cargoBuild$taskPostfix", Exec) {
-        workingDir "../../native/native"
+        workingDir "../../rust/native"
         environment ANDROID_NDK_HOME: "$ANDROID_NDK"
         commandLine 'cargo', 'ndk',
                 // the 2 ABIs below are used by real Android devices

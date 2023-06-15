@@ -26,54 +26,23 @@ class NativeImpl implements Native {
   factory NativeImpl.wasm(FutureOr<WasmModule> module) =>
       NativeImpl(module as ExternalLibrary);
   NativeImpl.raw(this._platform);
-  Future<Platform> platform({dynamic hint}) {
-    return _platform.executeNormal(FlutterRustBridgeTask(
-      callFfi: (port_) => _platform.inner.wire_platform(port_),
-      parseSuccessData: _wire2api_platform,
-      constMeta: kPlatformConstMeta,
-      argValues: [],
-      hint: hint,
-    ));
-  }
-
-  FlutterRustBridgeTaskConstMeta get kPlatformConstMeta =>
-      const FlutterRustBridgeTaskConstMeta(
-        debugName: "platform",
-        argNames: [],
-      );
-
-  Future<bool> rustReleaseMode({dynamic hint}) {
-    return _platform.executeNormal(FlutterRustBridgeTask(
-      callFfi: (port_) => _platform.inner.wire_rust_release_mode(port_),
-      parseSuccessData: _wire2api_bool,
-      constMeta: kRustReleaseModeConstMeta,
-      argValues: [],
-      hint: hint,
-    ));
-  }
-
-  FlutterRustBridgeTaskConstMeta get kRustReleaseModeConstMeta =>
-      const FlutterRustBridgeTaskConstMeta(
-        debugName: "rust_release_mode",
-        argNames: [],
-      );
-
-  Future<String> aaa(
+  Future<String> getUnblockNeteaseMusicUrl(
       {required String songName, required String artistsName, dynamic hint}) {
     var arg0 = _platform.api2wire_String(songName);
     var arg1 = _platform.api2wire_String(artistsName);
     return _platform.executeNormal(FlutterRustBridgeTask(
-      callFfi: (port_) => _platform.inner.wire_aaa(port_, arg0, arg1),
+      callFfi: (port_) =>
+          _platform.inner.wire_get_unblock_netease_music_url(port_, arg0, arg1),
       parseSuccessData: _wire2api_String,
-      constMeta: kAaaConstMeta,
+      constMeta: kGetUnblockNeteaseMusicUrlConstMeta,
       argValues: [songName, artistsName],
       hint: hint,
     ));
   }
 
-  FlutterRustBridgeTaskConstMeta get kAaaConstMeta =>
+  FlutterRustBridgeTaskConstMeta get kGetUnblockNeteaseMusicUrlConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
-        debugName: "aaa",
+        debugName: "get_unblock_netease_music_url",
         argNames: ["songName", "artistsName"],
       );
 
@@ -84,18 +53,6 @@ class NativeImpl implements Native {
 
   String _wire2api_String(dynamic raw) {
     return raw as String;
-  }
-
-  bool _wire2api_bool(dynamic raw) {
-    return raw as bool;
-  }
-
-  int _wire2api_i32(dynamic raw) {
-    return raw as int;
-  }
-
-  Platform _wire2api_platform(dynamic raw) {
-    return Platform.values[raw as int];
   }
 
   int _wire2api_u8(dynamic raw) {
@@ -233,53 +190,27 @@ class NativeWire implements FlutterRustBridgeWireBase {
   late final _init_frb_dart_api_dl = _init_frb_dart_api_dlPtr
       .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
 
-  void wire_platform(
-    int port_,
-  ) {
-    return _wire_platform(
-      port_,
-    );
-  }
-
-  late final _wire_platformPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
-          'wire_platform');
-  late final _wire_platform =
-      _wire_platformPtr.asFunction<void Function(int)>();
-
-  void wire_rust_release_mode(
-    int port_,
-  ) {
-    return _wire_rust_release_mode(
-      port_,
-    );
-  }
-
-  late final _wire_rust_release_modePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
-          'wire_rust_release_mode');
-  late final _wire_rust_release_mode =
-      _wire_rust_release_modePtr.asFunction<void Function(int)>();
-
-  void wire_aaa(
+  void wire_get_unblock_netease_music_url(
     int port_,
     ffi.Pointer<wire_uint_8_list> song_name,
     ffi.Pointer<wire_uint_8_list> artists_name,
   ) {
-    return _wire_aaa(
+    return _wire_get_unblock_netease_music_url(
       port_,
       song_name,
       artists_name,
     );
   }
 
-  late final _wire_aaaPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>,
-              ffi.Pointer<wire_uint_8_list>)>>('wire_aaa');
-  late final _wire_aaa = _wire_aaaPtr.asFunction<
-      void Function(
-          int, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_uint_8_list>)>();
+  late final _wire_get_unblock_netease_music_urlPtr = _lookup<
+          ffi.NativeFunction<
+              ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>,
+                  ffi.Pointer<wire_uint_8_list>)>>(
+      'wire_get_unblock_netease_music_url');
+  late final _wire_get_unblock_netease_music_url =
+      _wire_get_unblock_netease_music_urlPtr.asFunction<
+          void Function(int, ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_uint_8_list>)>();
 
   ffi.Pointer<wire_uint_8_list> new_uint_8_list_0(
     int len,
@@ -311,9 +242,9 @@ class NativeWire implements FlutterRustBridgeWireBase {
       _free_WireSyncReturnPtr.asFunction<void Function(WireSyncReturn)>();
 }
 
- class _Dart_Handle extends ffi.Opaque {}
+class _Dart_Handle extends ffi.Opaque {}
 
- class wire_uint_8_list extends ffi.Struct {
+class wire_uint_8_list extends ffi.Struct {
   external ffi.Pointer<ffi.Uint8> ptr;
 
   @ffi.Int32()

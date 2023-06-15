@@ -12,10 +12,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
-import 'package:audio_session/audio_session.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:just_audio/just_audio.dart';
+
 // import 'package:media_cache_manager/media_cache_manager.dart';
+import '../ffi.dart';
 import 'audio_player_handler.dart';
 import 'constants/key.dart';
 import 'constants/platform_utils.dart';
@@ -73,7 +74,6 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
   final _playListShut = <MediaItem>[];
   int _curIndex = 0; // 播放列表索引
   bool playInterrupted = false;
-  AudioSession? session;
   Timer? _sleepTimer;
 
   BujuanAudioHandler() {
@@ -282,6 +282,11 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
       mediaItem.add(song);
       SongUrlListWrap songUrl = await NeteaseMusicApi().songDownloadUrl([song.id], level: high ? 'lossless' : 'exhigh');
       url = ((songUrl.data ?? [])[0].url ?? '').split('?')[0];
+      if (url.isEmpty) {
+        print('============UnblockNeteaseMusic开始启动===========================');
+        url = await api.getUnblockNeteaseMusicUrl(songName: song.title, artistsName: song.artist ?? '');
+        print('============UnblockNeteaseMusic启动成功===========================$url');
+      }
       if (url.isNotEmpty) {
         await _player.setUrl(url);
         if (playIt) _player.play();
