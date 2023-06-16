@@ -93,8 +93,8 @@ class _ClickableListWheelScrollViewState
 
   int _getClickedIndex() {
     final currentIndex = (widget.scrollController is FixedExtentScrollController) ?
-                          (widget.scrollController as FixedExtentScrollController).selectedItem :
-                           widget.scrollController.offset ~/ widget.itemHeight;
+    (widget.scrollController as FixedExtentScrollController).selectedItem :
+    widget.scrollController.offset ~/ widget.itemHeight;
     final clickOffset = _getClickedOffset();
     final indexOffset = (clickOffset / widget.itemHeight).round();
     final newIndex = currentIndex + indexOffset;

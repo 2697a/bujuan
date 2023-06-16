@@ -18,7 +18,7 @@ import 'package:bujuan/widget/weslide/panel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_zoom_drawer/config.dart';
+import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive_flutter/adapters.dart';
@@ -174,7 +174,6 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
   //路由相关
   AutoRouterDelegate? autoRouterDelegate;
 
-
   Rx<Color> bodyColor = Colors.white.obs;
 
   RxInt sleepMin = 0.obs;
@@ -304,29 +303,27 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
   _getLyric() async {
     //获取歌词
     hasTran.value = false;
-    if (mediaItem.value.extras?['type'] != MediaType.local.name) {
-      String lyric = box.get('lyric_${mediaItem.value.id}') ?? '';
-      String lyricTran = box.get('lyricTran_${mediaItem.value.id}') ?? '';
-      if (lyric.isEmpty) {
-        SongLyricWrap songLyricWrap = await NeteaseMusicApi().songLyric(mediaItem.value.id);
-        lyric = songLyricWrap.lrc.lyric ?? "";
-        lyricTran = songLyricWrap.tlyric.lyric ?? "";
-        box.put('lyric_${mediaItem.value.id}', lyric);
-        box.put('lyricTran_${mediaItem.value.id}', lyricTran);
-      }
-      if (lyric.isNotEmpty) {
-        var list = ParserLrc(lyric).parseLines();
-        var listTran = ParserLrc(lyricTran).parseLines();
-        if (lyricTran.isNotEmpty) {
-          hasTran.value = true;
-          lyricsLineModels.addAll(list.map((e) {
-            int index = listTran.indexWhere((element) => element.startTime == e.startTime);
-            if (index != -1) e.extText = listTran[index].mainText;
-            return e;
-          }).toList());
-        } else {
-          lyricsLineModels.addAll(list);
-        }
+    String lyric = box.get('lyric_${mediaItem.value.id}') ?? '';
+    String lyricTran = box.get('lyricTran_${mediaItem.value.id}') ?? '';
+    if (lyric.isEmpty) {
+      SongLyricWrap songLyricWrap = await NeteaseMusicApi().songLyric(mediaItem.value.id);
+      lyric = songLyricWrap.lrc.lyric ?? "";
+      lyricTran = songLyricWrap.tlyric.lyric ?? "";
+      box.put('lyric_${mediaItem.value.id}', lyric);
+      box.put('lyricTran_${mediaItem.value.id}', lyricTran);
+    }
+    if (lyric.isNotEmpty) {
+      var list = ParserLrc(lyric).parseLines();
+      var listTran = ParserLrc(lyricTran).parseLines();
+      if (lyricTran.isNotEmpty) {
+        hasTran.value = true;
+        lyricsLineModels.addAll(list.map((e) {
+          int index = listTran.indexWhere((element) => element.startTime == e.startTime);
+          if (index != -1) e.extText = listTran[index].mainText;
+          return e;
+        }).toList());
+      } else {
+        lyricsLineModels.addAll(list);
       }
     }
   }
@@ -347,7 +344,6 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
     // if (leftImage.value) return;
     var color = rx.value.darkMutedColor?.color ?? rx.value.darkVibrantColor?.color ?? rx.value.dominantColor?.color ?? Colors.white;
     Brightness brightness = ThemeData.estimateBrightnessForColor(color);
-    print('object===================================================================================${brightness == Brightness.dark}');
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       systemNavigationBarIconBrightness: changed
           ? brightness == Brightness.light
@@ -573,7 +569,7 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
                 'size': ''
               },
               title: e.name ?? "",
-              album: jsonEncode(e.album!.toJson()),
+              album: e.album?.name ?? '',
               artist: (e.artists ?? []).map((e) => e.name).toList().join(' / ')))
           .toList();
       audioServeHandler.addFmItems(medias, false);

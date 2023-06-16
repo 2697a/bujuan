@@ -5,6 +5,7 @@ import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/pages/home/view/z_lyric_view.dart';
 import 'package:bujuan/pages/home/view/z_playlist_view.dart';
 import 'package:bujuan/widget/mobile/flashy_navbar.dart';
+import 'package:bujuan/widget/my_get_view.dart';
 import 'package:bujuan/widget/simple_extended_image.dart';
 import 'package:bujuan/widget/weslide/panel.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +26,7 @@ class PanelView extends GetView<Home> {
   Widget build(BuildContext context) {
     double bottomHeight = MediaQuery.of(controller.buildContext).padding.bottom * (PlatformUtils.isIOS ? 0.4 : 0.9);
     if (bottomHeight == 0) bottomHeight = 30.w;
-    return SlidingUpPanel(
+    return MyGetView(child: SlidingUpPanel(
       controller: controller.panelController,
       onPanelSlide: (value) {
         controller.changeSlidePosition(1 - value, status: false);
@@ -38,13 +39,16 @@ class PanelView extends GetView<Home> {
       body: _buildDefaultBody(context),
       panel: Padding(
         padding: EdgeInsets.only(top: 110.w + bottomHeight),
-        child: const ZPlayListView(),
+        child: Obx(() => IndexedStack(
+          index: controller.selectIndex.value,
+          children: controller.pages,
+        )),
       ),
       header: _buildBottom(bottomHeight, context),
       boxShadow: const [BoxShadow(blurRadius: 8.0, color: Color.fromRGBO(0, 0, 0, 0.05))],
-      maxHeight: Get.height - (controller.panelMobileMinSize + MediaQuery.of(context).padding.top + controller.panelAlbumPadding * 2),
-      minHeight: 110.w + bottomHeight,
-    );
+      maxHeight: Get.height - (controller.panelMobileMinSize + MediaQuery.of(context).padding.top + controller.panelAlbumPadding *2),
+      minHeight: controller.panelMobileMinSize+controller.panelAlbumPadding*2 + bottomHeight,
+    ));
   }
 
   Widget _buildSlide(BuildContext context) {
@@ -180,18 +184,18 @@ class PanelView extends GetView<Home> {
 
   Widget _buildBottom(bottomHeight, context) {
     return SizedBox(
-      height: 120.w + bottomHeight,
+      height: controller.panelMobileMinSize+controller.panelAlbumPadding*2 + bottomHeight,
       child: Stack(
         alignment: Alignment.topCenter,
         children: [
           Obx(() => Container(
                 width: 70.w,
                 height: 8.w,
-                margin: EdgeInsets.only(top: 12.w),
+                margin: EdgeInsets.only(top: 2.w),
                 decoration: BoxDecoration(color: controller.bodyColor.value.withOpacity(.3), borderRadius: BorderRadius.circular(4.w)),
               )),
           FlashyNavbar(
-            height: 120.w,
+            height: controller.panelMobileMinSize+controller.panelAlbumPadding*2,
             selectedIndex: 0,
             items: [
               FlashyNavbarItem(icon: const Icon(TablerIcons.atom_2)),
@@ -266,69 +270,43 @@ class PanelView extends GetView<Home> {
   Widget _buildBodyContent(BuildContext context) {
     return Column(
       children: [
-        GestureDetector(
-          child: Container(
-            margin: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-            height: controller.panelTopSize,
-            width: Get.width - controller.panelAlbumPadding * 2,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                  onPressed: () => controller.panelControllerHome.close(),
-                  icon: Obx(() => Icon(Icons.keyboard_arrow_down_sharp, color: controller.bodyColor.value)),
-                ),
-                Expanded(
-                    child: Obx(
-                  () => RichText(
-                    text: TextSpan(
-                        text: '${Home.to.mediaItem.value.title} - ',
-                        children: [TextSpan(text: Home.to.mediaItem.value.artist ?? '', style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w500))],
-                        style: TextStyle(fontSize: 32.sp, color: controller.bodyColor.value, fontWeight: FontWeight.w500)),
-                    maxLines: 1,
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                )),
-                IconButton(onPressed: () {}, icon: Obx(() => Icon(Icons.more_horiz, color: controller.bodyColor.value))),
-              ],
-            ),
+        Container(
+          margin: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+          height: controller.panelTopSize,
+          width: Get.width - controller.panelAlbumPadding * 2,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                onPressed: () => controller.panelControllerHome.close(),
+                icon: Obx(() => Icon(Icons.keyboard_arrow_down_sharp, color: controller.bodyColor.value)),
+              ),
+              Obx(() => Visibility(visible: !controller.second.value,child: Expanded(
+                  child: Obx(
+                        () => RichText(
+                      text: TextSpan(
+                          text: '${Home.to.mediaItem.value.title} - ',
+                          children: [TextSpan(text: Home.to.mediaItem.value.artist ?? '', style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w500))],
+                          style: TextStyle(fontSize: 32.sp, color: controller.bodyColor.value, fontWeight: FontWeight.w500)),
+                      maxLines: 1,
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  )),)),
+              IconButton(onPressed: () {}, icon: Obx(() => Icon(Icons.more_horiz, color: controller.bodyColor.value))),
+            ],
           ),
-          onVerticalDragEnd: (e) {},
         ),
-        SizedBox(
+        Container(
           height: 640.w,
         ),
         // //操控区域
         _buildPlayController(context),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 55.w, vertical: 20.w),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Obx(() => Text(
-                    OtherUtils.getTimeStamp(controller.duration.value.inMilliseconds),
-                    style: TextStyle(color: controller.bodyColor.value, fontSize: 28.sp),
-                  )),
-              Obx(() => (controller.mediaItem.value.extras?['cache'] ?? false)
-                  ? Icon(
-                      TablerIcons.circle_check,
-                      color: controller.bodyColor.value.withOpacity(.6),
-                      size: 30.sp,
-                    )
-                  : const SizedBox.shrink()),
-              Obx(() => Text(
-                    OtherUtils.getTimeStamp(controller.mediaItem.value.duration?.inMilliseconds ?? 0),
-                    style: TextStyle(color: controller.bodyColor.value, fontSize: 28.sp),
-                  )),
-            ],
-          ),
-        ),
         //进度条
         _buildSlide(context),
         // 功能按钮
         SizedBox(
-          height: 130.w + MediaQuery.of(context).padding.bottom,
+          height: controller.panelMobileMinSize+controller.panelAlbumPadding*6 + MediaQuery.of(context).padding.bottom,
         ),
       ],
     );

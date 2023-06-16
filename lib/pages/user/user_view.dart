@@ -43,7 +43,7 @@ class UserViewP extends GetView<UserController> {
               child: DraggableHome(
                 physics: const ClampingScrollPhysics(),
                 backgroundColor: Colors.transparent,
-                appBarColor: Colors.transparent,
+                appBarColor: Theme.of(context).scaffoldBackgroundColor.withOpacity(Home.to.background.value.isEmpty ? 1 : 0),
                 curvedBodyRadius: 0,
                 leading: IconButton(
                     onPressed: () {
@@ -228,76 +228,76 @@ class UserViewL extends GetView<UserController> {
                 slivers: [
                   SliverToBoxAdapter(
                     child: Obx(() => Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(colors: [
-                          Theme.of(context).scaffoldBackgroundColor,
-                          controller.palette.value.lightMutedColor?.color.withOpacity(.3) ?? Colors.transparent,
-                          controller.palette.value.dominantColor?.color.withOpacity(.3) ?? Colors.transparent
-                        ]),
-                        borderRadius: BorderRadius.circular(25.w),
-                      ),
-                      margin: EdgeInsets.symmetric(horizontal: 80.w),
-                      height: 500.w,
-                      child: Row(
-                        children: [
-                          Padding(padding: EdgeInsets.symmetric(horizontal: 40.w)),
-                          InkWell(
-                            child: SimpleExtendedImage(
-                              '${controller.play.value.coverImgUrl ?? ''}?param=500y500',
-                              width: 400.w,
-                              height: 400.w,
-                              borderRadius: BorderRadius.circular(25.w),
-                              // borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), bottomLeft: Radius.circular(25.w)),
-                            ),
-                            onTap: () {
-                              context.router.push(const gr.PlayListView().copyWith(args: controller.play.value));
-                            },
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(colors: [
+                              Theme.of(context).scaffoldBackgroundColor,
+                              controller.palette.value.lightMutedColor?.color.withOpacity(.3) ?? Colors.transparent,
+                              controller.palette.value.dominantColor?.color.withOpacity(.3) ?? Colors.transparent
+                            ]),
+                            borderRadius: BorderRadius.circular(25.w),
                           ),
-                          Expanded(
-                              child: Column(
+                          margin: EdgeInsets.symmetric(horizontal: 80.w),
+                          height: 500.w,
+                          child: Row(
+                            children: [
+                              Padding(padding: EdgeInsets.symmetric(horizontal: 40.w)),
+                              InkWell(
+                                child: SimpleExtendedImage(
+                                  '${controller.play.value.coverImgUrl ?? ''}?param=500y500',
+                                  width: 400.w,
+                                  height: 400.w,
+                                  borderRadius: BorderRadius.circular(25.w),
+                                  // borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), bottomLeft: Radius.circular(25.w)),
+                                ),
+                                onTap: () {
+                                  context.router.push(const gr.PlayListView().copyWith(args: controller.play.value));
+                                },
+                              ),
+                              Expanded(
+                                  child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Obx(() => Text(
-                                    controller.play.value.name ?? '',
-                                    style: TextStyle(color: controller.palette.value.dominantColor?.bodyTextColor, fontSize: 54.sp),
-                                  )),
+                                        controller.play.value.name ?? '',
+                                        style: TextStyle(color: controller.palette.value.dominantColor?.bodyTextColor, fontSize: 54.sp),
+                                      )),
                                   Padding(padding: EdgeInsets.symmetric(vertical: 20.w)),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                                     children: controller.userItems
                                         .map((e) => Column(
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        IconButton(
-                                          onPressed: () {
-                                            if ((e.routes ?? '') == 'playFm') {
-                                              Home.to.audioServeHandler.setRepeatMode(AudioServiceRepeatMode.all);
-                                              Home.to.audioServiceRepeatMode.value = AudioServiceRepeatMode.all;
-                                              Home.to.box.put(repeatModeSp, AudioServiceRepeatMode.all.name);
-                                              Home.to.getFmSongList();
-                                              return;
-                                            }
-                                            AutoRouter.of(context).pushNamed(e.routes ?? '');
-                                          },
-                                          icon: Icon(e.iconData),
-                                          color: controller.palette.value.dominantColor?.bodyTextColor,
-                                          iconSize: 72.w,
-                                        ),
-                                        Text(
-                                          e.title,
-                                          style: TextStyle(fontSize: 26.sp, color: controller.palette.value.dominantColor?.bodyTextColor),
-                                        )
-                                      ],
-                                    ))
+                                              crossAxisAlignment: CrossAxisAlignment.center,
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                IconButton(
+                                                  onPressed: () {
+                                                    if ((e.routes ?? '') == 'playFm') {
+                                                      Home.to.audioServeHandler.setRepeatMode(AudioServiceRepeatMode.all);
+                                                      Home.to.audioServiceRepeatMode.value = AudioServiceRepeatMode.all;
+                                                      Home.to.box.put(repeatModeSp, AudioServiceRepeatMode.all.name);
+                                                      Home.to.getFmSongList();
+                                                      return;
+                                                    }
+                                                    AutoRouter.of(context).pushNamed(e.routes ?? '');
+                                                  },
+                                                  icon: Icon(e.iconData),
+                                                  color: controller.palette.value.dominantColor?.bodyTextColor,
+                                                  iconSize: 72.w,
+                                                ),
+                                                Text(
+                                                  e.title,
+                                                  style: TextStyle(fontSize: 26.sp, color: controller.palette.value.dominantColor?.bodyTextColor),
+                                                )
+                                              ],
+                                            ))
                                         .toList(),
                                   )
                                 ],
                               )),
-                        ],
-                      ),
-                    )),
+                            ],
+                          ),
+                        )),
                   ),
                   // SliverPadding(
                   //   padding: EdgeInsets.symmetric(horizontal: 80.w),

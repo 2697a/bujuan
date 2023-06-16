@@ -1,4 +1,3 @@
-
 import 'lyrics_parse.dart';
 import 'lyrics_reader_model.dart';
 
@@ -13,7 +12,7 @@ class ParserLrc extends LyricsParse {
   ParserLrc(String lyric) : super(lyric);
 
   @override
-  List<LyricsLineModel> parseLines({bool isMain: true}) {
+  List<LyricsLineModel> parseLines({bool isMain = true}) {
     //读每一行
     var lines = lyric.split("\n");
     if (lines.isEmpty) {
@@ -68,10 +67,6 @@ class ParserLrc extends LyricsParse {
       millisecond = millisecond.substring(0, 3);
     }
     var minAndSecArray = timeArray.first.split(":");
-    return Duration(
-            minutes: int.parse(minAndSecArray.first),
-            seconds: int.parse(minAndSecArray.last),
-            milliseconds: int.parse(millisecond))
-        .inMilliseconds;
+    return Duration(minutes: int.parse(minAndSecArray.first), seconds: int.parse(minAndSecArray.last), milliseconds: int.parse(millisecond)).inMilliseconds;
   }
 }

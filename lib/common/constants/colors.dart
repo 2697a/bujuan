@@ -11,15 +11,17 @@ class AppTheme {
             surface: surface,
             onSurface: onSurface,
           ),
+      pageTransitionsTheme: const PageTransitionsTheme(builders: {
+        TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+        TargetPlatform.iOS: FadeUpwardsPageTransitionsBuilder(),
+        TargetPlatform.macOS: FadeUpwardsPageTransitionsBuilder(),
+      }),
       cardColor: const Color(0xFF2C2C2C),
       iconTheme: const IconThemeData(color: Color(0xFF494949)),
       primaryColor: const Color(0xffe56260),
       bottomAppBarColor: onPrimaryDark,
       scaffoldBackgroundColor: const Color(0xFFF5F3F3),
-      appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFFF5F3F3),
-          foregroundColor: primaryDark,
-          elevation: 0));
+      appBarTheme: const AppBarTheme(backgroundColor: Color(0xFFF5F3F3), foregroundColor: primaryDark, elevation: 0));
 
   static ThemeData dark = ThemeData.dark().copyWith(
       colorScheme: ThemeData.dark().colorScheme.copyWith(
@@ -30,13 +32,18 @@ class AppTheme {
             surface: surfaceDark,
             onSurface: onSurfaceDark,
           ),
+      pageTransitionsTheme: const PageTransitionsTheme(builders: {
+        TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+        TargetPlatform.iOS: FadeUpwardsPageTransitionsBuilder(),
+        TargetPlatform.macOS: FadeUpwardsPageTransitionsBuilder(),
+      }),
       cardColor: const Color(0xFFECEBEB),
-      primaryColor:  const Color(0xffe56260),
+      primaryColor: const Color(0xffe56260),
       bottomAppBarColor: onSurfaceDark,
       scaffoldBackgroundColor: const Color(0xFF2C2B2B),
       appBarTheme: const AppBarTheme(
           systemOverlayStyle: SystemUiOverlayStyle(statusBarBrightness: Brightness.light, statusBarIconBrightness: Brightness.light),
-          backgroundColor:  Color(0xFF2C2B2B),
+          backgroundColor: Color(0xFF2C2B2B),
           foregroundColor: primary,
           elevation: 0));
 

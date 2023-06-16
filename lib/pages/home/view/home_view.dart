@@ -2,8 +2,10 @@ import 'package:bujuan/common/constants/platform_utils.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/pages/home/view/body_view.dart';
 import 'package:bujuan/pages/home/view/panel_view.dart';
+import 'package:bujuan/widget/swipeable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:get/get.dart';
 
@@ -66,6 +68,8 @@ class HomeView extends GetView<Home> {
                 menuScreen: const MenuView(),
                 mainScreen: SlidingUpPanel(
                   color: Colors.transparent,
+                  parallaxEnabled: true,
+                  parallaxOffset: .03,
                   controller: controller.panelControllerHome,
                   onPanelSlide: (value) => controller.changeSlidePosition(value),
                   boxShadow: const [BoxShadow(blurRadius: 8.0, color: Color.fromRGBO(0, 0, 0, 0.05))],
@@ -77,49 +81,62 @@ class HomeView extends GetView<Home> {
                 ),
                 dragOffset: 360.w,
                 angle: 0,
-                menuBackgroundColor: Theme.of(context).cardColor,
-                slideWidth: Get.width * .24,
-                mainScreenScale: 0,
+                menuBackgroundColor: Theme.of(context).scaffoldBackgroundColor.withOpacity(.1),
+                slideWidth: Get.width * .31,
+                mainScreenScale: 0.1,
                 duration: const Duration(milliseconds: 200),
                 reverseDuration: const Duration(milliseconds: 200),
                 showShadow: true,
                 mainScreenTapClose: true,
                 menuScreenTapClose: true,
-                drawerShadowsBackgroundColor: Colors.grey,
+                androidCloseOnBackTap: true,
+                drawerShadowsBackgroundColor: const Color(0xFFBEBBBB),
                 controller: controller.myDrawerController,
               ));
   }
 
   Widget _buildHeader(context, bottomHeight) {
-    return Obx(() => IgnorePointer(
-          ignoring: controller.panelOpenPositionThan8.value || controller.second.value,
-          child: AnimatedBuilder(
-            animation: controller.animationController,
-            builder: (context, child) {
-              return Container(
-                alignment: Alignment.centerLeft,
-                padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top * controller.slideSecondPosition.value),
-                child: child,
-              );
-            },
-            child: InkWell(
-              child: Container(
-                width: Get.width,
-                padding: EdgeInsets.all(controller.panelAlbumPadding),
-                child: Stack(
-                  alignment: Alignment.centerLeft,
-                  children: [
-                    _buildMediaTitle(context),
-                    _buildAlbum(),
-                  ],
+    return Swipeable(
+        background: Container(),
+        child: Obx(() => IgnorePointer(
+              ignoring: controller.panelOpenPositionThan8.value,
+              child: AnimatedBuilder(
+                animation: controller.animationController,
+                builder: (context, child) {
+                  return Container(
+                    alignment: Alignment.centerLeft,
+                    padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top * controller.slideSecondPosition.value),
+                    child: child,
+                  );
+                },
+                child: GestureDetector(
+                  onVerticalDragEnd: (controller.second.value) ? (e) {} : null,
+                  // onHorizontalDragEnd: (e){},
+                  child: InkWell(
+                    child: Container(
+                      width: Get.width,
+                      padding: EdgeInsets.all(controller.panelAlbumPadding),
+                      child: Stack(
+                        alignment: Alignment.centerLeft,
+                        children: [
+                          _buildMediaTitle(context),
+                          _buildAlbum(),
+                        ],
+                      ),
+                    ),
+                    onTap: () {
+                      if (controller.panelControllerHome.isPanelClosed) {
+                        controller.panelControllerHome.open();
+                      } else {
+                        if (controller.panelController.isPanelOpen) controller.panelController.close();
+                      }
+                    },
+                  ),
                 ),
               ),
-              onTap: () {
-                controller.panelControllerHome.open();
-              },
-            ),
-          ),
-        ));
+            )),
+        onSwipeLeft: () => controller.audioServeHandler.skipToPrevious(),
+        onSwipeRight: () => controller.audioServeHandler.skipToNext());
   }
 
   //构建歌曲标题和播放按钮
@@ -140,7 +157,9 @@ class HomeView extends GetView<Home> {
                               text: '${Home.to.mediaItem.value.title} - ',
                               children: [TextSpan(text: Home.to.mediaItem.value.artist ?? '', style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w500))],
                               style: TextStyle(
-                                  fontSize: 32.sp, color: controller.second.value ? controller.bodyColor.value : controller.getLightTextColor(context), fontWeight: FontWeight.w500)),
+                                  fontSize: 32.sp,
+                                  color: controller.second.value ? controller.bodyColor.value : controller.getLightTextColor(context),
+                                  fontWeight: FontWeight.w500)),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -148,9 +167,10 @@ class HomeView extends GetView<Home> {
               IconButton(
                   onPressed: () => controller.playOrPause(),
                   icon: Obx(() => Icon(
-                        controller.playing.value ? Icons.pause : Icons.play_arrow,
-                    color: controller.second.value ? controller.bodyColor.value : controller.getLightTextColor(context),
-                      )))
+                        controller.playing.value ? TablerIcons.player_pause : TablerIcons.player_play,
+                        color: controller.second.value ? controller.bodyColor.value : controller.getLightTextColor(context),
+                        size: 44.sp,
+                      ))),
             ],
           ),
         ));
@@ -163,10 +183,10 @@ class HomeView extends GetView<Home> {
       builder: (context, index) {
         return Container(
           margin: EdgeInsets.only(
-              left: (Get.width - 680.w) / 2 * controller.animationController.value,
+              left: (Get.width - 620.w - controller.panelAlbumPadding * 2) / 2 * controller.animationController.value,
               top: (controller.panelTopSize + MediaQuery.of(context).padding.top - controller.panelAlbumPadding) * controller.animationController.value),
-          width: controller.panelMobileMinSize + 560.w * controller.animationController.value,
-          height: controller.panelMobileMinSize + 560.w * controller.animationController.value,
+          width: controller.panelMobileMinSize + 540.w * controller.animationController.value,
+          height: controller.panelMobileMinSize + 540.w * controller.animationController.value,
           child: index,
         );
       },
@@ -174,8 +194,8 @@ class HomeView extends GetView<Home> {
         borderRadius: BorderRadius.circular(controller.panelMobileMinSize / 2),
         child: Obx(() => SimpleExtendedImage(
               '${Home.to.mediaItem.value.extras?['image'] ?? ''}?param=500y500',
-              width: 640.w,
-              height: 640.w,
+              width: 620.w,
+              height: 620.w,
             )),
       ),
     );

@@ -1,13 +1,10 @@
 import 'dart:convert';
 
-import 'package:bujuan/common/netease_api/src/api/play/cloud_entity.dart';
 import 'package:dio/dio.dart';
 import '../../../netease_music_api.dart';
 import '../../../src/api/bean.dart';
 import '../../../src/dio_ext.dart';
 import '../../../src/netease_handler.dart';
-
-import 'bean.dart';
 
 mixin ApiPlay {
   DioMetaData playlistSubscribersDioMetaData(String pid, {int offset = 0, int limit = 30}) {
@@ -24,7 +21,7 @@ mixin ApiPlay {
 
   DioMetaData subscribePlayListDioMetaData(String pid, {bool subscribe = true}) {
     var params = {'id': pid};
-    return DioMetaData(joinUri('/weapi/playlist/${subscribe?'subscribe':'unsubscribe'}'), data: params, options: joinOptions());
+    return DioMetaData(joinUri('/weapi/playlist/${subscribe ? 'subscribe' : 'unsubscribe'}'), data: params, options: joinOptions());
   }
 
   /// 歌单收藏
@@ -491,9 +488,13 @@ mixin ApiPlay {
   }
 
   DioMetaData songDownloadUrlDioMetaData(List<String> songIds, {String level = 'exhigh'}) {
-    var params = {'ids': songIds, 'level': level,'encodeType': 'flac',};
+    var params = {
+      'ids': songIds,
+      'level': level,
+      'encodeType': 'flac',
+    };
     return DioMetaData(Uri.parse('https://interface.music.163.com/eapi/song/enhance/player/url/v1'),
-        data: params, options: joinOptions(encryptType: EncryptType.EApi,  eApiUrl: '/api/song/enhance/player/url/v1'));
+        data: params, options: joinOptions(encryptType: EncryptType.EApi, eApiUrl: '/api/song/enhance/player/url/v1'));
   }
 
   /// 音乐url
@@ -623,7 +624,7 @@ mixin ApiPlay {
 
   DioMetaData artistALLSongListDioMetaData(
     String artistId, {
-    bool privateCloud: true,
+    bool privateCloud = true,
     int workType = 1,
     order = 'hot',
     int offset = 0,
@@ -637,7 +638,7 @@ mixin ApiPlay {
   /// [order] hot time
   Future<ArtistSongListWrap> artistALLSongList(
     String artistId, {
-    bool privateCloud: true,
+    bool privateCloud = true,
     int workType = 1,
     order = 'hot',
     int offset = 0,

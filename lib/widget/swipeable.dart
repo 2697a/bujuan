@@ -82,8 +82,6 @@ class _SwipeableState extends State<Swipeable> with TickerProviderStateMixin {
 
       var adjustedPixelPos = movePastThresholdPixels * reducedThreshold;
       newPos = adjustedPixelPos / (context.size?.width ?? 0);
-
-
     } else {
       // Send a cancel event if the user has swiped back underneath the
       // threshold
@@ -104,23 +102,20 @@ class _SwipeableState extends State<Swipeable> with TickerProviderStateMixin {
     var oldDragExtent = _dragExtent;
     _dragExtent += delta!;
 
-    if (_dragExtent > 0 && !_pastLeftThreshold) {
+    if (_dragExtent > 0 && !_pastLeftThreshold && (_moveController?.value ?? 0) > 0.2) {
       _pastLeftThreshold = true;
-
-      if (widget.onSwipeRight != null) {
-        widget.onSwipeRight?.call();
-      }
-    }
-    if (_dragExtent < 0 && !_pastRightThreshold) {
-      _pastRightThreshold = true;
-
       if (widget.onSwipeLeft != null) {
         widget.onSwipeLeft?.call();
       }
     }
+    if (_dragExtent < 0 && !_pastRightThreshold && (_moveController?.value ?? 0) > 0.2) {
+      _pastRightThreshold = true;
+      if (widget.onSwipeRight != null) {
+        widget.onSwipeRight?.call();
+      }
+    }
     _moveController?.animateTo(0.0, duration: const Duration(milliseconds: 200));
     _dragExtent = 0.0;
-
 
     // if (widget.onSwipeEnd != null) {
     //   widget.onSwipeEnd?.call();

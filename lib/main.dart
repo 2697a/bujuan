@@ -15,7 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_zoom_drawer/config.dart';
+import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -25,67 +25,35 @@ import 'package:window_manager/window_manager.dart';
 import 'common/constants/colors.dart';
 import 'common/netease_api/src/netease_api.dart';
 
-
 main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  if(PlatformUtils.isWindows || PlatformUtils.isMacOS){
-    await windowManager.ensureInitialized();
-    WindowOptions windowOptions = const WindowOptions(
-      size: Size(1080, 720),
-      minimumSize: Size(1080, 720),
-      center: true,
-      backgroundColor: Colors.transparent,
-      skipTaskbar: false,
-      titleBarStyle: TitleBarStyle.hidden,
-    );
-    windowManager.waitUntilReadyToShow(windowOptions, () async {
-      await windowManager.show();
-      await windowManager.focus();
-    });
-  }
-  // await DownloadCacheManager.init();
-  // await DownloadCacheManager.setExpireDate(daysToExpire: 100);
+  bool land = PlatformUtils.isMacOS || PlatformUtils.isWindows || OtherUtils.isPad();
   final getIt = GetIt.instance;
   await _initAudioServer(getIt);
   final rootRouter = getIt<RootRouter>();
-  bool land = PlatformUtils.isMacOS || PlatformUtils.isWindows || OtherUtils.isPad();
   if (PlatformUtils.isAndroid) {
     await FlutterDisplayMode.setHighRefreshRate();
     SystemUiOverlayStyle systemUiOverlayStyle =
         const SystemUiOverlayStyle(statusBarColor: Colors.transparent, systemNavigationBarColor: Colors.transparent, systemNavigationBarContrastEnforced: false);
     SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
   }
-  if(land){
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight
-    ]);
-  }
+  //如果满足横屏条件，强制屏幕为横屏
+  if (land) SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge).then((value) => runApp(ScreenUtilInit(
         designSize: !land ? const Size(750, 1334) : const Size(2339, 1080),
-    minTextAdapt: true,
-    splitScreenMode: true,
+        minTextAdapt: true,
+        splitScreenMode: true,
         builder: (BuildContext context, Widget? child) {
           HomeBinding().dependencies();
           return GetMaterialApp.router(
             title: "Bujuan",
-            theme: AppTheme.light.copyWith(
-                pageTransitionsTheme: const PageTransitionsTheme(builders: {
-                  TargetPlatform.android: NoShadowCupertinoPageTransitionsBuilder(),
-                  TargetPlatform.macOS: FadeUpwardsPageTransitionsBuilder(),
-                })),
-            darkTheme: AppTheme.dark.copyWith(
-                pageTransitionsTheme: const PageTransitionsTheme(builders: {
-                  TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
-                  TargetPlatform.macOS: FadeUpwardsPageTransitionsBuilder(),
-                })),
+            theme: AppTheme.light,
+            darkTheme: AppTheme.dark,
             // showPerformanceOverlay: true,
             // checkerboardOffscreenLayers: true,
             // checkerboardRasterCacheImages: true,
             themeMode: ThemeMode.system,
-            routerDelegate: rootRouter.delegate(
-              navigatorObservers: () => [MyObserver()],
-            ),
+            routerDelegate: rootRouter.delegate(navigatorObservers: () => [MyObserver()]),
             routeInformationParser: rootRouter.defaultRouteParser(),
             debugShowCheckedModeBanner: false,
             builder: (_, router) => MediaQuery(data: MediaQuery.of(_).copyWith(textScaleFactor: 1.0), child: router!),
@@ -144,12 +112,10 @@ class MyObserver extends AutoRouterObserver {
 
   // only override to observer tab routes
   @override
-  void didInitTabRoute(TabPageRoute route, TabPageRoute? previousRoute) {
-  }
+  void didInitTabRoute(TabPageRoute route, TabPageRoute? previousRoute) {}
 
   @override
-  void didChangeTabRoute(TabPageRoute route, TabPageRoute previousRoute) {
-  }
+  void didChangeTabRoute(TabPageRoute route, TabPageRoute previousRoute) {}
 }
 
 Future<void> _initAudioServer(getIt) async {
@@ -168,4 +134,22 @@ Future<void> _initAudioServer(getIt) async {
       androidNotificationIcon: 'drawable/audio_service_icon',
     ),
   ));
+}
+
+Future<void> _initWindowManager() async {
+  if (PlatformUtils.isWindows || PlatformUtils.isMacOS) {
+    await windowManager.ensureInitialized();
+    WindowOptions windowOptions = const WindowOptions(
+      size: Size(1080, 720),
+      minimumSize: Size(1080, 720),
+      center: true,
+      backgroundColor: Colors.transparent,
+      skipTaskbar: false,
+      titleBarStyle: TitleBarStyle.hidden,
+    );
+    windowManager.waitUntilReadyToShow(windowOptions, () async {
+      await windowManager.show();
+      await windowManager.focus();
+    });
+  }
 }

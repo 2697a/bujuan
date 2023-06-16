@@ -16,56 +16,57 @@ class MenuView extends GetView<Home> {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Padding(padding: EdgeInsets.symmetric(vertical: 25.w)),
-        GestureDetector(
-          child: Obx(() => SimpleExtendedImage.avatar(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(padding: EdgeInsets.symmetric(vertical: 25.w)),
+            GestureDetector(
+              child: Obx(() => SimpleExtendedImage.avatar(
                 '${controller.userData.value.profile?.avatarUrl ?? ''}?param=300y300',
                 width: 90.w,
               )),
-          onTap: () {
-            if (controller.loginStatus.value == LoginStatus.noLogin) {
-              context.router.pushNamed(Routes.login);
-              return;
-            }
-            if (!Home.to.landscape) controller.myDrawerController.close!();
-            Future.delayed(const Duration(milliseconds: 200), () {
-              context.router.pushNamed(Routes.userSetting);
-            });
-          },
-        ),
-        Expanded(
-            child: ListView.builder(
-          padding: EdgeInsets.symmetric(vertical: 140.w),
-          itemBuilder: (context1, index) => Container(
-            padding: EdgeInsets.symmetric(vertical: 12.w),
-            child: IconButton(
-              onPressed: () {
+              onTap: () {
+                if (controller.loginStatus.value == LoginStatus.noLogin) {
+                  context.router.pushNamed(Routes.login);
+                  return;
+                }
                 if (!Home.to.landscape) controller.myDrawerController.close!();
                 Future.delayed(const Duration(milliseconds: 200), () {
-                  if (controller.leftMenus[index].path.isEmpty) {
-                    Home.to.sleep(context);
-                    return;
-                  }
-                  if (controller.leftMenus[index].pathUrl.isEmpty) {
-                    context.router.pushNamed(controller.leftMenus[index].path);
-                    return;
-                  }
-                  context.router.replaceNamed(controller.leftMenus[index].path);
+                  context.router.pushNamed(Routes.userSetting);
                 });
               },
-              icon: Obx(() => Icon(controller.leftMenus[index].icon,
-                  size: 52.sp,
-                  color: controller.currPathUrl.value == controller.leftMenus[index].pathUrl
-                      ? Theme.of(context).primaryColor
-                      : Theme.of(context).iconTheme.color)),
             ),
-          ),
-          itemCount: controller.leftMenus.length,
-        )),
-      ],
-    ));
+            Expanded(
+                child: ListView.builder(
+                  padding: EdgeInsets.symmetric(vertical: 140.w),
+                  itemBuilder: (context1, index) => Container(
+                    padding: EdgeInsets.symmetric(vertical: 12.w),
+                    child: IconButton(
+                      onPressed: () {
+                        if (!Home.to.landscape) controller.myDrawerController.close!();
+                        Future.delayed(const Duration(milliseconds: 200), () {
+                          if (controller.leftMenus[index].path.isEmpty) {
+                            Home.to.sleep(context);
+                            return;
+                          }
+                          if (controller.leftMenus[index].pathUrl.isEmpty) {
+                            context.router.pushNamed(controller.leftMenus[index].path);
+                            return;
+                          }
+                          context.router.replaceNamed(controller.leftMenus[index].path);
+                        });
+                      },
+                      icon: Obx(() => Icon(controller.leftMenus[index].icon,
+                          size: 52.sp,
+                          color: controller.currPathUrl.value == controller.leftMenus[index].pathUrl
+                              ? Theme.of(context).primaryColor
+                              : Theme.of(context).iconTheme.color)),
+                    ),
+                  ),
+                  itemCount: controller.leftMenus.length,
+                )),
+          ],
+        ));
   }
 }
 

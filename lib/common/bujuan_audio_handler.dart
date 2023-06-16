@@ -6,7 +6,6 @@ import 'package:audio_service/audio_service.dart';
 import 'package:bujuan/common/constants/enmu.dart';
 import 'package:bujuan/common/constants/other.dart';
 
-// import 'package:bujuan/common/storage.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -15,7 +14,6 @@ import 'package:get_it/get_it.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:just_audio/just_audio.dart';
 
-// import 'package:media_cache_manager/media_cache_manager.dart';
 import '../ffi.dart';
 import 'audio_player_handler.dart';
 import 'constants/key.dart';
@@ -280,12 +278,14 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
       if (playIt) _player.play();
     } else {
       mediaItem.add(song);
-      SongUrlListWrap songUrl = await NeteaseMusicApi().songDownloadUrl([song.id], level: high ? 'lossless' : 'exhigh');
-      url = ((songUrl.data ?? [])[0].url ?? '').split('?')[0];
-      if (url.isEmpty) {
-        print('============UnblockNeteaseMusic开始启动===========================');
+      //应判断一下用户是不是vip（）
+      if ((song.extras?['fee'] ?? 0) != 1 && (song.extras?['fee'] ?? 0) != 4) {
+        SongUrlListWrap songUrl = await NeteaseMusicApi().songDownloadUrl([song.id], level: high ? 'lossless' : 'exhigh');
+        url = ((songUrl.data ?? [])[0].url ?? '').split('?')[0];
+      }
+      if (url == null || url.isEmpty) {
         url = await api.getUnblockNeteaseMusicUrl(songName: song.title, artistsName: song.artist ?? '');
-        print('============UnblockNeteaseMusic启动成功===========================$url');
+        print('============UnblockNeteaseMusic启动成功=============${song.title}==============$url');
       }
       if (url.isNotEmpty) {
         await _player.setUrl(url);
