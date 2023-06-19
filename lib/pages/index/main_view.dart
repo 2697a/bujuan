@@ -7,9 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
+import '../../routes/router.dart';
 import '../../routes/router.gr.dart' as gr;
+import '../../widget/app_bar.dart';
 import '../../widget/simple_extended_image.dart';
 import '../play_list/playlist_view.dart';
+import '../user/user_controller.dart';
 
 class MainView extends GetView<IndexController> {
   const MainView({Key? key}) : super(key: key);
@@ -19,65 +22,103 @@ class MainView extends GetView<IndexController> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       resizeToAvoidBottomInset: false,
-      // appBar: MyAppBar(
-      //   backgroundColor: Colors.transparent,
-      //   centerTitle: false,
-      //   // leading: IconButton(
-      //   //     onPressed: () {
-      //   //       if (Home.to.loginStatus.value == LoginStatus.login) {
-      //   //         Home.to.myDrawerController.open!();
-      //   //         return;
-      //   //       }
-      //   //       AutoRouter.of(context).pushNamed(Routes.login);
-      //   //     },
-      //   //     icon: Obx(() => SimpleExtendedImage.avatar(
-      //   //           Home.to.userData.value.profile?.avatarUrl ?? '',
-      //   //           width: 80.w,
-      //   //         ))),
-      //   title: RichText(
-      //       text: TextSpan(style: TextStyle(fontSize: 36.sp, color: Colors.grey, fontWeight: FontWeight.bold), text: 'Here  ', children: [
-      //     TextSpan(text: '每日发现～', style: TextStyle(color: Theme.of(context).primaryColor.withOpacity(.9))),
-      //   ])),
-      // ),
-      body: Obx(() => Visibility(
-            visible: !controller.loading.value,
-            replacement: const LoadingView(),
-            child: CustomScrollView(
-              slivers: [
-                SliverToBoxAdapter(
-                  child: _buildHeader('歌单推荐', context),
-                ),
-                SliverPadding(
-                  padding: EdgeInsets.symmetric(horizontal: 80.w),
-                  sliver: SliverGrid.builder(
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 6, childAspectRatio: .75, mainAxisSpacing: 10.0, crossAxisSpacing: 10.0),
-                      itemBuilder: (context, index) => _buildItem(controller.playlist[index], context),
-                      itemCount: controller.playlist.length,
+      appBar: Home.to.landscape?null:MyAppBar(
+        backgroundColor: Colors.transparent,
+        centerTitle: false,
+        leading: IconButton(
+            onPressed: () {
+              if (Home.to.loginStatus.value == LoginStatus.login) {
+                Home.to.myDrawerController.open!();
+                return;
+              }
+              AutoRouter.of(context).pushNamed(Routes.login);
+            },
+            icon: Obx(() => SimpleExtendedImage.avatar(
+                  Home.to.userData.value.profile?.avatarUrl ?? '',
+                  width: 80.w,
+                ))),
+        title: RichText(
+            text: TextSpan(style: TextStyle(fontSize: 36.sp, color: Colors.grey, fontWeight: FontWeight.bold), text: 'Here  ', children: [
+          TextSpan(text: '每日发现～', style: TextStyle(color: Theme.of(context).primaryColor.withOpacity(.9))),
+        ])),
+      ),
+      body: Home.to.landscape?Obx(() => Visibility(
+        visible: !controller.loading.value,
+        replacement: const LoadingView(),
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: _buildHeader('歌单推荐', context),
+            ),
+            SliverPadding(
+              padding: EdgeInsets.symmetric(horizontal: 80.w),
+              sliver: SliverGrid.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 6, childAspectRatio: .75, mainAxisSpacing: 10.0, crossAxisSpacing: 10.0),
+                  itemBuilder: (context, index) => _buildItem(controller.playlist[index], context),
+                  itemCount: controller.playlist.length,
+                  addAutomaticKeepAlives: false,
+                  addRepaintBoundaries: false),
+            ),
+            SliverToBoxAdapter(
+              child: _buildHeader('新歌推荐', context),
+            ),
+            SliverPadding(
+              padding: EdgeInsets.symmetric(horizontal: 80.w),
+              sliver: SliverFixedExtentList(
+                  delegate: SliverChildBuilderDelegate(
+                          (context, index) => SongItemShowImage(
+                        index: index,
+                        mediaItem: controller.newSong[index],
+                        onTap: () {
+                          Home.to.playByIndex(index, 'queueTitle', mediaItem: controller.newSong);
+                        },
+                      ),
+                      childCount: controller.newSong.length,
                       addAutomaticKeepAlives: false,
                       addRepaintBoundaries: false),
-                ),
-                SliverToBoxAdapter(
-                  child: _buildHeader('新歌推荐', context),
-                ),
-                SliverPadding(
-                  padding: EdgeInsets.symmetric(horizontal: 80.w),
-                  sliver: SliverFixedExtentList(
-                      delegate: SliverChildBuilderDelegate(
-                          (context, index) => SongItemShowImage(
-                                index: index,
-                                mediaItem: controller.newSong[index],
-                                onTap: () {
-                                  Home.to.playByIndex(index, 'queueTitle', mediaItem: controller.newSong);
-                                },
-                              ),
-                          childCount: controller.newSong.length,
-                          addAutomaticKeepAlives: false,
-                          addRepaintBoundaries: false),
-                      itemExtent: 140.w),
-                ),
-              ],
+                  itemExtent: 140.w),
             ),
-          )),
+          ],
+        ),
+      )):Obx(() => Visibility(
+        visible: !controller.loading.value,
+        replacement: const LoadingView(),
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: _buildHeader('歌单推荐', context),
+            ),
+            SliverPadding(
+              padding: EdgeInsets.symmetric(horizontal: 20.w),
+              sliver: SliverGrid.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, childAspectRatio: .75, mainAxisSpacing: 10.0, crossAxisSpacing: 10.0),
+                  itemBuilder: (context, index) => _buildItem(controller.playlist[index], context),
+                  itemCount: controller.playlist.length,
+                  addAutomaticKeepAlives: false,
+                  addRepaintBoundaries: false),
+            ),
+            SliverToBoxAdapter(
+              child: _buildHeader('新歌推荐', context),
+            ),
+            SliverPadding(
+              padding: EdgeInsets.symmetric(horizontal: 20.w),
+              sliver: SliverFixedExtentList(
+                  delegate: SliverChildBuilderDelegate(
+                          (context, index) => SongItemShowImage(
+                        index: index,
+                        mediaItem: controller.newSong[index],
+                        onTap: () {
+                          Home.to.playByIndex(index, 'queueTitle', mediaItem: controller.newSong);
+                        },
+                      ),
+                      childCount: controller.newSong.length,
+                      addAutomaticKeepAlives: false,
+                      addRepaintBoundaries: false),
+                  itemExtent: 140.w),
+            ),
+          ],
+        ),
+      )),
     );
   }
 

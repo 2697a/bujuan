@@ -33,8 +33,11 @@ main() async {
   final rootRouter = getIt<RootRouter>();
   if (PlatformUtils.isAndroid) {
     await FlutterDisplayMode.setHighRefreshRate();
-    SystemUiOverlayStyle systemUiOverlayStyle =
-        const SystemUiOverlayStyle(statusBarColor: Colors.transparent, systemNavigationBarColor: Colors.transparent, systemNavigationBarContrastEnforced: false);
+    SystemUiOverlayStyle systemUiOverlayStyle = const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarContrastEnforced: false,
+    );
     SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
   }
   //如果满足横屏条件，强制屏幕为横屏

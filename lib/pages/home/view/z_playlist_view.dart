@@ -53,13 +53,21 @@ class ZPlayListView extends GetView<Home> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Obx(() => Text(
+                 controller.landscape?Text(
+                   mediaItem.title,
+                   maxLines: 1,
+                   style: TextStyle(fontSize: 30.sp, color: (Theme.of(context).iconTheme.color ?? Colors.black)),
+                 ): Obx(() => Text(
                     mediaItem.title,
                     maxLines: 1,
                     style: TextStyle(fontSize: 30.sp, color: controller.bodyColor.value),
                   )),
                   Padding(padding: EdgeInsets.symmetric(vertical: 4.w)),
-                  Obx(() => Text(
+                  controller.landscape?Text(
+                    mediaItem.artist ?? '',
+                    maxLines: 1,
+                    style: TextStyle(fontSize: 24.sp, color:(Theme.of(context).iconTheme.color ?? Colors.black)),
+                  ):Obx(() => Text(
                     mediaItem.artist ?? '',
                     maxLines: 1,
                     style: TextStyle(fontSize: 24.sp, color: controller.bodyColor.value),
@@ -68,12 +76,16 @@ class ZPlayListView extends GetView<Home> {
               )),
           Obx(() => Visibility(
             visible: controller.mediaItem.value.id == mediaItem.id,
-            child:  Icon(TablerIcons.circle_letter_p,color: controller.bodyColor.value,),
+            child:  Icon(TablerIcons.circle_letter_p,color: controller.landscape?(Theme.of(context).iconTheme.color ?? Colors.black):controller.bodyColor.value,),
           )),
           Padding(padding: EdgeInsets.symmetric(horizontal: 10.w)),
           IconButton(
               onPressed: () => controller.audioServeHandler.removeQueueItemAt(index),
-              icon: Obx(() => Icon(
+              icon: controller.landscape?Icon(
+                TablerIcons.trash_x,
+                color: (Theme.of(context).iconTheme.color ?? Colors.black),
+                size: 42.w,
+              ):Obx(() => Icon(
                 TablerIcons.trash_x,
                 color: controller.bodyColor.value,
                 size: 42.w,

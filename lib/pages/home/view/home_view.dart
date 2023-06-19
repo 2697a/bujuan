@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:bujuan/common/constants/platform_utils.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/pages/home/view/body_view.dart';
@@ -25,43 +27,55 @@ class HomeView extends GetView<Home> {
   Widget build(BuildContext context) {
     controller.buildContext = context;
     double bottomHeight = MediaQuery.of(controller.buildContext).padding.bottom * (PlatformUtils.isIOS ? 0.6 : .85);
-    if (bottomHeight == 0) bottomHeight = 32.w;
+    if (bottomHeight == 0 && PlatformUtils.isAndroid || PlatformUtils.isIOS) bottomHeight = 32.w;
     return Material(
         child: Home.to.landscape
-            ? SlidingUpPanel(
-                color: Colors.transparent,
-                controller: controller.panelControllerHome,
-                onPanelSlide: (value) => controller.changeSlidePosition(value),
-                boxShadow: const [BoxShadow(blurRadius: 0, color: Colors.transparent)],
-                panel: const PanelViewL(),
-                body: Row(
-                  children: [
-                    const MenuViewL(),
-                    Expanded(
-                        child: Column(
-                      children: [
-                        SafeArea(
-                            child: Container(
-                          decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.grey.withOpacity(.2), width: .6.w))),
-                          height: 85.h,
-                          child: Row(
-                            children: [
-                              Padding(padding: EdgeInsets.symmetric(horizontal: 40.w)),
-                              RichText(
-                                  text: TextSpan(style: TextStyle(fontSize: 42.sp, color: Colors.grey, fontWeight: FontWeight.bold), text: 'Here  ', children: [
-                                TextSpan(text: 'BuJuan～', style: TextStyle(color: Theme.of(context).primaryColor.withOpacity(.9))),
-                              ])),
-                            ],
-                          ),
-                        )),
-                        const Expanded(child: BodyView())
-                      ],
-                    )),
-                  ],
-                ),
-                minHeight: controller.panelMobileMinSize + controller.panelAlbumPadding * 2,
-                maxHeight: Get.height,
-                header: _buildHeaderL(context, 0),
+            ? Stack(
+                children: [
+                  Obx(() => SimpleExtendedImage(
+                        Home.to.mediaItem.value.extras?['image'] ?? '',
+                        fit: BoxFit.cover,
+                        width: Get.width,
+                        height: Get.height,
+                      )),
+                  Container(
+                    width: Get.width,
+                    height: Get.height,
+                    color: Theme.of(context).scaffoldBackgroundColor.withOpacity(.7),
+                  ),
+                  Obx(() => AnimatedContainer(
+                        duration: const Duration(milliseconds: 180),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(colors: [
+                            controller.rx.value.lightVibrantColor?.color.withOpacity(.4) ??
+                                controller.rx.value.lightVibrantColor?.color.withOpacity(.4) ??
+                                controller.rx.value.lightMutedColor?.color.withOpacity(.4) ??
+                                Colors.transparent,
+                            controller.rx.value.darkVibrantColor?.color.withOpacity(.4) ??
+                                controller.rx.value.darkMutedColor?.color.withOpacity(.4) ??
+                                controller.rx.value.lightVibrantColor?.color.withOpacity(.4) ??
+                                Colors.transparent,
+                          ], begin: Alignment.topLeft, end: Alignment.bottomRight),
+                          // borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),
+                        ),
+                      )),
+                  BackdropFilter(filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12), child: Container()),
+                  Row(
+                    children: [
+                      const MenuViewL(),
+                      Expanded(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: controller.landscape ? controller.panelAlbumPadding * 2 : 0),
+                          child: const SafeArea(child: BodyView()),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 750.w,
+                        child: const TestView(),
+                      ),
+                    ],
+                  )
+                ],
               )
             : ZoomDrawer(
                 moveMenuScreen: false,
@@ -114,7 +128,7 @@ class HomeView extends GetView<Home> {
                   // onHorizontalDragEnd: (e){},
                   child: InkWell(
                     child: Container(
-                      width: Get.width,
+                      width: 750.w,
                       padding: EdgeInsets.all(controller.panelAlbumPadding),
                       child: Stack(
                         alignment: Alignment.centerLeft,
@@ -183,10 +197,10 @@ class HomeView extends GetView<Home> {
       builder: (context, index) {
         return Container(
           margin: EdgeInsets.only(
-              left: (Get.width - 620.w - controller.panelAlbumPadding * 2) / 2 * controller.animationController.value,
+              left: (750.w - 630.w - controller.panelAlbumPadding * 2) / 2 * controller.animationController.value,
               top: (controller.panelTopSize + MediaQuery.of(context).padding.top - controller.panelAlbumPadding) * controller.animationController.value),
-          width: controller.panelMobileMinSize + 540.w * controller.animationController.value,
-          height: controller.panelMobileMinSize + 540.w * controller.animationController.value,
+          width: controller.panelMobileMinSize + 550.w * controller.animationController.value,
+          height: controller.panelMobileMinSize + 550.w * controller.animationController.value,
           child: index,
         );
       },
@@ -194,14 +208,45 @@ class HomeView extends GetView<Home> {
         borderRadius: BorderRadius.circular(controller.panelMobileMinSize / 2),
         child: Obx(() => SimpleExtendedImage(
               '${Home.to.mediaItem.value.extras?['image'] ?? ''}?param=500y500',
-              width: 620.w,
-              height: 620.w,
+              width: 630.w,
+              height: 630.w,
             )),
       ),
     );
   }
 
   Widget _buildHeaderL(context, bottomHeight) {
+    // return Obx(() => IgnorePointer(
+    //       ignoring: controller.panelOpenPositionThan8.value,
+    //       child: AnimatedBuilder(
+    //         animation: controller.animationController,
+    //         builder: (context, child) {
+    //           return Container(
+    //             height: controller.panelMobileMinSize +
+    //                 controller.panelAlbumPadding * 2 +
+    //                 (Get.width/8*3*.86 - controller.panelMobileMinSize + controller.panelAlbumPadding * 2) * controller.animationController.value,
+    //             alignment: Alignment.centerLeft,
+    //             child: child,
+    //           );
+    //         },
+    //         child: InkWell(
+    //           child: Container(
+    //             width: Get.width,
+    //             padding: EdgeInsets.symmetric(horizontal: controller.panelAlbumPadding),
+    //             child: Stack(
+    //               alignment: Alignment.centerLeft,
+    //               children: [
+    //                 _buildMediaTitleL(context),
+    //                 _buildAlbumL(),
+    //               ],
+    //             ),
+    //           ),
+    //           onTap: () {
+    //             controller.panelControllerHome.open();
+    //           },
+    //         ),
+    //       ),
+    //     ));
     return Obx(() => IgnorePointer(
           ignoring: controller.panelOpenPositionThan8.value,
           child: AnimatedBuilder(
@@ -210,7 +255,7 @@ class HomeView extends GetView<Home> {
               return Container(
                 height: controller.panelMobileMinSize +
                     controller.panelAlbumPadding * 2 +
-                    (750.w - controller.panelMobileMinSize + controller.panelAlbumPadding * 2) * controller.animationController.value,
+                    (Get.width / 8 * 3 * .86 - controller.panelMobileMinSize + controller.panelAlbumPadding * 2) * controller.animationController.value,
                 alignment: Alignment.centerLeft,
                 child: child,
               );
@@ -280,8 +325,8 @@ class HomeView extends GetView<Home> {
 
   //构建歌曲专辑
   Widget _buildAlbumL() {
-    double albumWidth = 750.w;
-    double leftWidth = Get.width / 2;
+    double albumWidth = Get.width / 8 * 3 * .86;
+    double leftWidth = Get.width / 8 * 3;
     return AnimatedBuilder(
       animation: controller.animationController,
       builder: (context, index) {

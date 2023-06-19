@@ -287,7 +287,7 @@ class UserViewL extends GetView<UserController> {
                                                 ),
                                                 Text(
                                                   e.title,
-                                                  style: TextStyle(fontSize: 26.sp, color: controller.palette.value.dominantColor?.bodyTextColor),
+                                                  style: TextStyle(fontSize: 28.sp, color: controller.palette.value.dominantColor?.bodyTextColor),
                                                 )
                                               ],
                                             ))
@@ -377,7 +377,7 @@ class UserViewL extends GetView<UserController> {
                   SliverPadding(
                     padding: EdgeInsets.symmetric(horizontal: 80.w),
                     sliver: SliverGrid.builder(
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 6, childAspectRatio: .75, mainAxisSpacing: 10.0, crossAxisSpacing: 10.0),
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4, childAspectRatio: .75, mainAxisSpacing: 10.0, crossAxisSpacing: 10.0),
                         itemBuilder: (context, index) => _buildItem(controller.playlist[index], context),
                         itemCount: controller.playlist.length,
                         addAutomaticKeepAlives: false,
@@ -467,6 +467,7 @@ class UserViewL extends GetView<UserController> {
                   padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 2.w),
                   child: Text(
                     albumModel.name ?? '',
+                    style: TextStyle(fontSize: 28.sp),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),

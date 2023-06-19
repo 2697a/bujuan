@@ -25,7 +25,7 @@ enum LoginStatus { login, noLogin }
 class UserController extends GetxController {
   List<Play> playlist = <Play>[].obs;
   Rx<Play> play = Play().obs;
-   Rx<PaletteGenerator> palette = PaletteGenerator.fromColors([]).obs;
+  Rx<PaletteGenerator> palette = PaletteGenerator.fromColors([]).obs;
   RxBool loading = true.obs;
   late BuildContext context;
   final List<UserItem> userItems = [

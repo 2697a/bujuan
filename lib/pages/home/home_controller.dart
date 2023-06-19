@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
+import 'package:android_intent_plus/android_intent.dart';
+import 'package:android_intent_plus/flag.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/common/constants/enmu.dart';
@@ -33,6 +35,7 @@ import '../../common/bujuan_audio_handler.dart';
 import '../../routes/router.dart';
 import '../../widget/wheel_slider.dart';
 import 'view/home_view.dart';
+import 'package:auto_route/auto_route.dart';
 
 Future<PaletteGenerator> getColor(MediaItem mediaItem) async {
   return await OtherUtils.getImageColor('${mediaItem.extras?['image'] ?? ''}?param=500y500');
@@ -42,7 +45,7 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
   double panelHeaderSize = 100.w;
   double panelMobileMinSize = 85.w; //折叠起来时播放栏的高度
   double panelTopSize = 140.w; //折叠起来时播放栏的高度
-  double panelAlbumPadding = 35.w; //专辑图片左右上下的边距
+  double panelAlbumPadding = 15.w; //专辑图片左右上下的边距
 
   //是否是横屏
   bool landscape = PlatformUtils.isMacOS || PlatformUtils.isWindows || OtherUtils.isPad();
@@ -51,7 +54,7 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
     LeftMenu('个人中心', TablerIcons.user, Routes.user, '/home/user'),
     LeftMenu('推荐歌单', TablerIcons.smart_home, Routes.index, '/home/index'),
     // LeftMenu('本地歌曲', TablerIcons.file_music, Routes.local, '/home/local'),
-    LeftMenu('个性设置', TablerIcons.settings, (PlatformUtils.isMacOS || PlatformUtils.isWindows || OtherUtils.isPad()) ? Routes.settingL : Routes.setting, '/home/settingL'),
+    LeftMenu('个性设置', TablerIcons.settings,  Routes.settingL, '/home/settingL'),
     LeftMenu('捐赠', TablerIcons.coffee, Routes.coffee, ''),
   ];
 
@@ -186,6 +189,7 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
   RxBool sleepSlide = false.obs;
   late AnimationController animationController;
   late Animation<double> animationPanel;
+  late Animation<double> animationScalePanel;
 
   bool intervalClick(int needTime) {
     // 防重复提交
@@ -197,6 +201,12 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
     }
   }
 
+  AndroidIntent androidHomeIntent = const AndroidIntent(
+    action: 'android.intent.action.MAIN',
+    flags: [Flag.FLAG_ACTIVITY_NEW_TASK],
+    category: 'android.intent.category.HOME',
+  );
+
   //用户信息
   RxList<int> likeIds = <int>[].obs;
   Rx<LoginStatus> loginStatus = LoginStatus.noLogin.obs;
@@ -205,10 +215,11 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
   //进度
   @override
   void onInit() async {
-    panelMobileMinSize = landscape ? 60.h : 85.w;
-    panelAlbumPadding = landscape ? 22.h : 15.w;
+    // panelMobileMinSize = landscape ? 58.h : 85.w;
+    // panelAlbumPadding = landscape ? 20.h : 15.w;
     animationController = AnimationController(vsync: this, value: 0);
     animationPanel = Tween(begin: 0.0, end: 1.0).animate(animationController);
+    animationScalePanel = Tween(begin: 1.06, end: 1.0).animate(animationController);
     var rng = Random();
     for (double i = 0; i < (landscape ? 100 : 50); i++) {
       mEffects.add({"percent": i, "size": 3 + rng.nextInt(30 - 5).toDouble()});
@@ -354,11 +365,11 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
               : Brightness.dark,
       statusBarBrightness: changed
           ? brightness == Brightness.dark
-              ? Brightness.light
-              : Brightness.dark
-          : Get.isPlatformDarkMode
               ? Brightness.dark
-              : Brightness.light,
+              : Brightness.light
+          : Get.isPlatformDarkMode
+              ? Brightness.light
+              : Brightness.dark,
       statusBarIconBrightness: changed
           ? brightness == Brightness.light
               ? Brightness.dark
@@ -531,6 +542,7 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
 
   //当按下返回键
   Future<bool> onWillPop() async {
+    print('object============${autoRouterDelegate?.currentConfiguration?.url}');
     if (!landscape && panelController.isPanelOpen) {
       panelController.close();
       return false;
@@ -541,6 +553,12 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
     }
     if (!landscape && myDrawerController.isOpen!()) {
       myDrawerController.close!();
+      return false;
+    }
+    if (PlatformUtils.isAndroid &&
+        (autoRouterDelegate?.currentConfiguration?.path ?? '').contains(Routes.index) ||
+        (autoRouterDelegate?.currentConfiguration?.path ?? '').contains(Routes.user)) {
+      androidHomeIntent.launch();
       return false;
     }
     return true;

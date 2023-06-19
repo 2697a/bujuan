@@ -64,8 +64,9 @@ class _LoginViewStateP extends State<LoginView> {
       return;
     }
     String codeUrl = NeteaseMusicApi().loginQrCodeUrl(qrCodeLoginKey.unikey);
+    print('object=========$codeUrl');
     setState(() => qrCodeUrl = codeUrl);
-    timer = Timer.periodic(const Duration(seconds: 5), (Timer t) async {
+    timer = Timer.periodic(const Duration(seconds: 3), (Timer t) async {
       ServerStatusBean serverStatusBean = await NeteaseMusicApi().loginQrCodeCheck(qrCodeLoginKey.unikey);
       if (serverStatusBean.code == 800) {
         WidgetUtil.showToast('二维码过期请重新获取');
@@ -223,12 +224,12 @@ class _LoginViewStateP extends State<LoginView> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // QrImage(
-                    //   backgroundColor: Colors.white,
-                    //   data: qrCodeUrl,
-                    //   version: QrVersions.auto,
-                    //   size: 400.w,
-                    // ),
+                    QrImageView(
+                      backgroundColor: Colors.white,
+                      data: qrCodeUrl,
+                      version: QrVersions.auto,
+                      size: 400.w,
+                    ),
                     Padding(
                       padding: EdgeInsets.symmetric(vertical: 30.w),
                       child: Text(

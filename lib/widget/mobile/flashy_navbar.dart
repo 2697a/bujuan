@@ -126,10 +126,13 @@ class _FlashyNavbarItem extends StatelessWidget {
             AnimatedAlign(
               duration: animationDuration,
               alignment: Alignment.center,
-              child: Obx(() => IconTheme(
-                    data: IconThemeData(size: iconSize, color: Home.to.bodyColor.value.withOpacity(isSelected ? 1 : 0.6)),
-                    child: item.icon,
-                  )),
+              child: Home.to.landscape?IconTheme(
+                data: IconThemeData(size: iconSize, color: (Theme.of(context).iconTheme.color??Colors.black).withOpacity(isSelected ? 1 : 0.6)),
+                child: item.icon,
+              ):Obx(() => IconTheme(
+                data: IconThemeData(size: iconSize, color: Home.to.bodyColor.value.withOpacity(isSelected ? 1 : 0.6)),
+                child: item.icon,
+              )),
             ),
           ],
         ));

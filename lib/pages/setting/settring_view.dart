@@ -12,7 +12,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../common/netease_api/src/dio_ext.dart';
+import '../../routes/router.dart';
 import '../../routes/router.gr.dart';
+import '../../widget/simple_extended_image.dart';
+import '../user/user_controller.dart';
 
 class SettingView extends StatefulWidget {
   const SettingView({Key? key}) : super(key: key);
@@ -96,10 +99,10 @@ class _SettingViewState extends State<SettingView> {
               style: TextStyle(fontSize: 30.sp),
             ),
             trailing: Obx(() => Icon(
-              Home.to.gradientBackground.value ? TablerIcons.toggle_right : TablerIcons.toggle_left,
-              size: 56.w,
-              color: Theme.of(context).cardColor.withOpacity(Home.to.gradientBackground.value ? 0.7 : .4),
-            )),
+                  Home.to.gradientBackground.value ? TablerIcons.toggle_right : TablerIcons.toggle_left,
+                  size: 56.w,
+                  color: Theme.of(context).cardColor.withOpacity(Home.to.gradientBackground.value ? 0.7 : .4),
+                )),
             onTap: () {
               Home.to.gradientBackground.value = !Home.to.gradientBackground.value;
               Home.to.box.put(gradientBackgroundSp, Home.to.gradientBackground.value);
@@ -126,10 +129,10 @@ class _SettingViewState extends State<SettingView> {
               style: TextStyle(fontSize: 30.sp),
             ),
             trailing: Obx(() => Icon(
-              Home.to.roundAlbum.value ? TablerIcons.toggle_right : TablerIcons.toggle_left,
-              size: 56.w,
-              color: Theme.of(context).cardColor.withOpacity(Home.to.roundAlbum.value ? 0.7 : .4),
-            )),
+                  Home.to.roundAlbum.value ? TablerIcons.toggle_right : TablerIcons.toggle_left,
+                  size: 56.w,
+                  color: Theme.of(context).cardColor.withOpacity(Home.to.roundAlbum.value ? 0.7 : .4),
+                )),
             onTap: () {
               Home.to.roundAlbum.value = !Home.to.roundAlbum.value;
               Home.to.box.put(roundAlbumSp, Home.to.roundAlbum.value);
@@ -148,7 +151,7 @@ class _SettingViewState extends State<SettingView> {
             onTap: () async {
               XFile? x = await _picker.pickImage(source: ImageSource.gallery, requestFullMetadata: false);
               if (x != null && mounted) {
-                context.router.push( ImageBlur(path: x.path));
+                context.router.push(ImageBlur(path: x.path));
               }
             },
           ),
@@ -163,7 +166,7 @@ class _SettingViewState extends State<SettingView> {
             //   color: Theme.of(context).cardColor.withOpacity(.6),
             // ),
             onTap: () async {
-              if(Home.to.background.value.isEmpty){
+              if (Home.to.background.value.isEmpty) {
                 WidgetUtil.showToast('没有设置背景');
                 return;
               }
@@ -172,7 +175,6 @@ class _SettingViewState extends State<SettingView> {
               WidgetUtil.showToast('清除成功');
             },
           ),
-
           ListTile(
             title: Text(
               '自定义启动图',
@@ -280,8 +282,6 @@ class _SettingViewState extends State<SettingView> {
   }
 }
 
-
-
 class SettingViewL extends StatefulWidget {
   const SettingViewL({Key? key}) : super(key: key);
 
@@ -331,13 +331,36 @@ class _SettingViewStateL extends State<SettingViewL> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: MyAppBar(
-        title: const Text('设置'),
-      ),
+      backgroundColor: Colors.transparent,
+      appBar: Home.to.landscape
+          ? null
+          : MyAppBar(
+              backgroundColor: Colors.transparent,
+              centerTitle: false,
+              leading: IconButton(
+                  onPressed: () {
+                    if (Home.to.loginStatus.value == LoginStatus.login) {
+                      Home.to.myDrawerController.open!();
+                      return;
+                    }
+                    AutoRouter.of(context).pushNamed(Routes.login);
+                  },
+                  icon: Obx(() => SimpleExtendedImage.avatar(
+                        Home.to.userData.value.profile?.avatarUrl ?? '',
+                        width: 80.w,
+                      ))),
+              title: RichText(
+                  text: TextSpan(style: TextStyle(fontSize: 36.sp, color: Colors.grey, fontWeight: FontWeight.bold), text: 'Here  ', children: [
+                TextSpan(text: '设置～', style: TextStyle(color: Theme.of(context).primaryColor.withOpacity(.9))),
+              ])),
+            ),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 20.w),
         child: Column(
-          children: [_buildUiSetting(), _buildAppSetting()],
+          children: [
+            _buildUiSetting(),
+            _buildAppSetting(),
+          ],
         ),
       ),
     );
@@ -346,7 +369,7 @@ class _SettingViewStateL extends State<SettingViewL> {
   Widget _buildUiSetting() {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10.w),
-      decoration: BoxDecoration(color: Theme.of(context).colorScheme.onSecondary, borderRadius: BorderRadius.circular(25.w)),
+      decoration: BoxDecoration(color: Theme.of(context).colorScheme.onSecondary.withOpacity(.5), borderRadius: BorderRadius.circular(25.w)),
       padding: EdgeInsets.symmetric(horizontal: 15.w),
       child: Column(
         children: [
@@ -364,10 +387,10 @@ class _SettingViewStateL extends State<SettingViewL> {
               style: TextStyle(fontSize: 30.sp),
             ),
             trailing: Obx(() => Icon(
-              Home.to.gradientBackground.value ? TablerIcons.toggle_right : TablerIcons.toggle_left,
-              size: 56.w,
-              color: Theme.of(context).cardColor.withOpacity(Home.to.gradientBackground.value ? 0.7 : .4),
-            )),
+                  Home.to.gradientBackground.value ? TablerIcons.toggle_right : TablerIcons.toggle_left,
+                  size: 56.w,
+                  color: Theme.of(context).cardColor.withOpacity(Home.to.gradientBackground.value ? 0.7 : .4),
+                )),
             onTap: () {
               Home.to.gradientBackground.value = !Home.to.gradientBackground.value;
               Home.to.box.put(gradientBackgroundSp, Home.to.gradientBackground.value);
@@ -379,10 +402,10 @@ class _SettingViewStateL extends State<SettingViewL> {
               style: TextStyle(fontSize: 30.sp),
             ),
             trailing: Obx(() => Icon(
-              Home.to.topLyric.value ? TablerIcons.toggle_right : TablerIcons.toggle_left,
-              size: 56.w,
-              color: Theme.of(context).cardColor.withOpacity(Home.to.topLyric.value ? 0.7 : .4),
-            )),
+                  Home.to.topLyric.value ? TablerIcons.toggle_right : TablerIcons.toggle_left,
+                  size: 56.w,
+                  color: Theme.of(context).cardColor.withOpacity(Home.to.topLyric.value ? 0.7 : .4),
+                )),
             onTap: () {
               Home.to.topLyric.value = !Home.to.topLyric.value;
               Home.to.box.put(topLyricSp, Home.to.topLyric.value);
@@ -394,10 +417,10 @@ class _SettingViewStateL extends State<SettingViewL> {
               style: TextStyle(fontSize: 30.sp),
             ),
             trailing: Obx(() => Icon(
-              Home.to.roundAlbum.value ? TablerIcons.toggle_right : TablerIcons.toggle_left,
-              size: 56.w,
-              color: Theme.of(context).cardColor.withOpacity(Home.to.roundAlbum.value ? 0.7 : .4),
-            )),
+                  Home.to.roundAlbum.value ? TablerIcons.toggle_right : TablerIcons.toggle_left,
+                  size: 56.w,
+                  color: Theme.of(context).cardColor.withOpacity(Home.to.roundAlbum.value ? 0.7 : .4),
+                )),
             onTap: () {
               Home.to.roundAlbum.value = !Home.to.roundAlbum.value;
               Home.to.box.put(roundAlbumSp, Home.to.roundAlbum.value);
@@ -416,7 +439,7 @@ class _SettingViewStateL extends State<SettingViewL> {
             onTap: () async {
               XFile? x = await _picker.pickImage(source: ImageSource.gallery, requestFullMetadata: false);
               if (x != null && mounted) {
-                context.router.push( ImageBlur(path: x.path));
+                context.router.push(ImageBlur(path: x.path));
               }
             },
           ),
@@ -431,7 +454,7 @@ class _SettingViewStateL extends State<SettingViewL> {
             //   color: Theme.of(context).cardColor.withOpacity(.6),
             // ),
             onTap: () async {
-              if(Home.to.background.value.isEmpty){
+              if (Home.to.background.value.isEmpty) {
                 WidgetUtil.showToast('没有设置背景');
                 return;
               }
@@ -440,7 +463,6 @@ class _SettingViewStateL extends State<SettingViewL> {
               WidgetUtil.showToast('清除成功');
             },
           ),
-
           ListTile(
             title: Text(
               '自定义启动图',
@@ -476,7 +498,7 @@ class _SettingViewStateL extends State<SettingViewL> {
   Widget _buildAppSetting() {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10.w),
-      decoration: BoxDecoration(color: Theme.of(context).colorScheme.onSecondary, borderRadius: BorderRadius.circular(25.w)),
+      decoration: BoxDecoration(color: Theme.of(context).colorScheme.onSecondary.withOpacity(.5), borderRadius: BorderRadius.circular(25.w)),
       padding: EdgeInsets.symmetric(horizontal: 15.w),
       child: Column(
         children: [
@@ -494,10 +516,10 @@ class _SettingViewStateL extends State<SettingViewL> {
               style: TextStyle(fontSize: 30.sp),
             ),
             trailing: Obx(() => Icon(
-              Home.to.high.value ? TablerIcons.toggle_right : TablerIcons.toggle_left,
-              size: 56.w,
-              color: Theme.of(context).cardColor.withOpacity(Home.to.high.value ? 0.7 : .4),
-            )),
+                  Home.to.high.value ? TablerIcons.toggle_right : TablerIcons.toggle_left,
+                  size: 56.w,
+                  color: Theme.of(context).cardColor.withOpacity(Home.to.high.value ? 0.7 : .4),
+                )),
             onTap: () {
               Home.to.high.value = !Home.to.high.value;
               Home.to.box.put(highSong, Home.to.high.value);
@@ -509,10 +531,10 @@ class _SettingViewStateL extends State<SettingViewL> {
               style: TextStyle(fontSize: 30.sp),
             ),
             trailing: Obx(() => Icon(
-              Home.to.cache.value ? TablerIcons.toggle_right : TablerIcons.toggle_left,
-              size: 56.w,
-              color: Theme.of(context).cardColor.withOpacity(Home.to.cache.value ? 0.7 : .4),
-            )),
+                  Home.to.cache.value ? TablerIcons.toggle_right : TablerIcons.toggle_left,
+                  size: 56.w,
+                  color: Theme.of(context).cardColor.withOpacity(Home.to.cache.value ? 0.7 : .4),
+                )),
             onTap: () {
               Home.to.cache.value = !Home.to.cache.value;
               Home.to.box.put(cacheSp, Home.to.cache.value);

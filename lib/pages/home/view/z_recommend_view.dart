@@ -1,8 +1,10 @@
 import 'dart:convert';
 
+import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/common/constants/enmu.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
+import 'package:bujuan/pages/home/view/panel_view.dart';
 import 'package:bujuan/widget/simple_extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -21,48 +23,206 @@ class RecommendView extends GetView<Home> {
   }
 
   Widget _buildBody(BuildContext context) {
-    return Obx(() {
-      return Visibility(
-        visible: controller.mediaItem.value.extras?['type'] != MediaType.local.name,
-        child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 50.w, vertical: 20.w),
+    return controller.landscape
+        ? Column(
+      children: [
+        Padding(padding: EdgeInsets.symmetric(vertical: 20.w)),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(controller.panelMobileMinSize / 2),
+          child: Obx(() => SimpleExtendedImage(
+            '${Home.to.mediaItem.value.extras?['image'] ?? ''}?param=500y500',
+            width: 630.w,
+            height: 630.w,
+          )),
+        ),
+        Container(
+          padding: EdgeInsets.only(left: 45.w, top: 30.w, right: 45.w),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Container(
-                alignment: Alignment.centerLeft,
-                padding: EdgeInsets.only(top: 10.w, bottom: 20.w),
-                child: Obx(() => Text(
-                      '歌手',
-                      style: TextStyle(fontSize: 36.sp, color: controller.bodyColor.value, fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.left,
-                    )),
-              ),
-              _buildArtistsList(),
-              // Container(
-              //   alignment: Alignment.centerLeft,
-              //   padding: EdgeInsets.only(top: 10.w, bottom: 20.w),
-              //   child: Obx(() => Text(
-              //     '专辑',
-              //     style: TextStyle(fontSize: 36.sp, color: controller.bodyColor.value, fontWeight: FontWeight.bold),
-              //     textAlign: TextAlign.left,
-              //   )),
-              // ),
-              // ClassWidget(child: _buildAlbum(context)),
-              // Container(
-              //   alignment: Alignment.centerLeft,
-              //   padding: EdgeInsets.only(top: 10.w, bottom: 20.w),
-              //   child: Obx(() => Text(
-              //         '相似歌单',
-              //         style: TextStyle(fontSize: 36.sp, color: controller.bodyColor.value, fontWeight: FontWeight.bold),
-              //         textAlign: TextAlign.left,
-              //       )),
-              // ),
-              // _buildSimSongListView(),
+              Obx(() => Text(
+                controller.mediaItem.value.title.fixAutoLines(),
+                style: TextStyle(fontSize: 38.sp, fontWeight: FontWeight.bold),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              )),
+              Padding(padding: EdgeInsets.symmetric(vertical: 10.w)),
+              Obx(() => Text(
+                (controller.mediaItem.value.artist ?? '').fixAutoLines(),
+                style: TextStyle(fontSize: 28.sp),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ))
             ],
           ),
         ),
-      );
-    });
+        // //操控区域
+        _buildPlayController(context),
+        //进度条
+        _buildSlide(context),
+        // 功能按钮
+        SizedBox(
+          height: controller.panelMobileMinSize + MediaQuery.of(context).padding.bottom,
+        ),
+      ],
+    )
+        : Obx(() {
+            return Visibility(
+              visible: controller.mediaItem.value.extras?['type'] != MediaType.local.name,
+              child: SingleChildScrollView(
+                padding: EdgeInsets.symmetric(horizontal: 50.w, vertical: 20.w),
+                child: Column(
+                  children: [
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      padding: EdgeInsets.only(top: 10.w, bottom: 20.w),
+                      child: Obx(() => Text(
+                            '歌手',
+                            style: TextStyle(fontSize: 36.sp, color: controller.bodyColor.value, fontWeight: FontWeight.bold),
+                            textAlign: TextAlign.left,
+                          )),
+                    ),
+                    _buildArtistsList(),
+                    // Container(
+                    //   alignment: Alignment.centerLeft,
+                    //   padding: EdgeInsets.only(top: 10.w, bottom: 20.w),
+                    //   child: Obx(() => Text(
+                    //     '专辑',
+                    //     style: TextStyle(fontSize: 36.sp, color: controller.bodyColor.value, fontWeight: FontWeight.bold),
+                    //     textAlign: TextAlign.left,
+                    //   )),
+                    // ),
+                    // ClassWidget(child: _buildAlbum(context)),
+                    // Container(
+                    //   alignment: Alignment.centerLeft,
+                    //   padding: EdgeInsets.only(top: 10.w, bottom: 20.w),
+                    //   child: Obx(() => Text(
+                    //         '相似歌单',
+                    //         style: TextStyle(fontSize: 36.sp, color: controller.bodyColor.value, fontWeight: FontWeight.bold),
+                    //         textAlign: TextAlign.left,
+                    //       )),
+                    // ),
+                    // _buildSimSongListView(),
+                  ],
+                ),
+              ),
+            );
+          });
+  }
+
+  Widget _buildSlide(BuildContext context) {
+    return Container(
+      width: 750.w,
+      padding: EdgeInsets.only(left: 60.w, right: 60.w, bottom: 50.w),
+      height: 100.w,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            scrollDirection: Axis.horizontal,
+            addAutomaticKeepAlives: false,
+            cacheExtent: 1.3,
+            addRepaintBoundaries: false,
+            addSemanticIndexes: false,
+            itemBuilder: (context, index) => Container(
+              margin: EdgeInsets.symmetric(vertical: controller.mEffects[index]['size'] / 2, horizontal: 5.w),
+              decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(4)),
+              width: 1.8,
+            ),
+            itemCount: controller.mEffects.length,
+          ),
+          Obx(() => ProgressBar(
+                progress: controller.duration.value,
+                buffered: controller.duration.value,
+                total: controller.mediaItem.value.duration ?? const Duration(seconds: 10),
+                progressBarColor: Colors.transparent,
+                baseBarColor: Colors.transparent,
+                bufferedBarColor: Colors.transparent,
+                thumbColor: (Theme.of(context).iconTheme.color ?? Colors.black),
+                barHeight: 0.w,
+                thumbRadius: 20.w,
+                barCapShape: BarCapShape.square,
+                timeLabelType: TimeLabelType.remainingTime,
+                timeLabelLocation: TimeLabelLocation.none,
+                timeLabelTextStyle: TextStyle(color: (Theme.of(context).iconTheme.color ?? Colors.black), fontSize: 28.sp),
+                onSeek: (duration) => controller.audioServeHandler.seek(duration),
+              ))
+        ],
+      ),
+    );
+  }
+
+  // height:329.h-MediaQuery.of(context).padding.top,
+  Widget _buildPlayController(BuildContext context) {
+    return Expanded(
+        child: Container(
+      width: 750.w,
+      padding: EdgeInsets.symmetric(horizontal: 35.w, vertical: 30.w),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          IconButton(
+              onPressed: () => controller.likeSong(),
+              icon: Obx(() => Icon(controller.likeIds.contains(int.tryParse(controller.mediaItem.value.id)) ? TablerIcons.heartbeat : TablerIcons.heart, size: 46.w))),
+          IconButton(
+              onPressed: () {
+                if (controller.fm.value) {
+                  return;
+                }
+                if (controller.intervalClick(1)) {
+                  controller.audioServeHandler.skipToPrevious();
+                }
+              },
+              icon: Icon(
+                TablerIcons.player_skip_back,
+                size: 46.w,
+              )),
+          InkWell(
+            child: Obx(() => Container(
+              alignment: Alignment.center,
+              padding: EdgeInsets.only(bottom: 5.h),
+              height: 105.w,
+              width: 105.w,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(80.w),
+                border: Border.all(color: (Theme.of(context).iconTheme.color ?? Colors.black).withOpacity(.04), width: 5.w),
+                color: (Theme.of(context).iconTheme.color ?? Colors.black).withOpacity(0.06),
+              ),
+              child: Icon(
+                controller.playing.value ? TablerIcons.player_pause : TablerIcons.player_play,
+                size: 54.w,
+              ),
+            )),
+            onTap: () => controller.playOrPause(),
+          ),
+          IconButton(
+              onPressed: () {
+                if (controller.intervalClick(1)) {
+                  controller.audioServeHandler.skipToNext();
+                }
+              },
+              icon: Icon(
+                TablerIcons.player_skip_forward,
+                size: 46.w,
+              )),
+          IconButton(
+              onPressed: () {
+                if (controller.fm.value) {
+                  return;
+                }
+                controller.changeRepeatMode();
+              },
+              icon: Obx(() => Icon(
+                    controller.getRepeatIcon(),
+                    size: 43.w,
+                  ))),
+        ],
+      ),
+    ));
   }
 
   Widget _buildArtistsList() {

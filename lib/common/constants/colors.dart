@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -12,13 +13,27 @@ class AppTheme {
             onSurface: onSurface,
           ),
       pageTransitionsTheme: const PageTransitionsTheme(builders: {
-        TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+        TargetPlatform.android: NoShadowCupertinoPageTransitionsBuilder(),
         TargetPlatform.iOS: FadeUpwardsPageTransitionsBuilder(),
         TargetPlatform.macOS: FadeUpwardsPageTransitionsBuilder(),
       }),
       cardColor: const Color(0xFF2C2C2C),
-      iconTheme: const IconThemeData(color: Color(0xFF494949)),
+      iconTheme: const IconThemeData(color: Color(0xFF4D4D4D)),
       primaryColor: const Color(0xffe56260),
+      textTheme: const TextTheme(
+        titleLarge:TextStyle(color: Color(0xFF4D4D4D)) ,
+        titleMedium:TextStyle(color: Color(0xFF4D4D4D)) ,
+        titleSmall:TextStyle(color: Color(0xFF4D4D4D)) ,
+        displayLarge:TextStyle(color: Color(0xFF4D4D4D)) ,
+        displayMedium:TextStyle(color: Color(0xFF4D4D4D)) ,
+        displaySmall:TextStyle(color: Color(0xFF4D4D4D)) ,
+        bodyLarge:TextStyle(color: Color(0xFF4D4D4D)) ,
+        bodyMedium:TextStyle(color: Color(0xFF4D4D4D)) ,
+        bodySmall:TextStyle(color: Color(0xFF4D4D4D)) ,
+        headlineLarge:TextStyle(color: Color(0xFF4D4D4D)) ,
+        headlineMedium:TextStyle(color: Color(0xFF4D4D4D)) ,
+        headlineSmall:TextStyle(color: Color(0xFF4D4D4D)) ,
+      ),
       bottomAppBarColor: onPrimaryDark,
       scaffoldBackgroundColor: const Color(0xFFF5F3F3),
       appBarTheme: const AppBarTheme(backgroundColor: Color(0xFFF5F3F3), foregroundColor: primaryDark, elevation: 0));

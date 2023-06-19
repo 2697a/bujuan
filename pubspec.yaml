@@ -72,6 +72,7 @@ dependencies:
   window_manager: ^0.3.4
   flutter_rust_bridge: ^1.77.1
   ffi: ^2.0.2
+  android_intent_plus: ^4.0.1
 
 
 dev_dependencies:

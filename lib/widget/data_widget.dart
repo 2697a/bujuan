@@ -59,11 +59,13 @@ class _DataViewState<T> extends State<DataView<T>> {
 
 class LoadingView extends StatelessWidget {
   final String? tips;
+
   const LoadingView({Key? key, this.tips}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Home.to.landscape || Home.to.background.value.isNotEmpty ? Colors.transparent : Theme.of(context).scaffoldBackgroundColor,
       body: SizedBox(
         width: Get.width,
         height: Get.height,
@@ -72,16 +74,14 @@ class LoadingView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // SvgPicture.asset(AppIcons.loading,width: Get.width/2.9,),
-            Lottie.asset('assets/lottie/empty_status.json', height: Home.to.landscape?250.w:Get.width / 3.5, fit: BoxFit.fitHeight,
-                filterQuality: FilterQuality.low),
-            Text(tips??'加载中...', style: TextStyle(fontSize: 28.sp)),
+            Lottie.asset('assets/lottie/empty_status.json', height: Home.to.landscape ? 250.w : Get.width / 3.5, fit: BoxFit.fitHeight, filterQuality: FilterQuality.low),
+            Text(tips ?? '加载中...', style: TextStyle(fontSize: 28.sp)),
           ],
         ),
       ),
     );
   }
 }
-
 
 class EmptyView extends StatelessWidget {
   const EmptyView({Key? key}) : super(key: key);
@@ -96,8 +96,7 @@ class EmptyView extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // SvgPicture.asset(AppIcons.loading,width: Get.width/2.9,),
-          Lottie.asset('assets/lottie/empty.json', height: Get.width / 2, fit: BoxFit.fitHeight,
-              filterQuality: FilterQuality.low),
+          Lottie.asset('assets/lottie/empty.json', height: Get.width / 2, fit: BoxFit.fitHeight, filterQuality: FilterQuality.low),
           Text('暂无数据...', style: TextStyle(fontSize: 28.sp)),
         ],
       ),
@@ -118,12 +117,10 @@ class ErrorView extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // SvgPicture.asset(AppIcons.loading,width: Get.width/2.9,),
-          Lottie.asset('assets/lottie/no_internet_connection.json', height: Get.width / 2.5, fit: BoxFit.fitHeight,
-              filterQuality: FilterQuality.low),
+          Lottie.asset('assets/lottie/no_internet_connection.json', height: Get.width / 2.5, fit: BoxFit.fitHeight, filterQuality: FilterQuality.low),
           Text('网络错误', style: TextStyle(fontSize: 32.sp)),
         ],
       ),
     );
   }
 }
-
