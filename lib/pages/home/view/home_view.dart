@@ -93,11 +93,12 @@ class HomeView extends GetView<Home> {
                   maxHeight: Get.height,
                   header: _buildHeader(context, bottomHeight),
                 ),
-                dragOffset: 360.w,
-                angle: 0,
+                dragOffset: 260.w,
+                // angle: -11,
                 menuBackgroundColor: Theme.of(context).scaffoldBackgroundColor.withOpacity(.1),
-                slideWidth: Get.width * .31,
-                mainScreenScale: 0.1,
+                slideWidth: Get.width * .6,
+                menuScreenWidth: Get.width * .6,
+                mainScreenScale: 0.2,
                 duration: const Duration(milliseconds: 200),
                 reverseDuration: const Duration(milliseconds: 200),
                 showShadow: true,
@@ -110,47 +111,67 @@ class HomeView extends GetView<Home> {
   }
 
   Widget _buildHeader(context, bottomHeight) {
-    return Swipeable(
-        background: Container(),
-        child: Obx(() => IgnorePointer(
-              ignoring: controller.panelOpenPositionThan8.value,
-              child: AnimatedBuilder(
-                animation: controller.animationController,
-                builder: (context, child) {
-                  return Container(
-                    alignment: Alignment.centerLeft,
-                    padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top * controller.slideSecondPosition.value),
-                    child: child,
-                  );
-                },
-                child: GestureDetector(
-                  onVerticalDragEnd: (controller.second.value) ? (e) {} : null,
-                  // onHorizontalDragEnd: (e){},
-                  child: InkWell(
-                    child: Container(
-                      width: 750.w,
-                      padding: EdgeInsets.all(controller.panelAlbumPadding),
-                      child: Stack(
-                        alignment: Alignment.centerLeft,
-                        children: [
-                          _buildMediaTitle(context),
-                          _buildAlbum(),
-                        ],
-                      ),
+    return AnimatedBuilder(
+      animation: controller.animationController,
+      builder: (context, child) {
+        return Stack(
+          children: [
+            Container(
+              alignment: Alignment.centerLeft,
+              padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top * controller.slideSecondPosition.value),
+              child: child,
+            ),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: controller.panelAlbumPadding),
+              margin: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+              height: controller.panelTopSize*controller.animationController.value,
+              width: 750.w ,
+              child:  Obx(() => Visibility(
+                visible: !controller.second.value&&controller.panelOpenPositionThan1.value,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      onPressed: () => controller.panelControllerHome.close(),
+                      icon: Obx(() => Icon(Icons.keyboard_arrow_down_sharp, color: controller.bodyColor.value)),
                     ),
-                    onTap: () {
-                      if (controller.panelControllerHome.isPanelClosed) {
-                        controller.panelControllerHome.open();
-                      } else {
-                        if (controller.panelController.isPanelOpen) controller.panelController.close();
-                      }
-                    },
-                  ),
+                     Text('Now Playing',style: TextStyle(color: controller.bodyColor.value,fontSize: 28.sp),),
+                    IconButton(onPressed: () {}, icon: Obx(() => Icon(Icons.more_horiz, color: controller.bodyColor.value))),
+                  ],
+                ),
+              )),
+            ),
+          ],
+        );
+      },
+      child: Obx(() => GestureDetector(
+        onVerticalDragEnd: (controller.second.value) ? (e) {} : null,
+        child: Swipeable(
+            background: const SizedBox.shrink(),
+            child: InkWell(
+              child: Container(
+                width: 750.w,
+                padding: EdgeInsets.all(controller.panelAlbumPadding),
+                child: Stack(
+                  alignment: Alignment.centerLeft,
+                  children: [
+                    _buildMediaTitle(context),
+                    _buildAlbum(),
+                  ],
                 ),
               ),
-            )),
-        onSwipeLeft: () => controller.audioServeHandler.skipToPrevious(),
-        onSwipeRight: () => controller.audioServeHandler.skipToNext());
+              onTap: () {
+                if (controller.panelControllerHome.isPanelClosed) {
+                  controller.panelControllerHome.open();
+                } else {
+                  if (controller.panelController.isPanelOpen) controller.panelController.close();
+                }
+              },
+            ),
+            onSwipeLeft: () => controller.audioServeHandler.skipToPrevious(),
+            onSwipeRight: () => controller.audioServeHandler.skipToNext()),
+      )),
+    );
   }
 
   //构建歌曲标题和播放按钮

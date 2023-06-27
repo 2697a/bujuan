@@ -57,6 +57,7 @@ dependencies:
   flutter_svg: ^2.0.7
   fluttertoast: ^8.2.2
   cached_network_image: ^3.2.3
+  rive: ^0.11.3
   lottie: ^2.4.0
   pull_to_refresh: ^2.0.0
   notification_permissions: ^0.6.1

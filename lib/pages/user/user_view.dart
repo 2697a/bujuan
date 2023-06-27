@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:audio_service/audio_service.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/common/constants/icon.dart';
@@ -14,6 +16,7 @@ import '../../common/constants/key.dart';
 import '../../common/netease_api/src/api/play/bean.dart';
 import '../../routes/router.dart';
 import '../../routes/router.gr.dart' as gr;
+import '../../widget/app_bar.dart';
 import '../../widget/draggable_home.dart';
 import '../home/home_controller.dart';
 import '../home/view/panel_view.dart';
@@ -40,8 +43,159 @@ class UserViewP extends GetView<UserController> {
         child: Obx(() => Visibility(
               visible: !controller.loading.value,
               replacement: const LoadingView(),
+              // child: Scaffold(
+              //   backgroundColor: Colors.transparent,
+              //   appBar: MyAppBar(
+              //     backgroundColor: Theme.of(context).scaffoldBackgroundColor.withOpacity(Home.to.background.value.isEmpty ? 1 : 0),
+              //     leading: IconButton(
+              //         onPressed: () {
+              //           if (Home.to.loginStatus.value == LoginStatus.login) {
+              //             Home.to.myDrawerController.open!();
+              //             return;
+              //           }
+              //           AutoRouter.of(context).pushNamed(Routes.login);
+              //         },
+              //         icon: Obx(() => SimpleExtendedImage.avatar(
+              //               Home.to.userData.value.profile?.avatarUrl ?? '',
+              //               width: 76.w,
+              //             ))),
+              //     actions: [
+              //       IconButton(
+              //           onPressed: () {
+              //             AutoRouter.of(context).pushNamed(Routes.search);
+              //           },
+              //           icon: const Icon(TablerIcons.search))
+              //     ],
+              //     title: ClassStatelessWidget(
+              //         child: RichText(
+              //             text: TextSpan(style: TextStyle(fontSize: 42.sp, color: Colors.grey, fontWeight: FontWeight.bold), text: 'Hi  ', children: [
+              //       TextSpan(text: '${Home.to.userData.value.profile?.nickname}～', style: TextStyle(color: Theme.of(context).primaryColor.withOpacity(.9))),
+              //     ]))),
+              //   ),
+              //   body: CustomScrollView(
+              //     physics: const BouncingScrollPhysics(),
+              //     slivers: [
+              //       SliverToBoxAdapter(
+              //         child: Stack(
+              //           alignment: Alignment.topCenter,
+              //           children: [
+              //             Container(
+              //               margin: EdgeInsets.only(top: 35.w),
+              //               width: Get.width / 1.35,
+              //               height: Get.width / 1.6,
+              //               decoration: BoxDecoration(
+              //                 borderRadius: BorderRadius.circular(65.w),
+              //                 color: const Color(0xFFBEBBBB).withAlpha(60),
+              //               ),
+              //             ),
+              //             Container(
+              //               margin: EdgeInsets.only(top: 18.w),
+              //               width: Get.width / 1.2,
+              //               height: Get.width / 1.6,
+              //               decoration: BoxDecoration(
+              //                 borderRadius: BorderRadius.circular(65.w),
+              //                 color: const Color(0xFFBEBBBB).withAlpha(160),
+              //               ),
+              //             ),
+              //             Obx(() => Container(
+              //                   margin: EdgeInsets.symmetric(horizontal: 30.w),
+              //                   child: SimpleExtendedImage(
+              //                     '${controller.play.value.coverImgUrl ?? ''}?param=800y800',
+              //                     width: Get.width,
+              //                     height: Get.width / 1.6,
+              //                     borderRadius: BorderRadius.circular(65.w),
+              //                   ),
+              //                 )),
+              //             Positioned(
+              //               bottom: 35.w,
+              //               child: Container(
+              //                 decoration: BoxDecoration(
+              //                   borderRadius: BorderRadius.only(bottomLeft: Radius.circular(65.w), bottomRight: Radius.circular(65.w)),
+              //                   color: Theme.of(context).scaffoldBackgroundColor.withOpacity(.6),
+              //                 ),
+              //                 width: Get.width - 60.w,
+              //                 child: ClipRRect(
+              //                   borderRadius: BorderRadius.only(bottomLeft: Radius.circular(65.w), bottomRight: Radius.circular(65.w)),
+              //                   child: BackdropFilter(
+              //                       filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+              //                       child: Container(
+              //                         padding: EdgeInsets.symmetric(vertical: 20.w, horizontal: 40.w),
+              //                         child: Column(
+              //                           crossAxisAlignment: CrossAxisAlignment.start,
+              //                           children: [
+              //                             Obx(() => Text(
+              //                                   controller.play.value.name ?? '',
+              //                                   style: TextStyle(fontSize: 42.sp),
+              //                                 )),
+              //                             Padding(padding: EdgeInsets.symmetric(vertical: 8.w)),
+              //                             Obx(() => Text(
+              //                                   '${controller.play.value.playCount ?? 0}',
+              //                                   style: TextStyle(fontSize: 30.sp),
+              //                                 )),
+              //                           ],
+              //                         ),
+              //                       )),
+              //                 ),
+              //               ),
+              //             )
+              //           ],
+              //         ),
+              //       ),
+              //       SliverToBoxAdapter(child:  _buildHeader('喜欢的音乐', context),),
+              //       SliverToBoxAdapter(
+              //         child: Padding(padding: EdgeInsets.symmetric(vertical: 40.w),child: GridView.count(
+              //           padding: EdgeInsets.symmetric(horizontal: 40.w),
+              //           shrinkWrap: true,
+              //           physics: const NeverScrollableScrollPhysics(),
+              //           crossAxisCount: 4,
+              //           childAspectRatio: 1,
+              //           //设置内边距
+              //           //设置横向间距
+              //           crossAxisSpacing: 45,
+              //           //设置主轴间距
+              //           mainAxisSpacing: 10,
+              //           children: controller.userItems
+              //               .map((e) => Container(
+              //             decoration: BoxDecoration(
+              //               borderRadius: BorderRadius.circular(100),
+              //               color: e.color,
+              //             ),
+              //             child: IconButton(
+              //               onPressed: () {
+              //                 if ((e.routes ?? '') == 'playFm') {
+              //                   Home.to.audioServeHandler.setRepeatMode(AudioServiceRepeatMode.all);
+              //                   Home.to.audioServiceRepeatMode.value = AudioServiceRepeatMode.all;
+              //                   Home.to.box.put(repeatModeSp, AudioServiceRepeatMode.all.name);
+              //                   Home.to.getFmSongList();
+              //                   return;
+              //                 }
+              //                 AutoRouter.of(context).pushNamed(e.routes ?? '');
+              //               },
+              //               icon: Icon(e.iconData,color: Colors.white,),
+              //               iconSize: 52.w,
+              //             ),
+              //           ))
+              //               .toList(),
+              //         ),),
+              //       ),
+              //       SliverToBoxAdapter(child:  _buildHeader('我的歌单', context),),
+              //       SliverToBoxAdapter(
+              //         child: Obx(() => ListView.builder(
+              //               padding: EdgeInsets.symmetric(horizontal: 20.w),
+              //               shrinkWrap: true,
+              //               addRepaintBoundaries: false,
+              //               addAutomaticKeepAlives: false,
+              //               physics: const NeverScrollableScrollPhysics(),
+              //               itemBuilder: (content, index) => PlayListItem(index: index, play: controller.playlist[index]),
+              //               itemCount: controller.playlist.length,
+              //               itemExtent: 120.w,
+              //             )),
+              //       ),
+              //     ],
+              //   ),
+              // ),
               child: DraggableHome(
-                physics: const ClampingScrollPhysics(),
+                physics: const BouncingScrollPhysics(),
                 backgroundColor: Colors.transparent,
                 appBarColor: Theme.of(context).scaffoldBackgroundColor.withOpacity(Home.to.background.value.isEmpty ? 1 : 0),
                 curvedBodyRadius: 0,
@@ -129,7 +283,7 @@ class UserViewP extends GetView<UserController> {
                         )),
                     onTap: () => context.router.push(const gr.PlayListView().copyWith(args: controller.play.value)),
                   ),
-                  _buildHeader('我的歌单', context),
+                  _buildHeader('我的歌单', context, actionStr: '查看/管理'),
                   Obx(() => ListView.builder(
                         padding: EdgeInsets.symmetric(horizontal: 20.w),
                         shrinkWrap: true,
@@ -137,7 +291,7 @@ class UserViewP extends GetView<UserController> {
                         addAutomaticKeepAlives: false,
                         physics: const NeverScrollableScrollPhysics(),
                         itemBuilder: (content, index) => PlayListItem(index: index, play: controller.playlist[index]),
-                        itemCount: controller.playlist.length,
+                        itemCount: controller.playlist.length > 10 ? 10 : controller.playlist.length,
                         itemExtent: 120.w,
                       )),
                 ],
@@ -146,22 +300,30 @@ class UserViewP extends GetView<UserController> {
             ))));
   }
 
-  Widget _buildHeader(String title, context) {
+  Widget _buildHeader(String title, context, {String? actionStr}) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 30.w),
+      padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 10.w),
       alignment: Alignment.centerLeft,
       child: Row(
         children: [
-          Container(
-            decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: BorderRadius.circular(6.w)),
-            width: 10.w,
-            height: 10.w,
-          ),
+          Container(decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: BorderRadius.circular(6.w)), width: 10.w, height: 10.w),
           Padding(padding: EdgeInsets.symmetric(horizontal: 6.w)),
           Text(
             title,
-            style: TextStyle(fontSize: 32.sp, color: Theme.of(context).iconTheme.color),
+            style: TextStyle(fontSize: 32.sp, color: Theme.of(context).iconTheme.color, fontWeight: FontWeight.bold),
           ),
+          const Expanded(child: SizedBox.shrink()),
+          Visibility(
+            visible: actionStr != null,
+            child: TextButton(
+                onPressed: () {
+                  AutoRouter.of(context).pushNamed(Routes.playlistManager);
+                },
+                child: Text(
+                  actionStr ?? '',
+                  style: TextStyle(color: Theme.of(context).primaryColor, fontSize: 28.sp),
+                )),
+          )
           // Icon(Icons.keyboard_arrow_right_outlined,color: Colors.black87.withOpacity(.6))
         ],
       ),
@@ -228,19 +390,10 @@ class UserViewL extends GetView<UserController> {
                 slivers: [
                   SliverToBoxAdapter(
                     child: Obx(() => Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(colors: [
-                              Theme.of(context).scaffoldBackgroundColor,
-                              controller.palette.value.lightMutedColor?.color.withOpacity(.3) ?? Colors.transparent,
-                              controller.palette.value.dominantColor?.color.withOpacity(.3) ?? Colors.transparent
-                            ]),
-                            borderRadius: BorderRadius.circular(25.w),
-                          ),
                           margin: EdgeInsets.symmetric(horizontal: 80.w),
                           height: 500.w,
                           child: Row(
                             children: [
-                              Padding(padding: EdgeInsets.symmetric(horizontal: 40.w)),
                               InkWell(
                                 child: SimpleExtendedImage(
                                   '${controller.play.value.coverImgUrl ?? ''}?param=500y500',
@@ -529,8 +682,9 @@ class UserItem {
   String title;
   IconData iconData;
   String? routes;
+  Color? color;
 
-  UserItem(this.title, this.iconData, {this.routes});
+  UserItem(this.title, this.iconData, {this.routes, this.color});
 }
 
 class WidgetView extends StatelessWidget {

@@ -1112,6 +1112,22 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "3.2.1"
+  rive:
+    dependency: "direct main"
+    description:
+      name: rive
+      sha256: "55e1f8bf249444545a7c832830d2bbb9adae759193fb879294bc6018b9f0eedd"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.11.3"
+  rive_common:
+    dependency: transitive
+    description:
+      name: rive_common
+      sha256: "7e17937b790bb2f631767b3d505da8c298309c0a6ab08cd317fa6fe081ed5b63"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.0.10"
   rxdart:
     dependency: transitive
     description:

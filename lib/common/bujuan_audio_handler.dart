@@ -278,19 +278,20 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
       if (playIt) _player.play();
     } else {
       mediaItem.add(song);
-      //应判断一下用户是不是vip（）
-      if ((song.extras?['fee'] ?? 0) != 1 && (song.extras?['fee'] ?? 0) != 4) {
+      if (_box.get(unblockVipSp, defaultValue: false) && ((song.extras?['fee'] ?? 0) == 1 || (song.extras?['fee'] ?? 0) == 4)) {
+        //如果开启会员解锁并且歌曲为vip,直接从rust获取
+        print('============如果开启会员解锁,直接从rust获取=============');
+        url = await getUnblockUrl(song);
+      } else {
         SongUrlListWrap songUrl = await NeteaseMusicApi().songDownloadUrl([song.id], level: high ? 'lossless' : 'exhigh');
         url = ((songUrl.data ?? [])[0].url ?? '').split('?')[0];
-      }
-      if (url == null || url.isEmpty) {
-        url = await api.getUnblockNeteaseMusicUrl(songName: song.title, artistsName: song.artist ?? '');
-        print('============UnblockNeteaseMusic启动成功=============${song.title}==============$url');
+        if (url.isEmpty && _box.get(unblockSp, defaultValue: false)) {
+          url = await getUnblockUrl(song);
+        }
       }
       if (url.isNotEmpty) {
         await _player.setUrl(url);
         if (playIt) _player.play();
-        // if (cache && !PlatformUtils.isIOS) Downloader.downloadFile(url, song.id);
       } else {
         if (isNext) {
           await skipToNext();
@@ -298,6 +299,17 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
           await skipToPrevious();
         }
       }
+    }
+  }
+
+  Future<String> getUnblockUrl(MediaItem song) async {
+    try {
+      String url = await api.getUnblockNeteaseMusicUrl(songName: song.title, artistsName: song.artist ?? '');
+      print('============UnblockNeteaseMusic启动成功=============${song.title}==============$url');
+      return url;
+    } catch (e) {
+      print('===========rust获取失败===========');
+      return '';
     }
   }
 

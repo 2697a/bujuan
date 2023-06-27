@@ -9,6 +9,8 @@ import 'package:bujuan/pages/home/home_binding.dart';
 import 'package:bujuan/pages/index/cound_controller.dart';
 import 'package:bujuan/pages/index/index_controller.dart';
 import 'package:bujuan/pages/play_list/playlist_controller.dart';
+import 'package:bujuan/pages/playlist_manager/playlist_manager_controller.dart';
+import 'package:bujuan/pages/playlist_manager/playlist_manager_view.dart';
 import 'package:bujuan/pages/user/user_controller.dart';
 import 'package:bujuan/routes/router.gr.dart';
 import 'package:flutter/material.dart';
@@ -41,7 +43,9 @@ main() async {
     SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
   }
   //如果满足横屏条件，强制屏幕为横屏
-  if (land) SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
+  if (land) {
+    SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
+  }
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge).then((value) => runApp(ScreenUtilInit(
         designSize: !land ? const Size(750, 1334) : const Size(2339, 1080),
         minTextAdapt: true,
@@ -83,6 +87,9 @@ class MyObserver extends AutoRouterObserver {
         break;
       case 'AlbumDetails':
         del ? Get.delete<AlbumController>() : Get.lazyPut<AlbumController>(() => AlbumController());
+        break;
+      case 'PlaylistManagerView':
+        del ? Get.delete<PlaylistManager>() : Get.lazyPut<PlaylistManager>(() => PlaylistManager());
         break;
     }
   }

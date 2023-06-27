@@ -292,6 +292,8 @@ class SettingViewL extends StatefulWidget {
 class _SettingViewStateL extends State<SettingViewL> {
   String version = '1.0.0';
   final ImagePicker _picker = ImagePicker();
+  bool unblock = Home.to.box.get(unblockSp, defaultValue: false);
+  bool unblockVip = Home.to.box.get(unblockVipSp, defaultValue: false);
 
   @override
   void initState() {
@@ -357,10 +359,7 @@ class _SettingViewStateL extends State<SettingViewL> {
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 20.w),
         child: Column(
-          children: [
-            _buildUiSetting(),
-            _buildAppSetting(),
-          ],
+          children: [_buildUiSetting(), _buildAppSetting(), _buildOtherSetting()],
         ),
       ),
     );
@@ -520,6 +519,18 @@ class _SettingViewStateL extends State<SettingViewL> {
                   size: 56.w,
                   color: Theme.of(context).cardColor.withOpacity(Home.to.high.value ? 0.7 : .4),
                 )),
+            onTap: () {},
+          ),
+          ListTile(
+            title: Text(
+              '开启高音质(与会员有关)',
+              style: TextStyle(fontSize: 30.sp),
+            ),
+            trailing: Obx(() => Icon(
+                  Home.to.high.value ? TablerIcons.toggle_right : TablerIcons.toggle_left,
+                  size: 56.w,
+                  color: Theme.of(context).cardColor.withOpacity(Home.to.high.value ? 0.7 : .4),
+                )),
             onTap: () {
               Home.to.high.value = !Home.to.high.value;
               Home.to.box.put(highSong, Home.to.high.value);
@@ -563,6 +574,60 @@ class _SettingViewStateL extends State<SettingViewL> {
             ),
             trailing: Text(version),
             onTap: () => _update(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOtherSetting() {
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 10.w),
+      decoration: BoxDecoration(color: Theme.of(context).colorScheme.onSecondary.withOpacity(.5), borderRadius: BorderRadius.circular(25.w)),
+      padding: EdgeInsets.symmetric(horizontal: 15.w),
+      child: Column(
+        children: [
+          Container(
+            padding: EdgeInsets.symmetric(vertical: 15.w, horizontal: 10.w),
+            alignment: Alignment.centerLeft,
+            child: Text(
+              '试验性功能',
+              style: TextStyle(fontSize: 28.sp, color: Theme.of(context).cardColor.withOpacity(.4)),
+            ),
+          ),
+          ListTile(
+            title: Text(
+              'Unblock获取灰色音乐',
+              style: TextStyle(fontSize: 30.sp),
+            ),
+            trailing: Icon(
+              unblock ? TablerIcons.toggle_right : TablerIcons.toggle_left,
+              size: 56.w,
+              color: Theme.of(context).cardColor.withOpacity(unblock ? 0.7 : .4),
+            ),
+            onTap: () {
+              setState(() {
+                unblock = !unblock;
+              });
+              Home.to.box.put(unblockSp, unblock);
+            },
+          ),
+          ListTile(
+            title: Text(
+              'Unblock获取Vip音乐（会员勿开）',
+              style: TextStyle(fontSize: 30.sp),
+            ),
+            trailing: Icon(
+              unblockVip ? TablerIcons.toggle_right : TablerIcons.toggle_left,
+              size: 56.w,
+              color: Theme.of(context).cardColor.withOpacity(unblockVip ? 0.7 : .4),
+            ),
+            onTap: () {
+              setState(() {
+                unblockVip = !unblockVip;
+              });
+              Home.to.box.put(unblockVipSp, unblockVip);
+            },
           ),
         ],
       ),

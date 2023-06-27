@@ -42,14 +42,14 @@ pub async fn get_unblock_netease_music_url(song_name: String, artists_name: Stri
 
     let (search_time_taken, search_result) =
         measure_async_function_time(|| executor.search(&engines_to_use, &song, &context).boxed()).await;
-    let search_result = search_result.expect("wulalallala");
+    let search_result = search_result.expect("should has a search result");
 
     let (retrieve_time_taken, retrieved_result) =
         measure_async_function_time(|| executor.retrieve(&search_result, &context).boxed()).await;
     let retrieved_result = retrieved_result.expect("can't be retrieved");
 
     println!(
-        "[Retrieved] 周杰伦 - 青花瓷: {} (from {})",
+        "[Retrieved]: {} (from {})",
         retrieved_result.url, retrieved_result.source
     );
     let url = retrieved_result.url;

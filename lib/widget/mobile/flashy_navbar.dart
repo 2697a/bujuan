@@ -22,7 +22,7 @@ class FlashyNavbar extends StatelessWidget {
     this.selectedIndex = 0,
     this.height = 55,
     this.showElevation = true,
-    this.iconSize = 23,
+    this.iconSize = 25,
     this.backgroundColor,
     this.animationDuration = const Duration(milliseconds: 300),
     this.animationCurve = Curves.linear,

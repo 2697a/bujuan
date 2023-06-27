@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
-import 'package:bujuan/pages/home/view/z_lyric_view.dart';
 import 'package:bujuan/widget/mobile/flashy_navbar.dart';
 import 'package:bujuan/widget/my_get_view.dart';
 import 'package:bujuan/widget/simple_extended_image.dart';
@@ -21,7 +20,7 @@ class PanelView extends GetView<Home> {
 
   @override
   Widget build(BuildContext context) {
-    double bottomHeight = MediaQuery.of(controller.buildContext).padding.bottom * (PlatformUtils.isIOS ? 0.4 : 0.9);
+    double bottomHeight = MediaQuery.of(controller.buildContext).padding.bottom * (PlatformUtils.isIOS ? 0.6 : 0.9);
     if (bottomHeight == 0) bottomHeight = 30.w;
     return MyGetView(
         child: SlidingUpPanel(
@@ -37,7 +36,7 @@ class PanelView extends GetView<Home> {
       body: _buildDefaultBody(context),
       panel: Container(
         width: 750.w,
-        padding: EdgeInsets.only(top: 110.w + bottomHeight),
+        padding: EdgeInsets.only(top: controller.panelMobileMinSize + controller.panelAlbumPadding * 2),
         child: Obx(() => IndexedStack(
               index: controller.selectIndex.value,
               children: controller.pages,
@@ -45,33 +44,36 @@ class PanelView extends GetView<Home> {
       ),
       header: _buildBottom(bottomHeight, context),
       boxShadow: const [BoxShadow(blurRadius: 8.0, color: Color.fromRGBO(0, 0, 0, 0.05))],
-      maxHeight: Get.height - (controller.panelMobileMinSize + MediaQuery.of(context).padding.top + controller.panelAlbumPadding * 2),
+      maxHeight: Get.height - (controller.panelMobileMinSize + MediaQuery.of(context).padding.top + controller.panelAlbumPadding * 4),
       minHeight: controller.panelMobileMinSize + controller.panelAlbumPadding * 2 + bottomHeight,
     ));
   }
 
   Widget _buildSlide(BuildContext context) {
-    return Container(
+    return Expanded(
+        child: Container(
       width: 750.w,
-      padding: EdgeInsets.only(left: 60.w, right: 60.w, bottom: 50.w),
-      height: 100.w,
+      padding: EdgeInsets.only(left: 66.w, right: 66.w, bottom: 0.w),
       child: Stack(
         alignment: Alignment.center,
         children: [
-          ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            scrollDirection: Axis.horizontal,
-            addAutomaticKeepAlives: false,
-            cacheExtent: 1.3,
-            addRepaintBoundaries: false,
-            addSemanticIndexes: false,
-            itemBuilder: (context, index) => Obx(() => Container(
-                  margin: EdgeInsets.symmetric(vertical: controller.mEffects[index]['size'] / 2, horizontal: 5.w),
-                  decoration: BoxDecoration(color: controller.bodyColor.value, borderRadius: BorderRadius.circular(4)),
-                  width: 1.8,
-                )),
-            itemCount: controller.mEffects.length,
+          SizedBox(
+            height: 50.w,
+            child: ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              scrollDirection: Axis.horizontal,
+              addAutomaticKeepAlives: false,
+              cacheExtent: 1.3,
+              addRepaintBoundaries: false,
+              addSemanticIndexes: false,
+              itemBuilder: (context, index) => Obx(() => Container(
+                  height: 50.w,
+                  margin: EdgeInsets.symmetric(vertical: controller.mEffects[index]['size'] / 2, horizontal: 6.w),
+                  decoration: BoxDecoration(color: controller.bodyColor.value, borderRadius: BorderRadius.circular(8)),
+                  width: 2)),
+              itemCount: controller.mEffects.length,
+            ),
           ),
           Obx(() => ProgressBar(
                 progress: controller.duration.value,
@@ -91,7 +93,7 @@ class PanelView extends GetView<Home> {
               ))
         ],
       ),
-    );
+    ));
   }
 
   // height:329.h-MediaQuery.of(context).padding.top,
@@ -102,64 +104,56 @@ class PanelView extends GetView<Home> {
       padding: EdgeInsets.symmetric(horizontal: 35.w),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           IconButton(
               onPressed: () => controller.likeSong(),
               icon: Obx(() => Icon(controller.likeIds.contains(int.tryParse(controller.mediaItem.value.id)) ? TablerIcons.heartbeat : TablerIcons.heart,
                   size: 46.w, color: controller.bodyColor.value))),
-          Expanded(
-              child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Obx(() => IconButton(
-                  onPressed: () {
-                    if (controller.fm.value) {
-                      return;
-                    }
-                    if (controller.intervalClick(1)) {
-                      controller.audioServeHandler.skipToPrevious();
-                    }
-                  },
-                  icon: Icon(
-                    TablerIcons.player_skip_back,
+          Obx(() => IconButton(
+              onPressed: () {
+                if (controller.fm.value) {
+                  return;
+                }
+                if (controller.intervalClick(1)) {
+                  controller.audioServeHandler.skipToPrevious();
+                }
+              },
+              icon: Icon(
+                TablerIcons.player_skip_back,
+                size: 46.w,
+                color: controller.bodyColor.value,
+              ))),
+          InkWell(
+            child: Obx(() => Container(
+                  alignment: Alignment.center,
+                  padding: EdgeInsets.only(bottom: 5.h),
+                  height: 125.w,
+                  width: 125.w,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(80.w),
+                    border: Border.all(color: controller.bodyColor.value.withOpacity(.04), width: 5.w),
+                    color: controller.bodyColor.value.withOpacity(0.06),
+                  ),
+                  child: Icon(
+                    controller.playing.value ? TablerIcons.player_pause : TablerIcons.player_play,
+                    size: 54.w,
+                    color: controller.bodyColor.value,
+                  ),
+                )),
+            onTap: () => controller.playOrPause(),
+          ),
+          IconButton(
+              onPressed: () {
+                if (controller.intervalClick(1)) {
+                  controller.audioServeHandler.skipToNext();
+                }
+              },
+              icon: Obx(() => Icon(
+                    TablerIcons.player_skip_forward,
                     size: 46.w,
                     color: controller.bodyColor.value,
                   ))),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 60.w),
-                child: InkWell(
-                  child: Obx(() => Container(
-                        alignment: Alignment.center,
-                        padding: EdgeInsets.only(bottom: 5.h),
-                        height: 105.h,
-                        width: 105.h,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(80.w),
-                          border: Border.all(color: controller.bodyColor.value.withOpacity(.04), width: 5.w),
-                          color: controller.bodyColor.value.withOpacity(0.06),
-                        ),
-                        child: Icon(
-                          controller.playing.value ? TablerIcons.player_pause : TablerIcons.player_play,
-                          size: 54.w,
-                          color: controller.bodyColor.value,
-                        ),
-                      )),
-                  onTap: () => controller.playOrPause(),
-                ),
-              ),
-              IconButton(
-                  onPressed: () {
-                    if (controller.intervalClick(1)) {
-                      controller.audioServeHandler.skipToNext();
-                    }
-                  },
-                  icon: Obx(() => Icon(
-                        TablerIcons.player_skip_forward,
-                        size: 46.w,
-                        color: controller.bodyColor.value,
-                      ))),
-            ],
-          )),
           IconButton(
               onPressed: () {
                 if (controller.fm.value) {
@@ -273,42 +267,37 @@ class PanelView extends GetView<Home> {
           margin: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
           height: controller.panelTopSize,
           width: 750.w - controller.panelAlbumPadding * 2,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              IconButton(
-                onPressed: () => controller.panelControllerHome.close(),
-                icon: Obx(() => Icon(Icons.keyboard_arrow_down_sharp, color: controller.bodyColor.value)),
-              ),
-              Obx(() => Visibility(
-                    visible: !controller.second.value,
-                    child: Expanded(
-                        child: Obx(
-                      () => RichText(
-                        text: TextSpan(
-                            text: '${Home.to.mediaItem.value.title} - ',
-                            children: [TextSpan(text: Home.to.mediaItem.value.artist ?? '', style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w500))],
-                            style: TextStyle(fontSize: 32.sp, color: controller.bodyColor.value, fontWeight: FontWeight.w500)),
-                        maxLines: 1,
-                        textAlign: TextAlign.center,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    )),
-                  )),
-              IconButton(onPressed: () {}, icon: Obx(() => Icon(Icons.more_horiz, color: controller.bodyColor.value))),
-            ],
-          ),
         ),
         Container(
-          height: 640.w,
+          height: 630.w,
         ),
+        Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Obx(() => Text(
+                  controller.mediaItem.value.title.fixAutoLines(),
+                  style: TextStyle(fontSize: 38.sp, fontWeight: FontWeight.bold,color: controller.bodyColor.value),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                )),
+                Padding(padding: EdgeInsets.symmetric(vertical: 10.w)),
+                Obx(() => Text(
+                  (controller.mediaItem.value.artist ?? '').fixAutoLines(),
+                  style: TextStyle(fontSize: 28.sp,color: controller.bodyColor.value),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ))
+              ],
+            )),
         // //操控区域
         _buildPlayController(context),
         //进度条
         _buildSlide(context),
         // 功能按钮
         SizedBox(
-          height: controller.panelMobileMinSize + controller.panelAlbumPadding * 6 + MediaQuery.of(context).padding.bottom,
+          height: controller.panelMobileMinSize + controller.panelAlbumPadding * 4 + MediaQuery.of(context).padding.bottom,
         ),
       ],
     );
@@ -322,7 +311,7 @@ class PanelViewL extends GetView<Home> {
 
   @override
   Widget build(BuildContext context) {
-    double bottomHeight = MediaQuery.of(controller.buildContext).padding.bottom * (PlatformUtils.isIOS ? 0.4 : 0.9);
+    double bottomHeight = MediaQuery.of(controller.buildContext).padding.bottom * (PlatformUtils.isIOS ? 0.6 : 0.9);
     if (bottomHeight == 0 && PlatformUtils.isAndroid && PlatformUtils.isIOS) bottomHeight = 32.w;
     return Row(
       children: [
@@ -566,10 +555,10 @@ class TestView extends GetView<Home> {
 
   @override
   Widget build(BuildContext context) {
-    double bottomHeight = MediaQuery.of(controller.buildContext).padding.bottom * (PlatformUtils.isIOS ? 0.4 : 0.9);
+    double bottomHeight = MediaQuery.of(controller.buildContext).padding.bottom * (PlatformUtils.isIOS ? 0.6 : 0.9);
     if (bottomHeight == 0 && PlatformUtils.isAndroid && PlatformUtils.isIOS) bottomHeight = 32.w;
     return Padding(
-        padding: EdgeInsets.symmetric(vertical: controller.landscape ? controller.panelAlbumPadding*2 : 0),
+        padding: EdgeInsets.symmetric(vertical: controller.landscape ? controller.panelAlbumPadding * 2 : 0),
         child: SafeArea(
           child: Column(
             children: [

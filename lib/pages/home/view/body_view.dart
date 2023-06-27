@@ -1,4 +1,3 @@
-import 'dart:ui';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
@@ -16,7 +15,7 @@ class BodyView extends GetView<Home> {
   Widget build(BuildContext context) {
     controller.buildContext = context;
     double bottomHeight = MediaQuery.of(controller.buildContext).padding.bottom * (PlatformUtils.isIOS ? 0.6 : .85);
-    if (bottomHeight == 0 && PlatformUtils.isAndroid && PlatformUtils.isIOS) bottomHeight = 32.w;
+    if (bottomHeight == 0 && PlatformUtils.isAndroid || PlatformUtils.isIOS) bottomHeight = 32.w;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Home.to.landscape ? Colors.transparent : null,
@@ -32,7 +31,7 @@ class BodyView extends GetView<Home> {
                 ),
               )),
           Padding(
-            padding: EdgeInsets.only(bottom: controller.landscape ? 0 : controller.panelMobileMinSize + controller.panelAlbumPadding * 2 + bottomHeight),
+            padding: EdgeInsets.only(bottom: controller.landscape ? 0 : controller.panelMobileMinSize + bottomHeight + controller.panelAlbumPadding * 2),
             child: const AutoRouter(),
           )
         ],
@@ -47,7 +46,7 @@ class BodyViewL extends GetView<Home> {
   @override
   Widget build(BuildContext context) {
     controller.buildContext = context;
-    double bottomHeight = MediaQuery.of(controller.buildContext).padding.bottom * (PlatformUtils.isIOS ? 0.4 : 0.85);
+    double bottomHeight = MediaQuery.of(controller.buildContext).padding.bottom * (PlatformUtils.isIOS ? 0.6 : 0.85);
     if (bottomHeight == 0) bottomHeight = 25.w;
     return Scaffold(
       resizeToAvoidBottomInset: false,

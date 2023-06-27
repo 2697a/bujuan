@@ -35,7 +35,7 @@ class PlayListView extends GetView<PlayListController> {
             child: CustomScrollView(
               slivers: [
                 MySliverAppBar(
-                  backgroundColor: Colors.transparent,
+                  backgroundColor: Theme.of(context).scaffoldBackgroundColor.withOpacity(Home.to.background.value.isEmpty ? 1 : 0),
                   pinned: true,
                   leading: IconButton(
                       padding: EdgeInsets.only(left: 20.w),
@@ -52,7 +52,7 @@ class PlayListView extends GetView<PlayListController> {
                           autoFocus: true,
                           hitText: '请输入关键字',
                         ),
-                        child: Text('data'),
+                        child: Text((context.routeData.args as Play).name ?? ''),
                         // child: AutoSizeText(
                         //   (context.routeData.args as Play).name ?? '',
                         //   maxLines: 1,
@@ -158,10 +158,7 @@ class SongItem extends StatelessWidget {
       visualDensity: VisualDensity.compact,
       leading: Text('${index + 1}'),
       horizontalTitleGap: 0.w,
-      title: RichText(
-          text: TextSpan(text: mediaItem.title, style: TextStyle(fontSize: 30.sp, color: Theme.of(context).cardColor), children: [
-        TextSpan(text:getSongFeeType( mediaItem.extras?['fee']??0), style: TextStyle(color: Theme.of(context).primaryColor.withOpacity(.9), fontSize: 26.sp)),
-      ]),maxLines: 1,),
+      title: Text(mediaItem.title,maxLines: 1,),
       subtitle: Text(
         mediaItem.artist ?? '',
         maxLines: 1,
@@ -324,7 +321,7 @@ class PlayListItem extends StatelessWidget {
       visualDensity: VisualDensity.compact,
       contentPadding: EdgeInsets.symmetric(horizontal: 10.w),
       leading: SimpleExtendedImage.avatar(
-        '${play.coverImgUrl ?? ''}?param=100y100',
+        '${play.coverImgUrl ?? ''}?param=300y300',
         width: 85.w,
         height: 85.w,
       ),

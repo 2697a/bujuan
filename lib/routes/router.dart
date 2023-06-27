@@ -4,6 +4,7 @@ import 'package:bujuan/pages/home/view/home_view.dart';
 import 'package:bujuan/pages/index/cloud_view.dart';
 import 'package:bujuan/pages/index/main_view.dart';
 import 'package:bujuan/pages/mv/mv_view.dart';
+import 'package:bujuan/pages/playlist_manager/playlist_manager_view.dart';
 import 'package:bujuan/pages/radio/my_radio_view.dart';
 import 'package:bujuan/pages/radio/radio_details_view.dart';
 import 'package:bujuan/pages/setting/coffee.dart';
@@ -54,6 +55,7 @@ abstract class Routes {
   static const localAlbum = _Paths.localAlbum;
   static const localAr = _Paths.localAr;
   static const albumDetails = _Paths.albumDetails;
+  static const playlistManager = _Paths.playlistManager;
 }
 
 abstract class _Paths {
@@ -88,6 +90,7 @@ abstract class _Paths {
   static const localAlbum = 'localAlbum';
   static const localAr = 'localAr';
   static const albumDetails = 'albumDetails';
+  static const playlistManager = 'playlistManager';
 }
 
 @MaterialAutoRouter(
@@ -105,6 +108,7 @@ abstract class _Paths {
       AutoRoute(path: Routes.radioDetails, page: RadioDetailsView),
       AutoRoute(path: Routes.albumDetails, page: AlbumDetails),
       AutoRoute(path: Routes.settingL, page: SettingViewL),
+      AutoRoute(path: Routes.playlistManager, page: PlaylistManagerView),
     ]),
     AutoRoute(path: Routes.splash, page: SplashPage, initial: true, deferredLoading: true),
     AutoRoute(path: Routes.login, page: LoginView),

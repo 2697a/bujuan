@@ -2,16 +2,13 @@ import 'dart:convert';
 
 import 'package:bujuan/common/constants/key.dart';
 import 'package:bujuan/common/constants/other.dart';
-import 'package:bujuan/common/storage.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
 import 'package:bujuan/pages/user/user_view.dart';
 import 'package:bujuan/routes/router.dart';
-import 'package:bujuan/routes/router.gr.dart';
 import 'package:bujuan/widget/enable_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get/get.dart';
-import 'package:get_it/get_it.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:palette_generator/palette_generator.dart';
 
@@ -29,10 +26,10 @@ class UserController extends GetxController {
   RxBool loading = true.obs;
   late BuildContext context;
   final List<UserItem> userItems = [
-    UserItem('每日', TablerIcons.calendar, routes: Routes.today),
-    UserItem('FM', TablerIcons.vinyl, routes: 'playFm'),
-    UserItem('播客', TablerIcons.brand_apple_podcast, routes: Routes.myRadio),
-    UserItem('云盘', TablerIcons.cloud_fog, routes: Routes.cloud)
+    UserItem('每日', TablerIcons.calendar, routes: Routes.today,color: const Color.fromRGBO(66,133,244, .7)),
+    UserItem('FM', TablerIcons.vinyl, routes: 'playFm',color: const Color.fromRGBO(52,168,83, .7)),
+    UserItem('播客', TablerIcons.brand_apple_podcast, routes: Routes.myRadio,color: const Color.fromRGBO(251,188,5, .7)),
+    UserItem('云盘', TablerIcons.cloud_fog, routes: Routes.cloud,color: const Color.fromRGBO(234,67,53, .7))
   ];
 
   //进度
@@ -63,7 +60,7 @@ class UserController extends GetxController {
       }
       if (int.parse((versionData['version'] ?? '0').replaceAll('.', '')) > int.parse(version.replaceAll('.', ''))) {
         Future.delayed(const Duration(milliseconds: 1000), () {
-          GetIt.instance<RootRouter>().push(const UpdateView().copyWith(queryParams: versionData));
+          // GetIt.instance<RootRouter>().push(const UpdateView().copyWith(queryParams: versionData));
         });
       }
     });

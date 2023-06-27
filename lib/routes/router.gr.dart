@@ -11,8 +11,8 @@
 // ignore_for_file: type=lint
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:auto_route/auto_route.dart' as _i22;
-import 'package:flutter/material.dart' as _i23;
+import 'package:auto_route/auto_route.dart' as _i23;
+import 'package:flutter/material.dart' as _i24;
 
 import '../pages/album/album_details.dart' as _i21;
 import '../pages/artists/artists_view.dart' as _i18;
@@ -23,6 +23,7 @@ import '../pages/index/main_view.dart' as _i15;
 import '../pages/login/login.dart' as _i3;
 import '../pages/mv/mv_view.dart' as _i8;
 import '../pages/play_list/playlist_view.dart' as _i14;
+import '../pages/playlist_manager/playlist_manager_view.dart' as _i22;
 import '../pages/radio/my_radio_view.dart' as _i19;
 import '../pages/radio/radio_details_view.dart' as _i20;
 import '../pages/search/search_view.dart' as _i17;
@@ -36,18 +37,18 @@ import '../pages/today/today_view.dart' as _i16;
 import '../pages/update/update_view.dart' as _i9;
 import '../pages/user/user_view.dart' deferred as _i12;
 
-class RootRouter extends _i22.RootStackRouter {
-  RootRouter([_i23.GlobalKey<_i23.NavigatorState>? navigatorKey])
+class RootRouter extends _i23.RootStackRouter {
+  RootRouter([_i24.GlobalKey<_i24.NavigatorState>? navigatorKey])
       : super(navigatorKey);
 
   @override
-  final Map<String, _i22.PageFactory> pagesMap = {
+  final Map<String, _i23.PageFactory> pagesMap = {
     HomeView.name: (routeData) {
       final args =
           routeData.argsAs<HomeViewArgs>(orElse: () => const HomeViewArgs());
-      return _i22.MaterialPageX<dynamic>(
+      return _i23.MaterialPageX<dynamic>(
         routeData: routeData,
-        child: _i22.DeferredWidget(
+        child: _i23.DeferredWidget(
           _i1.loadLibrary,
           () => _i1.HomeView(
             key: args.key,
@@ -57,59 +58,59 @@ class RootRouter extends _i22.RootStackRouter {
       );
     },
     SplashRoute.name: (routeData) {
-      return _i22.MaterialPageX<dynamic>(
+      return _i23.MaterialPageX<dynamic>(
         routeData: routeData,
-        child: _i22.DeferredWidget(
+        child: _i23.DeferredWidget(
           _i2.loadLibrary,
           () => _i2.SplashPage(),
         ),
       );
     },
     LoginView.name: (routeData) {
-      return _i22.MaterialPageX<dynamic>(
+      return _i23.MaterialPageX<dynamic>(
         routeData: routeData,
         child: const _i3.LoginView(),
       );
     },
     TalkView.name: (routeData) {
-      return _i22.MaterialPageX<dynamic>(
+      return _i23.MaterialPageX<dynamic>(
         routeData: routeData,
         child: const _i4.TalkView(),
       );
     },
     SettingView.name: (routeData) {
-      return _i22.MaterialPageX<dynamic>(
+      return _i23.MaterialPageX<dynamic>(
         routeData: routeData,
         child: const _i5.SettingView(),
       );
     },
     GuideView.name: (routeData) {
-      return _i22.MaterialPageX<dynamic>(
+      return _i23.MaterialPageX<dynamic>(
         routeData: routeData,
         child: const _i6.GuideView(),
       );
     },
     UserSettingView.name: (routeData) {
-      return _i22.MaterialPageX<dynamic>(
+      return _i23.MaterialPageX<dynamic>(
         routeData: routeData,
         child: const _i7.UserSettingView(),
       );
     },
     MvView.name: (routeData) {
-      return _i22.MaterialPageX<dynamic>(
+      return _i23.MaterialPageX<dynamic>(
         routeData: routeData,
         child: const _i8.MvView(),
       );
     },
     UpdateView.name: (routeData) {
-      return _i22.MaterialPageX<dynamic>(
+      return _i23.MaterialPageX<dynamic>(
         routeData: routeData,
         child: const _i9.UpdateView(),
       );
     },
     ImageBlur.name: (routeData) {
       final args = routeData.argsAs<ImageBlurArgs>();
-      return _i22.MaterialPageX<dynamic>(
+      return _i23.MaterialPageX<dynamic>(
         routeData: routeData,
         child: _i10.ImageBlur(
           key: args.key,
@@ -118,198 +119,209 @@ class RootRouter extends _i22.RootStackRouter {
       );
     },
     CoffeeRoute.name: (routeData) {
-      return _i22.MaterialPageX<dynamic>(
+      return _i23.MaterialPageX<dynamic>(
         routeData: routeData,
         child: const _i11.CoffeePage(),
       );
     },
     UserView.name: (routeData) {
-      return _i22.MaterialPageX<dynamic>(
+      return _i23.MaterialPageX<dynamic>(
         routeData: routeData,
-        child: _i22.DeferredWidget(
+        child: _i23.DeferredWidget(
           _i12.loadLibrary,
           () => _i12.UserView(),
         ),
       );
     },
     AlbumView.name: (routeData) {
-      return _i22.MaterialPageX<dynamic>(
+      return _i23.MaterialPageX<dynamic>(
         routeData: routeData,
         child: const _i13.AlbumView(),
       );
     },
     PlayListView.name: (routeData) {
-      return _i22.MaterialPageX<dynamic>(
+      return _i23.MaterialPageX<dynamic>(
         routeData: routeData,
         child: const _i14.PlayListView(),
       );
     },
     MainView.name: (routeData) {
-      return _i22.MaterialPageX<dynamic>(
+      return _i23.MaterialPageX<dynamic>(
         routeData: routeData,
         child: const _i15.MainView(),
       );
     },
     TodayView.name: (routeData) {
-      return _i22.MaterialPageX<dynamic>(
+      return _i23.MaterialPageX<dynamic>(
         routeData: routeData,
         child: const _i16.TodayView(),
       );
     },
     SearchView.name: (routeData) {
-      return _i22.MaterialPageX<dynamic>(
+      return _i23.MaterialPageX<dynamic>(
         routeData: routeData,
         child: const _i17.SearchView(),
       );
     },
     ArtistsView.name: (routeData) {
-      return _i22.MaterialPageX<dynamic>(
+      return _i23.MaterialPageX<dynamic>(
         routeData: routeData,
         child: const _i18.ArtistsView(),
       );
     },
     MyRadioView.name: (routeData) {
-      return _i22.MaterialPageX<dynamic>(
+      return _i23.MaterialPageX<dynamic>(
         routeData: routeData,
         child: const _i19.MyRadioView(),
       );
     },
     RadioDetailsView.name: (routeData) {
-      return _i22.MaterialPageX<dynamic>(
+      return _i23.MaterialPageX<dynamic>(
         routeData: routeData,
         child: const _i20.RadioDetailsView(),
       );
     },
     AlbumDetails.name: (routeData) {
-      return _i22.MaterialPageX<dynamic>(
+      return _i23.MaterialPageX<dynamic>(
         routeData: routeData,
         child: const _i21.AlbumDetails(),
       );
     },
     SettingViewL.name: (routeData) {
-      return _i22.MaterialPageX<dynamic>(
+      return _i23.MaterialPageX<dynamic>(
         routeData: routeData,
         child: const _i5.SettingViewL(),
+      );
+    },
+    PlaylistManagerView.name: (routeData) {
+      return _i23.MaterialPageX<dynamic>(
+        routeData: routeData,
+        child: const _i22.PlaylistManagerView(),
       );
     },
   };
 
   @override
-  List<_i22.RouteConfig> get routes => [
-        _i22.RouteConfig(
+  List<_i23.RouteConfig> get routes => [
+        _i23.RouteConfig(
           '/#redirect',
           path: '/',
           redirectTo: '/splash',
           fullMatch: true,
         ),
-        _i22.RouteConfig(
+        _i23.RouteConfig(
           HomeView.name,
           path: '/home',
           deferredLoading: true,
           children: [
-            _i22.RouteConfig(
+            _i23.RouteConfig(
               '#redirect',
               path: '',
               parent: HomeView.name,
               redirectTo: 'user',
               fullMatch: true,
             ),
-            _i22.RouteConfig(
+            _i23.RouteConfig(
               UserView.name,
               path: 'user',
               parent: HomeView.name,
               deferredLoading: true,
             ),
-            _i22.RouteConfig(
+            _i23.RouteConfig(
               AlbumView.name,
               path: 'cloud',
               parent: HomeView.name,
             ),
-            _i22.RouteConfig(
+            _i23.RouteConfig(
               PlayListView.name,
               path: 'playlist',
               parent: HomeView.name,
             ),
-            _i22.RouteConfig(
+            _i23.RouteConfig(
               MainView.name,
               path: 'index',
               parent: HomeView.name,
             ),
-            _i22.RouteConfig(
+            _i23.RouteConfig(
               TodayView.name,
               path: 'today',
               parent: HomeView.name,
             ),
-            _i22.RouteConfig(
+            _i23.RouteConfig(
               SearchView.name,
               path: 'search',
               parent: HomeView.name,
             ),
-            _i22.RouteConfig(
+            _i23.RouteConfig(
               ArtistsView.name,
               path: 'artists',
               parent: HomeView.name,
             ),
-            _i22.RouteConfig(
+            _i23.RouteConfig(
               MyRadioView.name,
               path: 'myRadio',
               parent: HomeView.name,
             ),
-            _i22.RouteConfig(
+            _i23.RouteConfig(
               RadioDetailsView.name,
               path: 'radioDetails',
               parent: HomeView.name,
             ),
-            _i22.RouteConfig(
+            _i23.RouteConfig(
               AlbumDetails.name,
               path: 'albumDetails',
               parent: HomeView.name,
             ),
-            _i22.RouteConfig(
+            _i23.RouteConfig(
               SettingViewL.name,
               path: 'settingL',
               parent: HomeView.name,
             ),
+            _i23.RouteConfig(
+              PlaylistManagerView.name,
+              path: 'playlistManager',
+              parent: HomeView.name,
+            ),
           ],
         ),
-        _i22.RouteConfig(
+        _i23.RouteConfig(
           SplashRoute.name,
           path: '/splash',
           deferredLoading: true,
         ),
-        _i22.RouteConfig(
+        _i23.RouteConfig(
           LoginView.name,
           path: '/login',
         ),
-        _i22.RouteConfig(
+        _i23.RouteConfig(
           TalkView.name,
           path: '/talk',
         ),
-        _i22.RouteConfig(
+        _i23.RouteConfig(
           SettingView.name,
           path: '/setting',
         ),
-        _i22.RouteConfig(
+        _i23.RouteConfig(
           GuideView.name,
           path: '/guide',
         ),
-        _i22.RouteConfig(
+        _i23.RouteConfig(
           UserSettingView.name,
           path: '/userSetting',
         ),
-        _i22.RouteConfig(
+        _i23.RouteConfig(
           MvView.name,
           path: '/mv',
         ),
-        _i22.RouteConfig(
+        _i23.RouteConfig(
           UpdateView.name,
           path: '/update',
         ),
-        _i22.RouteConfig(
+        _i23.RouteConfig(
           ImageBlur.name,
           path: '/imageBlur',
         ),
-        _i22.RouteConfig(
+        _i23.RouteConfig(
           CoffeeRoute.name,
           path: '/coffee',
         ),
@@ -318,11 +330,11 @@ class RootRouter extends _i22.RootStackRouter {
 
 /// generated route for
 /// [_i1.HomeView]
-class HomeView extends _i22.PageRouteInfo<HomeViewArgs> {
+class HomeView extends _i23.PageRouteInfo<HomeViewArgs> {
   HomeView({
-    _i23.Key? key,
-    _i23.Widget? body,
-    List<_i22.PageRouteInfo>? children,
+    _i24.Key? key,
+    _i24.Widget? body,
+    List<_i23.PageRouteInfo>? children,
   }) : super(
           HomeView.name,
           path: '/home',
@@ -342,9 +354,9 @@ class HomeViewArgs {
     this.body,
   });
 
-  final _i23.Key? key;
+  final _i24.Key? key;
 
-  final _i23.Widget? body;
+  final _i24.Widget? body;
 
   @override
   String toString() {
@@ -354,7 +366,7 @@ class HomeViewArgs {
 
 /// generated route for
 /// [_i2.SplashPage]
-class SplashRoute extends _i22.PageRouteInfo<void> {
+class SplashRoute extends _i23.PageRouteInfo<void> {
   const SplashRoute()
       : super(
           SplashRoute.name,
@@ -366,7 +378,7 @@ class SplashRoute extends _i22.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i3.LoginView]
-class LoginView extends _i22.PageRouteInfo<void> {
+class LoginView extends _i23.PageRouteInfo<void> {
   const LoginView()
       : super(
           LoginView.name,
@@ -378,7 +390,7 @@ class LoginView extends _i22.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i4.TalkView]
-class TalkView extends _i22.PageRouteInfo<void> {
+class TalkView extends _i23.PageRouteInfo<void> {
   const TalkView()
       : super(
           TalkView.name,
@@ -390,7 +402,7 @@ class TalkView extends _i22.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i5.SettingView]
-class SettingView extends _i22.PageRouteInfo<void> {
+class SettingView extends _i23.PageRouteInfo<void> {
   const SettingView()
       : super(
           SettingView.name,
@@ -402,7 +414,7 @@ class SettingView extends _i22.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i6.GuideView]
-class GuideView extends _i22.PageRouteInfo<void> {
+class GuideView extends _i23.PageRouteInfo<void> {
   const GuideView()
       : super(
           GuideView.name,
@@ -414,7 +426,7 @@ class GuideView extends _i22.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i7.UserSettingView]
-class UserSettingView extends _i22.PageRouteInfo<void> {
+class UserSettingView extends _i23.PageRouteInfo<void> {
   const UserSettingView()
       : super(
           UserSettingView.name,
@@ -426,7 +438,7 @@ class UserSettingView extends _i22.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i8.MvView]
-class MvView extends _i22.PageRouteInfo<void> {
+class MvView extends _i23.PageRouteInfo<void> {
   const MvView()
       : super(
           MvView.name,
@@ -438,7 +450,7 @@ class MvView extends _i22.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i9.UpdateView]
-class UpdateView extends _i22.PageRouteInfo<void> {
+class UpdateView extends _i23.PageRouteInfo<void> {
   const UpdateView()
       : super(
           UpdateView.name,
@@ -450,9 +462,9 @@ class UpdateView extends _i22.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i10.ImageBlur]
-class ImageBlur extends _i22.PageRouteInfo<ImageBlurArgs> {
+class ImageBlur extends _i23.PageRouteInfo<ImageBlurArgs> {
   ImageBlur({
-    _i23.Key? key,
+    _i24.Key? key,
     required String path,
   }) : super(
           ImageBlur.name,
@@ -472,7 +484,7 @@ class ImageBlurArgs {
     required this.path,
   });
 
-  final _i23.Key? key;
+  final _i24.Key? key;
 
   final String path;
 
@@ -484,7 +496,7 @@ class ImageBlurArgs {
 
 /// generated route for
 /// [_i11.CoffeePage]
-class CoffeeRoute extends _i22.PageRouteInfo<void> {
+class CoffeeRoute extends _i23.PageRouteInfo<void> {
   const CoffeeRoute()
       : super(
           CoffeeRoute.name,
@@ -496,7 +508,7 @@ class CoffeeRoute extends _i22.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i12.UserView]
-class UserView extends _i22.PageRouteInfo<void> {
+class UserView extends _i23.PageRouteInfo<void> {
   const UserView()
       : super(
           UserView.name,
@@ -508,7 +520,7 @@ class UserView extends _i22.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i13.AlbumView]
-class AlbumView extends _i22.PageRouteInfo<void> {
+class AlbumView extends _i23.PageRouteInfo<void> {
   const AlbumView()
       : super(
           AlbumView.name,
@@ -520,7 +532,7 @@ class AlbumView extends _i22.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i14.PlayListView]
-class PlayListView extends _i22.PageRouteInfo<void> {
+class PlayListView extends _i23.PageRouteInfo<void> {
   const PlayListView()
       : super(
           PlayListView.name,
@@ -532,7 +544,7 @@ class PlayListView extends _i22.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i15.MainView]
-class MainView extends _i22.PageRouteInfo<void> {
+class MainView extends _i23.PageRouteInfo<void> {
   const MainView()
       : super(
           MainView.name,
@@ -544,7 +556,7 @@ class MainView extends _i22.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i16.TodayView]
-class TodayView extends _i22.PageRouteInfo<void> {
+class TodayView extends _i23.PageRouteInfo<void> {
   const TodayView()
       : super(
           TodayView.name,
@@ -556,7 +568,7 @@ class TodayView extends _i22.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i17.SearchView]
-class SearchView extends _i22.PageRouteInfo<void> {
+class SearchView extends _i23.PageRouteInfo<void> {
   const SearchView()
       : super(
           SearchView.name,
@@ -568,7 +580,7 @@ class SearchView extends _i22.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i18.ArtistsView]
-class ArtistsView extends _i22.PageRouteInfo<void> {
+class ArtistsView extends _i23.PageRouteInfo<void> {
   const ArtistsView()
       : super(
           ArtistsView.name,
@@ -580,7 +592,7 @@ class ArtistsView extends _i22.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i19.MyRadioView]
-class MyRadioView extends _i22.PageRouteInfo<void> {
+class MyRadioView extends _i23.PageRouteInfo<void> {
   const MyRadioView()
       : super(
           MyRadioView.name,
@@ -592,7 +604,7 @@ class MyRadioView extends _i22.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i20.RadioDetailsView]
-class RadioDetailsView extends _i22.PageRouteInfo<void> {
+class RadioDetailsView extends _i23.PageRouteInfo<void> {
   const RadioDetailsView()
       : super(
           RadioDetailsView.name,
@@ -604,7 +616,7 @@ class RadioDetailsView extends _i22.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i21.AlbumDetails]
-class AlbumDetails extends _i22.PageRouteInfo<void> {
+class AlbumDetails extends _i23.PageRouteInfo<void> {
   const AlbumDetails()
       : super(
           AlbumDetails.name,
@@ -616,7 +628,7 @@ class AlbumDetails extends _i22.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i5.SettingViewL]
-class SettingViewL extends _i22.PageRouteInfo<void> {
+class SettingViewL extends _i23.PageRouteInfo<void> {
   const SettingViewL()
       : super(
           SettingViewL.name,
@@ -624,4 +636,16 @@ class SettingViewL extends _i22.PageRouteInfo<void> {
         );
 
   static const String name = 'SettingViewL';
+}
+
+/// generated route for
+/// [_i22.PlaylistManagerView]
+class PlaylistManagerView extends _i23.PageRouteInfo<void> {
+  const PlaylistManagerView()
+      : super(
+          PlaylistManagerView.name,
+          path: 'playlistManager',
+        );
+
+  static const String name = 'PlaylistManagerView';
 }

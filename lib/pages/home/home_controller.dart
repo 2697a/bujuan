@@ -44,7 +44,7 @@ Future<PaletteGenerator> getColor(MediaItem mediaItem) async {
 class Home extends SuperController with GetSingleTickerProviderStateMixin {
   double panelHeaderSize = 100.w;
   double panelMobileMinSize = 85.w; //折叠起来时播放栏的高度
-  double panelTopSize = 140.w; //折叠起来时播放栏的高度
+  double panelTopSize = 130.w; //折叠起来时播放栏的高度
   double panelAlbumPadding = 15.w; //专辑图片左右上下的边距
 
   //是否是横屏
@@ -54,7 +54,7 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
     LeftMenu('个人中心', TablerIcons.user, Routes.user, '/home/user'),
     LeftMenu('推荐歌单', TablerIcons.smart_home, Routes.index, '/home/index'),
     // LeftMenu('本地歌曲', TablerIcons.file_music, Routes.local, '/home/local'),
-    LeftMenu('个性设置', TablerIcons.settings,  Routes.settingL, '/home/settingL'),
+    LeftMenu('个性设置', TablerIcons.settings, Routes.settingL, '/home/settingL'),
     LeftMenu('捐赠', TablerIcons.coffee, Routes.coffee, ''),
   ];
 
@@ -219,10 +219,10 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
     // panelAlbumPadding = landscape ? 20.h : 15.w;
     animationController = AnimationController(vsync: this, value: 0);
     animationPanel = Tween(begin: 0.0, end: 1.0).animate(animationController);
-    animationScalePanel = Tween(begin: 1.06, end: 1.0).animate(animationController);
+    animationScalePanel = Tween(begin: 1.1, end: 1.0).animate(animationController);
     var rng = Random();
     for (double i = 0; i < (landscape ? 100 : 50); i++) {
-      mEffects.add({"percent": i, "size": 3 + rng.nextInt(30 - 5).toDouble()});
+      mEffects.add({"percent": i, "size": 3 + rng.nextInt(30 - 2).toDouble()});
     }
     box.get(noFirstOpen, defaultValue: false);
     background.value = box.get(backgroundSp, defaultValue: '');
@@ -351,32 +351,17 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
     });
   }
 
-  changeStatusIconColor(bool changed) {
-    // if (leftImage.value) return;
+  changeStatusIconColor(bool changedToAlbum) {
     var color = rx.value.darkMutedColor?.color ?? rx.value.darkVibrantColor?.color ?? rx.value.dominantColor?.color ?? Colors.white;
     Brightness brightness = ThemeData.estimateBrightnessForColor(color);
+    bool isLight = brightness == Brightness.light;
+    if (!changedToAlbum) {
+      isLight = !Get.isPlatformDarkMode;
+    }
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      systemNavigationBarIconBrightness: changed
-          ? brightness == Brightness.light
-              ? Brightness.dark
-              : Brightness.light
-          : Get.isPlatformDarkMode
-              ? Brightness.light
-              : Brightness.dark,
-      statusBarBrightness: changed
-          ? brightness == Brightness.dark
-              ? Brightness.dark
-              : Brightness.light
-          : Get.isPlatformDarkMode
-              ? Brightness.light
-              : Brightness.dark,
-      statusBarIconBrightness: changed
-          ? brightness == Brightness.light
-              ? Brightness.dark
-              : Brightness.light
-          : Get.isPlatformDarkMode
-              ? Brightness.light
-              : Brightness.dark,
+      systemNavigationBarIconBrightness: isLight ? Brightness.dark : Brightness.light,
+      statusBarBrightness: isLight ? Brightness.light : Brightness.dark,
+      statusBarIconBrightness: isLight ? Brightness.dark : Brightness.light,
       statusBarColor: Colors.transparent,
       systemNavigationBarColor: Colors.transparent,
       systemNavigationBarContrastEnforced: false,
@@ -540,23 +525,26 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
     // }
   }
 
+  bool get isDarkMode => Theme.of(buildContext).brightness == Brightness.dark;
+
   //当按下返回键
   Future<bool> onWillPop() async {
-    print('object============${autoRouterDelegate?.currentConfiguration?.url}');
-    if (!landscape && panelController.isPanelOpen) {
-      panelController.close();
-      return false;
+    if (!landscape) {
+      if (panelController.isPanelOpen) {
+        panelController.close();
+        return false;
+      }
+      if (panelControllerHome.isPanelOpen) {
+        panelControllerHome.close();
+        return false;
+      }
+      if (myDrawerController.isOpen!()) {
+        myDrawerController.close!();
+        return false;
+      }
     }
-    if (panelControllerHome.isPanelOpen) {
-      panelControllerHome.close();
-      return false;
-    }
-    if (!landscape && myDrawerController.isOpen!()) {
-      myDrawerController.close!();
-      return false;
-    }
-    if (PlatformUtils.isAndroid &&
-        (autoRouterDelegate?.currentConfiguration?.path ?? '').contains(Routes.index) ||
+
+    if (PlatformUtils.isAndroid && (autoRouterDelegate?.currentConfiguration?.path ?? '').contains(Routes.index) ||
         (autoRouterDelegate?.currentConfiguration?.path ?? '').contains(Routes.user)) {
       androidHomeIntent.launch();
       return false;
@@ -597,6 +585,11 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
   //获取图片亮色背景下文字显示的颜色
   Color getLightTextColor(context) {
     return Theme.of(context).cardColor.withOpacity(.7);
+  }
+
+  //添加/删除歌曲到指定的歌单
+  addOrDelSongToPlaylist(String playlistId, String songId, bool add) async{
+    NeteaseMusicApi().playlistManipulateTracks(playlistId, songId, add);
   }
 
   @override
@@ -644,8 +637,12 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
     // }
     if (second.value || slidePosition.value == 1) return;
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarBrightness: Get.isPlatformDarkMode ? Brightness.dark : Brightness.light,
-      statusBarIconBrightness: Get.isPlatformDarkMode ? Brightness.light : Brightness.dark,
+      systemNavigationBarIconBrightness: isDarkMode ? Brightness.dark : Brightness.light,
+      statusBarBrightness: isDarkMode ? Brightness.light : Brightness.dark,
+      statusBarIconBrightness: isDarkMode ? Brightness.dark : Brightness.light,
+      statusBarColor: Colors.transparent,
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarContrastEnforced: false,
     ));
     super.didChangePlatformBrightness();
   }

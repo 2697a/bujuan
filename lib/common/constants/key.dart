@@ -15,3 +15,5 @@ String splashBackgroundSp = 'BACKGROUND_SPLASH';
 String repeatModeSp = 'REPEAT_MODE';
 String cacheSp = 'CACHE';
 String roundAlbumSp = 'ROUND_ALBUM';
+String unblockSp = 'UNBLOCK';
+String unblockVipSp = 'UNBLOCK_VIP';
