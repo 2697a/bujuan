@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:bujuan/pages/home/home_controller.dart';
+import 'package:bujuan/pages/home/view/z_lyric_view.dart';
 import 'package:bujuan/widget/mobile/flashy_navbar.dart';
 import 'package:bujuan/widget/my_get_view.dart';
 import 'package:bujuan/widget/simple_extended_image.dart';
@@ -12,11 +13,10 @@ import 'package:get/get.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 import '../../../common/constants/platform_utils.dart';
+import '../../../widget/music_visualizer.dart';
 
 class PanelView extends GetView<Home> {
   const PanelView({Key? key}) : super(key: key);
-
-  //进度
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +36,7 @@ class PanelView extends GetView<Home> {
       body: _buildDefaultBody(context),
       panel: Container(
         width: 750.w,
-        padding: EdgeInsets.only(top: controller.panelMobileMinSize + controller.panelAlbumPadding * 2),
+        padding: EdgeInsets.only(top: controller.panelMobileMinSize + controller.panelAlbumPadding * 2 + bottomHeight),
         child: Obx(() => IndexedStack(
               index: controller.selectIndex.value,
               children: controller.pages,
@@ -53,44 +53,59 @@ class PanelView extends GetView<Home> {
     return Expanded(
         child: Container(
       width: 750.w,
-      padding: EdgeInsets.only(left: 66.w, right: 66.w, bottom: 0.w),
+      padding: EdgeInsets.only(left: 56.w, right: 56.w, bottom: 0.w),
       child: Stack(
         alignment: Alignment.center,
         children: [
+          // SizedBox(
+          //   height: 50.w,
+          //   child: ListView.builder(
+          //     shrinkWrap: true,
+          //     physics: const NeverScrollableScrollPhysics(),
+          //     scrollDirection: Axis.horizontal,
+          //     addAutomaticKeepAlives: false,
+          //     cacheExtent: 1.3,
+          //     addRepaintBoundaries: false,
+          //     addSemanticIndexes: false,
+          //     itemBuilder: (context, index) => Obx(() => Container(
+          //         height: 50.w,
+          //         margin: EdgeInsets.symmetric(vertical: controller.mEffects[index]['size'] / 2, horizontal: 6.w),
+          //         decoration: BoxDecoration(color: controller.bodyColor.value, borderRadius: BorderRadius.circular(8)),
+          //         width: 2)),
+          //     itemCount: controller.mEffects.length,
+          //   ),
+          // ),
           SizedBox(
-            height: 50.w,
-            child: ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              scrollDirection: Axis.horizontal,
-              addAutomaticKeepAlives: false,
-              cacheExtent: 1.3,
-              addRepaintBoundaries: false,
-              addSemanticIndexes: false,
-              itemBuilder: (context, index) => Obx(() => Container(
-                  height: 50.w,
-                  margin: EdgeInsets.symmetric(vertical: controller.mEffects[index]['size'] / 2, horizontal: 6.w),
-                  decoration: BoxDecoration(color: controller.bodyColor.value, borderRadius: BorderRadius.circular(8)),
-                  width: 2)),
-              itemCount: controller.mEffects.length,
-            ),
+            height: 60.w,
+            child: Obx(() => MusicVisualizer(
+                  barCount: 35,
+                  colors: [
+                    controller.bodyColor.value.withAlpha(50),
+                    controller.bodyColor.value.withAlpha(80),
+                    controller.bodyColor.value.withAlpha(110),
+                    controller.bodyColor.value.withAlpha(140)
+                  ],
+                )),
           ),
-          Obx(() => ProgressBar(
-                progress: controller.duration.value,
-                buffered: controller.duration.value,
-                total: controller.mediaItem.value.duration ?? const Duration(seconds: 10),
-                progressBarColor: Colors.transparent,
-                baseBarColor: Colors.transparent,
-                bufferedBarColor: Colors.transparent,
-                thumbColor: controller.bodyColor.value.withOpacity(.18),
-                barHeight: 0.w,
-                thumbRadius: 20.w,
-                barCapShape: BarCapShape.square,
-                timeLabelType: TimeLabelType.remainingTime,
-                timeLabelLocation: TimeLabelLocation.none,
-                timeLabelTextStyle: TextStyle(color: controller.bodyColor.value, fontSize: 28.sp),
-                onSeek: (duration) => controller.audioServeHandler.seek(duration),
-              ))
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20.w),
+            child: Obx(() => ProgressBar(
+                  progress: controller.duration.value,
+                  buffered: controller.duration.value,
+                  total: controller.mediaItem.value.duration ?? const Duration(seconds: 10),
+                  progressBarColor: Colors.transparent,
+                  baseBarColor: Colors.transparent,
+                  bufferedBarColor: Colors.transparent,
+                  thumbColor: controller.bodyColor.value.withOpacity(.38),
+                  barHeight: 0.w,
+                  thumbRadius: 20.w,
+                  barCapShape: BarCapShape.square,
+                  timeLabelType: TimeLabelType.remainingTime,
+                  timeLabelLocation: TimeLabelLocation.none,
+                  timeLabelTextStyle: TextStyle(color: controller.bodyColor.value, fontSize: 28.sp),
+                  onSeek: (duration) => controller.audioServeHandler.seek(duration),
+                )),
+          )
         ],
       ),
     ));
@@ -108,8 +123,8 @@ class PanelView extends GetView<Home> {
         children: [
           IconButton(
               onPressed: () => controller.likeSong(),
-              icon: Obx(() => Icon(controller.likeIds.contains(int.tryParse(controller.mediaItem.value.id)) ? TablerIcons.heartbeat : TablerIcons.heart,
-                  size: 46.w, color: controller.bodyColor.value))),
+              icon: Obx(() => Icon(controller.likeIds.contains(int.tryParse(controller.mediaItem.value.id)) ? Icons.favorite : Icons.favorite_border,
+                  size: 46.w, color: controller.likeIds.contains(int.tryParse(controller.mediaItem.value.id)) ? Colors.red : controller.bodyColor.value))),
           Obx(() => IconButton(
               onPressed: () {
                 if (controller.fm.value) {
@@ -273,24 +288,24 @@ class PanelView extends GetView<Home> {
         ),
         Expanded(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Obx(() => Text(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Obx(() => Text(
                   controller.mediaItem.value.title.fixAutoLines(),
-                  style: TextStyle(fontSize: 38.sp, fontWeight: FontWeight.bold,color: controller.bodyColor.value),
+                  style: TextStyle(fontSize: 38.sp, fontWeight: FontWeight.bold, color: controller.bodyColor.value),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 )),
-                Padding(padding: EdgeInsets.symmetric(vertical: 10.w)),
-                Obx(() => Text(
+            Padding(padding: EdgeInsets.symmetric(vertical: 10.w)),
+            Obx(() => Text(
                   (controller.mediaItem.value.artist ?? '').fixAutoLines(),
-                  style: TextStyle(fontSize: 28.sp,color: controller.bodyColor.value),
+                  style: TextStyle(fontSize: 28.sp, color: controller.bodyColor.value),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ))
-              ],
-            )),
+          ],
+        )),
         // //操控区域
         _buildPlayController(context),
         //进度条
@@ -562,56 +577,162 @@ class TestView extends GetView<Home> {
         child: SafeArea(
           child: Column(
             children: [
-              _buildBottom(bottomHeight, context),
-              Expanded(
-                child: Obx(() => IndexedStack(
-                      index: controller.selectIndex.value,
-                      children: controller.pages,
-                    )),
-              )
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Obx(() => Text(
+                    controller.mediaItem.value.title.fixAutoLines(),
+                    style: TextStyle(fontSize: 38.sp, fontWeight: FontWeight.bold),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  )),
+                  Padding(padding: EdgeInsets.symmetric(vertical: 10.w)),
+                  Obx(() => Text(
+                    (controller.mediaItem.value.artist ?? '').fixAutoLines(),
+                    style: TextStyle(fontSize: 28.sp),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ))
+                ],
+              ),
+              Padding(padding: EdgeInsets.symmetric(vertical: 40.w),child: ClipRRect(
+                borderRadius: BorderRadius.circular(100.w),
+                child: Obx(() => SimpleExtendedImage(
+                  '${Home.to.mediaItem.value.extras?['image'] ?? ''}?param=500y500',
+                  width: 200.w,
+                  height: 200.w,
+                )),
+              ),),
+              const Expanded(child: LyricView()),
+              _buildPlayController(context),
+              _buildSlide(context)
             ],
           ),
         ));
   }
 
-  Widget _buildBottom(bottomHeight, context) {
-    return SizedBox(
+
+
+  Widget _buildSlide(BuildContext context) {
+    return Container(
       width: 750.w,
-      height: controller.panelMobileMinSize + controller.panelAlbumPadding * 2 + bottomHeight,
+      padding: EdgeInsets.only(left: 56.w, right: 56.w, bottom: 0.w),
       child: Stack(
-        alignment: Alignment.topCenter,
+        alignment: Alignment.center,
         children: [
-          FlashyNavbar(
-            height: controller.panelMobileMinSize + controller.panelAlbumPadding * 2,
-            selectedIndex: 0,
-            items: [
-              FlashyNavbarItem(icon: const Icon(TablerIcons.atom_2)),
-              FlashyNavbarItem(icon: const Icon(TablerIcons.playlist)),
-              FlashyNavbarItem(icon: const Icon(TablerIcons.quote)),
-              FlashyNavbarItem(icon: const Icon(TablerIcons.message_2)),
-            ],
-            onItemSelected: (index) {
-              print('object=====================');
-              controller.selectIndex.value = index;
-              // if (!controller.panelController.isPanelOpen) controller.panelController.open();
-            },
-            backgroundColor: controller.bodyColor.value,
+          SizedBox(
+            height: 60.w,
+            child: Obx(() => MusicVisualizer(
+              barCount: 35,
+              colors: [
+                Theme.of(context).iconTheme.color!.withAlpha(50),
+                Theme.of(context).iconTheme.color!.withAlpha(80),
+                Theme.of(context).iconTheme.color!.withAlpha(110),
+                Theme.of(context).iconTheme.color!.withAlpha(140)
+              ],
+            )),
           ),
-          Positioned(
-            bottom: 0,
-            child: GestureDetector(
-              child: Container(
-                height: MediaQuery.of(context).padding.bottom,
-                width: 750.w,
-                color: Colors.transparent,
-              ),
-              onVerticalDragEnd: (e) {},
-            ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20.w),
+            child: Obx(() => ProgressBar(
+              progress: controller.duration.value,
+              buffered: controller.duration.value,
+              total: controller.mediaItem.value.duration ?? const Duration(seconds: 10),
+              progressBarColor: Colors.transparent,
+              baseBarColor: Colors.transparent,
+              bufferedBarColor: Colors.transparent,
+              thumbColor: controller.bodyColor.value.withOpacity(.38),
+              barHeight: 0.w,
+              thumbRadius: 20.w,
+              barCapShape: BarCapShape.square,
+              timeLabelType: TimeLabelType.remainingTime,
+              timeLabelLocation: TimeLabelLocation.none,
+              timeLabelTextStyle: TextStyle(color: controller.bodyColor.value, fontSize: 28.sp),
+              onSeek: (duration) => controller.audioServeHandler.seek(duration),
+            )),
           )
         ],
       ),
     );
   }
+  // height:329.h-MediaQuery.of(context).padding.top,
+  Widget _buildPlayController(BuildContext context) {
+    return Container(
+      width: 750.w,
+      padding: EdgeInsets.symmetric(horizontal: 35.w,vertical: 40.w),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          IconButton(
+              onPressed: () => controller.likeSong(),
+              icon: Obx(() => Icon(controller.likeIds.contains(int.tryParse(controller.mediaItem.value.id)) ? TablerIcons.heartbeat : TablerIcons.heart,
+                  size: 46.w))),
+          Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Obx(() => IconButton(
+                      onPressed: () {
+                        if (controller.fm.value) {
+                          return;
+                        }
+                        if (controller.intervalClick(1)) {
+                          controller.audioServeHandler.skipToPrevious();
+                        }
+                      },
+                      icon: Icon(
+                        TablerIcons.player_skip_back,
+                        size: 46.w,
+                      ))),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 60.w),
+                    child: InkWell(
+                      child: Obx(() => Container(
+                        alignment: Alignment.center,
+                        padding: EdgeInsets.only(bottom: 5.h),
+                        height: 80.w,
+                        width: 80.w,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(80.w),
+                          color: controller.bodyColor.value
+                        ),
+                        child: Icon(
+                          controller.playing.value ? TablerIcons.player_pause : TablerIcons.player_play,
+                          size: 54.w,
+                        ),
+                      )),
+                      onTap: () => controller.playOrPause(),
+                    ),
+                  ),
+                  IconButton(
+                      onPressed: () {
+                        if (controller.intervalClick(1)) {
+                          controller.audioServeHandler.skipToNext();
+                        }
+                      },
+                      icon: Obx(() => Icon(
+                        TablerIcons.player_skip_forward,
+                        size: 46.w,
+                      ))),
+                ],
+              )),
+          IconButton(
+              onPressed: () {
+                if (controller.fm.value) {
+                  return;
+                }
+                controller.changeRepeatMode();
+              },
+              icon: Obx(() => Icon(
+                controller.getRepeatIcon(),
+                size: 43.w,
+              ))),
+        ],
+      ),
+    );
+  }
+
 }
 
 class BottomItem {

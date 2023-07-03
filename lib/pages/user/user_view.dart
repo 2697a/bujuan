@@ -290,7 +290,7 @@ class UserViewP extends GetView<UserController> {
                         addRepaintBoundaries: false,
                         addAutomaticKeepAlives: false,
                         physics: const NeverScrollableScrollPhysics(),
-                        itemBuilder: (content, index) => PlayListItem(index: index, play: controller.playlist[index]),
+                        itemBuilder: (content, index) => PlayListItem(play: controller.playlist[index]),
                         itemCount: controller.playlist.length > 10 ? 10 : controller.playlist.length,
                         itemExtent: 120.w,
                       )),

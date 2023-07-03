@@ -28,12 +28,21 @@ class LyricView extends GetView<Home> {
             child: Listener(
               onPointerDown: (event) {
                 controller.onMove.value = true;
+                //记录手指放下的y位置
+                controller.scrollDown.value = event.position.dy;
+                controller.canScroll.value = true;
               },
               onPointerMove: (event) {
+                if (event.position.dy > controller.scrollDown.value && controller.lyricScrollController.offset == 0) {
+                  controller.canScroll.value = false;
+                } else {
+                  controller.canScroll.value = true;
+                }
                 //手指移动暂停歌词自动滚动
                 controller.onMove.value = true;
               },
               onPointerUp: (event) {
+                controller.canScroll.value = true;
                 //手指放开 延时三秒开始自动滚动（用户三秒期间可以滑动到指定位置并播放）
                 Future.delayed(const Duration(milliseconds: 2500), () => controller.onMove.value = false);
               },
@@ -49,7 +58,7 @@ class LyricView extends GetView<Home> {
                     child: ListWheelScrollView.useDelegate(
                       itemExtent: controller.hasTran.value ?  210.w : 120.w,
                       controller: controller.lyricScrollController,
-                      physics: const FixedExtentScrollPhysics(),
+                      physics: controller.canScroll.value?const FixedExtentScrollPhysics():const NeverScrollableScrollPhysics(),
                       perspective: 0.0006,
                       onSelectedItemChanged: (index) {
                         //TODO 此处可以获取实时歌词

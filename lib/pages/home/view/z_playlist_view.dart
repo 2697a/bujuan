@@ -18,14 +18,31 @@ class ZPlayListView extends GetView<Home> {
     return Obx(() {
       return Visibility(
         visible: !controller.fm.value,
-        child: Obx(() => ListView.builder(
-          physics: const ClampingScrollPhysics(),
-          controller: controller.playListScrollController,
-          padding: EdgeInsets.symmetric(horizontal: 50.w),
-          itemExtent: 110.w,
-          itemBuilder: (context, index) => _buildPlayListItem(controller.mediaItems[index], index, context),
-          itemCount: controller.mediaItems.length,
-        )),
+        child: Listener(
+          onPointerMove: (event) {
+            if (event.position.dy > controller.scrollDown.value && controller.playListScrollController.offset == 0) {
+              controller.canScroll.value = false;
+            } else {
+              controller.canScroll.value = true;
+            }
+          },
+          onPointerUp: (event){
+            controller.canScroll.value = true;
+          },
+          onPointerDown: (event) {
+            //记录手指放下的y位置
+            controller.scrollDown.value = event.position.dy;
+            controller.canScroll.value = true;
+          },
+          child: Obx(() => ListView.builder(
+                physics: controller.canScroll.value ? const ClampingScrollPhysics() : const NeverScrollableScrollPhysics(),
+                controller: controller.playListScrollController,
+                padding: EdgeInsets.symmetric(horizontal: 50.w),
+                itemExtent: 110.w,
+                itemBuilder: (context, index) => _buildPlayListItem(controller.mediaItems[index], index, context),
+                itemCount: controller.mediaItems.length,
+              )),
+        ),
       );
     });
   }
@@ -50,46 +67,55 @@ class ZPlayListView extends GetView<Home> {
         children: [
           Expanded(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                 controller.landscape?Text(
-                   mediaItem.title,
-                   maxLines: 1,
-                   style: TextStyle(fontSize: 30.sp, color: (Theme.of(context).iconTheme.color ?? Colors.black)),
-                 ): Obx(() => Text(
-                    mediaItem.title,
-                    maxLines: 1,
-                    style: TextStyle(fontSize: 30.sp, color: controller.bodyColor.value),
-                  )),
-                  Padding(padding: EdgeInsets.symmetric(vertical: 4.w)),
-                  controller.landscape?Text(
-                    mediaItem.artist ?? '',
-                    maxLines: 1,
-                    style: TextStyle(fontSize: 24.sp, color:(Theme.of(context).iconTheme.color ?? Colors.black)),
-                  ):Obx(() => Text(
-                    mediaItem.artist ?? '',
-                    maxLines: 1,
-                    style: TextStyle(fontSize: 24.sp, color: controller.bodyColor.value),
-                  ))
-                ],
-              )),
-          Obx(() => Visibility(
-            visible: controller.mediaItem.value.id == mediaItem.id,
-            child:  Icon(TablerIcons.circle_letter_p,color: controller.landscape?(Theme.of(context).iconTheme.color ?? Colors.black):controller.bodyColor.value,),
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              controller.landscape
+                  ? Text(
+                      mediaItem.title,
+                      maxLines: 1,
+                      style: TextStyle(fontSize: 30.sp, color: (Theme.of(context).iconTheme.color ?? Colors.black)),
+                    )
+                  : Obx(() => Text(
+                        mediaItem.title,
+                        maxLines: 1,
+                        style: TextStyle(fontSize: 30.sp, color: controller.bodyColor.value),
+                      )),
+              Padding(padding: EdgeInsets.symmetric(vertical: 4.w)),
+              controller.landscape
+                  ? Text(
+                      mediaItem.artist ?? '',
+                      maxLines: 1,
+                      style: TextStyle(fontSize: 24.sp, color: (Theme.of(context).iconTheme.color ?? Colors.black)),
+                    )
+                  : Obx(() => Text(
+                        mediaItem.artist ?? '',
+                        maxLines: 1,
+                        style: TextStyle(fontSize: 24.sp, color: controller.bodyColor.value),
+                      ))
+            ],
           )),
+          Obx(() => Visibility(
+                visible: controller.mediaItem.value.id == mediaItem.id,
+                child: Icon(
+                  TablerIcons.circle_letter_p,
+                  color: controller.landscape ? (Theme.of(context).iconTheme.color ?? Colors.black) : controller.bodyColor.value,
+                ),
+              )),
           Padding(padding: EdgeInsets.symmetric(horizontal: 10.w)),
           IconButton(
               onPressed: () => controller.audioServeHandler.removeQueueItemAt(index),
-              icon: controller.landscape?Icon(
-                TablerIcons.trash_x,
-                color: (Theme.of(context).iconTheme.color ?? Colors.black),
-                size: 42.w,
-              ):Obx(() => Icon(
-                TablerIcons.trash_x,
-                color: controller.bodyColor.value,
-                size: 42.w,
-              )))
+              icon: controller.landscape
+                  ? Icon(
+                      TablerIcons.trash_x,
+                      color: (Theme.of(context).iconTheme.color ?? Colors.black),
+                      size: 42.w,
+                    )
+                  : Obx(() => Icon(
+                        TablerIcons.trash_x,
+                        color: controller.bodyColor.value,
+                        size: 42.w,
+                      )))
         ],
       ),
       onTap: () => controller.audioServeHandler.playIndex(index),

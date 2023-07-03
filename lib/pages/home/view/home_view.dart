@@ -59,7 +59,7 @@ class HomeView extends GetView<Home> {
                           // borderRadius: BorderRadius.only(topLeft: Radius.circular(25.w), topRight: Radius.circular(25.w)),
                         ),
                       )),
-                  BackdropFilter(filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12), child: Container()),
+                  BackdropFilter(filter: ImageFilter.blur(sigmaX: 22, sigmaY: 22), child: Container()),
                   Row(
                     children: [
                       const MenuViewL(),

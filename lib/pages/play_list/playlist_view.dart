@@ -15,7 +15,7 @@ import 'package:get/get.dart';
 
 import '../../widget/app_bar.dart';
 import '../../widget/simple_extended_image.dart';
-import 'package:bujuan/common/constants/enmu.dart'as type;
+import 'package:bujuan/common/constants/enmu.dart' as type;
 import '../home/home_controller.dart';
 
 class PlayListView extends GetView<PlayListController> {
@@ -69,22 +69,22 @@ class PlayListView extends GetView<PlayListController> {
                 ),
                 _buildTopItem(context),
                 Obx(() => SliverFixedExtentList(
-                  delegate: SliverChildBuilderDelegate(
+                      delegate: SliverChildBuilderDelegate(
                           (context, index) => SongItem(
-                        index: index,
-                        mediaItem: controller.isSearch.value ? controller.searchItems[index] : controller.mediaItems[index],
-                        onTap: () {
-                          if (controller.isSearch.value) {
-                            index = controller.mediaItems.indexOf(controller.searchItems[index]);
-                          }
-                          Home.to.playByIndex(index, 'queueTitle', mediaItem: controller.mediaItems);
-                        },
-                      ),
-                      childCount: controller.isSearch.value ? controller.searchItems.length : controller.mediaItems.length,
-                      addAutomaticKeepAlives: false,
-                      addRepaintBoundaries: false),
-                  itemExtent: 130.w,
-                ))
+                                index: index,
+                                mediaItem: controller.isSearch.value ? controller.searchItems[index] : controller.mediaItems[index],
+                                onTap: () {
+                                  if (controller.isSearch.value) {
+                                    index = controller.mediaItems.indexOf(controller.searchItems[index]);
+                                  }
+                                  Home.to.playByIndex(index, 'queueTitle', mediaItem: controller.mediaItems);
+                                },
+                              ),
+                          childCount: controller.isSearch.value ? controller.searchItems.length : controller.mediaItems.length,
+                          addAutomaticKeepAlives: false,
+                          addRepaintBoundaries: false),
+                      itemExtent: 130.w,
+                    ))
               ],
             ),
           ),
@@ -149,16 +149,19 @@ class SongItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<SheetAction<ActionType>> sheet = [const SheetAction<ActionType>(label: '下一首播放', icon: TablerIcons.player_play, key: ActionType.next)];
-    if(mediaItem.extras?['type'] == type.MediaType.local.name){
-      sheet.add( const SheetAction<ActionType>(label: '修改歌曲标签', icon: TablerIcons.edit, key: ActionType.edit));
-    }else{
-      sheet.add( const SheetAction<ActionType>(label: '查看歌曲评论', icon: TablerIcons.message_2, key: ActionType.talk));
+    if (mediaItem.extras?['type'] == type.MediaType.local.name) {
+      sheet.add(const SheetAction<ActionType>(label: '修改歌曲标签', icon: TablerIcons.edit, key: ActionType.edit));
+    } else {
+      sheet.add(const SheetAction<ActionType>(label: '查看歌曲评论', icon: TablerIcons.message_2, key: ActionType.talk));
     }
     return ListTile(
       visualDensity: VisualDensity.compact,
       leading: Text('${index + 1}'),
       horizontalTitleGap: 0.w,
-      title: Text(mediaItem.title,maxLines: 1,),
+      title: Text(
+        mediaItem.title,
+        maxLines: 1,
+      ),
       subtitle: Text(
         mediaItem.artist ?? '',
         maxLines: 1,
@@ -172,7 +175,7 @@ class SongItem extends StatelessWidget {
               actions: sheet,
             ).then((value) {
               if (value != null) {
-                switch(value){
+                switch (value) {
                   case ActionType.next:
                     if (Home.to.audioServeHandler.playbackState.value.queueIndex != 0) {
                       Home.to.audioServeHandler.insertQueueItem(Home.to.audioServeHandler.playbackState.value.queueIndex! + 1, mediaItem);
@@ -184,10 +187,9 @@ class SongItem extends StatelessWidget {
                   case ActionType.edit:
                     break;
                   case ActionType.talk:
-                    context.router.push(const gr.TalkView().copyWith(queryParams: {'id': mediaItem.id, 'type': 'song','name':mediaItem.title}));
+                    context.router.push(const gr.TalkView().copyWith(queryParams: {'id': mediaItem.id, 'type': 'song', 'name': mediaItem.title}));
                     break;
                 }
-
               }
             });
           },
@@ -198,21 +200,19 @@ class SongItem extends StatelessWidget {
     );
   }
 
-  getSongFeeType(int fee){
+  getSongFeeType(int fee) {
     String feeStr = '';
-    switch(fee){
+    switch (fee) {
       case 1:
-        feeStr =  '  vip';
+        feeStr = '  vip';
         break;
       case 4:
-        feeStr =  '  need buy';
+        feeStr = '  need buy';
         break;
     }
     return feeStr;
   }
 }
-
-
 
 class SongItemShowImage extends StatelessWidget {
   final int index;
@@ -224,18 +224,23 @@ class SongItemShowImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<SheetAction<ActionType>> sheet = [const SheetAction<ActionType>(label: '下一首播放', icon: TablerIcons.player_play, key: ActionType.next)];
-    if(mediaItem.extras?['type'] == type.MediaType.local.name){
-      sheet.add( const SheetAction<ActionType>(label: '修改歌曲标签', icon: TablerIcons.edit, key: ActionType.edit));
-    }else{
-      sheet.add( const SheetAction<ActionType>(label: '查看歌曲评论', icon: TablerIcons.message_2, key: ActionType.talk));
+    if (mediaItem.extras?['type'] == type.MediaType.local.name) {
+      sheet.add(const SheetAction<ActionType>(label: '修改歌曲标签', icon: TablerIcons.edit, key: ActionType.edit));
+    } else {
+      sheet.add(const SheetAction<ActionType>(label: '查看歌曲评论', icon: TablerIcons.message_2, key: ActionType.talk));
     }
     return ListTile(
       contentPadding: EdgeInsets.symmetric(horizontal: 10.w),
-      leading: SimpleExtendedImage.avatar( '${mediaItem.extras?['image'] ?? ''}?param=120y120',width: 85.w,height: 85.w,fit: BoxFit.cover,),
+      leading: SimpleExtendedImage.avatar(
+        '${mediaItem.extras?['image'] ?? ''}?param=120y120',
+        width: 85.w,
+        height: 85.w,
+        fit: BoxFit.cover,
+      ),
       title: RichText(
           text: TextSpan(text: mediaItem.title, style: TextStyle(fontSize: 30.sp, color: Theme.of(context).cardColor), children: [
-            TextSpan(text: mediaItem.extras?['fee'] == 1 ? '   vip' : '', style: TextStyle(color: Theme.of(context).primaryColor.withOpacity(.9), fontSize: 26.sp)),
-          ])),
+        TextSpan(text: mediaItem.extras?['fee'] == 1 ? '   vip' : '', style: TextStyle(color: Theme.of(context).primaryColor.withOpacity(.9), fontSize: 26.sp)),
+      ])),
       subtitle: Text(
         mediaItem.artist ?? '',
         maxLines: 1,
@@ -249,7 +254,7 @@ class SongItemShowImage extends StatelessWidget {
               actions: sheet,
             ).then((value) {
               if (value != null) {
-                switch(value){
+                switch (value) {
                   case ActionType.next:
                     if (Home.to.audioServeHandler.playbackState.value.queueIndex != 0) {
                       Home.to.audioServeHandler.insertQueueItem(Home.to.audioServeHandler.playbackState.value.queueIndex! + 1, mediaItem);
@@ -261,10 +266,9 @@ class SongItemShowImage extends StatelessWidget {
                   case ActionType.edit:
                     break;
                   case ActionType.talk:
-                    context.router.push(const gr.TalkView().copyWith(queryParams: {'id': mediaItem.id, 'type': 'song','name':mediaItem.title}));
+                    context.router.push(const gr.TalkView().copyWith(queryParams: {'id': mediaItem.id, 'type': 'song', 'name': mediaItem.title}));
                     break;
                 }
-
               }
             });
           },
@@ -310,10 +314,9 @@ class AlbumItem extends StatelessWidget {
 }
 
 class PlayListItem extends StatelessWidget {
-  final int index;
   final Play play;
 
-  const PlayListItem({Key? key, required this.index, required this.play}) : super(key: key);
+  const PlayListItem({Key? key, required this.play}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

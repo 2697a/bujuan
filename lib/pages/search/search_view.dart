@@ -198,7 +198,7 @@ class _SearchViewState extends State<SearchView> with SingleTickerProviderStateM
         return ListView.builder(
           padding: EdgeInsets.symmetric(horizontal: 20.w),
           itemExtent: 120.w,
-          itemBuilder: (context, index) => PlayListItem(index: index, play: playlist[index]),
+          itemBuilder: (context, index) => PlayListItem( play: playlist[index]),
           itemCount: playlist.length,
         );
       },

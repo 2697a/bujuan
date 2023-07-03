@@ -18,6 +18,8 @@ PODS:
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
+  - rive_common (0.0.1):
+    - FlutterMacOS
   - screen_retriever (0.0.1):
     - FlutterMacOS
   - sqflite (0.0.2):
@@ -37,6 +39,7 @@ DEPENDENCIES:
   - just_audio (from `Flutter/ephemeral/.symlinks/plugins/just_audio/macos`)
   - package_info_plus (from `Flutter/ephemeral/.symlinks/plugins/package_info_plus/macos`)
   - path_provider_foundation (from `Flutter/ephemeral/.symlinks/plugins/path_provider_foundation/darwin`)
+  - rive_common (from `Flutter/ephemeral/.symlinks/plugins/rive_common/macos`)
   - screen_retriever (from `Flutter/ephemeral/.symlinks/plugins/screen_retriever/macos`)
   - sqflite (from `Flutter/ephemeral/.symlinks/plugins/sqflite/macos`)
   - url_launcher_macos (from `Flutter/ephemeral/.symlinks/plugins/url_launcher_macos/macos`)
@@ -63,6 +66,8 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/package_info_plus/macos
   path_provider_foundation:
     :path: Flutter/ephemeral/.symlinks/plugins/path_provider_foundation/darwin
+  rive_common:
+    :path: Flutter/ephemeral/.symlinks/plugins/rive_common/macos
   screen_retriever:
     :path: Flutter/ephemeral/.symlinks/plugins/screen_retriever/macos
   sqflite:
@@ -82,6 +87,7 @@ SPEC CHECKSUMS:
   just_audio: 9b67ca7b97c61cfc9784ea23cd8cc55eb226d489
   package_info_plus: 02d7a575e80f194102bef286361c6c326e4c29ce
   path_provider_foundation: 37748e03f12783f9de2cb2c4eadfaa25fe6d4852
+  rive_common: fab8476ce8352bf54152a913f393a8696d3dc98c
   screen_retriever: 59634572a57080243dd1bf715e55b6c54f241a38
   sqflite: a5789cceda41d54d23f31d6de539d65bb14100ea
   url_launcher_macos: c04e4fa86382d4f94f6b38f14625708be3ae52e2

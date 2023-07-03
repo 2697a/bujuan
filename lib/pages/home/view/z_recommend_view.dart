@@ -227,42 +227,39 @@ class RecommendView extends GetView<Home> {
 
   Widget _buildArtistsList() {
     return Obx(() {
-      return Visibility(
-        visible: controller.mediaItem.value.extras!['artist'] != null,
-        child: ListView.builder(
-          itemBuilder: (context, index) => InkWell(
-            child: Container(
-              padding: EdgeInsets.symmetric(vertical: 20.w),
-              child: Obx(() => Row(
-                    children: [
-                      Expanded(
-                          child: Text(
-                        (controller.mediaItem.value.extras!['artist']?.split(' / ').map((e) => Artists.fromJson(jsonDecode(e))).toList() ?? [])[index].name ?? '',
-                        maxLines: 1,
-                        style: TextStyle(fontSize: 30.sp, color: controller.bodyColor.value),
-                      )),
-                      Icon(
-                        TablerIcons.chevron_right,
-                        color: controller.bodyColor.value,
-                        size: 38.sp,
-                      ),
-                    ],
-                  )),
-            ),
-            onTap: () {
-              controller.panelController.close().then((value) {
-                controller.panelControllerHome.close();
-                context.router.push(const ArtistsView()
-                    .copyWith(args: (controller.mediaItem.value.extras!['artist']?.split(' / ').map((e) => Artists.fromJson(jsonDecode(e))).toList() ?? [])[index]));
-              });
-            },
+      return controller.mediaItem.value.extras!['artist'] != null?ListView.builder(
+        itemBuilder: (context, index) => InkWell(
+          child: Container(
+            padding: EdgeInsets.symmetric(vertical: 20.w),
+            child: Obx(() => Row(
+              children: [
+                Expanded(
+                    child: Text(
+                      (controller.mediaItem.value.extras!['artist']?.split(' / ').map((e) => Artists.fromJson(jsonDecode(e))).toList() ?? [])[index].name ?? '',
+                      maxLines: 1,
+                      style: TextStyle(fontSize: 30.sp, color: controller.bodyColor.value),
+                    )),
+                Icon(
+                  TablerIcons.chevron_right,
+                  color: controller.bodyColor.value,
+                  size: 38.sp,
+                ),
+              ],
+            )),
           ),
-          itemCount: (controller.mediaItem.value.extras!['artist']?.split(' / ').map((e) => Artists.fromJson(jsonDecode(e))).toList() ?? []).length,
-          shrinkWrap: true,
-          padding: const EdgeInsets.all(0),
-          physics: const NeverScrollableScrollPhysics(),
+          onTap: () {
+            controller.panelController.close().then((value) {
+              controller.panelControllerHome.close();
+              context.router.push(const ArtistsView()
+                  .copyWith(args: (controller.mediaItem.value.extras!['artist']?.split(' / ').map((e) => Artists.fromJson(jsonDecode(e))).toList() ?? [])[index]));
+            });
+          },
         ),
-      );
+        itemCount: (controller.mediaItem.value.extras!['artist']?.split(' / ').map((e) => Artists.fromJson(jsonDecode(e))).toList() ?? []).length,
+        shrinkWrap: true,
+        padding: const EdgeInsets.all(0),
+        physics: const NeverScrollableScrollPhysics(),
+      ):const SizedBox();
     });
   }
 

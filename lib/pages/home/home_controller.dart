@@ -44,7 +44,7 @@ Future<PaletteGenerator> getColor(MediaItem mediaItem) async {
 class Home extends SuperController with GetSingleTickerProviderStateMixin {
   double panelHeaderSize = 100.w;
   double panelMobileMinSize = 85.w; //折叠起来时播放栏的高度
-  double panelTopSize = 130.w; //折叠起来时播放栏的高度
+  double panelTopSize = 110.w; //折叠起来时播放栏的高度
   double panelAlbumPadding = 15.w; //专辑图片左右上下的边距
 
   //是否是横屏
@@ -211,6 +211,10 @@ class Home extends SuperController with GetSingleTickerProviderStateMixin {
   RxList<int> likeIds = <int>[].obs;
   Rx<LoginStatus> loginStatus = LoginStatus.noLogin.obs;
   Rx<NeteaseAccountInfoWrap> userData = NeteaseAccountInfoWrap().obs;
+
+
+  RxDouble scrollDown = 0.0.obs;
+  RxBool canScroll = true.obs;
 
   //进度
   @override
