@@ -65,17 +65,17 @@ class MenuView extends GetView<Home> {
             ),
             itemCount: controller.leftMenus.length,
           )),
-          InkWell(
-            child: SizedBox(
-              width: 300.w,
-              height: 300.w,
-              child: const RiveAnimation.network(
-                'https://resource-qingchen.oss-cn-hangzhou.aliyuncs.com/h5/test.riv',
-              ),
-            ),
-            onTap: () {
-            },
-          )
+          // InkWell(
+          //   child: SizedBox(
+          //     width: 300.w,
+          //     height: 300.w,
+          //     child: const RiveAnimation.network(
+          //       'https://resource-qingchen.oss-cn-hangzhou.aliyuncs.com/h5/test.riv',
+          //     ),
+          //   ),
+          //   onTap: () {
+          //   },
+          // )
         ],
       ),
     ));

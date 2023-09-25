@@ -226,6 +226,7 @@ class RecommendView extends GetView<Home> {
   }
 
   Widget _buildArtistsList() {
+    return SizedBox();
     return Obx(() {
       return controller.mediaItem.value.extras!['artist'] != null?ListView.builder(
         itemBuilder: (context, index) => InkWell(

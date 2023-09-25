@@ -98,6 +98,7 @@ class SimpleExtendedImageState extends State<SimpleExtendedImage> {
         visible: widget.shape != BoxShape.circle,
         replacement: ClipOval(
           child: CachedNetworkImage(
+            httpHeaders: const {'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36 Edg/117.0.2045.35'},
             imageUrl: widget.url,
             width: widget.width,
             height: widget.height,
@@ -107,6 +108,7 @@ class SimpleExtendedImageState extends State<SimpleExtendedImage> {
         child: ClipRRect(
           borderRadius: widget.borderRadius ?? BorderRadius.circular(0),
           child: CachedNetworkImage(
+            httpHeaders: const {'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36 Edg/117.0.2045.35'},
             imageUrl: widget.url,
             width: widget.width,
             height: widget.height,
