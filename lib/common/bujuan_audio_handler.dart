@@ -352,16 +352,21 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
   }
 
   void _setCurrIndex({bool next = false}) {
-    if (_audioServiceRepeatMode == AudioServiceRepeatMode.one) return;
-    var list = _audioServiceRepeatMode == AudioServiceRepeatMode.none ? _playListShut : _playList;
-    if (next ? _curIndex >= list.length - 1 : _curIndex <= 0) {
-      next ? _curIndex = 0 : _curIndex = list.length - 1;
-    } else {
-      next ? _curIndex++ : _curIndex--;
-    }
-    _box.put(playByIndex, _curIndex);
+   if (_audioServiceRepeatMode == AudioServiceRepeatMode.one) return;
 
-    // StorageUtil().setInt(playByIndex, _curIndex);
+  var list = _audioServiceRepeatMode == AudioServiceRepeatMode.none ? _playListShut : _playList;
+
+  // 计算新的索引值
+  _curIndex = next ? _curIndex + 1 : _curIndex - 1;
+
+  // 如果超出索引范围，循环到列表的开始或结尾
+  if (_curIndex >= list.length) {
+    _curIndex = 0;
+  } else if (_curIndex < 0) {
+    _curIndex = list.length - 1;
+  }
+
+  _box.put(playByIndex, _curIndex);
   }
 
   @override
