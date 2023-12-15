@@ -37,11 +37,11 @@ dependencies:
   get: ^4.6.5
   encrypt: ^5.0.1
   path_provider: ^2.0.15
-  flutter_screenutil: ^5.8.4
-  extended_image: ^8.0.2
-  palette_generator: ^0.3.3+2
-  just_audio: ^0.9.34
-  audio_service: ^0.18.10
+  flutter_screenutil: ^5.9.0
+  extended_image: ^8.2.0
+  palette_generator: ^0.3.3+3
+  just_audio: ^0.9.36
+  audio_service: ^0.18.12
   get_it: ^7.6.0
   dio: ^5.2.1+1
   qr_flutter: ^4.1.0
@@ -56,7 +56,7 @@ dependencies:
   auto_route: ^5.0.4
   flutter_svg: ^2.0.7
   fluttertoast: ^8.2.2
-  cached_network_image: ^3.2.3
+  cached_network_image: ^3.3.0
   rive: ^0.11.3
   lottie: ^2.4.0
   pull_to_refresh: ^2.0.0
@@ -71,8 +71,8 @@ dependencies:
   hive_flutter: ^1.1.0
   flutter_zoom_drawer: ^3.1.1
   window_manager: ^0.3.4
-  flutter_rust_bridge: ^1.77.1
-  ffi: ^2.0.2
+#  flutter_rust_bridge: ^1.77.1
+#  ffi: ^2.0.2
   android_intent_plus: ^4.0.1
 
 

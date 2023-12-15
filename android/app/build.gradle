@@ -34,7 +34,7 @@ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
     compileSdkVersion 33
-    ndkVersion flutter.ndkVersion
+//    ndkVersion flutter.ndkVersion
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -96,32 +96,32 @@ dependencies {
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'org.altbeacon:android-beacon-library:2.19.3'
 }
-[
-        Debug: null,
-        Profile: '--release',
-        Release: '--release'
-].each {
-    def taskPostfix = it.key
-    def profileMode = it.value
-    tasks.whenTaskAdded { task ->
-        if (task.name == "javaPreCompile$taskPostfix") {
-            task.dependsOn "cargoBuild$taskPostfix"
-        }
-    }
-    tasks.register("cargoBuild$taskPostfix", Exec) {
-        workingDir "../../rust/native"
-        environment ANDROID_NDK_HOME: "$ANDROID_NDK"
-        commandLine 'cargo', 'ndk',
-                // the 2 ABIs below are used by real Android devices
-                '-t', 'armeabi-v7a',
-                '-t', 'arm64-v8a',
-                // the below 2 ABIs are usually used for Android simulators,
-                // add or remove these ABIs as needed.
-//                '-t', 'x86',
-//                '-t', 'x86_64',
-                '-o', '../../android/app/src/main/jniLibs', 'build'
-        if (profileMode != null) {
-            args profileMode
-        }
-    }
-}
+//[
+//        Debug: null,
+//        Profile: '--release',
+//        Release: '--release'
+//].each {
+//    def taskPostfix = it.key
+//    def profileMode = it.value
+//    tasks.whenTaskAdded { task ->
+//        if (task.name == "javaPreCompile$taskPostfix") {
+//            task.dependsOn "cargoBuild$taskPostfix"
+//        }
+//    }
+//    tasks.register("cargoBuild$taskPostfix", Exec) {
+//        workingDir "../../rust/native"
+//        environment ANDROID_NDK_HOME: "$ANDROID_NDK"
+//        commandLine 'cargo', 'ndk',
+//                // the 2 ABIs below are used by real Android devices
+//                '-t', 'armeabi-v7a',
+//                '-t', 'arm64-v8a',
+//                // the below 2 ABIs are usually used for Android simulators,
+//                // add or remove these ABIs as needed.
+////                '-t', 'x86',
+////                '-t', 'x86_64',
+//                '-o', '../../android/app/src/main/jniLibs', 'build'
+//        if (profileMode != null) {
+//            args profileMode
+//        }
+//    }
+//}

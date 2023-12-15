@@ -14,7 +14,6 @@ import 'package:get_it/get_it.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:just_audio/just_audio.dart';
 
-import '../ffi.dart';
 import 'audio_player_handler.dart';
 import 'constants/key.dart';
 import 'constants/platform_utils.dart';
@@ -303,14 +302,15 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
   }
 
   Future<String> getUnblockUrl(MediaItem song) async {
-    try {
-      String url = await api.getUnblockNeteaseMusicUrl(songName: song.title, artistsName: song.artist ?? '');
-      print('============UnblockNeteaseMusic启动成功=============${song.title}==============$url');
-      return url;
-    } catch (e) {
-      print('===========rust获取失败===========');
-      return '';
-    }
+    // try {
+    //   String url = await api.getUnblockNeteaseMusicUrl(songName: song.title, artistsName: song.artist ?? '');
+    //   print('============UnblockNeteaseMusic启动成功=============${song.title}==============$url');
+    //   return url;
+    // } catch (e) {
+    //   print('===========rust获取失败===========');
+    //   return '';
+    // }
+    return '';
   }
 
   @override
