@@ -4,22 +4,25 @@ import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/common/bujuan_audio_handler.dart';
 import 'package:bujuan/common/constants/other.dart';
 import 'package:bujuan/common/constants/platform_utils.dart';
+import 'package:bujuan/pages/a_rebuild/home/home.dart';
+import 'package:bujuan/pages/a_rebuild/outside/outside.dart';
+import 'package:bujuan/pages/a_rebuild/user/user.dart';
 import 'package:bujuan/pages/album/controller.dart';
-import 'package:bujuan/pages/home/home_binding.dart';
 import 'package:bujuan/pages/index/cound_controller.dart';
 import 'package:bujuan/pages/index/index_controller.dart';
 import 'package:bujuan/pages/play_list/playlist_controller.dart';
 import 'package:bujuan/pages/playlist_manager/playlist_manager_controller.dart';
-import 'package:bujuan/pages/playlist_manager/playlist_manager_view.dart';
 import 'package:bujuan/pages/user/user_controller.dart';
 import 'package:bujuan/routes/router.gr.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:window_manager/window_manager.dart';
@@ -31,8 +34,7 @@ main() async {
   WidgetsFlutterBinding.ensureInitialized();
   bool land = PlatformUtils.isMacOS || PlatformUtils.isWindows || OtherUtils.isPad();
   final getIt = GetIt.instance;
-  await _initAudioServer(getIt);
-  final rootRouter = getIt<RootRouter>();
+  // await _initAudioServer(getIt);
   if (PlatformUtils.isAndroid) {
     await FlutterDisplayMode.setHighRefreshRate();
     SystemUiOverlayStyle systemUiOverlayStyle = const SystemUiOverlayStyle(
@@ -46,27 +48,49 @@ main() async {
   if (land) {
     SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
   }
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge).then((value) => runApp(ScreenUtilInit(
-        designSize: !land ? const Size(750, 1334) : const Size(2339, 1080),
-        minTextAdapt: true,
-        splitScreenMode: true,
-        builder: (BuildContext context, Widget? child) {
-          HomeBinding().dependencies();
-          return GetMaterialApp.router(
-            title: "Bujuan",
-            theme: AppTheme.light,
-            darkTheme: AppTheme.dark,
-            // showPerformanceOverlay: true,
-            // checkerboardOffscreenLayers: true,
-            // checkerboardRasterCacheImages: true,
-            themeMode: ThemeMode.system,
-            routerDelegate: rootRouter.delegate(navigatorObservers: () => [MyObserver()]),
-            routeInformationParser: rootRouter.defaultRouteParser(),
-            debugShowCheckedModeBanner: false,
-            builder: (_, router) => MediaQuery(data: MediaQuery.of(_).copyWith(textScaleFactor: 1.0), child: router!),
-          );
-        },
-      )));
+  //外部
+  final rootNavigatorKey = GlobalKey<NavigatorState>();
+  final shellNavigatorKey = GlobalKey<NavigatorState>();
+  final router = GoRouter(
+    navigatorKey: rootNavigatorKey,
+    routes: [
+      ShellRoute(navigatorKey: shellNavigatorKey, builder: (BuildContext context, GoRouterState state, Widget child) => Outside(child: child), routes: [
+        GoRoute(path: '/', builder: (c, s) => const HomePage()),
+        GoRoute(path: '/user', builder: (c, s) => const User()),
+      ])
+    ],
+  );
+  runApp(ProviderScope(
+      child: ScreenUtilInit(
+    designSize: const Size(750, 1334),
+    minTextAdapt: true,
+    splitScreenMode: true,
+    builder: (context, child) => MaterialApp.router(
+      routerConfig: router,
+      // showPerformanceOverlay: true,
+    ),
+  )));
+  // SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge).then((value) => runApp(ScreenUtilInit(
+  //       designSize: !land ? const Size(750, 1334) : const Size(2339, 1080),
+  //       minTextAdapt: true,
+  //       splitScreenMode: true,
+  //       builder: (BuildContext context, Widget? child) {
+  //         HomeBinding().dependencies();
+  //         return GetMaterialApp.router(
+  //           title: "Bujuan",
+  //           theme: AppTheme.light,
+  //           darkTheme: AppTheme.dark,
+  //           // showPerformanceOverlay: true,
+  //           // checkerboardOffscreenLayers: true,
+  //           // checkerboardRasterCacheImages: true,
+  //           themeMode: ThemeMode.system,
+  //           routerDelegate: rootRouter.delegate(navigatorObservers: () => [MyObserver()]),
+  //           routeInformationParser: rootRouter.defaultRouteParser(),
+  //           debugShowCheckedModeBanner: false,
+  //           builder: (_, router) => MediaQuery(data: MediaQuery.of(_).copyWith(textScaleFactor: 1.0), child: router!),
+  //         );
+  //       },
+  //     )));
 }
 
 class MyObserver extends AutoRouterObserver {

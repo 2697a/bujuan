@@ -74,13 +74,16 @@ dependencies:
 #  flutter_rust_bridge: ^1.77.1
 #  ffi: ^2.0.2
   android_intent_plus: ^4.0.1
+  flutter_riverpod: ^2.4.10
+  go_router: ^13.2.0
+  riverpod_annotation: ^2.3.4
 
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   auto_route_generator: 5.0.3
-  build_runner:
+  build_runner: ^2.4.8
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -89,6 +92,7 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
   ffigen: ^8.0.2
+  custom_lint: ^0.6.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

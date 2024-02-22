@@ -13,6 +13,7 @@ import 'package:bujuan/pages/setting/user_setting_view.dart';
 import 'package:bujuan/pages/talk/talk_view.dart';
 import 'package:bujuan/pages/today/today_view.dart';
 import 'package:bujuan/pages/user/user_view.dart';
+import 'package:go_router/go_router.dart';
 
 import '../pages/album/album_details.dart';
 import '../pages/artists/artists_view.dart';
@@ -146,3 +147,4 @@ class $RootRouter {}
 //     )
 //   ],
 // );
+
