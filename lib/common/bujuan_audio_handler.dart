@@ -197,10 +197,10 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
 
   @override
   Future<void> changeQueueLists(List<MediaItem> list, {int index = 0, bool init = false}) async {
-    if (!init && Home.to.fm.value) {
-      Home.to.fm.value = false;
-      _box.put(fmSp, false);
-    }
+    // if (!init && Home.to.fm.value) {
+    //   Home.to.fm.value = false;
+    //   _box.put(fmSp, false);
+    // }
     _curIndex = index;
     _playList
       ..clear()
@@ -245,8 +245,8 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
 
   @override
   Future<void> readySongUrl({bool isNext = true, bool playIt = true}) async {
-    bool high = !playIt ? _box.get(highSong) ?? false : Home.to.high.value;
-    bool cache = !playIt ? _box.get(cacheSp) ?? false : Home.to.cache.value;
+    bool high = false;
+    bool cache = false;
     // 这里是获取歌曲url
     if (queue.value.isEmpty) return;
     var song = queue.value[_curIndex];

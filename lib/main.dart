@@ -1,6 +1,5 @@
 import 'package:audio_service/audio_service.dart';
 
-import 'package:auto_route/auto_route.dart';
 import 'package:bujuan/common/bujuan_audio_handler.dart';
 import 'package:bujuan/common/constants/other.dart';
 import 'package:bujuan/common/constants/platform_utils.dart';
@@ -10,6 +9,7 @@ import 'package:bujuan/pages/a_rebuild/user/user.dart';
 import 'package:bujuan/pages/album/controller.dart';
 import 'package:bujuan/pages/index/cound_controller.dart';
 import 'package:bujuan/pages/index/index_controller.dart';
+import 'package:bujuan/pages/login/login.dart';
 import 'package:bujuan/pages/play_list/playlist_controller.dart';
 import 'package:bujuan/pages/playlist_manager/playlist_manager_controller.dart';
 import 'package:bujuan/pages/user/user_controller.dart';
@@ -34,7 +34,7 @@ main() async {
   WidgetsFlutterBinding.ensureInitialized();
   bool land = PlatformUtils.isMacOS || PlatformUtils.isWindows || OtherUtils.isPad();
   final getIt = GetIt.instance;
-  // await _initAudioServer(getIt);
+  await _initAudioServer(getIt);
   if (PlatformUtils.isAndroid) {
     await FlutterDisplayMode.setHighRefreshRate();
     SystemUiOverlayStyle systemUiOverlayStyle = const SystemUiOverlayStyle(
@@ -43,7 +43,7 @@ main() async {
       systemNavigationBarContrastEnforced: false,
     );
      SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
-    await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge,overlays: [SystemUiOverlay.bottom]);
+    await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge,overlays: [SystemUiOverlay.top]);
   }
   //如果满足横屏条件，强制屏幕为横屏
   if (land) {
@@ -58,6 +58,7 @@ main() async {
       ShellRoute(navigatorKey: shellNavigatorKey, builder: (BuildContext context, GoRouterState state, Widget child) => Outside(child: child), routes: [
         GoRoute(path: '/', builder: (c, s) => const HomePage()),
         GoRoute(path: '/user', builder: (c, s) => const User()),
+        GoRoute(path: '/login', builder: (c, s) =>  const LoginViewPage()),
       ])
     ],
   );
@@ -69,7 +70,7 @@ main() async {
     builder: (context, child) => MaterialApp.router(
       theme: AppTheme.dark,
       routerConfig: router,
-      showPerformanceOverlay: true,
+      // showPerformanceOverlay: true,
     ),
   )));
   // SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge).then((value) => runApp(ScreenUtilInit(
@@ -95,64 +96,64 @@ main() async {
   //     )));
 }
 
-class MyObserver extends AutoRouterObserver {
-  _clearOrPutController(String name, {bool del = false}) {
-    if (name.isEmpty) return;
-    switch (name) {
-      case 'AlbumView':
-        del ? Get.delete<CloudController>() : Get.lazyPut<CloudController>(() => CloudController());
-        break;
-      case 'MainView':
-        del ? Get.delete<IndexController>() : Get.lazyPut<IndexController>(() => IndexController());
-        break;
-      case 'UserView':
-        del ? Get.delete<UserController>() : Get.lazyPut<UserController>(() => UserController());
-        break;
-      case 'PlayListView':
-        del ? Get.delete<PlayListController>() : Get.lazyPut<PlayListController>(() => PlayListController());
-        break;
-      case 'AlbumDetails':
-        del ? Get.delete<AlbumController>() : Get.lazyPut<AlbumController>(() => AlbumController());
-        break;
-      case 'PlaylistManagerView':
-        del ? Get.delete<PlaylistManager>() : Get.lazyPut<PlaylistManager>(() => PlaylistManager());
-        break;
-    }
-  }
-
-  @override
-  void didPush(Route route, Route? previousRoute) {
-    super.didPush(route, previousRoute);
-    _clearOrPutController(route.settings.name ?? '');
-    print('New route pushed: ${route.settings.name}');
-  }
-
-  @override
-  void didRemove(Route route, Route? previousRoute) {
-    // TODO: implement didRemove
-    super.didRemove(route, previousRoute);
-    _clearOrPutController(route.settings.name ?? '', del: true);
-  }
-
-  @override
-  void didPop(Route route, Route? previousRoute) {
-    // TODO: implement didPop
-    super.didPop(route, previousRoute);
-    _clearOrPutController(route.settings.name ?? '', del: true);
-  }
-
-  @override
-  void didReplace({Route? newRoute, Route? oldRoute}) {
-    super.didReplace(newRoute: newRoute, oldRoute: oldRoute);
-  }
-
-  // only override to observer tab routes
-  @override
-  void didInitTabRoute(TabPageRoute route, TabPageRoute? previousRoute) {}
-
-  @override
-  void didChangeTabRoute(TabPageRoute route, TabPageRoute previousRoute) {}
-}
+// class MyObserver extends AutoRouterObserver {
+//   _clearOrPutController(String name, {bool del = false}) {
+//     if (name.isEmpty) return;
+//     switch (name) {
+//       case 'AlbumView':
+//         del ? Get.delete<CloudController>() : Get.lazyPut<CloudController>(() => CloudController());
+//         break;
+//       case 'MainView':
+//         del ? Get.delete<IndexController>() : Get.lazyPut<IndexController>(() => IndexController());
+//         break;
+//       case 'UserView':
+//         del ? Get.delete<UserController>() : Get.lazyPut<UserController>(() => UserController());
+//         break;
+//       case 'PlayListView':
+//         del ? Get.delete<PlayListController>() : Get.lazyPut<PlayListController>(() => PlayListController());
+//         break;
+//       case 'AlbumDetails':
+//         del ? Get.delete<AlbumController>() : Get.lazyPut<AlbumController>(() => AlbumController());
+//         break;
+//       case 'PlaylistManagerView':
+//         del ? Get.delete<PlaylistManager>() : Get.lazyPut<PlaylistManager>(() => PlaylistManager());
+//         break;
+//     }
+//   }
+//
+//   @override
+//   void didPush(Route route, Route? previousRoute) {
+//     super.didPush(route, previousRoute);
+//     _clearOrPutController(route.settings.name ?? '');
+//     print('New route pushed: ${route.settings.name}');
+//   }
+//
+//   @override
+//   void didRemove(Route route, Route? previousRoute) {
+//     // TODO: implement didRemove
+//     super.didRemove(route, previousRoute);
+//     _clearOrPutController(route.settings.name ?? '', del: true);
+//   }
+//
+//   @override
+//   void didPop(Route route, Route? previousRoute) {
+//     // TODO: implement didPop
+//     super.didPop(route, previousRoute);
+//     _clearOrPutController(route.settings.name ?? '', del: true);
+//   }
+//
+//   @override
+//   void didReplace({Route? newRoute, Route? oldRoute}) {
+//     super.didReplace(newRoute: newRoute, oldRoute: oldRoute);
+//   }
+//
+//   // only override to observer tab routes
+//   @override
+//   void didInitTabRoute(TabPageRoute route, TabPageRoute? previousRoute) {}
+//
+//   @override
+//   void didChangeTabRoute(TabPageRoute route, TabPageRoute previousRoute) {}
+// }
 
 Future<void> _initAudioServer(getIt) async {
   getIt.registerSingleton<RootRouter>(RootRouter());

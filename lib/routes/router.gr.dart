@@ -66,12 +66,12 @@ class RootRouter extends _i23.RootStackRouter {
         ),
       );
     },
-    LoginView.name: (routeData) {
-      return _i23.MaterialPageX<dynamic>(
-        routeData: routeData,
-        child: const _i3.LoginView(),
-      );
-    },
+    // LoginView.name: (routeData) {
+    //   return _i23.MaterialPageX<dynamic>(
+    //     routeData: routeData,
+    //     child: const _i3.LoginView(),
+    //   );
+    // },
     TalkView.name: (routeData) {
       return _i23.MaterialPageX<dynamic>(
         routeData: routeData,

@@ -39,6 +39,7 @@ class AppTheme {
       appBarTheme: const AppBarTheme(backgroundColor: Color(0xFFF5F3F3), foregroundColor: primaryDark, elevation: 0));
 
   static ThemeData dark = ThemeData.dark().copyWith(
+    useMaterial3: false,
       colorScheme: ThemeData.dark().colorScheme.copyWith(
             primary: primaryDark,
             onPrimary: onPrimaryDark,

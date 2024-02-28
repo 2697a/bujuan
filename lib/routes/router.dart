@@ -112,7 +112,6 @@ abstract class _Paths {
       AutoRoute(path: Routes.playlistManager, page: PlaylistManagerView),
     ]),
     AutoRoute(path: Routes.splash, page: SplashPage, initial: true, deferredLoading: true),
-    AutoRoute(path: Routes.login, page: LoginView),
     AutoRoute(path: Routes.talk, page: TalkView),
     AutoRoute(path: Routes.setting, page: SettingView),
     AutoRoute(path: Routes.guide, page: GuideView),

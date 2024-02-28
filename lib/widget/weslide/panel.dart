@@ -57,6 +57,8 @@ class SlidingUpPanel extends StatefulWidget {
   /// The height of the sliding panel when fully open.
   final double maxHeight;
 
+  final double footerHeight;
+
   /// A point between [minHeight] and [maxHeight] that the panel snaps to
   /// while animating. A fast swipe on the panel will disregard this point
   /// and go directly to the open/close position. This value is represented as a
@@ -167,6 +169,7 @@ class SlidingUpPanel extends StatefulWidget {
         this.collapsed,
         this.minHeight = 100.0,
         this.maxHeight = 500.0,
+        this.footerHeight = 65,
         this.snapPoint,
         this.border,
         this.borderRadius,
@@ -214,7 +217,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
   late final ScrollController _sc;
 
   bool _scrollingEnabled = false;
-  VelocityTracker _vt = new VelocityTracker.withKind(PointerDeviceKind.touch);
+  final VelocityTracker _vt = VelocityTracker.withKind(PointerDeviceKind.touch);
 
   bool _isPanelVisible = true;
 
@@ -362,15 +365,15 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
 
                 // footer
                 widget.footer != null
-                    ? Positioned(
+                    ? AnimatedBuilder(animation: _ac, builder: (context, child) => Positioned(
                     top: widget.slideDirection == SlideDirection.UP
                         ? null
                         : 0.0,
                     bottom:
                     widget.slideDirection == SlideDirection.DOWN
                         ? null
-                        : 0.0,
-                    child: widget.footer ?? const SizedBox())
+                        : -(widget.footerHeight+MediaQuery.of(context).padding.bottom) *_ac.value,
+                    child: widget.footer ?? const SizedBox()))
                     : Container(),
 
                 // header
