@@ -55,6 +55,11 @@
 - ☑️Windows
 - ☑️Linux
 
+### Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=2697a/bujuan&type=Date)](https://star-history.com/#2697a/bujuan&Date)
+
+
 
 
 ### 代码部署编译
