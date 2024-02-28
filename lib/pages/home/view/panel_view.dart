@@ -34,14 +34,14 @@ class PanelView extends GetView<Home> {
       },
       color: Colors.transparent,
       body: _buildDefaultBody(context),
-      panel: Container(
-        width: 750.w,
-        padding: EdgeInsets.only(top: controller.panelMobileMinSize + controller.panelAlbumPadding * 2 + bottomHeight),
-        child: Obx(() => IndexedStack(
-              index: controller.selectIndex.value,
-              children: controller.pages,
-            )),
-      ),
+      // panel: Container(
+      //   width: 750.w,
+      //   padding: EdgeInsets.only(top: controller.panelMobileMinSize + controller.panelAlbumPadding * 2 + bottomHeight),
+      //   child: Obx(() => IndexedStack(
+      //         index: controller.selectIndex.value,
+      //         children: controller.pages,
+      //       )),
+      // ),
       header: _buildBottom(bottomHeight, context),
       boxShadow: const [BoxShadow(blurRadius: 8.0, color: Color.fromRGBO(0, 0, 0, 0.05))],
       maxHeight: Get.height - (controller.panelMobileMinSize + MediaQuery.of(context).padding.top + controller.panelAlbumPadding * 4),

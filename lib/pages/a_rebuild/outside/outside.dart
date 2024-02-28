@@ -18,10 +18,10 @@ class Outside extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    print('object===============outslider');
     return Scaffold(
       body: ZoomDrawer(
         dragOffset: 260.w,
-        menuBackgroundColor: Colors.green,
         slideWidth: 750.w * .7,
         menuScreenWidth: 750.w * .7,
         mainScreenScale: 0.2,
@@ -36,14 +36,22 @@ class Outside extends ConsumerWidget {
         menuScreen: const MenuPage(),
         mainScreen: SlidingUpPanel(
           body: child,
+          boxShadow: const [],
           color: Colors.transparent,
           parallaxEnabled: true,
           parallaxOffset: .03,
           maxHeight: MediaQuery.of(context).size.height,
-          minHeight: 150.w,
+          minHeight: 120.w+MediaQuery.of(context).padding.bottom,
           onPanelSlide: (double position) => ref.refresh(slideProvider.notifier).state = position,
-          panel: const Panel(),
+          onPanelOpened: () => ref.refresh(isOpen.notifier).state = true,
+          onPanelClosed: () => ref.refresh(isOpen.notifier).state = false,
+          panelBuilder:()=>const Panel(),
           controller: ref.read(panelController),
+          disableDraggableOnScrolling: false,
+          footer: IgnoreDraggableWidget(child: SizedBox(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).padding.bottom,
+          )),
         ),
       ),
     );

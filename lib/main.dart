@@ -42,7 +42,8 @@ main() async {
       systemNavigationBarColor: Colors.transparent,
       systemNavigationBarContrastEnforced: false,
     );
-    SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
+     SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
+    await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge,overlays: [SystemUiOverlay.bottom]);
   }
   //如果满足横屏条件，强制屏幕为横屏
   if (land) {
@@ -66,6 +67,7 @@ main() async {
     minTextAdapt: true,
     splitScreenMode: true,
     builder: (context, child) => MaterialApp.router(
+      theme: AppTheme.dark,
       routerConfig: router,
       // showPerformanceOverlay: true,
     ),

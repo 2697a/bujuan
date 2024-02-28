@@ -87,7 +87,7 @@ class HomeView extends GetView<Home> {
                   controller: controller.panelControllerHome,
                   onPanelSlide: (value) => controller.changeSlidePosition(value),
                   boxShadow: const [BoxShadow(blurRadius: 8.0, color: Color.fromRGBO(0, 0, 0, 0.05))],
-                  panel: const PanelView(),
+                  // panel: const PanelView(),
                   body: const BodyView(),
                   minHeight: controller.panelMobileMinSize + bottomHeight + controller.panelAlbumPadding * 2,
                   maxHeight: Get.height,

@@ -41,6 +41,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "4.0.1"
+  animated_background:
+    dependency: "direct main"
+    description:
+      name: animated_background
+      sha256: "24b05a6dca2cb0231b011f9e8fd2e9d8060faac08a78cf0643915bb7d6e9b03b"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.0.0"
   animations:
     dependency: transitive
     description:
