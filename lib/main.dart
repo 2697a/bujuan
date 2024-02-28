@@ -69,7 +69,7 @@ main() async {
     builder: (context, child) => MaterialApp.router(
       theme: AppTheme.dark,
       routerConfig: router,
-      // showPerformanceOverlay: true,
+      showPerformanceOverlay: true,
     ),
   )));
   // SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge).then((value) => runApp(ScreenUtilInit(
