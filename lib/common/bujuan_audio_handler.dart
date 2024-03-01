@@ -335,13 +335,13 @@ class BujuanAudioHandler extends BaseAudioHandler with SeekHandler, QueueHandler
     _setCurrIndex(next: true);
     print('下一首=======$_curIndex');
     await readySongUrl();
-    if (Home.to.fm.value) {
-      // 如果是私人fm
-      if (_curIndex == queue.value.length - 1) {
-        // 判断如果是最后一首
-        Home.to.getFmSongList();
-      }
-    }
+    // if (Home.to.fm.value) {
+    //   // 如果是私人fm
+    //   if (_curIndex == queue.value.length - 1) {
+    //     // 判断如果是最后一首
+    //     Home.to.getFmSongList();
+    //   }
+    // }
   }
 
   @override

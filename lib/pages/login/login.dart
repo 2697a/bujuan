@@ -53,15 +53,15 @@ class _LoginViewStateP extends State<LoginViewPage> {
     } else {
       neteaseAccountInfoWrap = await NeteaseMusicApi().loginCellPhone(phone.text, pass.text);
     }
-    if (mounted) Navigator.of(context).pop();
     if (neteaseAccountInfoWrap.code != 200) {
       WidgetUtil.showToast(neteaseAccountInfoWrap.message ?? '未知错误');
       return;
     }
-    UserController.to.getUserState();
+    // UserController.to.getUserState();
     try {
       NeteaseAccountInfoWrap neteaseAccountInfoWrap = await NeteaseMusicApi().loginAccountInfo();
       if (neteaseAccountInfoWrap.code == 200 && neteaseAccountInfoWrap.profile != null) {
+        print('object=====================');
        _box.put(loginData, jsonEncode(neteaseAccountInfoWrap.toJson()));
       } else {
         WidgetUtil.showToast('登录失效,请重新登录');

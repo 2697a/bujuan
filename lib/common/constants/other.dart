@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:audio_service/audio_service.dart';
 import 'package:bujuan/common/constants/icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:date_format/date_format.dart';
@@ -12,6 +14,8 @@ import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:palette_generator/palette_generator.dart';
 
+import '../netease_api/src/api/play/bean.dart';
+import 'enmu.dart';
 import 'images.dart';
 
 class OtherUtils {
@@ -53,6 +57,26 @@ class OtherUtils {
   static bool isPad(){
       final data = MediaQueryData.fromView(PlatformDispatcher.instance.implicitView!);
       return data.size.shortestSide >= 600;
+  }
+
+  static List<MediaItem> song2ToMedia(List<Song2> songs) {
+    return songs
+        .map((e) => MediaItem(
+        id: e.id,
+        duration: Duration(milliseconds: e.dt ?? 0),
+        artUri: Uri.parse('${e.al?.picUrl ?? ''}?param=500y500'),
+        extras: {
+          'type': MediaType.playlist.name,
+          'image': e.al?.picUrl ?? '',
+          'artist': (e.ar ?? []).map((e) => jsonEncode(e.toJson())).toList().join(' / '),
+          'album': jsonEncode(e.al?.toJson()),
+          'mv': e.mv,
+          'fee': e.fee
+        },
+        title: e.name ?? "",
+        album: e.al?.name,
+        artist: (e.ar ?? []).map((e) => e.name).toList().join(' / ')))
+        .toList();
   }
 }
 

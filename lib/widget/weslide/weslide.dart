@@ -432,11 +432,11 @@ class _WeSlideState extends State<WeSlide> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     //Get MediaQuery Sizes
-    final _height = MediaQuery.of(context).size.height;
-    final _width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
 
     return Container(
-      height: _height,
+      height: height,
       color: widget.backgroundColor, // Same as body,
       child: Stack(
         alignment: Alignment.bottomCenter,
@@ -456,8 +456,8 @@ class _WeSlideState extends State<WeSlide> with TickerProviderStateMixin {
                       topRight: Radius.circular(_bodyBorderRadius.value),
                     ),
                     child: SizedBox(
-                      height: _height - _getBodyHeight() - _getFooterOffset(),
-                      width: widget.bodyWidth ?? _width,
+                      height: height - _getBodyHeight() - _getFooterOffset(),
+                      width: widget.bodyWidth ?? width,
                       child: child,
                     ),
                   ),
@@ -517,7 +517,7 @@ class _WeSlideState extends State<WeSlide> with TickerProviderStateMixin {
                   onVerticalDragEnd: _handleVerticalEnd,
                   child: AnimatedContainer(
                     height: widget.panelMaxSize,
-                    width: widget.panelWidth ?? _width,
+                    width: widget.panelWidth ?? width,
                     duration: const Duration(milliseconds: 200),
                     child: ClipRRect(
                       borderRadius: BorderRadius.only(
@@ -534,7 +534,7 @@ class _WeSlideState extends State<WeSlide> with TickerProviderStateMixin {
               children: <Widget>[
                 /** Panel widget **/
                 SizedBox(
-                  height: _height - _getPanelSize(),
+                  height: height - _getPanelSize(),
                   child: widget.panel!,
                 ),
                 /** Panel Header widget **/

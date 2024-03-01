@@ -45,6 +45,7 @@ class Thebrioflashynavbar extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: bg,
+        // gradient: LinearGradient(colors: [Theme.of(context).scaffoldBackgroundColor.withOpacity(.92),Theme.of(context).scaffoldBackgroundColor]),
         boxShadow: showElevation ? shadows : [],
       ),
       child: SafeArea(

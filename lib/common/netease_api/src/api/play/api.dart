@@ -332,7 +332,7 @@ mixin ApiPlay {
 
   /// 新歌速递
   /// [areaId] 全部:0 华语:7 欧美:96 日本:8 韩国:16 默认0
-  Future<SongListWrap2> newSongList({String areaId = '0'}) {
+  Future<SongListWrap2> newSongList({String areaId = '8'}) {
     return Https.dioProxy.postUri(newSongListDioMetaData(areaId: areaId)).then((Response value) {
       return SongListWrap2.fromJson(value.data);
     });

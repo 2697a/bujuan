@@ -56,10 +56,10 @@ class AppTheme {
       cardColor: const Color(0xFFECEBEB),
       primaryColor: const Color(0xffe56260),
       bottomAppBarColor: onSurfaceDark,
-      scaffoldBackgroundColor: const Color(0xFF2C2B2B),
+      scaffoldBackgroundColor: const Color(0xff121212),
       appBarTheme: const AppBarTheme(
           systemOverlayStyle: SystemUiOverlayStyle(statusBarBrightness: Brightness.light, statusBarIconBrightness: Brightness.light),
-          backgroundColor: Color(0xFF2C2B2B),
+          backgroundColor:  Color(0xff121212),
           foregroundColor: primary,
           elevation: 0));
 
@@ -70,14 +70,14 @@ class AppTheme {
   static const onPrimary = Color(0xFF1c1d1f);
 
   //disabled or inactive background
-  static const surfaceDark = Color(0xFF333436);
-  static const onSurfaceDark = Color(0xFF2C2B2B);
+  static const surfaceDark = Color(0xff121212);
+  static const onSurfaceDark = Color(0xff121212);
   static const surface = Color(0xff787878);
   static const onSurface = Color(0xFFAEAEAE);
 
   //accent color
   //TODO change blue
-  static const secondary = Color(0xFF1C1B1B);
+  static const secondary = Color(0xff121212);
   static const onSecondary = Colors.white;
 
   //charge colors

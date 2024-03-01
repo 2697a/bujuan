@@ -3,8 +3,10 @@ import 'package:audio_service/audio_service.dart';
 import 'package:bujuan/common/bujuan_audio_handler.dart';
 import 'package:bujuan/common/constants/other.dart';
 import 'package:bujuan/common/constants/platform_utils.dart';
+import 'package:bujuan/common/netease_api/netease_music_api.dart';
 import 'package:bujuan/pages/a_rebuild/home/home.dart';
 import 'package:bujuan/pages/a_rebuild/outside/outside.dart';
+import 'package:bujuan/pages/a_rebuild/playlist/playlist.dart';
 import 'package:bujuan/pages/a_rebuild/user/user.dart';
 import 'package:bujuan/pages/album/controller.dart';
 import 'package:bujuan/pages/index/cound_controller.dart';
@@ -42,8 +44,8 @@ main() async {
       systemNavigationBarColor: Colors.transparent,
       systemNavigationBarContrastEnforced: false,
     );
-     SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
-    await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge,overlays: [SystemUiOverlay.top]);
+    SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
+    await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge, overlays: [SystemUiOverlay.top]);
   }
   //如果满足横屏条件，强制屏幕为横屏
   if (land) {
@@ -56,9 +58,12 @@ main() async {
     navigatorKey: rootNavigatorKey,
     routes: [
       ShellRoute(navigatorKey: shellNavigatorKey, builder: (BuildContext context, GoRouterState state, Widget child) => Outside(child: child), routes: [
-        GoRoute(path: '/', builder: (c, s) => const HomePage()),
+        GoRoute(path: '/', builder: (c, s) => const HomePage(),routes: [
+          GoRoute(path: 'playlist', builder: (c, s) => PlayList(s.extra! as Play)),
+        ]),
         GoRoute(path: '/user', builder: (c, s) => const User()),
-        GoRoute(path: '/login', builder: (c, s) =>  const LoginViewPage()),
+        GoRoute(path: '/login', builder: (c, s) => const LoginViewPage()),
+
       ])
     ],
   );

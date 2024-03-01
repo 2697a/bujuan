@@ -158,7 +158,7 @@ class _WheelChooserState extends State<WheelChooser> {
   Widget build(BuildContext context) {
     return RotatedBox(
         quarterTurns: widget.horizontal ? 3 : 0,
-        child: Container(
+        child: SizedBox(
             height: widget.listHeight ?? double.infinity,
             width: widget.listWidth ?? double.infinity,
             child: _getListWheelScrollView()));
@@ -171,7 +171,7 @@ class _WheelChooserState extends State<WheelChooser> {
           perspective: widget.perspective,
           squeeze: widget.squeeze,
           controller: fixedExtentScrollController,
-          physics: FixedExtentScrollPhysics(),
+          physics: const FixedExtentScrollPhysics(),
           childDelegate: ListWheelChildLoopingListDelegate(
               children: _convertListItems() ?? _buildListItems()),
           useMagnifier: true,
@@ -205,8 +205,8 @@ class _WheelChooserState extends State<WheelChooser> {
               textAlign: TextAlign.center,
               textScaleFactor: 1.5,
               style: i == currentPosition
-                  ? widget.selectTextStyle ?? null
-                  : widget.unSelectTextStyle ?? null,
+                  ? widget.selectTextStyle
+                  : widget.unSelectTextStyle,
             ),
           ),
         ),

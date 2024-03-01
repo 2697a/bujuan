@@ -494,6 +494,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "3.3.1"
+  flutter_card_swiper:
+    dependency: "direct main"
+    description:
+      name: flutter_card_swiper
+      sha256: "05bbbc11a0f57a6b9294cebe857d4d3dfdfbdad4e1628f4dc910c317d9684319"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "7.0.0"
   flutter_displaymode:
     dependency: "direct main"
     description:
