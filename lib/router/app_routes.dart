@@ -10,7 +10,7 @@ part of './app_pages.dart';
 abstract class Routes {
   static const splash = '/splash';
   static const main = '/';
-  static const home = '/';
+  static const home = '/home';
   static const classify = '/classify';
   static const news = '/news';
   static const my = '/my';

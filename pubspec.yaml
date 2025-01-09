@@ -39,6 +39,10 @@ dependencies:
     path: ../bujuan_music_api
   just_audio: ^0.9.42
   audio_service: ^0.18.15
+  audioplayers: ^6.1.0
+  media_kit: ^1.1.11
+  media_kit_video: ^1.2.5 # For video rendering.
+  media_kit_libs_video: ^1.0.5 # Native video dependencies.
   go_router: ^14.4.1
   flutter_riverpod: ^2.6.1
   flutter_screenutil: ^5.9.3

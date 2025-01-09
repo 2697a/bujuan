@@ -1,13 +1,16 @@
-import 'package:bujuan/pages/main/main.dart';
+import 'dart:io';
+
+import 'package:audio_service/audio_service.dart';
+import 'package:bujuan/common/player/bujuan_player.dart';
 import 'package:bujuan/router/app_pages.dart';
 import 'package:bujuan_music_api/bujuan_music_api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_acrylic/flutter_acrylic.dart';
-import 'package:flutter_acrylic/window.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:media_kit/media_kit.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -21,14 +24,17 @@ final isLand = Provider.family<bool, BuildContext>((ref, context) {
 
 main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  MediaKit.ensureInitialized();
   await _initMain();
-  await windowManager.ensureInitialized();
-  await Window.initialize();
-  await Window.setEffect(effect: WindowEffect.transparent);
-  // 设置窗口属性
-  windowManager.setSize(const Size(1200, 800));
-  windowManager.setResizable(false);
-  windowManager.setTitleBarStyle(TitleBarStyle.hidden);
+  if (Platform.isMacOS || Platform.isWindows || Platform.isLinux) {
+    await windowManager.ensureInitialized();
+    await Window.initialize();
+    await Window.setEffect(effect: WindowEffect.transparent);
+    // 设置窗口属性
+    windowManager.setSize(const Size(1200, 800));
+    windowManager.setResizable(false);
+    windowManager.setTitleBarStyle(TitleBarStyle.hidden);
+  }
 
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
     // 沉浸式状态栏（仅安卓）
@@ -38,7 +44,7 @@ main() async {
   ));
   final router = GoRouter(
     navigatorKey: rootNavigatorKey,
-    initialLocation: Routes.main,
+    initialLocation: Routes.home,
     routes: AppPages.pages,
   );
   runApp(Builder(builder: (BuildContext context) {
@@ -66,5 +72,14 @@ main() async {
 _initMain() async {
   //初始化音乐服务
   final appDocDir = await getApplicationDocumentsDirectory();
-  await BujuanMusicManager().init(cookiePath: '${appDocDir.path}/cookies', debug: true);
+  await BujuanMusicManager().init(cookiePath: '${appDocDir.path}/cookies', debug: false);
+  await AudioService.init<BujuanPlayer>(
+    builder: () => BujuanPlayer(),
+    config: const AudioServiceConfig(
+      androidStopForegroundOnPause: false,
+      androidNotificationChannelId: 'com.sixbugs.bujuan.channel.audio',
+      androidNotificationChannelName: 'Music playback',
+      androidNotificationIcon: 'drawable/audio_service_icon',
+    ),
+  );
 }

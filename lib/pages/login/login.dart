@@ -79,6 +79,9 @@ class LoginDesktop extends StatelessWidget {
                           child: const rive.RiveAnimation.asset(
                             AppIcons.loginIcon,
                             fit: BoxFit.cover,
+                            controllers: [
+
+                            ],
                             animations: ['Hair Wind', 'Idle', 'Blink'],
                           ),
                         ),

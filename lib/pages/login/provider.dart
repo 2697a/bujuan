@@ -62,7 +62,7 @@ class LoginRequestNotifier extends StateNotifier<LoginRequestState> {
     final qrCode = state.data?.qrCode;
     if (qrCode?.isNotEmpty ?? false) {
       final checkLogin = await BujuanMusicManager().checkQrCode(key: qrCode!);
-      _handleLoginCheckResponse(checkLogin);
+      // _handleLoginCheckResponse(checkLogin);
     }
   }
 

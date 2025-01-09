@@ -17,7 +17,7 @@ class AlbumImage extends StatelessWidget {
         clipper: ZigZagClipper(),
         child: Stack(
           children: [
-            ImageView(url: "http://p2.music.126.net/7G5HqyqcpZoP4cHL7-a-hQ==/109951170027064713.jpg",width: 340,height: 340,isCircle: true,),
+            ImageView(url: "https://p2.music.126.net/ArbpVuafLfcdRAPDi4JTDA==/109951167896179360.jpg",width: 260,height: 260,isCircle: true,),
             // CustomPaint(
             //   size: ui.Size(340, 340),
             //   painter: AlbumCoverPainter(),

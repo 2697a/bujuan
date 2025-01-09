@@ -3,13 +3,18 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  audioplayers_windows
   flutter_acrylic
+  media_kit_libs_windows_video
+  media_kit_video
   rive_common
+  screen_brightness_windows
   screen_retriever_windows
   window_manager
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST
+  media_kit_native_event_loop
 )
 
 set(PLUGIN_BUNDLED_LIBRARIES)
