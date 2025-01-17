@@ -1,0 +1,134 @@
+name: Build Android & iOS
+
+on:
+  push:
+    branches: [ "2.0.0" ]
+  pull_request:
+    branches: [ "2.0.0" ]
+  workflow_dispatch:
+  release:
+    types: [released]
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.x'
+          channel: 'stable'
+          
+      - name: Get dependencies
+        run: flutter pub get
+        
+      - name: Build APK
+        run: flutter build apk --release
+
+      - name: Print Folder Tree
+        uses: jaywcjlove/github-action-folder-tree@main
+        with:
+            exclude: "node_modules|dist|.git|.husky"
+            path: ./build
+            depth: 10
+        
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-release
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+  build-ios:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.x'
+          channel: 'stable'
+          
+      - name: Get dependencies
+        run: flutter pub get
+        
+      - name: Build iOS
+        run: flutter build ios --release --no-codesign
+
+      - name: Print Folder Tree
+        uses: jaywcjlove/github-action-folder-tree@main
+        with:
+            exclude: "node_modules|dist|.git|.husky"
+            path: ./build
+            depth: 10
+
+      - name: Pack IPA
+        run: |
+          cd build/ios/iphoneos
+          mkdir Payload
+          cp -r Runner.app Payload
+          zip -r app.ipa Payload
+          
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-release
+          path: build/ios/iphoneos/app.ipa 
+
+  release:
+    name: Release
+    needs: [build-android, build-ios]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Tag the repository (pre-release)
+        if: github.event_name != 'release' || github.event.action != 'created'
+        id: tag
+        run: |
+          TAG=nightly.$(date -Iseconds | sed 's/[T:\+]/-/g')
+          TIME=$(date '+%Y/%m/%d %H:%M')
+          echo "$TAG"
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo "time=$TIME" >> $GITHUB_OUTPUT
+          git config --global user.name "${GITHUB_ACTOR}"
+          git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+          git tag -a $TAG -m "Published version $TAG" ${GITHUB_SHA}
+          git push origin $TAG
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Create release (pre-release)
+        uses: softprops/action-gh-release@v2
+        if: github.event_name != 'release' || github.event.action != 'created'
+        with:
+          files: artifacts/*/*
+          prerelease: true
+          make_latest: false
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: ${{ steps.tag.outputs.time }}
+
+      - name: Create release (release)
+        uses: softprops/action-gh-release@v2
+        if: github.event_name == 'release' && github.event.action == 'created'
+        with:
+          files: artifacts/*/*
+          prerelease: false
+          make_latest: true
