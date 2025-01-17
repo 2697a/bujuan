@@ -272,7 +272,7 @@ Future<List<Cookie>> loadCookies({Uri? host}) async {
 
 Future<int> loadCookiesHash({List<Cookie>? cookies}) async {
   cookies ??= await loadCookies();
-  int hash = hashList(cookies.map((e) => e.toString()));
+  int hash = Object.hashAll(cookies.map((e) => e.toString()));
   int loginRefreshVersion = NeteaseMusicApi().loginRefreshVersion;
   return hash + loginRefreshVersion;
 }
