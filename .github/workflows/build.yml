@@ -15,7 +15,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          submodules: recursive
+          submodules: false  # 关闭自动子模块拉取
+
+      - name: Clone submodule (bujuan_music_api)
+        run: |
+          mkdir -p plugin
+          git clone https://github.com/2697a/bujuan_music_api.git plugin/bujuan_music_api
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -46,6 +51,11 @@ jobs:
 
       - name: Build APK (signed)
         run: flutter build apk --release
+        env:
+          KEYSTORE_PATH: ${{ env.KEYSTORE_PATH }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
@@ -60,7 +70,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          submodules: recursive
+          submodules: false
+
+      - name: Clone submodule (bujuan_music_api)
+        run: |
+          mkdir -p plugin
+          git clone https://github.com/2697a/bujuan_music_api.git plugin/bujuan_music_api
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -87,7 +102,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          submodules: recursive
+          submodules: false
+
+      - name: Clone submodule (bujuan_music_api)
+        run: |
+          mkdir -p plugin
+          git clone https://github.com/2697a/bujuan_music_api.git plugin/bujuan_music_api
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -114,7 +134,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          submodules: recursive
+          submodules: false
+
+      - name: Clone submodule (bujuan_music_api)
+        shell: bash
+        run: |
+          mkdir -p plugin
+          git clone https://github.com/2697a/bujuan_music_api.git plugin/bujuan_music_api
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -141,7 +167,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          submodules: recursive
+          submodules: false
+
+      - name: Clone submodule (bujuan_music_api)
+        run: |
+          mkdir -p plugin
+          git clone https://github.com/2697a/bujuan_music_api.git plugin/bujuan_music_api
 
       - name: Install Linux dependencies
         run: |
@@ -173,7 +204,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          submodules: recursive
+          submodules: false
+
+      - name: Clone submodule (bujuan_music_api)
+        run: |
+          mkdir -p plugin
+          git clone https://github.com/2697a/bujuan_music_api.git plugin/bujuan_music_api
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
