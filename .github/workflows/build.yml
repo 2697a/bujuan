@@ -75,7 +75,7 @@ jobs:
       - name: Clone submodule (bujuan_music_api)
         run: |
           mkdir -p plugin
-          git clone https://github.com/2697a/bujuan_music_api.git plugin/bujuan_music_api
+          git clone https://github.com/Zhenghao-Wen/bujuan_music_api.git plugin/bujuan_music_api
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -107,7 +107,7 @@ jobs:
       - name: Clone submodule (bujuan_music_api)
         run: |
           mkdir -p plugin
-          git clone https://github.com/2697a/bujuan_music_api.git plugin/bujuan_music_api
+          git clone https://github.com/Zhenghao-Wen/bujuan_music_api.git plugin/bujuan_music_api
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -140,7 +140,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p plugin
-          git clone https://github.com/2697a/bujuan_music_api.git plugin/bujuan_music_api
+          git clone https://github.com/Zhenghao-Wen/bujuan_music_api.git plugin/bujuan_music_api
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -172,7 +172,7 @@ jobs:
       - name: Clone submodule (bujuan_music_api)
         run: |
           mkdir -p plugin
-          git clone https://github.com/2697a/bujuan_music_api.git plugin/bujuan_music_api
+          git clone https://github.com/Zhenghao-Wen/bujuan_music_api.git plugin/bujuan_music_api
 
       - name: Install Linux dependencies
         run: |
@@ -209,7 +209,7 @@ jobs:
       - name: Clone submodule (bujuan_music_api)
         run: |
           mkdir -p plugin
-          git clone https://github.com/2697a/bujuan_music_api.git plugin/bujuan_music_api
+          git clone https://github.com/Zhenghao-Wen/bujuan_music_api.git plugin/bujuan_music_api
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
