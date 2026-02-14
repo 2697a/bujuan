@@ -27,13 +27,28 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+
+        // Limit to arm64-v8a to reduce APK size and build time
+        ndk {
+            abiFilters 'arm64-v8a'
+        }
+    }
+
+    signingConfigs {
+        release {
+            storeFile file(System.getenv("KEYSTORE_PATH") ?: "keystore.jks")
+            storePassword System.getenv("KEYSTORE_PASSWORD")
+            keyAlias System.getenv("KEY_ALIAS")
+            keyPassword System.getenv("KEY_PASSWORD")
+        }
     }
 
     buildTypes {
         release {
-//            minifyEnabled true
-//            shrinkResources true
-            signingConfig = signingConfigs.debug
+            // Uncomment the following lines if you want to enable code shrinking
+            // minifyEnabled true
+            // shrinkResources true
+            signingConfig signingConfigs.release
         }
     }
 }
