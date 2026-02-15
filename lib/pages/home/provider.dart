@@ -13,7 +13,7 @@ Future<HomeData> newAlbum(Ref ref) async {
   var recommendResourceFuture = BujuanMusicManager().recommendResource();
   var songsFuture = BujuanMusicManager().recommendNewSong(limit: 30);
   var topArtistFuture = BujuanMusicManager().topArtist(limit: 10);
-  var recommendSongFuture = BujuanMusicManager().recommendNewSong(); // 改为无参调用
+  var recommendSongFuture = BujuanMusicManager().recommendNewSong();
 
   var list = await Future.wait([
     recommendResourceFuture,
@@ -58,7 +58,7 @@ HomeData _buildHomeData(List list) {
 
 @riverpod
 Future<List<MediaItem>> recommendSongs(Ref ref) async {
-  var recommendSongEntity = await BujuanMusicManager().recommendNewSong(); // 改为无参调用
+  var recommendSongEntity = await BujuanMusicManager().recommendNewSong();
   var list = recommendSongEntity?.data?.dailySongs ?? [];
   return list
       .map(
