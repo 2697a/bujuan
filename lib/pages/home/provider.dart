@@ -1,5 +1,5 @@
 import 'package:audio_service/audio_service.dart';
-import 'package:bujuan_music_api/api/recommend/entity/recommend_new_song_entity.dart';
+import 'package:bujuan_music_api/api/recommend/entity/recommend_song_entity.dart'; // 改用旧实体
 import 'package:bujuan_music_api/api/recommend/entity/recommend_resource_entity.dart';
 import 'package:bujuan_music_api/api/top/entity/top_artist_entity.dart';
 import 'package:bujuan_music_api/bujuan_music_api.dart';
@@ -11,9 +11,9 @@ part 'provider.g.dart';
 @riverpod
 Future<HomeData> newAlbum(Ref ref) async {
   var recommendResourceFuture = BujuanMusicManager().recommendResource();
-  var songsFuture = BujuanMusicManager().recommendNewSong(limit: 30);
+  var songsFuture = BujuanMusicManager().recommendSongs(); // 改用旧方法
   var topArtistFuture = BujuanMusicManager().topArtist(limit: 10);
-  var recommendSongFuture = BujuanMusicManager().recommendNewSong();
+  var recommendSongFuture = BujuanMusicManager().recommendSongs(); // 改用旧方法
 
   var list = await Future.wait([
     recommendResourceFuture,
@@ -27,13 +27,11 @@ Future<HomeData> newAlbum(Ref ref) async {
 HomeData _buildHomeData(List list) {
   var playlist = list[0] as RecommendResourceEntity;
   var listArtist = list[1] as TopArtistEntity;
-  var songEntity = list[2] as RecommendNewSongEntity;
-  var recommendSongEntity = list[3] as RecommendNewSongEntity; // 类型修改
+  var songEntity = list[2] as RecommendSongEntity; // 改用旧实体
+  var recommendSongEntity = list[3] as RecommendSongEntity; // 改用旧实体
 
-  // 获取每日推荐歌曲列表
   var songs = songEntity.data?.dailySongs ?? [];
 
-  // 构建 MediaItem 列表，使用新实体的字段
   var medias = songs
       .map(
         (e) => MediaItem(
@@ -58,7 +56,7 @@ HomeData _buildHomeData(List list) {
 
 @riverpod
 Future<List<MediaItem>> recommendSongs(Ref ref) async {
-  var recommendSongEntity = await BujuanMusicManager().recommendNewSong();
+  var recommendSongEntity = await BujuanMusicManager().recommendSongs(); // 改用旧方法
   var list = recommendSongEntity?.data?.dailySongs ?? [];
   return list
       .map(
