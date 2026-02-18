@@ -1,11 +1,11 @@
-name: Build (Windows & macOS)
+name: Build Windows (Debug)
 
 on:
-#  push:
-#    branches: [ build ]
-#  pull_request:
-#    branches: [ build ]
-  workflow_dispatch:
+#   push:
+#     branches: [ build ]          # 根据需要修改分支
+#   pull_request:
+#     branches: [ build ]
+  workflow_dispatch:             # 允许手动触发
 
 jobs:
   windows:
@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          submodules: false
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -27,23 +29,30 @@ jobs:
       - name: Build Windows
         run: flutter build windows --release
 
-      - name: Debug - List Windows build output
-        shell: pwsh
-        run: |
-          Write-Host "Contents of build directory:"
-          Get-ChildItem -Path build -Recurse | Select-Object FullName
-
       - name: Locate Windows build output
         id: find_windows
         shell: pwsh
         run: |
-          # 查找任意 .exe 文件（可能是 Runner.exe 或项目名.exe）
-          $exePath = Get-ChildItem -Path build -Recurse -Filter "*.exe" | Select-Object -First 1 | % { $_.Directory.FullName }
+          # 优先查找 runner/Release 目录下的 .exe（排除 CMakeFiles 临时文件）
+          $exePath = Get-ChildItem -Path build\windows -Recurse -Filter "*.exe" |
+                     Where-Object { $_.FullName -notmatch "CMakeFiles" } |
+                     Where-Object { $_.FullName -match "runner\\Release" } |
+                     Select-Object -First 1 |
+                     ForEach-Object { $_.Directory.FullName }
+
+          if (-not $exePath) {
+            # 降级：查找任何非 CMakeFiles 的 .exe
+            $exePath = Get-ChildItem -Path build\windows -Recurse -Filter "*.exe" |
+                       Where-Object { $_.FullName -notmatch "CMakeFiles" } |
+                       Select-Object -First 1 |
+                       ForEach-Object { $_.Directory.FullName }
+          }
+
           if ($exePath) {
-            echo "Found exe at: $exePath"
+            Write-Host "Found Windows executable in: $exePath"
             echo "path=$exePath" >> $env:GITHUB_OUTPUT
           } else {
-            echo "::error::No .exe found in build directory. See above for directory tree."
+            Write-Host "::error::Windows build output not found"
             exit 1
           }
 
@@ -52,46 +61,3 @@ jobs:
         with:
           name: windows-build
           path: ${{ steps.find_windows.outputs.path }}
-
-  macos:
-    name: Build macOS App
-    runs-on: macos-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          cache: true
-
-      - name: Install dependencies
-        run: flutter pub get
-
-      - name: Build macOS
-        run: flutter build macos --release
-
-      - name: Debug - List macOS build output
-        run: |
-          echo "Contents of build directory:"
-          find build -type f -o -type d | head -50
-
-      - name: Locate macOS build output
-        id: find_macos
-        run: |
-          # 查找任意 .app 目录
-          APP_PATH=$(find build -type d -name "*.app" | head -1)
-          if [ -n "$APP_PATH" ]; then
-            echo "Found app at: $APP_PATH"
-            echo "path=$APP_PATH" >> $GITHUB_OUTPUT
-          else
-            echo "::error::No .app found in build directory. See above for directory listing."
-            exit 1
-          fi
-
-      - name: Upload macOS app
-        uses: actions/upload-artifact@v4
-        with:
-          name: macos-app
-          path: ${{ steps.find_macos.outputs.path }}
