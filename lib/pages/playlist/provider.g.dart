@@ -64,7 +64,7 @@ final class PlaylistDetailProvider
   }
 }
 
-String _$playlistDetailHash() => r'3d5c2dc1c694eeea7eb0ba153fbea44ce9938cac';
+String _$playlistDetailHash() => r'df5707822af7a5c41c22328e35250a47f798948f';
 
 final class PlaylistDetailFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<PlaylistData>, int> {
