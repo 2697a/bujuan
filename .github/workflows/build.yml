@@ -1,23 +1,21 @@
 name: Build
 
 on:
-#  push:
-#    branches: [ build ]                # 将触发分支从 feature/newui 改为 build
-#  pull_request:
-#    branches: [ build ]
+  push:
+    branches: [ build ]
+  pull_request:
+    branches: [ build ]
   workflow_dispatch:
 
 jobs:
   android:
-    name: Build Android APK (arm64-v8a)
+    name: Build Android APKs (multiple ABIs)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          submodules: false            # 无需手动拉取子模块
-
-      # 删除手动克隆子模块的步骤，因为依赖通过 pubspec.yaml 的 git 引用管理
+          submodules: false
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -26,7 +24,7 @@ jobs:
           cache: true
 
       - name: Install dependencies
-        run: flutter pub get            # 此时会自动拉取 bujuan_music_api 的 git 依赖
+        run: flutter pub get
 
       - name: Check Android signing secrets
         run: |
@@ -46,7 +44,7 @@ jobs:
           echo "KEY_ALIAS=${{ secrets.ANDROID_KEY_ALIAS }}" >> $GITHUB_ENV
           echo "KEY_PASSWORD=${{ secrets.ANDROID_KEY_PASSWORD }}" >> $GITHUB_ENV
 
-      - name: Build APK (signed)
+      - name: Build APKs
         run: flutter build apk --release
         env:
           KEYSTORE_PATH: ${{ env.KEYSTORE_PATH }}
@@ -54,11 +52,36 @@ jobs:
           KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
 
-      - name: Upload APK
+      - name: List APKs
+        run: ls -la build/app/outputs/flutter-apk/
+
+      - name: Upload armeabi-v7a APK
         uses: actions/upload-artifact@v4
         with:
-          name: android-apk
+          name: android-apk-armeabi-v7a
+          path: build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
+          if-no-files-found: warn
+
+      - name: Upload arm64-v8a APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk-arm64-v8a
+          path: build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+          if-no-files-found: warn
+
+      - name: Upload x86_64 APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk-x86_64
+          path: build/app/outputs/flutter-apk/app-x86_64-release.apk
+          if-no-files-found: warn
+
+      - name: Upload universal APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk-universal
           path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: warn
 
   ios:
     name: Build iOS App (unsigned)
@@ -68,8 +91,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: false
-
-      # 删除手动克隆子模块的步骤
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -110,14 +131,46 @@ jobs:
       - name: Build macOS
         run: flutter build macos --release
 
+      - name: Locate macOS build output
+        id: find_macos
+        run: |
+          # 查找 .app 目录（优先在 build/macos 下查找）
+          APP_PATH=$(find build/macos -type d -name "*.app" | grep -v "\.app/" | head -1)
+          if [ -z "$APP_PATH" ]; then
+            APP_PATH=$(find build -type d -name "*.app" | grep -v "\.app/" | head -1)
+          fi
+          if [ -n "$APP_PATH" ]; then
+            echo "Found macOS app at: $APP_PATH"
+            echo "path=$APP_PATH" >> $GITHUB_OUTPUT
+          else
+            echo "::error::macOS app not found"
+            exit 1
+          fi
+
+      - name: Locate macOS build output
+        id: find_macos
+        run: |
+          # 查找 .app 目录（优先在 build/macos 下查找）
+          APP_PATH=$(find build/macos -type d -name "*.app" | grep -v "\.app/" | head -1)
+          if [ -z "$APP_PATH" ]; then
+            APP_PATH=$(find build -type d -name "*.app" | grep -v "\.app/" | head -1)
+          fi
+          if [ -n "$APP_PATH" ]; then
+            echo "Found macOS app at: $APP_PATH"
+            echo "path=$APP_PATH" >> $GITHUB_OUTPUT
+          else
+            echo "::error::macOS app not found"
+            exit 1
+          fi
+
       - name: Upload macOS app
         uses: actions/upload-artifact@v4
         with:
           name: macos-app
-          path: build/macos/Build/Products/Release/Runner.app
+          path: ${{ steps.find_macos.outputs.path }}
 
   windows:
-    name: Build Windows Executable (x64)
+    name: Build Windows Executable
     runs-on: windows-latest
     steps:
       - name: Checkout code
@@ -137,14 +190,41 @@ jobs:
       - name: Build Windows
         run: flutter build windows --release
 
+      - name: Locate Windows build output
+        id: find_windows
+        shell: pwsh
+        run: |
+          # 优先查找 runner/Release 目录下的 .exe（排除 CMakeFiles 临时文件）
+          $exePath = Get-ChildItem -Path build\windows -Recurse -Filter "*.exe" |
+                     Where-Object { $_.FullName -notmatch "CMakeFiles" } |
+                     Where-Object { $_.FullName -match "runner\\Release" } |
+                     Select-Object -First 1 |
+                     ForEach-Object { $_.Directory.FullName }
+
+          if (-not $exePath) {
+            # 降级：查找任何非 CMakeFiles 的 .exe
+            $exePath = Get-ChildItem -Path build\windows -Recurse -Filter "*.exe" |
+                       Where-Object { $_.FullName -notmatch "CMakeFiles" } |
+                       Select-Object -First 1 |
+                       ForEach-Object { $_.Directory.FullName }
+          }
+
+          if ($exePath) {
+            Write-Host "Found Windows executable in: $exePath"
+            echo "path=$exePath" >> $env:GITHUB_OUTPUT
+          } else {
+            Write-Host "::error::Windows build output not found"
+            exit 1
+          }
+
       - name: Upload Windows build
         uses: actions/upload-artifact@v4
         with:
           name: windows-build
-          path: build/windows/runner/Release/
+          path: ${{ steps.find_windows.outputs.path }}
 
   linux:
-    name: Build Linux Bundle (x64)
+    name: Build Linux Bundle
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
