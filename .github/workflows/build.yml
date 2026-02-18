@@ -1,10 +1,10 @@
 name: Build
 
 on:
-  push:
-    branches: [ build ]                # 将触发分支从 feature/newui 改为 build
-  pull_request:
-    branches: [ build ]
+#  push:
+#    branches: [ build ]                # 将触发分支从 feature/newui 改为 build
+#  pull_request:
+#    branches: [ build ]
   workflow_dispatch:
 
 jobs:
