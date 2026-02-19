@@ -3,11 +3,13 @@ import 'package:bujuan_music/common/values/app_images.dart';
 import 'package:bujuan_music/router/app_router.dart';
 import 'package:bujuan_music_api/bujuan_music_api.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // 新增：用于剪贴板操作
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hugeicons_pro/hugeicons.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:pinput/pinput.dart';
+import 'dart:convert'; // 新增：用于 JSON 编码
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -265,15 +267,48 @@ class _LoginPageState extends State<LoginPage> {
           );
         }
       } else {
-        // 修复：LoginEntity 可能没有 message 字段，使用固定错误信息
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Login failed, please check your code and try again.')),
-        );
+        // 收集详细的错误信息
+        int? errorCode = loginEntity?.code;
+        String errorMessage = 'Login failed';
+        String detailedInfo = '';
+
+        if (loginEntity != null) {
+          // 尝试获取更多信息，如果实体有 toJson 方法，将其转为 JSON 字符串
+          try {
+            final map = (loginEntity as dynamic).toJson();
+            detailedInfo = jsonEncode(map);
+            errorMessage = 'Login failed (code: $errorCode)';
+          } catch (e) {
+            // 如果 toJson 不存在，至少输出 code
+            detailedInfo = 'code: $errorCode';
+            errorMessage = 'Login failed (code: $errorCode)';
+          }
+        } else {
+          detailedInfo = 'loginEntity is null';
+        }
+
+        // 将详细错误信息复制到剪贴板
+        await Clipboard.setData(ClipboardData(text: detailedInfo));
+
+        // 显示错误提示，包含复制成功提示
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('$errorMessage (details copied to clipboard)'),
+              duration: Duration(seconds: 5),
+            ),
+          );
+        }
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Login error: $e')),
-      );
+      // 捕获异常并复制
+      String errorDetail = 'Exception: $e';
+      await Clipboard.setData(ClipboardData(text: errorDetail));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Login error: $e (details copied)')),
+        );
+      }
     } finally {
       if (mounted) {
         setState(() {
