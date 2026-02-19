@@ -65,7 +65,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             SizedBox(height: 30.w),
             ElevatedButton(
-              onPressed: _isSendingCode ? null : () => showCodeDialog(),
+              onPressed: _isSendingCode ? null : () => showCodeBottomSheet(),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0XFF1ED760),
                 foregroundColor: Colors.white,
@@ -87,31 +87,24 @@ class _LoginPageState extends State<LoginPage> {
                   : Text('Get an SMS QR code'),
             ),
             SizedBox(height: 60.w),
-            // 二维码登录行，暂时不可点击并提示未实现
-            Tooltip(
-              message: 'QR code login not implemented yet',
-              child: Opacity(
-                opacity: 0.5,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(HugeIconsSolid.qrCode),
-                    SizedBox(width: 10.w),
-                    Text(
-                      'QR code login (coming soon)',
-                      style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500),
-                    ),
-                  ],
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(HugeIconsSolid.qrCode),
+                SizedBox(width: 10.w),
+                Text(
+                  'QR code login',
+                  style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500),
                 ),
-              ),
-            ),
+              ],
+            )
           ],
         ),
       ),
     );
   }
 
-  void showCodeDialog() async {
+  void showCodeBottomSheet() async {
     if (phoneController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Please enter phone number')),
@@ -120,7 +113,7 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     if (_lastSentPhone == phoneController.text) {
-      _showCodeInputDialog();
+      _showCodeInputSheet();
       return;
     }
 
@@ -132,7 +125,7 @@ class _LoginPageState extends State<LoginPage> {
       var boolEntity = await BujuanMusicManager().sendSmsCode(phone: phoneController.text);
       if (boolEntity != null && boolEntity.code == 200) {
         _lastSentPhone = phoneController.text;
-        _showCodeInputDialog();
+        _showCodeInputSheet();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to send code')),
@@ -151,31 +144,44 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  void _showCodeInputDialog() {
-    showDialog(
+  void _showCodeInputSheet() {
+    showModalBottomSheet(
       context: context,
-      barrierDismissible: true,
+      isScrollControlled: true,
+      useSafeArea: true,
+      enableDrag: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20.w),
+          topRight: Radius.circular(20.w),
+        ),
+      ),
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Center(child: Text('Verification', style: TextStyle(fontSize: 22.sp))),
-          content: Container(
-            width: double.maxFinite,
-            constraints: BoxConstraints(maxWidth: 400.w), // 限制最大宽度
-            child: SingleChildScrollView(
+        return Container(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.9,
+          ),
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  SizedBox(height: 30.w),
+                  Text('Verification',
+                      style: TextStyle(fontSize: 22.sp, fontWeight: FontWeight.w600)),
+                  SizedBox(height: 30.w),
                   Text('Enter the code sent to the number', style: TextStyle(fontSize: 16.sp)),
                   SizedBox(height: 30.w),
                   Text(phoneController.text,
                       style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600)),
-                  SizedBox(height: 30.w),
+                  SizedBox(height: 60.w),
                   Pinput(
                     autofocus: true,
                     defaultPinTheme: defaultPinTheme,
                     onCompleted: (v) {
-                      // 关闭对话框并执行登录
-                      Navigator.of(context).pop(); // 关闭当前对话框
                       goToHome(v);
                     },
                   ),
@@ -186,8 +192,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      // 关闭当前对话框，重新发送验证码
-                      Navigator.of(context).pop();
+                      Navigator.pop(context);
                       _resendCode();
                     },
                     child: Padding(
@@ -203,12 +208,6 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text('Cancel'),
-            ),
-          ],
         );
       },
     );
@@ -221,7 +220,7 @@ class _LoginPageState extends State<LoginPage> {
     try {
       var boolEntity = await BujuanMusicManager().sendSmsCode(phone: phoneController.text);
       if (boolEntity != null && boolEntity.code == 200) {
-        _showCodeInputDialog(); // 重新打开输入对话框
+        _showCodeInputSheet();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to resend code')),
@@ -257,7 +256,6 @@ class _LoginPageState extends State<LoginPage> {
           setValue(AppConfig.userInfoKey, userInfo.profile?.toJson());
           phoneController.text = '';
           if (mounted) {
-            // 关闭所有弹窗并跳转
             Navigator.popUntil(context, (route) => route.isFirst);
             context.replace(AppRouter.home);
           }
@@ -267,8 +265,9 @@ class _LoginPageState extends State<LoginPage> {
           );
         }
       } else {
+        // 修复：LoginEntity 可能没有 message 字段，使用固定错误信息
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Login failed: ${loginEntity?.message ?? 'unknown error'}')),
+          SnackBar(content: Text('Login failed, please check your code and try again.')),
         );
       }
     } catch (e) {
