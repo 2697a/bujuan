@@ -102,50 +102,67 @@ class _LoginPageState extends State<LoginPage> {
     var boolEntity = await BujuanMusicManager().sendSmsCode(phone: phoneController.text);
     if (boolEntity != null && mounted) {
       showModalBottomSheet(
-          context: context,
-          builder: (BuildContext context) {
-            return Column(
-              children: [
-                SizedBox(height: 30.w),
-                Text('Verification',
-                    style: TextStyle(fontSize: 22.sp, fontWeight: FontWeight.w600)),
-                SizedBox(height: 30.w),
-                Text('Enter the code sent to the number', style: TextStyle(fontSize: 16.sp)),
-                SizedBox(height: 30.w),
-                Text(phoneController.text,
-                    style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600)),
-                SizedBox(height: 60.w),
-                Pinput(
-                  autofocus: true,
-                  defaultPinTheme: defaultPinTheme,
-                  onCompleted: (v) {
-                    goToHome(v);
-                  },
+        context: context,
+        isScrollControlled: true,
+        useSafeArea: true,
+        enableDrag: true,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20.w),
+            topRight: Radius.circular(20.w),
+          ),
+        ),
+        builder: (BuildContext context) {
+          return Container(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.9,
+            ),
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom,
                 ),
-                SizedBox(height: 30.w),
-                Text(
-                  "Didn't receive code?",
-                  style: TextStyle(color: Color(0XFF1ED760)),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(height: 30.w),
+                    Text('Verification',
+                        style: TextStyle(fontSize: 22.sp, fontWeight: FontWeight.w600)),
+                    SizedBox(height: 30.w),
+                    Text('Enter the code sent to the number', style: TextStyle(fontSize: 16.sp)),
+                    SizedBox(height: 30.w),
+                    Text(phoneController.text,
+                        style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600)),
+                    SizedBox(height: 60.w),
+                    Pinput(
+                      autofocus: true,
+                      defaultPinTheme: defaultPinTheme,
+                      onCompleted: (v) {
+                        goToHome(v);
+                      },
+                    ),
+                    SizedBox(height: 30.w),
+                    Text(
+                      "Didn't receive code?",
+                      style: TextStyle(color: Color(0XFF1ED760)),
+                    ),
+                    GestureDetector(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 5.w),
+                        child: Text('Resend',
+                            style: TextStyle(
+                              color: Color(0XFF1ED760),
+                              decoration: TextDecoration.underline,
+                            )),
+                      ),
+                    ),
+                  ],
                 ),
-                GestureDetector(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 5.w),
-                    child: Text('Resend',
-                        style: TextStyle(
-                          color: Color(0XFF1ED760),
-                          decoration: TextDecoration.underline,
-                        )),
-                  ),
-                )
-              ],
-            );
-          },
-          isScrollControlled: true,
-          useSafeArea: true,
-          enableDrag: true,
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20.w), topRight: Radius.circular(20.w))));
+              ),
+            ),
+          );
+        },
+      );
     }
   }
 
