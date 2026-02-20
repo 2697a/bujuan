@@ -149,9 +149,9 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: master
-      resolved-ref: dff61e6b5989c2cda3b75bffa5057bdd3f65e8ff
-      url: "https://github.com/2697a/bujuan_music_api.git"
+      ref: login_test
+      resolved-ref: "407a85f0a79a74816aa707b942b4ffcc819b63bf"
+      url: "https://github.com/Zhenghao-Wen/bujuan_music_api.git"
     source: git
     version: "0.0.1"
   cached_network_image:
