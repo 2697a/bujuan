@@ -52,6 +52,7 @@ dependencies:
   window_manager: ^0.5.0
   nb_utils: ^7.1.8
   flutter_lyric: ^3.0.2
+  qr_flutter: ^4.1.0
 #  image_pixels: ^4.0.2
   flutter_displaymode: ^0.7.0
 #  dynamic_color: ^1.8.1
