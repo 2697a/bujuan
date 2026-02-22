@@ -1,0 +1,42 @@
+name: Web Build (Test)
+
+on:
+  workflow_dispatch:              # 允许手动触发
+
+jobs:
+  web:
+    name: Build Web App
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      # 强制清除子模块缓存，确保每次拉取最新 login_test 分支
+      - name: Clear submodule cache
+        run: rm -rf ~/.pub-cache/git/bujuan_music_api-*
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      # 验证子模块中是否包含必要的 .g.dart 文件
+      - name: Verify generated files in submodule
+        run: |
+          echo "Checking for .g.dart files in submodule..."
+          ls -la ~/.pub-cache/git/bujuan_music_api-*/lib/api/song/entity/*.g.dart || echo "::warning::No .g.dart files found in submodule"
+
+      - name: Build Web
+        run: flutter build web --release
+
+      - name: Upload Web build
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-build
+          path: build/web/
