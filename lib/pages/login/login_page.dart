@@ -34,10 +34,10 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
 
   bool _isSendingCode = false;
   bool _isLoggingIn = false;
+  bool _isCookieLoggingIn = false;
   String? _lastSentPhone;
 
-  // 二维码相关
-  bool _isQrMode = false; // 是否显示二维码面板
+  bool _isQrMode = false;
   String? _qrKey;
   String? _qrUrl;
   Timer? _qrTimer;
@@ -181,7 +181,6 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         captcha: code,
       );
       if (loginEntity != null && loginEntity.code == 200) {
-        // 登录成功，获取用户信息
         final userInfo = await BujuanMusicManager().userInfo();
         if (userInfo?.profile != null) {
           await setValue(AppConfig.userInfoKey, userInfo!.profile!.toJson());
@@ -193,7 +192,6 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
           _showTopSnackBar('Failed to get user info');
         }
       } else {
-        // 显示服务器返回的错误消息（如果有）
         final errorMsg = loginEntity?.message ?? 'Login failed (code: ${loginEntity?.code})';
         _showTopSnackBar(errorMsg);
       }
@@ -215,7 +213,6 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     _qrTimer?.cancel();
 
     try {
-      // 1. 获取二维码 key
       final keyEntity = await BujuanMusicManager().qrCodeKey();
       if (keyEntity?.unikey == null) {
         _showTopSnackBar('Failed to get QR key');
@@ -231,7 +228,6 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         _isQrLoading = false;
       });
 
-      // 2. 开始轮询扫码状态
       _qrTimer = Timer.periodic(const Duration(seconds: 2), (timer) async {
         if (_qrKey == null) return;
         try {
@@ -239,7 +235,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
           if (result == null) return;
 
           switch (result.code) {
-            case 800: // 二维码过期
+            case 800:
               _showTopSnackBar('QR code expired, please refresh');
               timer.cancel();
               setState(() {
@@ -247,29 +243,35 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                 _qrKey = null;
               });
               break;
-            case 801: // 等待扫码
-            case 802: // 待确认
-              // 继续等待
+            case 801:
+            case 802:
+              // waiting
               break;
-            case 803: // 成功
+            case 803:
               timer.cancel();
               if (result.cookie != null && result.cookie!.isNotEmpty) {
                 BujuanMusicManager().setCookie(result.cookie!);
-                // 获取用户信息并跳转
-                final userInfo = await BujuanMusicManager().userInfo();
-                if (userInfo?.profile != null) {
-                  await setValue(AppConfig.userInfoKey, userInfo!.profile!.toJson());
-                  if (mounted) {
-                    Navigator.popUntil(context, (route) => route.isFirst);
-                    context.replace(AppRouter.home);
+                try {
+                  final userInfo = await BujuanMusicManager().userInfo();
+                  if (userInfo?.profile != null) {
+                    await setValue(AppConfig.userInfoKey, userInfo!.profile!.toJson());
+                    if (mounted) {
+                      Navigator.popUntil(context, (route) => route.isFirst);
+                      context.replace(AppRouter.home);
+                    }
+                  } else {
+                    _showTopSnackBar('Failed to get user info with this cookie');
+                    BujuanMusicManager().clearCookie(); // 清除无效cookie
                   }
-                } else {
-                  _showTopSnackBar('Failed to get user info');
+                } catch (e) {
+                  _showTopSnackBar('Error fetching user info: $e');
+                  BujuanMusicManager().clearCookie();
                 }
+              } else {
+                _showTopSnackBar('No cookie received, please try manual input');
               }
               break;
             default:
-              // 其他错误
               if (result.message != null) {
                 _showTopSnackBar(result.message!);
               }
@@ -293,6 +295,94 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     });
   }
 
+  // ---------- Cookie 登录部分 ----------
+  Future<void> _showCookieDialog() async {
+    final TextEditingController _cookieController = TextEditingController();
+    return showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Cookie Login'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Tip: For Via browser users, scan the QR code on the official login page, '
+                  'then copy the cookie (e.g., MUSIC_U=xxx) from browser\'s developer tools and paste here.',
+                  style: TextStyle(fontSize: 14),
+                ),
+                SizedBox(height: 16.w),
+                TextField(
+                  controller: _cookieController,
+                  decoration: const InputDecoration(
+                    hintText: 'Paste your cookie here',
+                    border: OutlineInputBorder(),
+                  ),
+                  maxLines: 3,
+                  minLines: 1,
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: _isCookieLoggingIn
+                  ? null
+                  : () async {
+                      final cookie = _cookieController.text.trim();
+                      if (cookie.isEmpty) {
+                        _showTopSnackBar('Please paste a cookie');
+                        return;
+                      }
+                      Navigator.pop(context); // 关闭对话框
+                      await _loginWithCookie(cookie);
+                    },
+              child: _isCookieLoggingIn
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Text('Login'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _loginWithCookie(String cookie) async {
+    if (_isCookieLoggingIn) return;
+    setState(() => _isCookieLoggingIn = true);
+    try {
+      BujuanMusicManager().setCookie(cookie);
+      final userInfo = await BujuanMusicManager().userInfo();
+      if (userInfo?.profile != null) {
+        await setValue(AppConfig.userInfoKey, userInfo!.profile!.toJson());
+        if (mounted) {
+          Navigator.popUntil(context, (route) => route.isFirst);
+          context.replace(AppRouter.home);
+        }
+      } else {
+        _showTopSnackBar('Invalid cookie or login failed');
+        BujuanMusicManager().clearCookie(); // 清除无效cookie
+      }
+    } catch (e) {
+      _showTopSnackBar('Login error: $e');
+      BujuanMusicManager().clearCookie();
+    } finally {
+      if (mounted) setState(() => _isCookieLoggingIn = false);
+    }
+  }
+
+  // ---------- UI 构建 ----------
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -357,19 +447,27 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                     child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                 : const Text('Get an SMS QR code'),
           ),
-          SizedBox(height: 60.w),
-          GestureDetector(
-            onTap: _startQrLogin,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(HugeIconsSolid.qrCode, size: 24.w),
-                SizedBox(width: 10.w),
-                Text(
-                  'QR code login',
-                  style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500),
-                ),
-              ],
+          SizedBox(height: 30.w),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                icon: Icon(HugeIconsSolid.qrCode, size: 24.w),
+                onPressed: _startQrLogin,
+              ),
+              SizedBox(width: 10.w),
+              Text(
+                'QR code login',
+                style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500),
+              ),
+            ],
+          ),
+          SizedBox(height: 20.w),
+          TextButton(
+            onPressed: _showCookieDialog,
+            child: const Text(
+              'Cookie Login',
+              style: TextStyle(color: Color(0XFF1ED760)),
             ),
           ),
         ],
@@ -397,6 +495,15 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                 TextButton(
                   onPressed: _startQrLogin,
                   child: const Text('Refresh QR code'),
+                ),
+                SizedBox(height: 20.w),
+                // 添加手动输入cookie按钮
+                TextButton(
+                  onPressed: _showCookieDialog,
+                  child: const Text(
+                    'Already scanned? Enter cookie manually',
+                    style: TextStyle(color: Color(0XFF1ED760), fontSize: 14),
+                  ),
                 ),
               ],
             ),
