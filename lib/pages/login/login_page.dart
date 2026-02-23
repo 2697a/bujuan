@@ -310,8 +310,8 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'Tip: For Via browser users, scan the QR code on the official login page, '
-                  'then copy the cookie (e.g., MUSIC_U=xxx) from browser\'s developer tools and paste here.',
+                  'Tip: Scan the QR code in your browser (for mobile, \'Via\' is recommended), '
+                  'then copy the correct cookie from your browser.',
                   style: TextStyle(fontSize: 14),
                 ),
                 SizedBox(height: 16.w),
@@ -330,7 +330,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
+              child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
             ),
             ElevatedButton(
               onPressed: _isCookieLoggingIn
@@ -344,11 +344,15 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                       Navigator.pop(context); // 关闭对话框
                       await _loginWithCookie(cookie);
                     },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0XFF1ED760),
+                foregroundColor: Colors.white,
+              ),
               child: _isCookieLoggingIn
                   ? const SizedBox(
                       width: 16,
                       height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 2),
+                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                     )
                   : const Text('Login'),
             ),
@@ -372,7 +376,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         }
       } else {
         _showTopSnackBar('Invalid cookie or login failed');
-        BujuanMusicManager().clearCookie(); // 清除无效cookie
+        BujuanMusicManager().clearCookie();
       }
     } catch (e) {
       _showTopSnackBar('Login error: $e');
@@ -497,7 +501,6 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                   child: const Text('Refresh QR code'),
                 ),
                 SizedBox(height: 20.w),
-                // 添加手动输入cookie按钮
                 TextButton(
                   onPressed: _showCookieDialog,
                   child: const Text(
