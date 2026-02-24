@@ -250,7 +250,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
             case 803:
               timer.cancel();
               if (result.cookie != null && result.cookie!.isNotEmpty) {
-                BujuanMusicManager().setCookie(result.cookie!);
+                BujuanMusicManager().addCookie(result.cookie!); // 修改点：setCookie -> addCookie
                 try {
                   final userInfo = await BujuanMusicManager().userInfo();
                   if (userInfo?.profile != null) {
@@ -261,11 +261,11 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                     }
                   } else {
                     _showTopSnackBar('Failed to get user info with this cookie');
-                    BujuanMusicManager().clearCookie(); // 清除无效cookie
+                    BujuanMusicManager().clearCookies(); // 清除无效cookie
                   }
                 } catch (e) {
                   _showTopSnackBar('Error fetching user info: $e');
-                  BujuanMusicManager().clearCookie();
+                  BujuanMusicManager().clearCookies();
                 }
               } else {
                 _showTopSnackBar('No cookie received, please try manual input');
@@ -366,7 +366,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     if (_isCookieLoggingIn) return;
     setState(() => _isCookieLoggingIn = true);
     try {
-      BujuanMusicManager().setCookie(cookie);
+      BujuanMusicManager().addCookie(cookie); // 修改点：setCookie -> addCookie
       final userInfo = await BujuanMusicManager().userInfo();
       if (userInfo?.profile != null) {
         await setValue(AppConfig.userInfoKey, userInfo!.profile!.toJson());
@@ -376,11 +376,11 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         }
       } else {
         _showTopSnackBar('Invalid cookie or login failed');
-        BujuanMusicManager().clearCookie();
+        BujuanMusicManager().clearCookies();
       }
     } catch (e) {
       _showTopSnackBar('Login error: $e');
-      BujuanMusicManager().clearCookie();
+      BujuanMusicManager().clearCookies();
     } finally {
       if (mounted) setState(() => _isCookieLoggingIn = false);
     }
