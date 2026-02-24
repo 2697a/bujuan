@@ -250,7 +250,8 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
             case 803:
               timer.cancel();
               if (result.cookie != null && result.cookie!.isNotEmpty) {
-                BujuanMusicManager().addCookie(result.cookie!); // 修改点：setCookie -> addCookie
+                // 关键修复：添加 await 确保 cookie 保存完成
+                await BujuanMusicManager().addCookie(result.cookie!);
                 try {
                   final userInfo = await BujuanMusicManager().userInfo();
                   if (userInfo?.profile != null) {
@@ -261,11 +262,11 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                     }
                   } else {
                     _showTopSnackBar('Failed to get user info with this cookie');
-                    BujuanMusicManager().clearCookies(); // 清除无效cookie
+                    await BujuanMusicManager().clearCookies(); // 添加 await
                   }
                 } catch (e) {
                   _showTopSnackBar('Error fetching user info: $e');
-                  BujuanMusicManager().clearCookies();
+                  await BujuanMusicManager().clearCookies(); // 添加 await
                 }
               } else {
                 _showTopSnackBar('No cookie received, please try manual input');
@@ -317,9 +318,21 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                 SizedBox(height: 16.w),
                 TextField(
                   controller: _cookieController,
-                  decoration: const InputDecoration(
+                  cursorColor: const Color(0XFF1ED760), // 设置光标为绿色
+                  decoration: InputDecoration(
                     hintText: 'Paste your cookie here',
-                    border: OutlineInputBorder(),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.w),
+                      borderSide: const BorderSide(color: Colors.grey),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.w),
+                      borderSide: const BorderSide(color: Color(0XFF1ED760), width: 2),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.w),
+                      borderSide: const BorderSide(color: Colors.grey),
+                    ),
                   ),
                   maxLines: 3,
                   minLines: 1,
@@ -366,7 +379,8 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     if (_isCookieLoggingIn) return;
     setState(() => _isCookieLoggingIn = true);
     try {
-      BujuanMusicManager().addCookie(cookie); // 修改点：setCookie -> addCookie
+      // 关键修复：添加 await
+      await BujuanMusicManager().addCookie(cookie);
       final userInfo = await BujuanMusicManager().userInfo();
       if (userInfo?.profile != null) {
         await setValue(AppConfig.userInfoKey, userInfo!.profile!.toJson());
@@ -376,11 +390,11 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         }
       } else {
         _showTopSnackBar('Invalid cookie or login failed');
-        BujuanMusicManager().clearCookies();
+        await BujuanMusicManager().clearCookies(); // 添加 await
       }
     } catch (e) {
       _showTopSnackBar('Login error: $e');
-      BujuanMusicManager().clearCookies();
+      await BujuanMusicManager().clearCookies(); // 添加 await
     } finally {
       if (mounted) setState(() => _isCookieLoggingIn = false);
     }
