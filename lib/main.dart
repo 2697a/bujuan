@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:audio_service/audio_service.dart';
 import 'package:bujuan_music/common/local_proxy_service.dart';
 import 'package:bujuan_music/common/values/app_theme.dart';
@@ -17,6 +16,7 @@ import 'package:get_it/get_it.dart';
 // import 'package:media_kit/media_kit.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // 添加导入
 import 'package:window_manager/window_manager.dart';
 
 import 'common/bujuan_music_handler.dart';
@@ -31,25 +31,33 @@ void main() async {
 
   await initMedia();
   await initialize();
+  
+  // 启动时加载手动 cookie
+  await _loadManualCookie();
+
   getIt.registerSingleton<WeSlideController>(
     WeSlideController(initial: true),
     instanceName: 'footer',
   );
   getIt.registerSingleton<WeSlideController>(WeSlideController(), instanceName: 'panel');
-  // 让布局真正覆盖状态栏和底部手势栏
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   runApp(ProviderScope(child: MyApp()));
 }
 
-//帧率
-/// 初始化窗口
+Future<void> _loadManualCookie() async {
+  final prefs = await SharedPreferences.getInstance();
+  final cookie = prefs.getString('manual_cookie');
+  if (cookie != null && cookie.isNotEmpty) {
+    BujuanMusicManager().setCookie(cookie);
+    debugPrint('Loaded manual cookie from storage');
+  }
+}
+
 Future<void> initWindow() async {
   if (Platform.isMacOS || Platform.isWindows || Platform.isLinux) {
-    // await rive.RiveNative.init();
     await windowManager.ensureInitialized();
     WindowOptions windowOptions = WindowOptions(
       size: Size(1024, 650),
-      // minimumSize: Size(1024, 650),
       maximumSize: Size(1024, 800),
       center: true,
       backgroundColor: Colors.transparent,
@@ -63,9 +71,7 @@ Future<void> initWindow() async {
   }
 }
 
-/// 初始化音频服务
 Future<void> initMedia() async {
-  // MediaKit.ensureInitialized();
   final appDocDir = await getApplicationDocumentsDirectory();
   await BujuanMusicManager().init(cookiePath: '${appDocDir.path}/cookies', debug: false);
   await AudioService.init(
@@ -104,7 +110,6 @@ class MyApp extends ConsumerWidget {
               title: 'Bujuan',
               themeMode: themeMode,
               darkTheme: AppTheme.dark,
-              // showPerformanceOverlay: true,
               theme: AppTheme.light,
               routerConfig: router,
             ),
@@ -114,4 +119,3 @@ class MyApp extends ConsumerWidget {
     );
   }
 }
-

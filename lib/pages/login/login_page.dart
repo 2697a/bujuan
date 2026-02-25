@@ -11,6 +11,7 @@ import 'package:hugeicons_pro/hugeicons.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:pinput/pinput.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // 新增导入
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -250,8 +251,11 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
             case 803:
               timer.cancel();
               if (result.cookie != null && result.cookie!.isNotEmpty) {
-                // 关键修复：添加 await 确保 cookie 保存完成
-                await BujuanMusicManager().addCookie(result.cookie!);
+                // 保存到内存
+                BujuanMusicManager().setCookie(result.cookie!);
+                // 保存到 SharedPreferences
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.setString('manual_cookie', result.cookie!);
                 try {
                   final userInfo = await BujuanMusicManager().userInfo();
                   if (userInfo?.profile != null) {
@@ -262,11 +266,13 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                     }
                   } else {
                     _showTopSnackBar('Failed to get user info with this cookie');
-                    await BujuanMusicManager().clearCookies(); // 添加 await
+                    await prefs.remove('manual_cookie');
+                    BujuanMusicManager().clearCookie();
                   }
                 } catch (e) {
                   _showTopSnackBar('Error fetching user info: $e');
-                  await BujuanMusicManager().clearCookies(); // 添加 await
+                  await prefs.remove('manual_cookie');
+                  BujuanMusicManager().clearCookie();
                 }
               } else {
                 _showTopSnackBar('No cookie received, please try manual input');
@@ -318,7 +324,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                 SizedBox(height: 16.w),
                 TextField(
                   controller: _cookieController,
-                  cursorColor: const Color(0XFF1ED760), // 设置光标为绿色
+                  cursorColor: const Color(0XFF1ED760),
                   decoration: InputDecoration(
                     hintText: 'Paste your cookie here',
                     border: OutlineInputBorder(
@@ -379,8 +385,9 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     if (_isCookieLoggingIn) return;
     setState(() => _isCookieLoggingIn = true);
     try {
-      // 关键修复：添加 await
-      await BujuanMusicManager().addCookie(cookie);
+      BujuanMusicManager().setCookie(cookie);
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('manual_cookie', cookie);
       final userInfo = await BujuanMusicManager().userInfo();
       if (userInfo?.profile != null) {
         await setValue(AppConfig.userInfoKey, userInfo!.profile!.toJson());
@@ -390,11 +397,14 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         }
       } else {
         _showTopSnackBar('Invalid cookie or login failed');
-        await BujuanMusicManager().clearCookies(); // 添加 await
+        await prefs.remove('manual_cookie');
+        BujuanMusicManager().clearCookie();
       }
     } catch (e) {
       _showTopSnackBar('Login error: $e');
-      await BujuanMusicManager().clearCookies(); // 添加 await
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('manual_cookie');
+      BujuanMusicManager().clearCookie();
     } finally {
       if (mounted) setState(() => _isCookieLoggingIn = false);
     }
