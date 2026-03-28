@@ -16,7 +16,7 @@
         android:name="${applicationName}"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="bujuan_music"
+        android:label="Bujuan"
         android:usesCleartextTraffic="true"
         android:enableOnBackInvokedCallback="true"
         tools:targetApi="m">

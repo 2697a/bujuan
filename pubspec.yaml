@@ -38,7 +38,9 @@ dependencies:
   flutter_screenutil: ^5.9.3
   riverpod_annotation: ^3.0.3
   bujuan_music_api:
-    path: ./plugin/bujuan_music_api
+   git:
+    url: https://github.com/Zhenghao-Wen/bujuan_music_api.git
+    ref: login_test
   path_provider: ^2.1.5
   cached_network_image: ^3.4.1
   hugeicons_pro: ^0.0.2
@@ -50,6 +52,7 @@ dependencies:
   window_manager: ^0.5.0
   nb_utils: ^7.1.8
   flutter_lyric: ^3.0.2
+  qr_flutter: ^4.1.0
 #  image_pixels: ^4.0.2
   flutter_displaymode: ^0.7.0
 #  dynamic_color: ^1.8.1
@@ -66,7 +69,8 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
-  build_runner:
+  build_runner: ^2.4.0
+  json_serializable: ^6.7.0
   custom_lint:
   riverpod_generator: ^3.0.3
   riverpod_lint: ^3.0.3

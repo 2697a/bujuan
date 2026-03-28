@@ -21,19 +21,38 @@ android {
 
     defaultConfig {
         applicationId = "com.sixbugs.bujuan.bujuan_music"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        // 移除 ndk { abiFilters ... }，因为 splits 将处理 ABI 分割
+    }
+
+    // 添加 ABI 分割配置
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'armeabi-v7a', 'arm64-v8a', 'x86_64'  // 生成这三个 ABI 的独立 APK
+            universalApk true  // 同时生成包含所有 ABI 的 universal APK
+        }
+    }
+
+    signingConfigs {
+        release {
+            storeFile file(System.getenv("KEYSTORE_PATH") ?: "keystore.jks")
+            storePassword System.getenv("KEYSTORE_PASSWORD")
+            keyAlias System.getenv("KEY_ALIAS")
+            keyPassword System.getenv("KEY_PASSWORD")
+        }
     }
 
     buildTypes {
         release {
-//            minifyEnabled true
-//            shrinkResources true
-            signingConfig = signingConfigs.debug
+            signingConfig signingConfigs.release
+            // 如需开启混淆，取消注释以下两行
+            // minifyEnabled true
+            // shrinkResources true
         }
     }
 }

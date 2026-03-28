@@ -41,7 +41,7 @@ final class NewAlbumProvider
   }
 }
 
-String _$newAlbumHash() => r'1992313ea4437214f0493bc12c4ccb4650c7e433';
+String _$newAlbumHash() => r'06e26019e615f485df18970be7b57f1e0eeb4094';
 
 @ProviderFor(recommendSongs)
 const recommendSongsProvider = RecommendSongsProvider._();

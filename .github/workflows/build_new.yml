@@ -1,0 +1,267 @@
+name: Build
+
+on:
+#   push:
+#     branches: [ build ]
+#   pull_request:
+#     branches: [ build ]
+  workflow_dispatch:
+
+jobs:
+  android:
+    name: Build Android APKs (multiple ABIs)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Check Android signing secrets
+        run: |
+          if [ -z "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" ] || \
+             [ -z "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" ] || \
+             [ -z "${{ secrets.ANDROID_KEY_ALIAS }}" ] || \
+             [ -z "${{ secrets.ANDROID_KEY_PASSWORD }}" ]; then
+            echo "::error::Missing one or more Android signing secrets. Please set ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD in repository secrets."
+            exit 1
+          fi
+
+      - name: Decode Keystore
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > ${{ runner.temp }}/keystore.jks
+          echo "KEYSTORE_PATH=${{ runner.temp }}/keystore.jks" >> $GITHUB_ENV
+          echo "KEYSTORE_PASSWORD=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" >> $GITHUB_ENV
+          echo "KEY_ALIAS=${{ secrets.ANDROID_KEY_ALIAS }}" >> $GITHUB_ENV
+          echo "KEY_PASSWORD=${{ secrets.ANDROID_KEY_PASSWORD }}" >> $GITHUB_ENV
+
+      - name: Build APKs
+        run: flutter build apk --release
+        env:
+          KEYSTORE_PATH: ${{ env.KEYSTORE_PATH }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+
+      - name: List APKs
+        run: ls -la build/app/outputs/flutter-apk/
+
+      - name: Upload armeabi-v7a APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk-armeabi-v7a
+          path: build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
+          if-no-files-found: warn
+
+      - name: Upload arm64-v8a APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk-arm64-v8a
+          path: build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+          if-no-files-found: warn
+
+      - name: Upload x86_64 APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk-x86_64
+          path: build/app/outputs/flutter-apk/app-x86_64-release.apk
+          if-no-files-found: warn
+
+      - name: Upload universal APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk-universal
+          path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: warn
+
+  ios:
+    name: Build iOS App (unsigned)
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build iOS (no codesign)
+        run: flutter build ios --release --no-codesign
+
+      - name: Upload iOS app bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-app
+          path: build/ios/iphoneos/Runner.app
+
+  macos:
+    name: Build macOS App (unsigned)
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build macOS
+        run: flutter build macos --release
+
+      - name: Locate macOS build output
+        id: find_macos
+        run: |
+          # 查找 .app 目录（优先在 build/macos 下查找）
+          APP_PATH=$(find build/macos -type d -name "*.app" | grep -v "\.app/" | head -1)
+          if [ -z "$APP_PATH" ]; then
+            APP_PATH=$(find build -type d -name "*.app" | grep -v "\.app/" | head -1)
+          fi
+          if [ -n "$APP_PATH" ]; then
+            echo "Found macOS app at: $APP_PATH"
+            echo "path=$APP_PATH" >> $GITHUB_OUTPUT
+          else
+            echo "::error::macOS app not found"
+            exit 1
+          fi
+
+      - name: Upload macOS app
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-app
+          path: ${{ steps.find_macos.outputs.path }}
+
+  windows:
+    name: Build Windows Executable
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build Windows
+        run: flutter build windows --release
+
+      - name: Locate Windows build output
+        id: find_windows
+        shell: pwsh
+        run: |
+          # 优先查找 runner/Release 目录下的 .exe（排除 CMakeFiles 临时文件）
+          $exePath = Get-ChildItem -Path build\windows -Recurse -Filter "*.exe" |
+                     Where-Object { $_.FullName -notmatch "CMakeFiles" } |
+                     Where-Object { $_.FullName -match "runner\\Release" } |
+                     Select-Object -First 1 |
+                     ForEach-Object { $_.Directory.FullName }
+
+          if (-not $exePath) {
+            # 降级：查找任何非 CMakeFiles 的 .exe
+            $exePath = Get-ChildItem -Path build\windows -Recurse -Filter "*.exe" |
+                       Where-Object { $_.FullName -notmatch "CMakeFiles" } |
+                       Select-Object -First 1 |
+                       ForEach-Object { $_.Directory.FullName }
+          }
+
+          if ($exePath) {
+            Write-Host "Found Windows executable in: $exePath"
+            echo "path=$exePath" >> $env:GITHUB_OUTPUT
+          } else {
+            Write-Host "::error::Windows build output not found"
+            exit 1
+          }
+
+      - name: Upload Windows build
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-build
+          path: ${{ steps.find_windows.outputs.path }}
+
+  linux:
+    name: Build Linux Bundle
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - name: Install Linux dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build Linux
+        run: flutter build linux --release
+
+      - name: Upload Linux bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-bundle
+          path: build/linux/x64/release/bundle/
+
+  web:
+    name: Build Web
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build Web
+        run: flutter build web --release
+
+      - name: Upload Web build
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-build
+          path: build/web/

@@ -495,7 +495,7 @@ final class DynamicColorProvider
   }
 }
 
-String _$dynamicColorHash() => r'961e65a7697bd2334836b5051c5086f1eb2f4dd6';
+String _$dynamicColorHash() => r'74a3b3b892fa04cfea4e807a53da8e4f6b3fa1ce';
 
 @ProviderFor(playbackState)
 const playbackStateProvider = PlaybackStateProvider._();
